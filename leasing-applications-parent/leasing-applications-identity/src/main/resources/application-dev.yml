@@ -2,13 +2,15 @@ spring:
   # 数据库配置
   datasource:
     # 连接地址
-    url: jdbc:mysql://rm-uf639z9s4zf5n7c9gko.mysql.rds.aliyuncs.com:3306/keyproject?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    url: jdbc:mysql://rm-uf639z9s4zf5n7c9gko.mysql.rds.aliyuncs.com:3306/keyproject?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:sqlserver://192.168.0.106:1433;DatabaseName=JRParty
     # 用户名
-    username: asher
+    username: cqh
     # 密码-
-    password: Qq243485
+    password: 123456
     # 驱动类型
-    driver-class-name: com.mysql.jdbc.Driver
+#   driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     # 连接池类型
     type: com.alibaba.druid.pool.DruidDataSource
 
@@ -25,7 +27,7 @@ spring:
       time-between-eviction-runs-millis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
       min-evictable-idle-time-millis: 30000
-      validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1 FROM SYS_User
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
@@ -60,7 +62,8 @@ spring:
   # jpa 配置
   jpa:
     # 数据库类型 mysql
-    database: mysql
+#    database: mysql
+    database: sql_server
     # 是否显示 sql语句
     show-sql: true
     # hibernate 配置
@@ -71,7 +74,7 @@ spring:
       # 表更新策略
       ddl-auto: none
     #数据库方言
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+#    database-platform: org.hibernate.dialect.M
 
   # activiti 6
   activiti:
@@ -87,7 +90,7 @@ spring:
   liquibase:
     # sql语句存放位置
     change-log: classpath:/db/changelog/master.xml
-    enabled: true
+    enabled: false
   # redis 配置
   redis:
     host: localhost
