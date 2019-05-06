@@ -52,8 +52,8 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty(value = "是否可用", position = 18, required = true)
     private Integer enable;
 
-    /** XX */
-    @ApiModelProperty(value = "XXX", position = 20, required = true)
+    /** 头像 */
+    @ApiModelProperty(value = "头像", position = 20, required = true)
     private String portrait;
 
     /** XX */

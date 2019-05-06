@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -78,6 +79,11 @@ public class SysUserControllerImpl implements SysUserController {
         Page<SysUser> sysUserPage = sysUserService.findAll(sysUserSearchable, pageable);
         Page<SysUserVO> sysUserVOPage = SysUser.convert(sysUserPage, SysUserVO.class);
         return Result.of(sysUserVOPage);
+    }
+
+    @Override
+    public Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO) {
+        return sysUserService.login(sysUserDTO);
     }
 
 }

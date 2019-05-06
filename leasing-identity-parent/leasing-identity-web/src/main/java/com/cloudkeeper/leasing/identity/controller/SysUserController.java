@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 系统用户 controller
@@ -82,5 +83,14 @@ public interface SysUserController {
     @PostMapping("/page")
     Result<Page<SysUserVO>> page(@ApiParam(value = "系统用户查询条件", required = true) @RequestBody SysUserSearchable sysUserSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+    /**
+     * 登录接口
+     * @param sysUserDTO 系统用户DTO
+     * @return
+     */
+    @ApiOperation(value = "登录", notes = "登录", position = 4)
+    @PostMapping("/login")
+    Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO);
 
 }
