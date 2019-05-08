@@ -29,9 +29,10 @@ public class SysLoginLogDTO extends BaseEditDTO {
     @ApiModelProperty(value = "用户ID", position = 10, required = true)
     private String userId;
 
-    /** 用户name */
-    @ApiModelProperty(value = "用户name", position = 12, required = true)
+    /** 用户名 */
+    @ApiModelProperty(value = "用户名", position = 10, required = true)
     private String userName;
+
 
     /** 登陆时间 */
     @ApiModelProperty(value = "登陆时间", position = 14, required = true)
