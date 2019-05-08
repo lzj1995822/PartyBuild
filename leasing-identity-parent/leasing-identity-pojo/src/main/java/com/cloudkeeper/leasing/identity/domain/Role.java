@@ -41,25 +41,25 @@ public class Role extends BaseEntity {
     @Column(length = 1000)
     private String note;
 
-    /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 16, required = true)
-    @Column(length = 36)
-    private String organizationId;
-
-    /** 组织 */
-    @ApiModelProperty(value = "组织", position = 18)
-    @ManyToOne
-    @JoinColumn(name = "organizationId", insertable = false, updatable = false)
-    private Organization organization;
+//    /** 组织id */
+//    @ApiModelProperty(value = "组织id", position = 16, required = true)
+//    @Column(length = 36)
+//    private String organizationId;
+//
+//    /** 组织 */
+//    @ApiModelProperty(value = "组织", position = 18)
+//    @ManyToOne
+//    @JoinColumn(name = "organizationId", insertable = false, updatable = false)
+//    private Organization organization;
 
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         RoleVO roleVO = (RoleVO) convert;
-        if(!StringUtils.isEmpty(this.organization)){
-            roleVO.setOrganizationName(this.organization.getName());
-        }
+//        if(!StringUtils.isEmpty(this.organization)){
+//            roleVO.setOrganizationName(this.organization.getName());
+//        }
         return (T) roleVO;
     }
 

@@ -14,34 +14,34 @@ import java.util.List;
 @Repository
 public interface OrganizationRepository extends BaseRepository<Organization> {
 
-    /**
-     * 根据code，查询组织
-     * @param code 编码
-     * @return 组织
-     */
-    Organization findByCode(@Nonnull String code);
-
-    /**
-     * 根据父id，查询组织列表
-     * @param parentId 父id
-     * @return 组织列表
-     */
-    List<Organization> findAllByParentIdOrderBySortAsc(@Nonnull String parentId);
-
-    /**
-     * 是否存在
-     * @param parentId 父id
-     * @param code 编码
-     * @param id 主键
-     * @return true 存在
-     */
-    boolean existsByParentIdAndCodeAndIdNot(@Nonnull String parentId, @Nonnull String code, @Nonnull String id);
-
-    /**
-     * 是否存在
-     * @param parentId 父id
-     * @param code 编码
-     * @return true 存在
-     */
-    boolean existsByParentIdAndCode(@Nonnull String parentId, @Nonnull String code);
+//    /**
+//     * 根据code，查询组织
+//     * @param code 编码
+//     * @return 组织
+//     */
+//    Organization findByCode(@Nonnull String code);
+//
+//    /**
+//     * 根据父id，查询组织列表
+//     * @param parentId 父id
+//     * @return 组织列表
+//     */
+//    List<Organization> findAllByParentIdOrderBySortAsc(@Nonnull String parentId);
+//
+//    /**
+//     * 是否存在
+//     * @param parentId 父id
+//     * @param code 编码
+//     * @param id 主键
+//     * @return true 存在
+//     */
+//    boolean existsByParentIdAndCodeAndIdNot(@Nonnull String parentId, @Nonnull String code, @Nonnull String id);
+//
+//    /**
+//     * 是否存在
+//     * @param parentId 父id
+//     * @param code 编码
+//     * @return true 存在
+//     */
+//    boolean existsByParentIdAndCode(@Nonnull String parentId, @Nonnull String code);
 }

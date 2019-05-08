@@ -82,16 +82,26 @@ public class OrganizationControllerImpl implements OrganizationController {
 
     @Override
     public Result<OrganizationVO> tree() {
-        OrganizationVO organizationVO = organizationService.findTree();
-        return Result.of(organizationVO);
+        return null;
     }
 
     @Override
-    public Result<Boolean> existsCode(@ApiParam(value = "编码", required = true) @PathVariable String code,
-                                      @ApiParam(value = "组织父id", required = true) @PathVariable String parentId,
-                                      @ApiParam(value = "组织id") @PathVariable(required = false) String id) {
-        boolean exists = organizationService.existsCode(code, parentId, id);
-        return Result.of(exists);
+    public Result<Boolean> existsCode(String code, String parentId, String id) {
+        return null;
     }
+
+//    @Override
+//    public Result<OrganizationVO> tree() {
+//        OrganizationVO organizationVO = organizationService.findTree();
+//        return Result.of(organizationVO);
+//    }
+//
+//    @Override
+//    public Result<Boolean> existsCode(@ApiParam(value = "编码", required = true) @PathVariable String code,
+//                                      @ApiParam(value = "组织父id", required = true) @PathVariable String parentId,
+//                                      @ApiParam(value = "组织id") @PathVariable(required = false) String id) {
+//        boolean exists = organizationService.existsCode(code, parentId, id);
+//        return Result.of(exists);
+//    }
 
 }
