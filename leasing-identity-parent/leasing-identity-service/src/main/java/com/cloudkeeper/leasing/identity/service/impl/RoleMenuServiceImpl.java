@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.Principal;
 import com.cloudkeeper.leasing.identity.domain.RoleMenu;
 import com.cloudkeeper.leasing.identity.domain.SysRoutes;
+import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.repository.RoleMenuRepository;
 import com.cloudkeeper.leasing.identity.service.RoleMenuService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu> implements Ro
     /** 角色菜单 repository */
     private final RoleMenuRepository roleMenuRepository;
 
-    private final PrincipalServiceImpl principalService;
+    private final SysUserServiceImpl sysUserService;
 
     @Override
     protected BaseRepository<RoleMenu> getBaseRepository() {
@@ -66,11 +67,11 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu> implements Ro
     @Nonnull
     @Override
     public List<SysRoutes> findAllMenuCodeByPrincipalId(@Nonnull String principalId) {
-        Optional<Principal> optionalById = principalService.findOptionalById(principalId);
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(principalId);
         if (!optionalById.isPresent()) {
             return new ArrayList<>();
         }
-        List<RoleMenu> roleMenus = roleMenuRepository.findAllByRoleIdOrderByCreatedAtAsc(optionalById.get().getRoleId());
+        List<RoleMenu> roleMenus = roleMenuRepository.findAllByRoleIdOrderByCreatedAtAsc(optionalById.get().getRoleID());
         ArrayList<SysRoutes> sysRoutes = roleMenus.stream().map(item -> item.getSysRoutes()).collect(Collectors.toCollection(ArrayList::new));
         ArrayList<SysRoutes> firstMenus = sysRoutes.stream().filter(item -> item.getParentId() == null).collect(Collectors.toCollection(ArrayList::new));
         ArrayList<SysRoutes> childMenus = sysRoutes.stream().filter(item -> item.getParentId() != null).collect(Collectors.toCollection(ArrayList::new));

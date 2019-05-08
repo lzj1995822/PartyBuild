@@ -21,41 +21,45 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ck_id_organization")
+@Table(name = "dbo.SYS_District")
 public class Organization extends BaseEntity {
 
     /** 编码 */
     @ApiModelProperty(value = "编码", position = 10, required = true)
     @Column(length = 24)
-    private String code;
+    private String districtId;
 
     /** 全编码 */
     @ApiModelProperty(value = "全编码", position = 11, required = true)
     @Column(length = 250)
-    private String fullCode;
+    private String attachTo;
 
     /** 名称 */
     @ApiModelProperty(value = "名称", position = 12, required = true)
     @Column(length = 50)
-    private String name;
+    private String districtName;
 
-    /** 父id */
-    @ApiModelProperty(value = "父id", position = 14)
+    /** 等级 */
+    @ApiModelProperty(value = "等级", position = 14)
     @Column(length = 30)
-    private String parentId;
+    private String districtLevel;
 
-    /** 组织类型 */
-    @ApiModelProperty(value = "组织类型", position = 16, required = true)
-    @Enumerated(value = EnumType.STRING)
+    /** 等级 */
+    @ApiModelProperty(value = "等级", position = 14)
     @Column(length = 30)
-    private OrganizationTypeEnum type;
+    private String subDistrictNum;
+
 
     /** 排序 */
     @ApiModelProperty(value = "排序", position = 18, required = true)
-    private Integer sort;
+    private Integer score;
 
     /** 描述 */
     @ApiModelProperty(value = "描述", position = 20)
     @Column(length = 1000)
-    private String note;
+    private String description;
+
+    /** 是否可用 */
+    @ApiModelProperty(value = "是否可用", position = 20)
+    private Integer enable;
 }

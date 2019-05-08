@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.ArrayList;
@@ -21,34 +22,44 @@ import java.util.List;
 @Setter
 public class OrganizationVO extends BaseVO {
 
-    /** 编码*/
-    @ApiModelProperty(value = "编码", position = 10)
-    private String code;
+    /** 编码 */
+    @ApiModelProperty(value = "编码", position = 10, required = true)
+    @Column(length = 24)
+    private String districtId;
 
-    /** 全编码*/
-    @ApiModelProperty(value = "全编码", position = 11)
-    private String fullCode;
+    /** 全编码 */
+    @ApiModelProperty(value = "全编码", position = 11, required = true)
+    @Column(length = 250)
+    private String attachTo;
 
-    /** 名称*/
-    @ApiModelProperty(value = "名称", position = 12)
-    private String name;
+    /** 名称 */
+    @ApiModelProperty(value = "名称", position = 12, required = true)
+    @Column(length = 50)
+    private String districtName;
 
-    /** 父id*/
-    @ApiModelProperty(value = "父id", position = 14)
-    private String parentId;
+    /** 等级 */
+    @ApiModelProperty(value = "等级", position = 14)
+    @Column(length = 30)
+    private String districtLevel;
 
-    /** 组织类型*/
-    @ApiModelProperty(value = "组织类型", position = 16)
-    @Enumerated(value = EnumType.STRING)
-    private OrganizationTypeEnum type;
+    /** 等级 */
+    @ApiModelProperty(value = "等级", position = 14)
+    @Column(length = 30)
+    private String subDistrictNum;
 
-    /** 排序*/
-    @ApiModelProperty(value = "排序", position = 18)
-    private Integer sort;
 
-    /** 描述*/
+    /** 排序 */
+    @ApiModelProperty(value = "排序", position = 18, required = true)
+    private Integer score;
+
+    /** 描述 */
     @ApiModelProperty(value = "描述", position = 20)
-    private String note;
+    @Column(length = 1000)
+    private String description;
+
+    /** 是否可用 */
+    @ApiModelProperty(value = "是否可用", position = 20)
+    private Integer enable;
 
     /** 子节点*/
     @ApiModelProperty(value = "子节点", position = 22)

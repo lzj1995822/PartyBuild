@@ -91,7 +91,7 @@ public class Principal extends BaseEntity {
         T convert = super.convert(clazz);
         PrincipalVO principalVO = (PrincipalVO) convert;
         if(!StringUtils.isEmpty(this.organization)){
-            principalVO.setOrganizationName(this.organization.getName());
+            principalVO.setOrganizationName(this.organization.getDistrictName());
         }
         if(!StringUtils.isEmpty(this.role)){
             principalVO.setRoleName(this.role.getName());

@@ -22,8 +22,6 @@ public class OrganizationRepositoryTest {
     @Test
     public void saveTest() {
         Organization organization = new Organization();
-        organization.setCode("root");
-        organization.setName("新光租赁");
         organization = organizationRepository.save(organization);
         System.out.println(organization);
         System.out.println(organization.getId());

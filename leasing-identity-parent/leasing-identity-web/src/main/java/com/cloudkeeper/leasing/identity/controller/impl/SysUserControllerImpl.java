@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.SysUserController;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
@@ -82,6 +83,7 @@ public class SysUserControllerImpl implements SysUserController {
     }
 
     @Override
+    @Authorization(required = false)
     public Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO) {
         return sysUserService.login(sysUserDTO);
     }
