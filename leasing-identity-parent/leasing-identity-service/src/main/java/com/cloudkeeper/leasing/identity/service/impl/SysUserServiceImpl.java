@@ -77,6 +77,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_TOKEN_KEY + sysUser.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
+        sysUser.setPassword("不告诉你");
         map.put("user", sysUser);
         return Result.of("登录成功！", map);
     }
