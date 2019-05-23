@@ -39,7 +39,7 @@ public class SysUserVO extends BaseVO {
 
     /** 角色 */
     @ApiModelProperty(value = "角色", position = 16, required = true)
-    private String roleId;
+    private String roleID;
 
     /** 是否可用 */
     @ApiModelProperty(value = "是否可用", position = 18, required = true)
