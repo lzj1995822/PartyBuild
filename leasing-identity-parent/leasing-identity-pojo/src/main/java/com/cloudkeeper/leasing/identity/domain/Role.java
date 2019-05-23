@@ -23,7 +23,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ck_id_role")
+@Table(name = "dbo.ck_id_role")
 public class Role extends BaseEntity {
 
     /** 编码 */

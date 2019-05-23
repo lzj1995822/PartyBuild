@@ -61,4 +61,12 @@ public class SysUserVO extends BaseVO {
     @ApiModelProperty(value = "手机", position = 26, required = true)
     private String phone;
 
+    /** 角色名 */
+    @ApiModelProperty(value = "角色名", position = 26, required = true)
+    private String roleName;
+
+    /** 组织名 */
+    @ApiModelProperty(value = "组织名", position = 26, required = true)
+    private String organizationName;
+
 }

@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -68,7 +69,32 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty(value = "手机", position = 26, required = true)
     private String phone;
 
+    /** 角色 */
+    @ApiModelProperty(value = "角色", position = 28)
+    @OneToOne
+    @JoinColumn(name = "roleID", insertable = false, updatable = false)
+    private Role role;
 
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 28)
+    @OneToOne
+    @JoinColumn(name = "organizationId", insertable = false, updatable = false)
+    private SysDistrict sysDistrict;
+
+
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        SysUserVO sysUserVO = (SysUserVO) convert;
+        if(!StringUtils.isEmpty(this.role) ){
+            sysUserVO.setRoleName(this.role.getName());
+        }
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            sysUserVO.setOrganizationName(this.sysDistrict.getDistrictName());
+        }
+        return (T) sysUserVO;
+    }
 
 
 }
