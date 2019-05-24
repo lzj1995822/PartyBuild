@@ -27,7 +27,7 @@ public class ParActivitySearchable extends BaseSearchable {
 
     /** 截止日期 */
     @ApiModelProperty(value = "截止日期", position = 10, required = true)
-    private String month;
+    private LocalDate month;
 
     /** 背景 */
     @ApiModelProperty(value = "背景", position = 10, required = true)
@@ -55,11 +55,11 @@ public class ParActivitySearchable extends BaseSearchable {
 
     /** 释放时间 */
     @ApiModelProperty(value = "释放时间", position = 10, required = true)
-    private String releaseTime;
+    private LocalDateTime releaseTime;
 
     /** 报警时间 */
     @ApiModelProperty(value = "报警时间", position = 10, required = true)
-    private String alarmTime;
+    private LocalDateTime alarmTime;
 
     /** 分数 */
     @ApiModelProperty(value = "分数", position = 10, required = true)

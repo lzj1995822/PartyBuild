@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 活动
@@ -30,7 +32,7 @@ public class ParActivity extends BaseEntity {
     /** 截止日期 */
     @ApiModelProperty(value = "截止日期", position = 10, required = true)
     @Column(length = 60)
-    private String month;
+    private LocalDate month;
 
     /** 背景 */
     @ApiModelProperty(value = "背景", position = 10, required = true)
@@ -65,12 +67,12 @@ public class ParActivity extends BaseEntity {
     /** 释放时间 */
     @ApiModelProperty(value = "释放时间", position = 10, required = true)
     @Column(length = 60)
-    private String releaseTime;
+    private LocalDateTime releaseTime;
 
     /** 报警时间 */
     @ApiModelProperty(value = "报警时间", position = 10, required = true)
     @Column(length = 60)
-    private String alarmTime;
+    private LocalDateTime alarmTime;
 
     /** 分数 */
     @ApiModelProperty(value = "分数", position = 10, required = true)
