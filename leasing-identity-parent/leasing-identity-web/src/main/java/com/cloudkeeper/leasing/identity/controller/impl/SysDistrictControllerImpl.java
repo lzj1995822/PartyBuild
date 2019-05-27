@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,7 +42,10 @@ public class SysDistrictControllerImpl implements SysDistrictController {
 
     @Override
     public Result<SysDistrictVO> add(@ApiParam(value = "组织 DTO", required = true) @RequestBody @Validated SysDistrictDTO sysDistrictDTO) {
-        SysDistrict sysDistrict = sysDistrictService.save(sysDistrictDTO.convert(SysDistrict.class));
+        SysDistrict convert = sysDistrictDTO.convert(SysDistrict.class);
+        convert.setEnable(1);
+        convert.setScore(0);
+        SysDistrict sysDistrict = sysDistrictService.save(convert);
         return Result.ofAddSuccess(sysDistrict.convert(SysDistrictVO.class));
     }
 
@@ -80,4 +84,9 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         return Result.of(sysDistrictVOPage);
     }
 
+    @Override
+    public Result< Map<String ,String> > listSome() {
+        Map<String ,String> sysDistrictList = sysDistrictService.findAllByDistrictLevelNot();
+        return Result.of(sysDistrictList);
+    }
 }
