@@ -143,6 +143,11 @@
                 <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>
+
+        <repository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo/</url>
+        </repository>
     </repositories>
 
 </project>

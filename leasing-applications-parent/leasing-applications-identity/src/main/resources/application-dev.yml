@@ -3,8 +3,11 @@ spring:
   datasource:
     # 连接地址
 #    url: jdbc:mysql://rm-uf639z9s4zf5n7c9gko.mysql.rds.aliyuncs.com:3306/keyproject?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=JRParty
+#    url: jdbc:sqlserver://asher.wicp.vip:10858;DatabaseName=JRParty
+#    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=PartyBuild
+    url: jdbc:sqlserver://47.103.42.176:12964;DatabaseName=PartyBuild
     # 用户名
+#    username: lxw
     username: lxw
     # 密码-
     password: q243485908
@@ -74,7 +77,7 @@ spring:
       # 表更新策略
       ddl-auto: none
     #数据库方言
-#    database-platform: org.hibernate.dialect.M
+    database-platform: org.hibernate.dialect.SQLServer2008Dialect
 
   # activiti 6
   activiti:
@@ -95,7 +98,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-    password:
+    password: abc123
     database: 1
     timeout: 1s
     lettuce:
