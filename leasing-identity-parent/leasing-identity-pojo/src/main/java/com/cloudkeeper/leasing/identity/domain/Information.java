@@ -34,7 +34,7 @@ public class Information extends BaseEntity {
     @Column(length = 60)
     private String title;
 
-    /** 标题 */
+    /** 内容 */
     @ApiModelProperty(value = "内容", position = 10, required = true)
     @Column(length = 60)
     private String description;

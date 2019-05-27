@@ -41,8 +41,7 @@ public class InformationControllerImpl implements InformationController {
 
     @Override
     public Result<InformationVO> add(@ApiParam(value = "消息通知 DTO", required = true) @RequestBody @Validated InformationDTO informationDTO) {
-        Information information = informationService.save(informationDTO.convert(Information.class));
-        return Result.ofAddSuccess(information.convert(InformationVO.class));
+        return Result.ofAddSuccess(informationService.save(informationDTO));
     }
 
     @Override

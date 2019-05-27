@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 消息通知 DTO
@@ -37,8 +38,12 @@ public class InformationDTO extends BaseEditDTO {
     @ApiModelProperty(value = "发布时间", position = 10, required = true)
     private LocalDateTime releaseTime;
 
-    /** 发布对象 */
-    @ApiModelProperty(value = "发布对象", position = 10, required = true)
+    /** 发布者 */
+    @ApiModelProperty(value = "发布者", position = 10, required = true)
     private String districtID;
+
+    /** 发布对象集合*/
+    @ApiModelProperty(value = "发布对象集合", position = 10, required = true)
+    private List<String> districtIdList;
 
 }
