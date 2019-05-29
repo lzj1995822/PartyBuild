@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 组织 controller
@@ -72,6 +73,7 @@ public interface SysDistrictController {
     Result<List<SysDistrictVO>> list(@ApiParam(value = "组织查询条件", required = true) @RequestBody SysDistrictSearchable sysDistrictSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort);
 
+
     /**
      * 分页查询
      * @param sysDistrictSearchable 组织查询条件
@@ -82,5 +84,15 @@ public interface SysDistrictController {
     @PostMapping("/page")
     Result<Page<SysDistrictVO>> page(@ApiParam(value = "组织查询条件", required = true) @RequestBody SysDistrictSearchable sysDistrictSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+    /**
+     * 下拉项条件查询
+     * @param sysDistrictSearchable 组织查询条件
+     * @param sort 排序条件
+     * @return 组织 VO 集合
+     */
+    @ApiOperation(value = "下拉项条件查询", notes = "下拉项条件查询<br/>sort：单个排序字段传多值，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
+    @PostMapping("/listSome")
+    Result<Map<String ,String>> listSome();
 
 }

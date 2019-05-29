@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 组织 service
  * @author lxw
@@ -35,4 +39,14 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
                 .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+
+    @Override
+    public Map<String ,String> findAllByDistrictLevelNot() {
+        List<SysDistrict> allByDistrictLevelNot = sysDistrictRepository.findAllByDistrictLevelNot(3);
+        Map<String,String> map = new HashMap<>();
+        for (SysDistrict item:allByDistrictLevelNot) {
+            map.put(item.getDistrictId(),item.getDistrictName());
+        }
+        return map;
+    }
 }

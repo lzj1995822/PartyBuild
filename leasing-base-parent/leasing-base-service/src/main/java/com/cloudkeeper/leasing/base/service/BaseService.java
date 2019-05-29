@@ -206,4 +206,21 @@ public interface BaseService<T> {
      */
     Example<T> defaultExample(@Nonnull BaseSearchable searchable, @Nonnull ExampleMatcher exampleMatcher);
 
+    /**
+     * 原生查询
+     * @param clazz
+     * @param sql
+     * @param <D>
+     * @return
+     */
+    <D> D findBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
+
+    /**
+     * 原生查询
+     * @param clazz
+     * @param sql
+     * @param <D>
+     * @return
+     */
+    <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
 }
