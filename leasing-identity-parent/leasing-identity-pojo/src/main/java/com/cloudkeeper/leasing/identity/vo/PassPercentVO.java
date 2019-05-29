@@ -1,8 +1,19 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public class PassPercentVO {
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PassPercentVO implements Serializable {
     /** 镇名 */
     @ApiModelProperty(value = "镇名", position = 10, required = true)
     private String tn;
@@ -21,5 +32,5 @@ public class PassPercentVO {
 
     /** 比例 */
     @ApiModelProperty(value = "比例", position = 10, required = true)
-    private Float finishRatio;
+    private BigDecimal finishRatio;
 }

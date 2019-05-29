@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerfor
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
+import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -101,5 +102,16 @@ public interface ParActivityPerformController {
      */
     @ApiOperation(value = "列表查询完成比例", notes = "完成比例", position = 5)
     @PostMapping("/{activityId}perList")
-    Result<List<PassPercentVO>> perecent(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId);
+    Result<List<PassPercentVO>> percent(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId);
+
+    /**
+     * 列表查询各镇详情
+     * @param activityId 任务执行记录查询条件
+     * @param town 镇名
+     * @return 任务执行记录 VO 集合
+     */
+    @ApiOperation(value = "列表查询完成比例", notes = "完成比例", position = 5)
+    @PostMapping("/{activityId}&{town}townDetailList")
+    Result<List<TownDetailVO>> townDetail(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId,
+                                          @ApiParam(value = "活动ID", required = true) @PathVariable String town);
 }

@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
+import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,5 +16,6 @@ import java.util.List;
  */
 public interface ParActivityPerformService extends BaseService<ParActivityPerform> {
 //    Page<ParActivityPerform> listAll(String activityId, String orgId, Pageable pageable);
-    List<PassPercentVO> perecent(String activityId);
+    List<PassPercentVO> percent(String activityId);
+    List<TownDetailVO> townDetail(String activityId, String town);
 }

@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerfor
 import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
+import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -93,8 +94,15 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
 //    }
 //
     @Override
-    public Result<List<PassPercentVO>> perecent(@ApiParam(value = "活动ID", required = true) @RequestBody String activityId) {
-        List<PassPercentVO> passPercentVOList = parActivityPerformService.perecent(activityId);
+    public Result<List<PassPercentVO>> percent(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId) {
+        List<PassPercentVO> passPercentVOList = parActivityPerformService.percent(activityId);
         return Result.of(passPercentVOList);
+    }
+
+    @Override
+    public Result<List<TownDetailVO>> townDetail(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId,
+    @ApiParam(value = "活动ID", required = true) @PathVariable String town) {
+        List<TownDetailVO> townDetailVOList = parActivityPerformService.townDetail(activityId,town);
+        return Result.of(townDetailVOList);
     }
 }
