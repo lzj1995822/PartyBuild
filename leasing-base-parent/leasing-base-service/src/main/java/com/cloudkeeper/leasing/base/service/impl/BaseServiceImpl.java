@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
+import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,8 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     @Autowired
     protected EntityManager entityManager;
 
+    @Autowired
+    protected HttpServletRequest request;
     /**
      * 子类实现该方法
      * @return IBaseRepository
@@ -49,6 +54,19 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         return (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    @Override
+    public HttpSession getHttpSession() {
+        return request.getSession();
+    }
+
+    @Override
+    public String getTableName() {
+        //返回表示此 Class 所表示的实体（类、接口、基本类型或 void）的直接超类的 Type。
+        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
+        //返回表示此类型实际类型参数的 Type 对象的数组()
+        Class clazz = (Class) type.getActualTypeArguments()[0];
+        return ((Table) clazz.getAnnotation(Table.class)).name();
+    }
     /**
      * 获取hibernate session
      * @return session

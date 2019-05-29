@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +35,8 @@ public class ParActivityControllerImpl implements ParActivityController {
     /** 活动 service */
     private final ParActivityService parActivityService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         Optional<ParActivity> parActivityOptional = parActivityService.findOptionalById(id);
@@ -45,6 +46,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Override
     public Result<ParActivityVO> add(@ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO) {
         ParActivityVO parActivityVO = parActivityService.save(parActivityDTO);
+        sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivityVO.getId());
         return Result.ofAddSuccess(parActivityVO);
     }
 
@@ -60,25 +62,10 @@ public class ParActivityControllerImpl implements ParActivityController {
         parActivity = parActivityService.save(parActivity);
         return Result.ofUpdateSuccess(parActivity.convert(ParActivityVO.class));
     }
-    @Override
-    public Result<ParActivityVO> updateAlarmTime(@ApiParam(value = "活动id", required = true) @PathVariable String id,
-                                          @ApiParam(value = "提醒时间", required = true) @RequestBody ParActivityDTO parActivityDTO){
-        ParActivityVO parActivityVO = parActivityService.updateAlarmTime(id,parActivityDTO.getAlarmTime());
-        if(StringUtils.isEmpty(parActivityVO)){
-            return Result.ofLost();
-        }
-        return Result.ofUpdateSuccess(parActivityVO);
-    }
 
     @Override
     public Result delete(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         parActivityService.deleteById(id);
-        return Result.ofDeleteSuccess();
-    }
-
-    @Override
-    public Result deleteAll(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
-        parActivityService.deleteAll(id);
         return Result.ofDeleteSuccess();
     }
 
@@ -98,4 +85,19 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.of(parActivityVOPage);
     }
 
+    @Override
+    public Result<ParActivityVO> updateAlarmTime(@ApiParam(value = "活动id", required = true) @PathVariable String id,
+                                                 @ApiParam(value = "提醒时间", required = true) @RequestBody ParActivityDTO parActivityDTO){
+        ParActivityVO parActivityVO = parActivityService.updateAlarmTime(id,parActivityDTO.getAlarmTime());
+        if(StringUtils.isEmpty(parActivityVO)){
+            return Result.ofLost();
+        }
+        return Result.ofUpdateSuccess(parActivityVO);
+    }
+
+    @Override
+    public Result deleteAll(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
+        parActivityService.deleteAll(id);
+        return Result.ofDeleteSuccess();
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,10 @@ import java.util.Optional;
  * @author jerry
  */
 public interface BaseService<T> {
+
+    HttpSession getHttpSession();
+
+    String getTableName();
 
     /**
      * 保存/更新
