@@ -3,11 +3,14 @@ package com.cloudkeeper.leasing.base.service.impl;
 import com.cloudkeeper.leasing.base.dto.BaseSearchable;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.base.utils.BeanConverts;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -202,5 +206,23 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     public Example<T> defaultExample(@Nonnull BaseSearchable searchable, @Nonnull ExampleMatcher exampleMatcher) {
         Class <T> entityClass = getEntityClass();
         return Example.of(searchable.convert(entityClass), exampleMatcher);
+    }
+
+    // 原生sql查询返回体映射
+
+
+    @Override
+    public <D> D findBySql(@Nonnull Class<D> clazz, @Nonnull String sql) {
+        Object singleResult = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getSingleResult();
+        if (singleResult == null) {
+            return null;
+        }
+        return BeanConverts.mapToObj(clazz, (Map<String, Object>) singleResult);
+    }
+
+    @Override
+    public <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql) {
+        List<Map<String, Object>> list = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+        return BeanConverts.mapToObj(clazz, list);
     }
 }
