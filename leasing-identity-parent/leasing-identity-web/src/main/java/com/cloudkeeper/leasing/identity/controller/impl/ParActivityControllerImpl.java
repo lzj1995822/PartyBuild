@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,4 +85,19 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.of(parActivityVOPage);
     }
 
+    @Override
+    public Result<ParActivityVO> updateAlarmTime(@ApiParam(value = "活动id", required = true) @PathVariable String id,
+                                                 @ApiParam(value = "提醒时间", required = true) @RequestBody ParActivityDTO parActivityDTO){
+        ParActivityVO parActivityVO = parActivityService.updateAlarmTime(id,parActivityDTO.getAlarmTime());
+        if(StringUtils.isEmpty(parActivityVO)){
+            return Result.ofLost();
+        }
+        return Result.ofUpdateSuccess(parActivityVO);
+    }
+
+    @Override
+    public Result deleteAll(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
+        parActivityService.deleteAll(id);
+        return Result.ofDeleteSuccess();
+    }
 }
