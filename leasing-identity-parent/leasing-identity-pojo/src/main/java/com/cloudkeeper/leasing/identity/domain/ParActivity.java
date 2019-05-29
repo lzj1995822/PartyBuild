@@ -1,6 +1,9 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,12 +11,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 活动
@@ -79,5 +84,21 @@ public class ParActivity extends BaseEntity {
     @Column(length = 60)
     private Integer score;
 
+    /** 附件 */
+    @ApiModelProperty(value = "附件", position = 10, required = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "parActivity")
+    private List<ParActivityReleaseFile> parActivityReleaseFile;
+
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        ParActivityVO parActivityVO = (ParActivityVO) convert;
+        if(!StringUtils.isEmpty(this.parActivityReleaseFile)){
+            parActivityVO.setUrls(this.parActivityReleaseFile);
+        }
+        return (T) parActivityVO;
+    }
 
 }

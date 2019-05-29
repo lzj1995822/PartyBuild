@@ -1,12 +1,18 @@
 package com.cloudkeeper.leasing.base.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.annotation.Nonnull;
+import javax.persistence.Column;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class BaseDTO implements Serializable {
 
+    @ApiModelProperty(value = "主键id", position = 1)
+    private String id;
     /**
      * dto 转实体类
      * @param clazz 实体类

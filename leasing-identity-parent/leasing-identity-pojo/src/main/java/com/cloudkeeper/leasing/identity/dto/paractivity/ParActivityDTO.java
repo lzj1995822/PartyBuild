@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 活动 DTO
@@ -64,5 +65,9 @@ public class ParActivityDTO extends BaseEditDTO {
     /** 分数 */
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private Integer score;
+
+    /** 文件 */
+    @ApiModelProperty(value = "文件", position = 10, required = true)
+    private List<String> fileUrls;
 
 }

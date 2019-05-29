@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 活动 VO
@@ -64,5 +67,9 @@ public class ParActivityVO extends BaseVO {
     /** 分数 */
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private Integer score;
+
+    /** 附件 */
+    @ApiModelProperty(value = "附件", position = 10, required = true)
+    private List<ParActivityReleaseFile> urls = new LinkedList();
 
 }

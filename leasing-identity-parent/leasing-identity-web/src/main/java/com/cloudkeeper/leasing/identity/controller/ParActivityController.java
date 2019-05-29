@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,6 +54,17 @@ public interface ParActivityController {
         @ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO);
 
     /**
+     * 更新
+     * @param id 活动id
+     * @param parActivityDTO 活动
+     * @return 活动 VO
+     */
+    @ApiOperation(value = "更新", notes = "更新", position = 3)
+    @PutMapping("/{id}idAlarm")
+    Result<ParActivityVO> updateAlarmTime(@ApiParam(value = "活动id", required = true) @PathVariable String id,
+                                 @ApiParam(value = "提醒时间", required = true) @RequestBody ParActivityDTO parActivityDTO);
+
+    /**
      * 删除
      * @param id 活动id
      * @return 删除结果
@@ -60,6 +72,15 @@ public interface ParActivityController {
     @ApiOperation(value = "删除", notes = "删除", position = 4)
     @DeleteMapping("/{id}id")
     Result delete(@ApiParam(value = "活动id", required = true) @PathVariable String id);
+
+    /**
+     * 删除
+     * @param id 活动id
+     * @return 删除所有
+     */
+    @ApiOperation(value = "删除", notes = "删除", position = 4)
+    @DeleteMapping("/{id}ids")
+    Result deleteAll(@ApiParam(value = "活动id", required = true) @PathVariable String id);
 
     /**
      * 列表查询
