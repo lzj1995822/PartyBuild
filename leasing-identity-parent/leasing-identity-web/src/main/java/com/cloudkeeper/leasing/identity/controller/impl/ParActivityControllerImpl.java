@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ParActivityControllerImpl implements ParActivityController {
     /** 活动 service */
     private final ParActivityService parActivityService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         Optional<ParActivity> parActivityOptional = parActivityService.findOptionalById(id);
@@ -42,6 +45,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Override
     public Result<ParActivityVO> add(@ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO) {
         ParActivity parActivity = parActivityService.save(parActivityDTO.convert(ParActivity.class));
+        sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivity.getId());
         return Result.ofAddSuccess(parActivity.convert(ParActivityVO.class));
     }
 
