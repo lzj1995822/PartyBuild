@@ -44,9 +44,9 @@ public class ParActivityControllerImpl implements ParActivityController {
 
     @Override
     public Result<ParActivityVO> add(@ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO) {
-        ParActivity parActivity = parActivityService.save(parActivityDTO.convert(ParActivity.class));
-        sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivity.getId());
-        return Result.ofAddSuccess(parActivity.convert(ParActivityVO.class));
+        ParActivityVO parActivityVO = parActivityService.save(parActivityDTO);
+        sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivityVO.getId());
+        return Result.ofAddSuccess(parActivityVO);
     }
 
     @Override
