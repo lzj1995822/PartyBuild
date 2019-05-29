@@ -6,6 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,10 @@ import java.util.Optional;
  * @author jerry
  */
 public interface BaseService<T> {
+
+    HttpSession getHttpSession();
+
+    String getTableName();
 
     /**
      * 保存/更新
@@ -206,4 +211,21 @@ public interface BaseService<T> {
      */
     Example<T> defaultExample(@Nonnull BaseSearchable searchable, @Nonnull ExampleMatcher exampleMatcher);
 
+    /**
+     * 原生查询
+     * @param clazz
+     * @param sql
+     * @param <D>
+     * @return
+     */
+    <D> D findBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
+
+    /**
+     * 原生查询
+     * @param clazz
+     * @param sql
+     * @param <D>
+     * @return
+     */
+    <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
 }

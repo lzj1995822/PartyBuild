@@ -3,11 +3,14 @@ package com.cloudkeeper.leasing.base.service.impl;
 import com.cloudkeeper.leasing.base.dto.BaseSearchable;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.base.utils.BeanConverts;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,8 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
+import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,6 +37,8 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     @Autowired
     protected EntityManager entityManager;
 
+    @Autowired
+    protected HttpServletRequest request;
     /**
      * 子类实现该方法
      * @return IBaseRepository
@@ -45,6 +54,19 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         return (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    @Override
+    public HttpSession getHttpSession() {
+        return request.getSession();
+    }
+
+    @Override
+    public String getTableName() {
+        //返回表示此 Class 所表示的实体（类、接口、基本类型或 void）的直接超类的 Type。
+        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
+        //返回表示此类型实际类型参数的 Type 对象的数组()
+        Class clazz = (Class) type.getActualTypeArguments()[0];
+        return ((Table) clazz.getAnnotation(Table.class)).name();
+    }
     /**
      * 获取hibernate session
      * @return session
@@ -202,5 +224,23 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     public Example<T> defaultExample(@Nonnull BaseSearchable searchable, @Nonnull ExampleMatcher exampleMatcher) {
         Class <T> entityClass = getEntityClass();
         return Example.of(searchable.convert(entityClass), exampleMatcher);
+    }
+
+    // 原生sql查询返回体映射
+
+
+    @Override
+    public <D> D findBySql(@Nonnull Class<D> clazz, @Nonnull String sql) {
+        Object singleResult = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getSingleResult();
+        if (singleResult == null) {
+            return null;
+        }
+        return BeanConverts.mapToObj(clazz, (Map<String, Object>) singleResult);
+    }
+
+    @Override
+    public <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql) {
+        List<Map<String, Object>> list = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+        return BeanConverts.mapToObj(clazz, list);
     }
 }

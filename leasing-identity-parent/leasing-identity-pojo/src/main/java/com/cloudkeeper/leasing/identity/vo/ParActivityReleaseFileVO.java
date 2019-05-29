@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -65,8 +65,12 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
 
     @Override
     public Accessory save(@Nonnull Accessory entity, MultipartFile multipartFile) throws IOException {
-        entity.setName(multipartFile.getOriginalFilename());
-        entity.setPath(fdfsServiceImpl.uploadFile(multipartFile));
+        try {
+            entity.setName(multipartFile.getOriginalFilename());
+            entity.setPath(fdfsServiceImpl.uploadFile(multipartFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return super.save(entity);
     }
 
