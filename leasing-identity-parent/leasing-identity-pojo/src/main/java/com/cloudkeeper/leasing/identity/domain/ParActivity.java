@@ -90,6 +90,13 @@ public class ParActivity extends BaseEntity {
     @OneToMany(mappedBy = "parActivity")
     private List<ParActivityReleaseFile> parActivityReleaseFile;
 
+    /** 视频 */
+    @ApiModelProperty(value = "附件", position = 10, required = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "parActivity")
+    private List<DistLearningActivityVideo> distLearningActivityVideo;
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
@@ -97,6 +104,9 @@ public class ParActivity extends BaseEntity {
         ParActivityVO parActivityVO = (ParActivityVO) convert;
         if(!StringUtils.isEmpty(this.parActivityReleaseFile)){
             parActivityVO.setUrls(this.parActivityReleaseFile);
+        }
+        if(!StringUtils.isEmpty(this.distLearningActivityVideo)){
+            parActivityVO.setVideo(this.distLearningActivityVideo);
         }
         return (T) parActivityVO;
     }

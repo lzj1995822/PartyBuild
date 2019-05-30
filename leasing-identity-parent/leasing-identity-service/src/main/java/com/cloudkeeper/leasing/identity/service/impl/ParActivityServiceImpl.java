@@ -2,8 +2,10 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
 import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
+import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearningActivityVideoSearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityReleaseFileSearchable;
@@ -38,6 +40,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return parActivityRepository;
     }
 
+    private  final DistLearningActivityVideoServiceImpl distLearningActivityVideoService;
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -58,6 +61,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
+        handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
         return parActivity.convert(ParActivityVO.class);
     }
 
@@ -80,6 +84,29 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         return results;
     }
+    private List<DistLearningActivityVideo> handleVideoFiles(String activityId, List<DistLearningActivityVideo> video) {
+        DistLearningActivityVideoSearchable distLearningActivityVideoSearchable = new DistLearningActivityVideoSearchable();
+        distLearningActivityVideoSearchable.setActivityId(activityId);
+        List<DistLearningActivityVideo> all = distLearningActivityVideoService.findAll(distLearningActivityVideoSearchable);
+        all.stream().forEach(item -> {
+            distLearningActivityVideoService.deleteById(item.getId());
+        });
+
+        List<DistLearningActivityVideo> results = new ArrayList<>();
+        if(!StringUtils.isEmpty(video)) {
+            video.stream().forEach(item -> {
+                DistLearningActivityVideo distLearningActivityVideo = new DistLearningActivityVideo();
+                distLearningActivityVideo.setActivityId(activityId);
+                distLearningActivityVideo.setName(item.getName());
+                distLearningActivityVideo.setLengthOfTime(item.getLengthOfTime());
+                distLearningActivityVideo.setVideoCover(item.getVideoCover());
+                distLearningActivityVideo.setVideoUrl(item.getVideoUrl());
+                results.add(distLearningActivityVideoService.save(distLearningActivityVideo));
+            });
+        }
+        return results;
+    }
+
 
     public void deleteAll(String id){
         parActivityRepository.deletePar(id);
