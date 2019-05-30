@@ -35,7 +35,7 @@ public class VolunteerDTO extends BaseEditDTO {
 
     /** 性别 */
     @ApiModelProperty(value = "性别", position = 10)
-    private Integer sex;
+    private String sex;
 
     /** 出生年月 */
     @ApiModelProperty(value = "出生年月", position = 10)

@@ -31,7 +31,7 @@ public class ReserveVO extends BaseVO {
 
     /** 性别 */
     @ApiModelProperty(value = "性别", position = 13, required = true)
-    private Integer sex;
+    private String sex;
 
     /** 民族 */
     @ApiModelProperty(value = "民族", position = 15, required = true)
