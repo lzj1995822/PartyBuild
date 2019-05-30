@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
 import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -72,4 +73,7 @@ public class ParActivityVO extends BaseVO {
     @ApiModelProperty(value = "附件", position = 10, required = true)
     private List<ParActivityReleaseFile> urls = new LinkedList();
 
+    /** 视频 */
+    @ApiModelProperty(value = "视频", position = 10, required = true)
+    private List<DistLearningActivityVideo> video = new LinkedList();
 }
