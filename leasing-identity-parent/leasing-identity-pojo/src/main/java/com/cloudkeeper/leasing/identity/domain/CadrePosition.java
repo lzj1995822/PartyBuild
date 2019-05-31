@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.domain;
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.identity.vo.CadrePositionVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -63,9 +64,10 @@ public class CadrePosition extends BaseEntity {
     @Column(length = 60)
     private String cadreId;
 
-    /** 组织 */
-    @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne
+    /** 人员 */
+    @ApiModelProperty(value = "人员", position = 24)
+    @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "cadreId", insertable = false, updatable = false)
     private VillageCadres villageCadres;
 

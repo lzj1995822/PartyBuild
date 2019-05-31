@@ -77,6 +77,9 @@ public class VillageCadresSearchable extends BaseSearchable {
     @ApiModelProperty(value = "任职经历", position = 10, required = true)
     private String postExperience;
 
+    /** 岗位名称 */
+    @ApiModelProperty(value = "岗位名称", position = 10, required = true)
+    private String position;
 
 
 }
