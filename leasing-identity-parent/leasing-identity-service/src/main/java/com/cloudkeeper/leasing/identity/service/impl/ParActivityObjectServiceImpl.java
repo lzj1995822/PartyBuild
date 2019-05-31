@@ -33,4 +33,8 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
                 .withMatcher("isWorking", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public void deleteAllByActivityId(String activityId) {
+        parActivityObjectRepository.deleteAllByActivityId(activityId);
+    }
 }

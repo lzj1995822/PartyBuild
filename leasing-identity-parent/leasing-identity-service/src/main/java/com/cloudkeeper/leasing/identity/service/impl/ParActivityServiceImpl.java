@@ -4,12 +4,14 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
 import com.cloudkeeper.leasing.identity.domain.ParActivity;
+import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
 import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearningActivityVideoSearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityReleaseFileSearchable;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
+import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     private  final DistLearningActivityVideoServiceImpl distLearningActivityVideoService;
+
+    private final ParActivityObjectService parActivityObjectService;
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -62,6 +66,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ParActivity parActivity = super.save(p);
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
+        handleObjIds(parActivity.getId(), parActivityDTO.getObjIds());
         return parActivity.convert(ParActivityVO.class);
     }
 
@@ -121,5 +126,21 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         one.setAlarmTime(localDateTime);
         return  parActivityRepository.save(one).convert(ParActivityVO.class);
+    }
+
+    /**
+     * 处理被指派的对象
+     * @param activityId
+     * @param ids
+     */
+    private void handleObjIds(String activityId, List<String> ids) {
+        parActivityObjectService.deleteAllByActivityId(activityId);
+        for (String item : ids) {
+            ParActivityObject parActivityObject = new ParActivityObject();
+            parActivityObject.setActivityId(activityId);
+            parActivityObject.setOrganizationId(item);
+            parActivityObjectService.save(parActivityObject);
+
+        }
     }
 }

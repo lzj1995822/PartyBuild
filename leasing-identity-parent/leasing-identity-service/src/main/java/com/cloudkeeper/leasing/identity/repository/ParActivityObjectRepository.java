@@ -11,4 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParActivityObjectRepository extends BaseRepository<ParActivityObject> {
 
+    /**
+     * 根据活动id删除所有需要执行的对象
+     * @param activityId
+     */
+    void deleteAllByActivityId(String activityId);
 }

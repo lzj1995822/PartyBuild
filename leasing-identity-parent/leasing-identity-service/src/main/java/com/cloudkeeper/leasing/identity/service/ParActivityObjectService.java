@@ -9,4 +9,5 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface ParActivityObjectService extends BaseService<ParActivityObject> {
 
+    void deleteAllByActivityId(String activityId);
 }
