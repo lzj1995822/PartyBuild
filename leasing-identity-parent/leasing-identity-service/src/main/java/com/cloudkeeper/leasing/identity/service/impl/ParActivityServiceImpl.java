@@ -111,6 +111,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     public void deleteAll(String id){
         parActivityRepository.deletePar(id);
         parActivityRepository.deleteParFile(id);
+        parActivityRepository.deleteVideo(id);
     }
 
     @Override
