@@ -87,8 +87,6 @@ public interface SysDistrictController {
 
     /**
      * 下拉项条件查询
-     * @param sysDistrictSearchable 组织查询条件
-     * @param sort 排序条件
      * @return 组织 VO 集合
      */
     @ApiOperation(value = "下拉项条件查询", notes = "下拉项条件查询<br/>sort：单个排序字段传多值，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
