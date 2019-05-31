@@ -9,11 +9,14 @@ import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,7 +78,12 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result<Page<VillageCadresVO>> page(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
-        Page<VillageCadres> villageCadresPage = villageCadresService.findAll(villageCadresSearchable, pageable);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(VillageCadres.class);
+        if (!StringUtils.isEmpty(villageCadresSearchable.getPosition())) {
+            detachedCriteria.createAlias("cadrePosition","a");
+            detachedCriteria.add(Restrictions.eq("a.name", villageCadresSearchable.getPosition()));
+        }
+        Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable);
         Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);
         return Result.of(villageCadresVOPage);
     }

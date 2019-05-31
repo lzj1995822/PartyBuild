@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,12 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -96,5 +97,20 @@ public class VillageCadres extends BaseEntity {
     @Column(length = 60)
     private String postExperience;
 
+    /** 岗位 */
+    @ApiModelProperty(value = "岗位", position = 13)
+    @OneToOne(mappedBy = "villageCadres")
+    @NotFound(action = NotFoundAction.IGNORE)
+    private CadrePosition cadrePosition;
 
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
+        if(!StringUtils.isEmpty(this.cadrePosition)){
+            villageCadresVO.setPosition(this.cadrePosition.getName());
+        }
+        return (T) villageCadresVO;
+    }
 }
