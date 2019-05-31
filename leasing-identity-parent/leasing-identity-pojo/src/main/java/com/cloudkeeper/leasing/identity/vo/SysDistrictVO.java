@@ -61,5 +61,9 @@ public class SysDistrictVO extends BaseVO {
     @ApiModelProperty(value = "上级组织名称", position = 26, required = true)
     private String parentName;
 
+    /** 类型 */
+    @ApiModelProperty(value = "类型", position = 10, required = true)
+    private String districtType;
+
 
 }

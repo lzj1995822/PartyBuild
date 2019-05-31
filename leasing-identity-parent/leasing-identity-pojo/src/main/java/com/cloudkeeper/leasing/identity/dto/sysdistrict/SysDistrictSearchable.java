@@ -57,4 +57,9 @@ public class SysDistrictSearchable extends BaseSearchable {
     @ApiModelProperty(value = "enable", position = 10, required = true)
     private Integer enable;
 
+    /** 类型 */
+    @ApiModelProperty(value = "类型", position = 10, required = true)
+    private String districtType;
+
+
 }

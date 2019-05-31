@@ -71,6 +71,13 @@ public class SysDistrict extends BaseEntity {
     @Column(length = 60)
     private Integer enable;
 
+    /** 类型 */
+    @ApiModelProperty(value = "类型", position = 10, required = true)
+    @Column(length = 60)
+    private String districtType;
+
+
+
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
