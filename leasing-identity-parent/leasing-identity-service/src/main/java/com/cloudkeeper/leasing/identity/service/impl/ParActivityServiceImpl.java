@@ -107,7 +107,6 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return results;
     }
 
-
     public void deleteAll(String id){
         parActivityRepository.deletePar(id);
         parActivityRepository.deleteParFile(id);
