@@ -2,10 +2,10 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 
-import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 组织 service
@@ -14,4 +14,10 @@ import java.util.Map;
 public interface SysDistrictService extends BaseService<SysDistrict> {
 
     Map<String,String> findAllByDistrictLevelNot();
+
+    /**
+     * 树形结构
+     * @return
+     */
+    Set<SysDistrictTreeVO> tree(String sysDistrictId);
 }

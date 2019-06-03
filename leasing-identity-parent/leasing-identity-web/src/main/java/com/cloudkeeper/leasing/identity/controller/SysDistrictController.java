@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 组织 controller
@@ -92,5 +94,9 @@ public interface SysDistrictController {
     @ApiOperation(value = "下拉项条件查询", notes = "下拉项条件查询<br/>sort：单个排序字段传多值，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
     @PostMapping("/listSome")
     Result<Map<String ,String>> listSome();
+
+    @ApiOperation(value = "组织树形结构", notes = "组织树形结构", position = 8)
+    @GetMapping("/{sysDistrictId}tree")
+    Result<Set<SysDistrictTreeVO>> tree(@PathVariable String sysDistrictId);
 
 }

@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 组织
@@ -76,13 +79,19 @@ public class SysDistrict extends BaseEntity {
     @Column(length = 60)
     private String districtType;
 
-
+    /**
+     * 子组织
+     */
+    @ApiModelProperty(value = "类型", position = 10, required = true)
+    @OneToMany(mappedBy = "sysDistrict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysDistrict> children = new HashSet<>();
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
     @JoinColumn(name = "attachTo",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
+    @JsonIgnore
     private SysDistrict sysDistrict;
 
     @Nonnull

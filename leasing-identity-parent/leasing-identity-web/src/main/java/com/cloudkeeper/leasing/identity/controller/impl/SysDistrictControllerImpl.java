@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 组织 controller
@@ -88,5 +90,10 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     public Result< Map<String ,String> > listSome() {
         Map<String ,String> sysDistrictList = sysDistrictService.findAllByDistrictLevelNot();
         return Result.of(sysDistrictList);
+    }
+
+    @Override
+    public Result<Set<SysDistrictTreeVO>> tree(@PathVariable String sysDistrictId) {
+        return Result.of(sysDistrictService.tree(sysDistrictId));
     }
 }

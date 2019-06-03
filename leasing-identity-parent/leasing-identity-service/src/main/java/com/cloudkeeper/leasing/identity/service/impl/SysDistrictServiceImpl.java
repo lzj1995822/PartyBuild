@@ -5,14 +5,14 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 组织 service
@@ -21,6 +21,8 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> implements SysDistrictService {
+
+    private static final String ROOT_DISTRICT_ID = "01";
 
     /** 组织 repository */
     private final SysDistrictRepository sysDistrictRepository;
@@ -49,5 +51,32 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
             map.put(item.getDistrictId(),item.getDistrictName());
         }
         return map;
+    }
+
+    @Override
+    public Set<SysDistrictTreeVO> tree(String sysDistrictId) {
+        Set<SysDistrict> sysDistrictTreeVOS = sysDistrictRepository.findAllByAttachTo(sysDistrictId);
+        if (StringUtils.isEmpty(sysDistrictTreeVOS)) {
+            return null;
+        }
+        return generateTree(sysDistrictTreeVOS);
+    }
+
+    /**
+     * 生成会返回的树形treevo
+     * @return
+     */
+    private Set<SysDistrictTreeVO> generateTree(Set<SysDistrict> sysDistricts) {
+        Set<SysDistrictTreeVO> sysDistrictTreeVOSet =  new HashSet<>();
+        for (SysDistrict item : sysDistricts) {
+            SysDistrictTreeVO itemVo = new SysDistrictTreeVO();
+            itemVo.setLabel(item.getDistrictName());
+            itemVo.setId(item.getDistrictId());
+            if (item.getDistrictLevel().equals(3)) {
+                itemVo.setLeaf(true);
+            }
+            sysDistrictTreeVOSet.add(itemVo);
+        }
+        return sysDistrictTreeVOSet;
     }
 }

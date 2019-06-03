@@ -10,6 +10,7 @@ import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearni
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityReleaseFileSearchable;
+import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
@@ -65,7 +66,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
-        handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
+        if (TaskTypeEnum.DistLearning.equals(parActivityDTO.getTaskType())) {
+            handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
+        }
         handleObjIds(parActivity.getId(), parActivityDTO.getObjIds());
         return parActivity.convert(ParActivityVO.class);
     }
