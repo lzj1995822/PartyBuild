@@ -79,9 +79,9 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     public Result<Page<VillageCadresVO>> page(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(VillageCadres.class);
-        if (!StringUtils.isEmpty(villageCadresSearchable.getPosition())) {
+        if (!StringUtils.isEmpty(villageCadresSearchable.getPost())) {
             detachedCriteria.createAlias("cadrePosition","a");
-            detachedCriteria.add(Restrictions.eq("a.name", villageCadresSearchable.getPosition()));
+            detachedCriteria.add(Restrictions.eq("a.post", villageCadresSearchable.getPost()));
         }
         Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable);
         Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);

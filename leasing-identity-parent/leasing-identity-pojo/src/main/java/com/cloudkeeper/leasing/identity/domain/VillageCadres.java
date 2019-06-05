@@ -109,7 +109,7 @@ public class VillageCadres extends BaseEntity {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
         if(!StringUtils.isEmpty(this.cadrePosition)){
-            villageCadresVO.setPosition(this.cadrePosition.getName());
+            villageCadresVO.setPost(this.cadrePosition.getPost());
         }
         return (T) villageCadresVO;
     }
