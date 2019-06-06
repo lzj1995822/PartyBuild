@@ -77,8 +77,8 @@ public class VillageCadresVO extends BaseVO {
     @ApiModelProperty(value = "任职经历", position = 10, required = true)
     private String postExperience;
 
-    /** 岗位 */
-    @ApiModelProperty(value = "岗位", position = 10, required = true)
-    private String position;
+    /** 职位 */
+    @ApiModelProperty(value = "职位", position = 10, required = true)
+    private String post;
 
 }

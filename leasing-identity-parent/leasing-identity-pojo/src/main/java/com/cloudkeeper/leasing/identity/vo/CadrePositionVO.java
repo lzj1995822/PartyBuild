@@ -41,6 +41,10 @@ public class CadrePositionVO extends BaseVO {
     @ApiModelProperty(value = "职责", position = 10, required = true)
     private String duty;
 
+    /** 职位 */
+    @ApiModelProperty(value = "职位", position = 10, required = true)
+    private String post;
+
     /** 在职人员 */
     @ApiModelProperty(value = "在职人员", position = 10, required = true)
     private String cadreId;

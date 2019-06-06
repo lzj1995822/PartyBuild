@@ -47,11 +47,11 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
     @Override
     public InformationVO save(InformationDTO informationDTO) {
         Information information = informationDTO.convert(Information.class);
-        super.save(information);
+        information = super.save(information);
 
         InformationVO informationVO = information.convert(InformationVO.class);
         List<String> districtIdList = informationDTO.getDistrictIdList();
-        districtIdList.stream().forEach(item -> {
+        for (String item : districtIdList) {
             AcceptInformation acceptInformation = new AcceptInformation();
             acceptInformation.setAuthorId(information.getDistrictID());
             acceptInformation.setCreatTime(information.getCreatedAt());
@@ -59,7 +59,7 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
             acceptInformation.setInformationId(information.getId());
             acceptInformation.setObjs(item);
             acceptInformationService.save(acceptInformation);
-        });
+        }
         return informationVO;
     }
 

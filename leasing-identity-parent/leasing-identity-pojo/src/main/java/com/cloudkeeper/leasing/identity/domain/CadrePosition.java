@@ -59,6 +59,11 @@ public class CadrePosition extends BaseEntity {
     @Column(length = 60)
     private String duty;
 
+    /** 职位 */
+    @ApiModelProperty(value = "职位", position = 10, required = true)
+    @Column(length = 60)
+    private String post;
+
     /** 在职人员 */
     @ApiModelProperty(value = "在职人员", position = 10, required = true)
     @Column(length = 60)

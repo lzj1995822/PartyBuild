@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,6 @@ public class InformationDTO extends BaseEditDTO {
 
     /** 发布对象集合*/
     @ApiModelProperty(value = "发布对象集合", position = 10, required = true)
-    private List<String> districtIdList;
+    private List<String> districtIdList = new ArrayList();
 
 }
