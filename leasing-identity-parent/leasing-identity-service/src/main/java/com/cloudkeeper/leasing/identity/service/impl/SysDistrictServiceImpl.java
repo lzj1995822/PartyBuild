@@ -79,4 +79,15 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         }
         return sysDistrictTreeVOSet;
     }
+
+    /**
+     * 根据attchTo chaxun
+     * @return
+     */
+    @Override
+    public Set<SysDistrict> sysDistrictsByAttachTo(String attachTo){
+        Set<SysDistrict> s =  sysDistrictRepository.findAllByAttachTo(attachTo);
+        return s;
+    }
+
 }

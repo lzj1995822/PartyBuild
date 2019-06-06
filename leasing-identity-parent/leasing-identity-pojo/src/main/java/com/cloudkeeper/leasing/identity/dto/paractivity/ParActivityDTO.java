@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.dto.paractivity;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
 import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
+import com.cloudkeeper.leasing.identity.domain.TaskObject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -78,6 +79,10 @@ public class ParActivityDTO extends BaseEditDTO {
     /** 视频 */
     @ApiModelProperty(value = "视频", position = 34)
     private List<DistLearningActivityVideo> video;
+
+    /** 任务对象 */
+    @ApiModelProperty(value = "任务对象", position = 36)
+    private TaskObject taskObject;
 
 
 

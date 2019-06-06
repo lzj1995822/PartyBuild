@@ -20,4 +20,9 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
      * @return
      */
     Set<SysDistrictTreeVO> tree(String sysDistrictId);
+    /**
+     * 根据attchTo chaxun
+     * @return
+     */
+    Set<SysDistrict> sysDistrictsByAttachTo(String attachTo);
 }

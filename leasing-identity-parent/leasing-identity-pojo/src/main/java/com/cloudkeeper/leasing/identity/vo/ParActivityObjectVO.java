@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,5 +41,27 @@ public class ParActivityObjectVO extends BaseVO {
     /** 是否在用 */
     @ApiModelProperty(value = "是否在用", position = 10, required = true)
     private String isWorking;
+
+    /** 活动名称 */
+    @ApiModelProperty(value = "活动名称", position = 10, required = true)
+    private String title;
+
+    /** 类型 */
+    @ApiModelProperty(value = "类型", position = 10, required = true)
+    private String type;
+
+    /** 党建或远教 */
+    @ApiModelProperty(value = "党建或远教", position = 10, required = true)
+    private String taskType;
+
+    /** 截止日期 */
+    @ApiModelProperty(value = "截止日期", position = 10, required = true)
+    private LocalDate month;
+
+    /** 组织名字 */
+    @ApiModelProperty(value = "组织名字", position = 10, required = true)
+    private String districtName;
+
+
 
 }

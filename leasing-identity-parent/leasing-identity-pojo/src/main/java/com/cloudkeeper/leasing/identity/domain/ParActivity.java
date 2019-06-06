@@ -59,7 +59,7 @@ public class ParActivity extends BaseEntity {
     @Column(length = 60)
     private String districtID;
 
-    /** 截止日期 */
+    /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)
     @Column(length = 60)
     private String type;

@@ -1,6 +1,9 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+
+import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 
 /**
  * 任务对象
@@ -46,5 +49,36 @@ public class ParActivityObject extends BaseEntity {
     @ApiModelProperty(value = "是否在用", position = 10, required = true)
     @Column(length = 60)
     private String isWorking;
+
+    /** 活动信息 */
+    @ApiModelProperty(value = "活动信息", position = 10, required = true)
+    @OneToOne
+    @JsonIgnore
+    @JoinColumn(name = "activityId", insertable = false, updatable = false)
+    private ParActivity parActivity;
+
+    /** 组织信息 */
+    @ApiModelProperty(value = "组织信息", position = 10, required = true)
+    @OneToOne
+    @JsonIgnore
+    @JoinColumn(name = "organizationId", referencedColumnName = "districtId", insertable = false, updatable = false)
+    private SysDistrict sysDistrict;
+
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        ParActivityObjectVO parActivityObjectVO = (ParActivityObjectVO) convert;
+        if(!StringUtils.isEmpty(this.parActivity)){
+            parActivityObjectVO.setTitle(this.parActivity.getTitle());
+            parActivityObjectVO.setType(this.parActivity.getType());
+            parActivityObjectVO.setTaskType(this.parActivity.getTaskType());
+            parActivityObjectVO.setMonth(this.parActivity.getMonth());
+        }
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            parActivityObjectVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        return (T) parActivityObjectVO;
+    }
 
 }
