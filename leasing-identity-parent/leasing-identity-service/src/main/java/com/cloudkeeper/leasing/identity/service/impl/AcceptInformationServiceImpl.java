@@ -30,7 +30,7 @@ public class AcceptInformationServiceImpl extends BaseServiceImpl<AcceptInformat
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("objs", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("objs", ExampleMatcher.GenericPropertyMatchers.endsWith())
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 

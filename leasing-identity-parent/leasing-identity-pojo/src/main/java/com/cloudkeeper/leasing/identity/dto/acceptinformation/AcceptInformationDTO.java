@@ -49,4 +49,12 @@ public class AcceptInformationDTO extends BaseEditDTO {
     @ApiModelProperty(value = "公告Id", position = 10, required = true)
     private String informationId;
 
+    /** 发布组织 */
+    @ApiModelProperty(value = "发布组织", position = 10, required = true)
+    private String name;
+
+    /** 公告内容 */
+    @ApiModelProperty(value = "公告内容", position = 10, required = true)
+    private String description;
+
 }
