@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * 系统登录日志
@@ -31,7 +32,7 @@ public class SysLoginNote extends BaseEntity {
     /** 登录时间 */
     @ApiModelProperty(value = "登录时间", position = 10, required = true)
     @Column(length = 60)
-    private String createTime;
+    private LocalDateTime createTime;
 
     /** 登录名 */
     @ApiModelProperty(value = "登录名", position = 10, required = true)

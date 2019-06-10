@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.AcceptInformationVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -56,6 +61,32 @@ public class AcceptInformation extends BaseEntity {
     @Column(length = 60)
     private String informationId;
 
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "authorId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
+
+    /** 公告 */
+    @ApiModelProperty(value = "公告", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "informationId", insertable = false, updatable = false)
+    private Information information;
+
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        AcceptInformationVO acceptInformationVO = (AcceptInformationVO) convert;
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            acceptInformationVO.setName(this.sysDistrict.getDistrictName());
+        }
+        if(!StringUtils.isEmpty((this.information))){
+            acceptInformationVO.setDescription(this.information.getDescription());
+        }
+        return (T) acceptInformationVO;
+    }
 
 
 

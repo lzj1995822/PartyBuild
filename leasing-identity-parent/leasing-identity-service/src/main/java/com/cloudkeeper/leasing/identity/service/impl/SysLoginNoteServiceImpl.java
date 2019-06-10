@@ -32,7 +32,8 @@ public class SysLoginNoteServiceImpl extends BaseServiceImpl<SysLoginNote> imple
                 .withMatcher("createTime", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("userName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("action", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("region", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("region", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("createTime", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }
