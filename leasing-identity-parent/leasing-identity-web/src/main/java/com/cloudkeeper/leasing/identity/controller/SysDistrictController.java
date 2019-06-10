@@ -99,4 +99,8 @@ public interface SysDistrictController {
     @GetMapping("/{sysDistrictId}tree")
     Result<Set<SysDistrictTreeVO>> tree(@PathVariable String sysDistrictId);
 
+    @ApiOperation(value = "组织层级数组", notes = "组织层级数组", position = 8)
+    @GetMapping("/{sysDistrictId}alltree")
+    Result<Set<SysDistrictTreeVO>> getTree(@PathVariable String sysDistrictId);
+
 }

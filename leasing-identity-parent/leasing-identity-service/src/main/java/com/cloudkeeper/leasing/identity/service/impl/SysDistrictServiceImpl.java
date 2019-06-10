@@ -63,7 +63,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     }
 
     /**
-     * 生成会返回的树形treevo
+     * 生成SysDistrictTreeVO
      * @return
      */
     private Set<SysDistrictTreeVO> generateTree(Set<SysDistrict> sysDistricts) {
@@ -90,4 +90,27 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return s;
     }
 
+    @Override
+    public Set<SysDistrictTreeVO> getTree(String districtId) {
+        SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
+        HashSet<SysDistrict> sysDistricts = new HashSet<>();
+        sysDistricts.add(sysDistrictByDistrictId);
+        return this.translateToVO(sysDistricts);
+    }
+
+    private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
+        HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
+        for (SysDistrict sysDistrict: sysDistricts) {
+            SysDistrictTreeVO sysDistrictTreeVO = new SysDistrictTreeVO();
+            sysDistrictTreeVO.setId(sysDistrict.getDistrictId());
+            sysDistrictTreeVO.setLabel(sysDistrict.getDistrictName());
+            //查出下属组织
+            Set<SysDistrict> children = sysDistrict.getChildren();
+            if (children.size() > 0) {
+                sysDistrictTreeVO.setChildren(translateToVO(children));
+            }
+            sysDistrictTreeVOS.add(sysDistrictTreeVO);
+        }
+        return sysDistrictTreeVOS;
+    }
 }

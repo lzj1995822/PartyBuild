@@ -25,4 +25,10 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
      * @return
      */
     Set<SysDistrict> sysDistrictsByAttachTo(String attachTo);
+
+    /**
+     * 生成层级数组
+    */
+    Set<SysDistrictTreeVO> getTree(String districtId);
+
 }
