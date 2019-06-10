@@ -27,7 +27,7 @@ public class SysLoginNoteSearchable extends BaseSearchable {
 
     /** 登录时间 */
     @ApiModelProperty(value = "登录时间", position = 10, required = true)
-    private String createTime;
+    private LocalDateTime createTime;
 
     /** 登录名 */
     @ApiModelProperty(value = "登录名", position = 10, required = true)
