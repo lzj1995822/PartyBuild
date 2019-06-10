@@ -90,4 +90,14 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return s;
     }
 
+    /**
+     * 根据id 查询attachId
+     * @return
+     */
+    @Override
+    public List<SysDistrict> sysDistrictsByDistrictId(String districtId){
+        List<SysDistrict> attach =  sysDistrictRepository.findAllByDistrictId(districtId);
+        return attach;
+    }
+
 }
