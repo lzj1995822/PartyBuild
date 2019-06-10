@@ -2,14 +2,12 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
-import com.cloudkeeper.leasing.identity.domain.ParActivity;
-import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
-import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearningActivityVideoSearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityReleaseFileSearchable;
+import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
@@ -24,7 +22,9 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 活动 service
@@ -38,6 +38,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     private final ParActivityRepository parActivityRepository;
 
     private final ParActivityReleaseFileServiceImpl parActivityReleaseFileServiceImpl;
+    /** 组织 */
+    private final SysDistrictServiceImpl sysDistrictServiceImpl;
+
     @Override
     protected BaseRepository<ParActivity> getBaseRepository() {
         return parActivityRepository;
@@ -65,11 +68,12 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     public ParActivityVO save(@Nonnull ParActivityDTO parActivityDTO) {
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
+
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         if (TaskTypeEnum.DistLearning.equals(parActivityDTO.getTaskType())) {
             handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
         }
-        handleObjIds(parActivity.getId(), parActivityDTO.getObjIds());
+        handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject());
         return parActivity.convert(ParActivityVO.class);
     }
 
@@ -134,16 +138,78 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     /**
      * 处理被指派的对象
      * @param activityId
-     * @param ids
+     * @param taskObject
      */
-    private void handleObjIds(String activityId, List<String> ids) {
+    private void handleObjIds(String activityId, TaskObject taskObject) {
         parActivityObjectService.deleteAllByActivityId(activityId);
-        for (String item : ids) {
-            ParActivityObject parActivityObject = new ParActivityObject();
-            parActivityObject.setActivityId(activityId);
-            parActivityObject.setOrganizationId(item);
-            parActivityObjectService.save(parActivityObject);
+        if(taskObject.getSid().size()!=0){
+            SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
+            sysDistrictSearchable.setDistrictLevel(3);
+           List<SysDistrict> sysDistricts = sysDistrictServiceImpl.findAll(sysDistrictSearchable);
+            for(int i=0;i<sysDistricts.size();i++){
+                ParActivityObject parActivityObject = new ParActivityObject();
+                parActivityObject.setActivityId(activityId);
+                parActivityObject.setOrganizationId(sysDistricts.get(i).getDistrictId());
+                parActivityObject.setStatus("1");
+                parActivityObjectService.save(parActivityObject);
+            }
+        }else {
+                if(taskObject.getZid().size()!=0){
+                    ////选中的所有村级
+                    List<String> cids = taskObject.getCid();
+                    //选中的镇级下的所有村级
+                    Set<String> zcids = new HashSet<>();
+                    //遍历选中镇，并给zcids赋值
+                    for(int i=0;i<taskObject.getZid().size();i++){
+                        Set<SysDistrict> set =  sysDistrictServiceImpl.sysDistrictsByAttachTo(taskObject.getZid().get(i));
+                        for (SysDistrict sysDistrict: set) {
+                            zcids.add(sysDistrict.getDistrictId());
+                        }
+                }
+                    //zcids转List
+                    List<String> zcidsList = new ArrayList<>(zcids);
+                    //村级去除选中镇级下的重复村
+                    for(int i=0;i<cids.size();i++){
+                        for(int j=0;j<zcidsList.size();j++){
+                            if(cids.get(i) == zcidsList.get(j)){
+                                cids.remove(i);
+                            }
+                        }
+                    }
+                    //新增镇下面的村
+                    for(int i=0;i<taskObject.getZid().size();i++){
+                        Set<SysDistrict> set =  sysDistrictServiceImpl.sysDistrictsByAttachTo(taskObject.getZid().get(i));
+                        for (SysDistrict sysDistrict: set) {
+                            ParActivityObject parActivityObject = new ParActivityObject();
+                            parActivityObject.setActivityId(activityId);
+                            parActivityObject.setOrganizationId(sysDistrict.getDistrictId());
+                            parActivityObject.setStatus("1");
+                            parActivityObjectService.save(parActivityObject);
+                        }
+
+                        }
+                    //新增上级镇没有选的村
+                    for(int i=0;i<cids.size();i++){
+                        ParActivityObject parActivityObject = new ParActivityObject();
+                        parActivityObject.setActivityId(activityId);
+                        parActivityObject.setOrganizationId(cids.get(i));
+                        parActivityObject.setStatus("1");
+                        parActivityObjectService.save(parActivityObject);
+                    }
+                    }else{
+                    ////选中的所有村级
+                    List<String> cidss = taskObject.getCid();
+                    //新增上级镇没有选的村
+                    for(int j=0;j<cidss.size();j++){
+                        ParActivityObject parActivityObject = new ParActivityObject();
+                        parActivityObject.setActivityId(activityId);
+                        parActivityObject.setOrganizationId(cidss.get(j));
+                        parActivityObject.setStatus("1");
+                        parActivityObjectService.save(parActivityObject);
+                    }
+                }
 
         }
+
     }
 }
