@@ -139,9 +139,28 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         criteria.setProjection(null);
         //设置查询结果为实体对象
         criteria.setResultTransformer(CriteriaSpecification.ROOT_ENTITY);
-        criteria.setFirstResult(pageable.getPageNumber());
+        criteria.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         criteria.setMaxResults(pageable.getPageSize());
         return new PageImpl<>((List<T>) criteria.list(), pageable, resultCount);
+    }
+
+    @Nonnull
+    public Page<T> findAll(@Nonnull DetachedCriteria detachedCriteria, @Nonnull Pageable pageable,Integer resultCount) {
+        Criteria criteria = detachedCriteria.getExecutableCriteria(getSession());
+        criteria.setProjection(Projections.rowCount());
+        //清空projection，以便取得记录
+        criteria.setProjection(null);
+        //设置查询结果为实体对象
+        criteria.setResultTransformer(CriteriaSpecification.ROOT_ENTITY);
+        criteria.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        criteria.setMaxResults(pageable.getPageSize());
+        return new PageImpl<>((List<T>) criteria.list(), pageable, resultCount);
+    }
+
+    public Integer getTotalCount(@Nonnull DetachedCriteria detachedCriteria) {
+        Criteria criteria = detachedCriteria.getExecutableCriteria(getSession());
+        criteria.setProjection(Projections.rowCount());
+        return ((Long) criteria.uniqueResult()).intValue();
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         if (!StringUtils.isEmpty(villageCadresSearchable.getPost())) {
             detachedCriteria.createAlias("cadrePosition","a");
             detachedCriteria.add(Restrictions.eq("a.post", villageCadresSearchable.getPost()));
+        }
+        if(!StringUtils.isEmpty(villageCadresSearchable.getName())){
+            //通过姓名模糊查询
+            detachedCriteria.add(Restrictions.ilike("name", villageCadresSearchable.getName(), MatchMode.ANYWHERE));
         }
         Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable);
         Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);

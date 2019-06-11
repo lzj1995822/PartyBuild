@@ -95,6 +95,10 @@ public interface BaseService<T> {
     @Nonnull
     Page<T> findAll(@Nonnull DetachedCriteria detachedCriteria, @Nonnull Pageable pageable);
 
+    Page<T> findAll(@Nonnull DetachedCriteria detachedCriteria, @Nonnull Pageable pageable,Integer resultCount);
+
+    Integer getTotalCount(@Nonnull DetachedCriteria detachedCriteria);
+
     /**
      * 查询列表
      * @param sort 排序
