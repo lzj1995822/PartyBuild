@@ -106,6 +106,9 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
             sysDistrictTreeVO.setLabel(sysDistrict.getDistrictName());
             //查出下属组织
             Set<SysDistrict> children = sysDistrict.getChildren();
+            if (sysDistrict.getDistrictLevel().equals(3)) {
+                sysDistrictTreeVO.setLeaf(true);
+            }
             if (children.size() > 0) {
                 sysDistrictTreeVO.setChildren(translateToVO(children));
             }

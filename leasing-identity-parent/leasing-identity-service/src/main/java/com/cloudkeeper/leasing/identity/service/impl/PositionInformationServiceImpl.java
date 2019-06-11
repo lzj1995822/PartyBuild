@@ -30,6 +30,7 @@ public class PositionInformationServiceImpl extends BaseServiceImpl<PositionInfo
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("facilities", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("area", ExampleMatcher.GenericPropertyMatchers.contains())
