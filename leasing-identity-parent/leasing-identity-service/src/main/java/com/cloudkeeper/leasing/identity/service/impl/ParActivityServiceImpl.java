@@ -70,7 +70,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ParActivity parActivity = super.save(p);
 
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
-        if (TaskTypeEnum.DistLearning.equals(parActivityDTO.getTaskType())) {
+        if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
             handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
         }
         handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject());

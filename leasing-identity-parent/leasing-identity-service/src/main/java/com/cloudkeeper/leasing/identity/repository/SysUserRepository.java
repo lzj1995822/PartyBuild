@@ -4,6 +4,8 @@ import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,4 +21,12 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
      * @return
      */
     Optional<SysUser> findByUserName(String userName);
+
+    /**
+     * 查询列表 根据组织id
+     * @param organizationId 组织id
+     * @return 组织用户关系列表
+     */
+    @Nonnull
+    List<SysUser> findAllByOrganizationId(@Nonnull String organizationId);
 }
