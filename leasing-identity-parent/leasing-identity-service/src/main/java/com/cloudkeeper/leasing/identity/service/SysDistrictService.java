@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +26,11 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
      * @return
      */
     Set<SysDistrict> sysDistrictsByAttachTo(String attachTo);
+    /**
+     * 根据districtId chaxun
+     * @return
+     */
+    List<SysDistrict> sysDistrictsByDistrictId(String districtId);
 
     /**
      * 生成层级数组

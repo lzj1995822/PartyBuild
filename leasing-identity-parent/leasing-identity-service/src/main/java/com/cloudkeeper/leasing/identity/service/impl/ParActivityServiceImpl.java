@@ -183,6 +183,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                             ParActivityObject parActivityObject = new ParActivityObject();
                             parActivityObject.setActivityId(activityId);
                             parActivityObject.setOrganizationId(sysDistrict.getDistrictId());
+                            parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(sysDistrict.getDistrictId()).get(0).getAttachTo());
                             parActivityObject.setStatus("1");
                             parActivityObjectService.save(parActivityObject);
                         }
@@ -193,6 +194,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         ParActivityObject parActivityObject = new ParActivityObject();
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cids.get(i));
+                        parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cids.get(i)).get(0).getAttachTo());
                         parActivityObject.setStatus("1");
                         parActivityObjectService.save(parActivityObject);
                     }
@@ -204,6 +206,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         ParActivityObject parActivityObject = new ParActivityObject();
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cidss.get(j));
+                        parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cidss.get(j)).get(0).getAttachTo());
                         parActivityObject.setStatus("1");
                         parActivityObjectService.save(parActivityObject);
                     }

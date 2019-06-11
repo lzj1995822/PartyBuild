@@ -50,6 +50,11 @@ public class ParActivityObject extends BaseEntity {
     @Column(length = 60)
     private String isWorking;
 
+    /** 关联组织 */
+    @ApiModelProperty(value = "关联组织", position = 10, required = true)
+    @Column(length = 60)
+    private String attachTo;
+
     /** 活动信息 */
     @ApiModelProperty(value = "活动信息", position = 10, required = true)
     @OneToOne
@@ -74,9 +79,13 @@ public class ParActivityObject extends BaseEntity {
             parActivityObjectVO.setType(this.parActivity.getType());
             parActivityObjectVO.setTaskType(this.parActivity.getTaskType());
             parActivityObjectVO.setMonth(this.parActivity.getMonth());
+            parActivityObjectVO.setContext(this.parActivity.getContext());
+            parActivityObjectVO.setScore(this.parActivity.getScore());
+            parActivityObjectVO.setDistrictId(this.sysDistrict.getId());
         }
         if(!StringUtils.isEmpty(this.sysDistrict)){
             parActivityObjectVO.setDistrictName(this.sysDistrict.getDistrictName());
+            parActivityObjectVO.setDistrictId(this.sysDistrict.getId());
         }
         return (T) parActivityObjectVO;
     }
