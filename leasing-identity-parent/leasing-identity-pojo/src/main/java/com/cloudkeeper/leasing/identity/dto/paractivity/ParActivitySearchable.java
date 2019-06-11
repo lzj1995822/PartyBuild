@@ -65,4 +65,8 @@ public class ParActivitySearchable extends BaseSearchable {
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private Integer score;
 
+    /** 当前状态 */
+    @ApiModelProperty(value = "当前状态", position = 10, required = true)
+    private String currentStatus;
+
 }

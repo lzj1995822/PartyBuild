@@ -10,6 +10,9 @@ import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +87,10 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Override
     public Result<Page<ParActivityVO>> page(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
-        Page<ParActivity> parActivityPage = parActivityService.findAll(parActivitySearchable, pageable);
+        DetachedCriteria detachedCriteria = this.getDetachedCriteria(parActivitySearchable);
+        int resultCount = parActivityService.getTotalCount(detachedCriteria);
+        detachedCriteria.addOrder(Order.desc("month"));
+        Page<ParActivity> parActivityPage = parActivityService.findAll(detachedCriteria, pageable,resultCount);
         Page<ParActivityVO> parActivityVOPage = ParActivity.convert(parActivityPage, ParActivityVO.class);
         return Result.of(parActivityVOPage);
     }
@@ -99,5 +109,40 @@ public class ParActivityControllerImpl implements ParActivityController {
     public Result deleteAll(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         parActivityService.deleteAll(id);
         return Result.ofDeleteSuccess();
+    }
+
+    private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
+            detachedCriteria.add(Restrictions.eq("districtId", parActivitySearchable.getDistrictID()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getContext())) {
+            detachedCriteria.add(Restrictions.like("context", parActivitySearchable.getContext()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTitle())) {
+            detachedCriteria.add(Restrictions.like("title", parActivitySearchable.getTitle()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTaskType())) {
+            detachedCriteria.add(Restrictions.eq("taskType", parActivitySearchable.getTaskType()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getType())) {
+            detachedCriteria.add(Restrictions.eq("type", parActivitySearchable.getType()));
+        }
+        if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.le("month", lastDay()));
+        } else if ("PLAN".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.ge("month", lastDay()));
+        }
+        return  detachedCriteria;
+    }
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date date = ca.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
     }
 }
