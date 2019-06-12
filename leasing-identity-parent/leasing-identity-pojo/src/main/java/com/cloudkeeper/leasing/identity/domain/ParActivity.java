@@ -86,9 +86,51 @@ public class ParActivity extends BaseEntity {
 
     /** 市完成进度 */
     @ApiModelProperty(value = "市完成进度", position = 10, required = true)
-    @Column(length = 60)
-    private Double percent;
+    private String totalPercent;
 
+    /** 下蜀 */
+    @ApiModelProperty(value = "下蜀", position = 10, required = true)
+    private String xiaShuPercent;
+
+    /** 宝华 */
+    @ApiModelProperty(value = "宝华", position = 10, required = true)
+    private String baoHuaPercent;
+
+    /** 茅山 */
+    @ApiModelProperty(value = "茅山", position = 10, required = true)
+    private String maoShanPercent;
+
+    /** 后白 */
+    @ApiModelProperty(value = "后白", position = 10, required = true)
+    private String houBaiPercent;
+
+    /** 白兔 */
+    @ApiModelProperty(value = "白兔", position = 10, required = true)
+    private String baiTuPercent;
+
+    /** 茅山风景区 */
+    @ApiModelProperty(value = "茅山风景区", position = 10, required = true)
+    private String maoShanFengJingPercent;
+
+    /** 边城 */
+    @ApiModelProperty(value = "边城", position = 10, required = true)
+    private String bianChengPercent;
+
+    /** 郭庄 */
+    @ApiModelProperty(value = "郭庄", position = 10, required = true)
+    private String guoZhuangPercent;
+
+    /** 华阳 */
+    @ApiModelProperty(value = "华阳", position = 10, required = true)
+    private String huaYangPercent;
+
+    /** 开发区 */
+    @ApiModelProperty(value = "开发区", position = 10, required = true)
+    private String kaiFaPercent;
+
+    /** 天王 */
+    @ApiModelProperty(value = "天王", position = 10, required = true)
+    private String tianWangPercent;
     /** 附件 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     @JsonIgnore
