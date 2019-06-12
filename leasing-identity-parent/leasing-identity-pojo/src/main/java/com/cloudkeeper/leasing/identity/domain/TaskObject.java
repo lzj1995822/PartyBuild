@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,14 +19,14 @@ public class TaskObject implements Serializable {
 
     /** 市ID */
     @ApiModelProperty(value = "市ID", position = 10, required = true)
-    private List<String> sid;
+    private List<String> sid = new ArrayList<>();
 
     /** 镇ID */
     @ApiModelProperty(value = "镇ID", position = 10, required = true)
-    private List<String> zid;
+    private List<String> zid = new ArrayList<>();
 
     /** 村ID */
     @ApiModelProperty(value = "村ID", position = 10, required = true)
-    private List<String> cid;
+    private List<String> cid = new ArrayList<>();
 
 }

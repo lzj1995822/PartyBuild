@@ -215,4 +215,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
 
     }
+
+    //更新进度信息
+    private void updateProgress(String activityId) {
+        String sql = "";
+
+    }
 }
