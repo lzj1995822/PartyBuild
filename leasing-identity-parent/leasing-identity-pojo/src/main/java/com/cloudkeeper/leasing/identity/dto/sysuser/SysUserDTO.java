@@ -53,6 +53,14 @@ public class SysUserDTO extends BaseEditDTO {
     @ApiModelProperty(value = "XX", position = 22, required = true)
     private LocalDateTime lastTime;
 
+    /** 头像 */
+    @ApiModelProperty(value = "头像", position = 22, required = true)
+    private String image;
+
+    /** 组织简介 */
+    @ApiModelProperty(value = "组织简介", position = 22, required = true)
+    private String introduction;
+
     /** 组织id */
     @ApiModelProperty(value = "组织id", position = 24, required = true)
     private String organizationId;
