@@ -69,6 +69,10 @@ public class ParActivityVO extends BaseVO {
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private Integer score;
 
+    /** 市完成进度 */
+    @ApiModelProperty(value = "市完成进度", position = 10, required = true)
+    private Double percent;
+
     /** 附件 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     private List<ParActivityReleaseFile> urls = new LinkedList();

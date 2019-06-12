@@ -84,6 +84,11 @@ public class ParActivity extends BaseEntity {
     @Column(length = 60)
     private Integer score;
 
+    /** 市完成进度 */
+    @ApiModelProperty(value = "市完成进度", position = 10, required = true)
+    @Column(length = 60)
+    private Double percent;
+
     /** 附件 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     @JsonIgnore

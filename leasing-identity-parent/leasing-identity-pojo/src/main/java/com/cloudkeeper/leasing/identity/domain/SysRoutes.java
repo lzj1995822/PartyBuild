@@ -77,7 +77,7 @@ public class SysRoutes extends BaseEntity implements Comparable{
 
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 13)
-    @OneToMany(mappedBy = "sysRoutes")
+    @OneToMany(mappedBy = "sysRoutes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SysRoutes> children;
 
     @Override
