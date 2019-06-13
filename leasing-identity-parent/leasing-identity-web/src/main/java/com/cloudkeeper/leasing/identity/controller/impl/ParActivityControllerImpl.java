@@ -87,10 +87,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Override
     public Result<Page<ParActivityVO>> page(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
-        DetachedCriteria detachedCriteria = this.getDetachedCriteria(parActivitySearchable);
-        int resultCount = parActivityService.getTotalCount(detachedCriteria);
-        detachedCriteria.addOrder(Order.desc("month"));
-        Page<ParActivity> parActivityPage = parActivityService.findAll(detachedCriteria, pageable,resultCount);
+        Page<ParActivity> parActivityPage = parActivityService.handleDifferentRole(parActivitySearchable, pageable);
         Page<ParActivityVO> parActivityVOPage = ParActivity.convert(parActivityPage, ParActivityVO.class);
         return Result.of(parActivityVOPage);
     }
@@ -111,38 +108,4 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.ofDeleteSuccess();
     }
 
-    private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
-        if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
-            detachedCriteria.add(Restrictions.eq("districtId", parActivitySearchable.getDistrictID()));
-        }
-        if (!StringUtils.isEmpty(parActivitySearchable.getContext())) {
-            detachedCriteria.add(Restrictions.like("context", parActivitySearchable.getContext()));
-        }
-        if (!StringUtils.isEmpty(parActivitySearchable.getTitle())) {
-            detachedCriteria.add(Restrictions.like("title", parActivitySearchable.getTitle()));
-        }
-        if (!StringUtils.isEmpty(parActivitySearchable.getTaskType())) {
-            detachedCriteria.add(Restrictions.eq("taskType", parActivitySearchable.getTaskType()));
-        }
-        if (!StringUtils.isEmpty(parActivitySearchable.getType())) {
-            detachedCriteria.add(Restrictions.eq("type", parActivitySearchable.getType()));
-        }
-        if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
-            detachedCriteria.add(Restrictions.le("month", lastDay()));
-        } else if ("PLAN".equals(parActivitySearchable.getCurrentStatus())) {
-            detachedCriteria.add(Restrictions.ge("month", lastDay()));
-        }
-        return  detachedCriteria;
-    }
-
-    private LocalDate lastDay() {
-        Calendar ca = Calendar.getInstance();
-        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
-        Date date = ca.getTime();
-        Instant instant = date.toInstant();
-        ZoneId zone = ZoneId.systemDefault();
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
-        return localDateTime.toLocalDate();
-    }
 }

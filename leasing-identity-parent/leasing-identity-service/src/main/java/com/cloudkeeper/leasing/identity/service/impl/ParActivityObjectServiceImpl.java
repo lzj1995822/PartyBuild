@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 任务对象 service
  * @author lxw
@@ -36,5 +38,15 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Override
     public void deleteAllByActivityId(String activityId) {
         parActivityObjectRepository.deleteAllByActivityId(activityId);
+    }
+
+    @Override
+    public List<String> findActivityIdsByDistrictCode(String districtCode) {
+        return parActivityObjectRepository.findActivityIdsByDistrictCode(districtCode);
+    }
+
+    @Override
+    public List<String> findActivityIdsByOrganizationId(String organizationId) {
+        return parActivityObjectRepository.findActivityIdsByOrganizationId(organizationId);
     }
 }
