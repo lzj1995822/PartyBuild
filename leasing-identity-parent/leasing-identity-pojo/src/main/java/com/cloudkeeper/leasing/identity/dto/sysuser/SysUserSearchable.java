@@ -57,8 +57,19 @@ public class SysUserSearchable extends BaseSearchable {
     @ApiModelProperty(value = "组织id", position = 24, required = true)
     private String organizationId;
 
+    /** 组织districtId */
+    @ApiModelProperty(value = "组织districtId", position = 26, required = true)
+    private String districtId;
+
     /** 手机 */
-    @ApiModelProperty(value = "手机", position = 26, required = true)
+    @ApiModelProperty(value = "手机", position = 28, required = true)
     private String phone;
 
+    /** 头像 */
+    @ApiModelProperty(value = "头像", position = 28, required = true)
+    private String image;
+
+    /** 组织简介 */
+    @ApiModelProperty(value = "组织简介", position = 28, required = true)
+    private String introduction;
 }

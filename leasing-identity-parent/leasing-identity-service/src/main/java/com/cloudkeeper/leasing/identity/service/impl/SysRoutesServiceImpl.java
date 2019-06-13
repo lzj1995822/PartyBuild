@@ -77,6 +77,7 @@ public class SysRoutesServiceImpl extends BaseServiceImpl<SysRoutes> implements 
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         SysRoutes sysRoutes = getOne(id);
         if (sysRoutes == null) {

@@ -6,13 +6,16 @@ import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.base.utils.TokenUtil;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.domain.SysLoginNote;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserDTO;
 import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.SysLoginNoteService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import liquibase.util.MD5Util;
+import liquibase.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -45,6 +48,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     /** 登录日志*/
     private final SysLoginNoteService sysLoginNoteService;
 
+    /** 组织*/
+    private final SysDistrictService sysDistrictService;
+
     @Override
     protected BaseRepository<SysUser> getBaseRepository() {
         return sysUserRepository;
@@ -56,6 +62,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("userName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("password", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("portrait", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("phone", ExampleMatcher.GenericPropertyMatchers.contains());
     }
@@ -63,7 +70,15 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     @Nonnull
     @Override
     public SysUser save(@Nonnull SysUser entity) {
-        entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+        if(!StringUtils.isEmpty(entity.getOrganizationId())){
+            SysDistrict byId = sysDistrictService.findById(entity.getOrganizationId());
+            entity.setDistrictId(byId.getDistrictId());
+        }
+        if(StringUtils.isEmpty(entity.getPassword())){
+            entity.setPassword(MD5Util.computeMD5("123456"));
+        }else{
+            entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+        }
         return super.save(entity);
     }
 
@@ -89,9 +104,13 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
        /* sysUser.setPassword("不告诉你");*/
         map.put("user", sysUser);
         saveLoginNote("登录成功",sysUser);
+        updateLoginTime(sysUser);
         return Result.of("登录成功！", map);
     }
 
+    /*
+    * 保存登录日志
+    * */
     private void saveLoginNote(String msg ,SysUser sysUser){
         SysLoginNote sysLoginNote = new SysLoginNote();
         sysLoginNote.setUserId(sysUser.getId());
@@ -100,5 +119,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         sysLoginNote.setRegion("web");
         sysLoginNote.setAction(msg);
         sysLoginNoteService.save(sysLoginNote);
+    }
+
+    /*
+    * 更新用户最近登录时间
+    * */
+    private void updateLoginTime(SysUser sysUser){
+        Optional<SysUser> byId = sysUserRepository.findById(sysUser.getId());
+        if (byId.isPresent()){
+            SysUser sysUser1 = byId.get();
+            sysUser1.setLastTime(LocalDateTime.now());
+            sysUserRepository.save(sysUser1);
+        }
+
     }
 }

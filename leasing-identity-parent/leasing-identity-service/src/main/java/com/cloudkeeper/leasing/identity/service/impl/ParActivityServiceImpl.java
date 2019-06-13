@@ -13,6 +13,7 @@ import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
+import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -20,11 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 活动 service
@@ -214,5 +213,104 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
         }
 
+    }
+
+    //更新进度信息
+    private  List<PassPercentVO> getFinishRatio(String activityId) {
+        // 新结构统计sql
+        String sql = "SELECT " +
+                " attachTo as townCode, " +
+                " waitCheck, " +
+                " passed, " +
+                " fail, " +
+                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " SD.attachTo, " +
+                " COUNT( CASE WHEN PO.STATUS = 1 THEN 1 ELSE NULL END ) waitCheck, " +
+                " COUNT( CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END ) passed, " +
+                " COUNT( CASE WHEN PO.STATUS = 3 OR PO.STATUS = 0 THEN 1 ELSE NULL END ) fail  " +
+                "FROM " +
+                " PAR_ActivityObject PO " +
+                " LEFT JOIN SYS_District SD ON PO.organizationId = SD.districtId  " +
+                "WHERE " +
+                " PO.activityId = '" + activityId + "'  " +
+                " AND SD.isDelete = 0 " +
+                "GROUP BY " +
+                " SD.attachTo  " +
+                " ) a";
+        return  super.findAllBySql(PassPercentVO.class, sql);
+    }
+
+    private PassPercentVO getTotalPercent(String activityId) {
+        String sql = "SELECT " +
+                " waitCheck, " +
+                " passed, " +
+                " fail, " +
+                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " COUNT( CASE WHEN PO.STATUS = 1 THEN 1 ELSE NULL END ) waitCheck, " +
+                " COUNT( CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END ) passed, " +
+                " COUNT( CASE WHEN PO.STATUS = 3 OR PO.STATUS = 0 THEN 1 ELSE NULL END ) fail  " +
+                "FROM " +
+                " PAR_ActivityObject PO LEFT join SYS_District SD on PO.organizationId = SD.districtId " +
+                "WHERE " +
+                " PO.activityId = 'fe93f412-8e30-4a54-bd16-24871c19ce5f' " +
+                " AND SD.isDelete = 0 " +
+                " ) a";
+        return  super.findBySql(PassPercentVO.class, sql);
+    }
+
+    // 更新进度
+    public ParActivity updateProgress(String activityId) {
+        Optional<ParActivity> byId = parActivityRepository.findById(activityId);
+        if (!byId.isPresent()) {
+            return null;
+        }
+        ParActivity parActivity = byId.get();
+
+        List<PassPercentVO> finishRatio = this.getFinishRatio(activityId);
+        for (PassPercentVO item : finishRatio) {
+            BigDecimal value =  item.getFinishRatio();
+            switch (item.getTownCode()) {
+                case "0104":
+                    parActivity.setBaiTuPercent(value);
+                    break;
+                case "0103":
+                    parActivity.setGuoZhuangPercent(value);
+                    break;
+                case "0107":
+                    parActivity.setBaoHuaPercent(value);
+                    break;
+                case "0106":
+                    parActivity.setBianChengPercent(value);
+                    break;
+                case "0102":
+                    parActivity.setHouBaiPercent(value);
+                    break;
+                case "0111":
+                    parActivity.setKaiFaPercent(value);
+                    break;
+                case "0112":
+                    parActivity.setMaoShanFengJingPercent(value);
+                    break;
+                case "0105":
+                    parActivity.setMaoShanPercent(value);
+                    break;
+                case "0108":
+                    parActivity.setTianWangPercent(value);
+                    break;
+                case  "0101":
+                    parActivity.setXiaShuPercent(value);
+                    break;
+            }
+        }
+
+        BigDecimal totalPercent = this.getTotalPercent(activityId).getFinishRatio();
+        parActivity.setTotalPercent(totalPercent);
+        return this.save(parActivity);
     }
 }

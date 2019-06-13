@@ -69,6 +69,53 @@ public class ParActivityVO extends BaseVO {
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private Integer score;
 
+    /** 市完成进度 */
+    @ApiModelProperty(value = "市完成进度", position = 10, required = true)
+    private BigDecimal totalPercent;
+
+    /** 下蜀 */
+    @ApiModelProperty(value = "下蜀", position = 10, required = true)
+    private BigDecimal xiaShuPercent;
+
+    /** 宝华 */
+    @ApiModelProperty(value = "宝华", position = 10, required = true)
+    private BigDecimal baoHuaPercent;
+
+    /** 茅山 */
+    @ApiModelProperty(value = "茅山", position = 10, required = true)
+    private BigDecimal maoShanPercent;
+
+    /** 后白 */
+    @ApiModelProperty(value = "后白", position = 10, required = true)
+    private BigDecimal houBaiPercent;
+
+    /** 白兔 */
+    @ApiModelProperty(value = "白兔", position = 10, required = true)
+    private BigDecimal baiTuPercent;
+
+    /** 茅山风景区 */
+    @ApiModelProperty(value = "茅山风景区", position = 10, required = true)
+    private BigDecimal maoShanFengJingPercent;
+
+    /** 边城 */
+    @ApiModelProperty(value = "边城", position = 10, required = true)
+    private BigDecimal bianChengPercent;
+
+    /** 郭庄 */
+    @ApiModelProperty(value = "郭庄", position = 10, required = true)
+    private BigDecimal guoZhuangPercent;
+
+    /** 华阳 */
+    @ApiModelProperty(value = "华阳", position = 10, required = true)
+    private BigDecimal huaYangPercent;
+
+    /** 开发区 */
+    @ApiModelProperty(value = "开发区", position = 10, required = true)
+    private BigDecimal kaiFaPercent;
+
+    /** 天王 */
+    @ApiModelProperty(value = "天王", position = 10, required = true)
+    private BigDecimal tianWangPercent;
     /** 附件 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     private List<ParActivityReleaseFile> urls = new LinkedList();
