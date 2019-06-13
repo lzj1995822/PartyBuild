@@ -27,7 +27,7 @@ public class ParActivityPerformSearchable extends BaseSearchable {
 
     /** 活动ID */
     @ApiModelProperty(value = "活动ID", position = 10, required = true)
-    private String ActivityID;
+    private String activityID;
 
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)

@@ -2,10 +2,17 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.identity.domain.ParActivity;
+import com.cloudkeeper.leasing.identity.domain.ParActivityExamine;
+import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
+import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerformDTO;
+import com.cloudkeeper.leasing.identity.repository.ParActivityExamineRepository;
+import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
+import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 任务执行记录 service
@@ -30,6 +38,9 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
     /** 任务执行记录 repository */
     private final ParActivityPerformRepository parActivityPerformRepository;
 
+    private final ParActivityObjectRepository parActivityObjectRepository;
+
+    private final ParActivityExamineRepository parActivityExamineRepository;
     @Override
     protected BaseRepository<ParActivityPerform> getBaseRepository() {
         return parActivityPerformRepository;
@@ -38,7 +49,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
-                .withMatcher("ActivityID", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("activityID", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 //    @Override
@@ -118,5 +129,30 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
                 " S3.town = '"+town+"'";
         List<TownDetailVO> list = super.findAllBySql(TownDetailVO.class, sql);
         return list;
+    }
+
+    public ParActivityPerformVO check(ParActivityPerformDTO parActivityPerformDTO){
+        if(StringUtils.isEmpty(parActivityPerformDTO)){
+            return null;
+        }
+        Optional<ParActivityPerform> parActivityPerformFind =  parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivityPerformDTO.getActivityID(),parActivityPerformDTO.getOrganizationId());
+        Optional<ParActivityObject> parActivityObjectFind =  parActivityObjectRepository.findByActivityIdAndOrganizationId(parActivityPerformDTO.getActivityID(),parActivityPerformDTO.getDistrictId());
+        if (parActivityPerformFind.isPresent()&&parActivityObjectFind.isPresent()) {
+            //perform更新
+            ParActivityPerform parActivityPerform = parActivityPerformFind.get();
+            parActivityPerform.setStatus(parActivityPerformDTO.getStatus());
+            parActivityPerform = super.save(parActivityPerform);
+            //ParActivityObject更新
+            ParActivityObject parActivityObject = parActivityObjectFind.get();
+            parActivityObject.setStatus(parActivityPerformDTO.getStatus());
+            parActivityObjectRepository.save(parActivityObject);
+            //Exam添加
+            ParActivityExamine parActivityExamine = new ParActivityExamine();
+            parActivityExamine.setPId(parActivityPerform.getId());
+            parActivityExamine.setRemark(parActivityPerformDTO.getRemark());
+            parActivityExamineRepository.save(parActivityExamine);
+            return parActivityPerform.convert(ParActivityPerformVO.class);
+        }
+       return null;
     }
 }

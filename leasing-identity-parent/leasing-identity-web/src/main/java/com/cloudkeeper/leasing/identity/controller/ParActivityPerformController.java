@@ -114,4 +114,13 @@ public interface ParActivityPerformController {
     @PostMapping("/{activityId}&{town}townDetailList")
     Result<List<TownDetailVO>> townDetail(@ApiParam(value = "活动ID", required = true) @PathVariable String activityId,
                                           @ApiParam(value = "活动ID", required = true) @PathVariable String town);
+
+    /**
+     * 列表查询各镇详情
+     * @param
+     * @return 任务执行记录 VO 集合
+     */
+    @ApiOperation(value = "审核", notes = "审核", position = 6)
+    @PostMapping("/check")
+    Result<ParActivityPerformVO> check(@ApiParam(value = "审核记录 DTO", required = true) @RequestBody @Validated ParActivityPerformDTO parActivityPerformDTO);
 }
