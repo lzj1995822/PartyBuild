@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import java.util.Optional;
+
 /**
  * 任务对象 repository
  * @author lxw
@@ -25,4 +27,7 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
 
     @Query(value = "SELECT DISTINCT activityId FROM PAR_ActivityObject WHERE organizationId = ? ",nativeQuery=true)
     List<String> findActivityIdsByOrganizationId(String organizationId);
+
+
+    Optional<ParActivityObject> findByActivityIdAndOrganizationId(String activityId,String organizationId);
 }

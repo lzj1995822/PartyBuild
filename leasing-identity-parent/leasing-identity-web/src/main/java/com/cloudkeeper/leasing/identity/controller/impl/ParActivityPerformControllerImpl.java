@@ -105,4 +105,9 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         List<TownDetailVO> townDetailVOList = parActivityPerformService.townDetail(activityId,town);
         return Result.of(townDetailVOList);
     }
+    @Override
+    public Result<ParActivityPerformVO> check(@ApiParam(value = "审核记录 DTO", required = true) @RequestBody @Validated ParActivityPerformDTO parActivityPerformDTO){
+        ParActivityPerformVO parActivityPerformVO = parActivityPerformService.check(parActivityPerformDTO);
+        return Result.ofUpdateSuccess(parActivityPerformVO);
+    }
 }

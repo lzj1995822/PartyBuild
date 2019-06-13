@@ -33,8 +33,8 @@ public class ParActivityPerform extends BaseEntity {
 
     /** 活动ID */
     @ApiModelProperty(value = "活动ID", position = 10, required = true)
-    @Column(length = 60)
-    private String ActivityID;
+    @Column(name="ActivityID",length = 60)
+    private String activityID;
 
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)

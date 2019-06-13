@@ -27,11 +27,15 @@ public class ParActivityPerformDTO extends BaseEditDTO {
 
     /** 活动ID */
     @ApiModelProperty(value = "活动ID", position = 10, required = true)
-    private String ActivityID;
+    private String activityID;
 
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     private String organizationId;
+
+    /** 组织短ID */
+    @ApiModelProperty(value = "组织短ID", position = 10, required = true)
+    private String districtId;
 
     /** 状态 */
     @ApiModelProperty(value = "状态", position = 10, required = true)
@@ -40,5 +44,9 @@ public class ParActivityPerformDTO extends BaseEditDTO {
     /** 数据源 */
     @ApiModelProperty(value = "数据源", position = 10, required = true)
     private Integer source;
+
+    /** 审核说明 */
+    @ApiModelProperty(value = "审核说明", position = 10, required = true)
+    private String remark;
 
 }
