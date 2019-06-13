@@ -16,4 +16,7 @@ public interface ParActivityService extends BaseService<ParActivity> {
     ParActivityVO save(ParActivityDTO parActivityDTO);
     void deleteAll(String id);
     ParActivityVO updateAlarmTime(String id, LocalDateTime localDateTime);
+
+    //更新进度
+    ParActivity updateProgress(String activityId);
 }
