@@ -56,7 +56,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("context", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())

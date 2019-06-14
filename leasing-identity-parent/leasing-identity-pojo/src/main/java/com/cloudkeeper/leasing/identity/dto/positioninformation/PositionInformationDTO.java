@@ -53,4 +53,8 @@ public class PositionInformationDTO extends BaseEditDTO {
     @ApiModelProperty(value = "图片", position = 10, required = true)
     private String pictures;
 
+    /** 热度 */
+    @ApiModelProperty(value = "热度", position = 10, required = true)
+    private Integer hotDegree;
+
 }

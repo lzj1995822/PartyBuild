@@ -50,13 +50,7 @@ public class SysUserControllerImpl implements SysUserController {
     @Override
     public Result<SysUserVO> update(@ApiParam(value = "系统用户id", required = true) @PathVariable String id,
         @ApiParam(value = "系统用户 DTO", required = true) @RequestBody @Validated SysUserDTO sysUserDTO) {
-        Optional<SysUser> sysUserOptional = sysUserService.findOptionalById(id);
-        if (!sysUserOptional.isPresent()) {
-            return Result.ofLost();
-        }
-        SysUser sysUser = sysUserOptional.get();
-        BeanUtils.copyProperties(sysUserDTO, sysUser);
-        sysUser = sysUserService.save(sysUser);
+        SysUser sysUser = sysUserService.save(sysUserDTO.convert(SysUser.class));
         return Result.ofUpdateSuccess(sysUser.convert(SysUserVO.class));
     }
 
