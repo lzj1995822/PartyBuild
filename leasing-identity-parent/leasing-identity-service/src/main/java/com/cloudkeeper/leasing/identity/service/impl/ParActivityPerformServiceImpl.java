@@ -11,6 +11,7 @@ import com.cloudkeeper.leasing.identity.repository.ParActivityExamineRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
+import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
     private final ParActivityObjectRepository parActivityObjectRepository;
 
     private final ParActivityExamineRepository parActivityExamineRepository;
+
+    private final ParActivityService parActivityService;
     @Override
     protected BaseRepository<ParActivityPerform> getBaseRepository() {
         return parActivityPerformRepository;
@@ -131,6 +135,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         return list;
     }
 
+    @Transactional
     public ParActivityPerformVO check(ParActivityPerformDTO parActivityPerformDTO){
         if(StringUtils.isEmpty(parActivityPerformDTO)){
             return null;
@@ -151,6 +156,10 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
             parActivityExamine.setPId(parActivityPerform.getId());
             parActivityExamine.setRemark(parActivityPerformDTO.getRemark());
             parActivityExamineRepository.save(parActivityExamine);
+
+            if(parActivityPerformDTO.getStatus().equals("2")){
+                parActivityService.updateProgress(parActivityPerformDTO.getActivityID());
+            }
             return parActivityPerform.convert(ParActivityPerformVO.class);
         }
        return null;
