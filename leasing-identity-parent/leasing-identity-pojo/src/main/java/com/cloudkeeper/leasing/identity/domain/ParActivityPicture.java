@@ -40,7 +40,7 @@ public class ParActivityPicture extends BaseEntity {
 
     /** 活动记录 */
     @ApiModelProperty(value = "活动", position = 28)
-    @OneToOne
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "activityID", insertable = false, updatable = false)
     private ParActivityFeedback parActivityFeedback;

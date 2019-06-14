@@ -67,7 +67,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("context", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -161,7 +161,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 ParActivityObject parActivityObject = new ParActivityObject();
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setOrganizationId(sysDistricts.get(i).getDistrictId());
-                parActivityObject.setStatus("1");
+                parActivityObject.setStatus("0");
                 parActivityObject.setAttachTo(sysDistricts.get(i).getAttachTo());
                 parActivityObjectService.save(parActivityObject);
             }
@@ -196,7 +196,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                             parActivityObject.setActivityId(activityId);
                             parActivityObject.setOrganizationId(sysDistrict.getDistrictId());
                             parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(sysDistrict.getDistrictId()).get(0).getAttachTo());
-                            parActivityObject.setStatus("1");
+                            parActivityObject.setStatus("0");
                             parActivityObjectService.save(parActivityObject);
                         }
 
@@ -207,7 +207,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cids.get(i));
                         parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cids.get(i)).get(0).getAttachTo());
-                        parActivityObject.setStatus("1");
+                        parActivityObject.setStatus("0");
                         parActivityObjectService.save(parActivityObject);
                     }
                     }else{
@@ -219,7 +219,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cidss.get(j));
                         parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cidss.get(j)).get(0).getAttachTo());
-                        parActivityObject.setStatus("1");
+                        parActivityObject.setStatus("0");
                         parActivityObjectService.save(parActivityObject);
                     }
                 }
@@ -315,6 +315,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                     break;
                 case "0108":
                     parActivity.setTianWangPercent(value);
+                    break;
+                case "0109":
+                    parActivity.setHuaYangPercent(value);
                     break;
                 case  "0101":
                     parActivity.setXiaShuPercent(value);

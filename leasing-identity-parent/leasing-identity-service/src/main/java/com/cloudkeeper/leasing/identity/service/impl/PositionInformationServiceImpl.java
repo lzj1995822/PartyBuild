@@ -30,12 +30,13 @@ public class PositionInformationServiceImpl extends BaseServiceImpl<PositionInfo
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("facilities", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("area", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("introduction", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("pictures", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("pictures", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("hotDegree", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }

@@ -56,4 +56,8 @@ public class PositionInformationVO extends BaseVO {
     /** 组织名称 */
     @ApiModelProperty(value = "组织名称", position = 10, required = true)
     private String districtName;
+
+    /** 热度 */
+    @ApiModelProperty(value = "热度", position = 10, required = true)
+    private Integer hotDegree;
 }
