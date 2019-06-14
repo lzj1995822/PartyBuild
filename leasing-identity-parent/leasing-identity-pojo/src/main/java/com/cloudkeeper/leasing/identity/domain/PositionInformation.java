@@ -71,6 +71,11 @@ public class PositionInformation extends BaseEntity {
     @Column(length = 60)
     private Integer hotDegree;
 
+    /** 经纬度 */
+    @ApiModelProperty(value = "经纬度", position = 10, required = true)
+    @Column(length = 60)
+    private String lonLat;
+
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
