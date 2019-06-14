@@ -19,6 +19,8 @@ public interface BaseService<T> {
 
     HttpSession getHttpSession();
 
+    String getCurrentPrincipalId();
+
     String getTableName();
 
     /**

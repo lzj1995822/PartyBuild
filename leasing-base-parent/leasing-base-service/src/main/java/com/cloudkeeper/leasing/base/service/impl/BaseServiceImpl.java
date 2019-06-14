@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.base.service.impl;
 
+import com.cloudkeeper.leasing.base.constant.AuthorizationConstants;
 import com.cloudkeeper.leasing.base.dto.BaseSearchable;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.BaseService;
@@ -46,6 +47,12 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
      */
     protected abstract BaseRepository<T> getBaseRepository();
 
+    @Override
+    public String getCurrentPrincipalId() {
+        HttpSession httpSession = getHttpSession();
+        Object principalId = httpSession.getAttribute(AuthorizationConstants.CURRENT_USER_ID);
+        return (String) principalId;
+    }
     /**
      * 获取泛型类型
      * @return 泛型类型

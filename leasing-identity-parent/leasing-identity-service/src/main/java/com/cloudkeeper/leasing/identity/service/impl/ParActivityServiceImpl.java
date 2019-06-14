@@ -12,17 +12,26 @@ import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
+import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -39,6 +48,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     private final ParActivityReleaseFileServiceImpl parActivityReleaseFileServiceImpl;
     /** 组织 */
     private final SysDistrictServiceImpl sysDistrictServiceImpl;
+
+    /** 组织 */
+    private final SysUserService sysUserService;
 
     @Override
     protected BaseRepository<ParActivity> getBaseRepository() {
@@ -315,5 +327,63 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         BigDecimal totalPercent = this.getTotalPercent(activityId).getFinishRatio();
         parActivity.setTotalPercent(totalPercent);
         return this.save(parActivity);
+    }
+
+    @Override
+    public Page<ParActivity> handleDifferentRole(ParActivitySearchable parActivitySearchable, Pageable pageable) {
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(getCurrentPrincipalId());
+        if (!optionalById.isPresent()) {
+            return null;
+        }
+        SysUser sysUser = optionalById.get();
+        String districtCode = sysUser.getSysDistrict().getDistrictId();
+        String roleCode = sysUser.getRole().getCode();
+        DetachedCriteria detachedCriteria = getDetachedCriteria(parActivitySearchable);
+         if (roleCode.equals("TOWN_REVIEWER")) {
+            List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByDistrictCode(districtCode);
+            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+        } else if (roleCode.equals("COUNTRY_SIDE_ACTOR")) {
+            List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByOrganizationId(districtCode);
+            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+        }
+         //不加其他查询条件默认为市级
+        int resultCount = getTotalCount(detachedCriteria);
+        detachedCriteria.addOrder(Order.desc("month"));
+        return super.findAll(detachedCriteria, pageable,resultCount);
+    }
+
+    private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
+            detachedCriteria.add(Restrictions.eq("districtId", parActivitySearchable.getDistrictID()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getContext())) {
+            detachedCriteria.add(Restrictions.like("context", parActivitySearchable.getContext()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTitle())) {
+            detachedCriteria.add(Restrictions.like("title", parActivitySearchable.getTitle()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTaskType())) {
+            detachedCriteria.add(Restrictions.eq("taskType", parActivitySearchable.getTaskType()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getType())) {
+            detachedCriteria.add(Restrictions.eq("type", parActivitySearchable.getType()));
+        }
+        if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.le("month", lastDay()));
+        } else if ("PLAN".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.ge("month", lastDay()));
+        }
+        return  detachedCriteria;
+    }
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date date = ca.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
     }
 }
