@@ -69,6 +69,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         String sql =  "SELECT s6.*, ROUND(cast(s6.passed as FLOAT)/(s6.waitCheck + s6.passed + s6.fail),3)  as finishRatio from ( " +
                 "SELECT " +
                 " S5.tn, " +
+                " townCode, " +
                 " COUNT( CASE WHEN sa = 1 THEN 1 ELSE NULL END ) waitCheck, " +
                 " COUNT( CASE WHEN sa = 2 THEN 1 ELSE NULL END ) passed, " +
                 " COUNT( CASE WHEN sa = 3 OR sa IS NULL THEN 1 ELSE NULL END ) fail  " +
@@ -77,6 +78,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
                 "SELECT " +
                 " S3.town tn, " +
                 " S3.cun cn, " +
+                " S3.attachTo townCode, " +
                 " S3.cunId cd, " +
                 " S4.STATUS sa, " +
                 " S4.ActivityID aid  " +
@@ -85,6 +87,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
                 "SELECT " +
                 " S1.districtName town, " +
                 " S0.districtName cun, " +
+                " S0.attachTo, " +
                 " S0.id cunId  " +
                 "FROM " +
                 " SYS_District S0 " +
@@ -96,7 +99,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
                 " AND S4.ActivityID = '"+activityId+"'  " +
                 " ) S5  " +
                 "GROUP BY " +
-                " tn " +
+                " tn, townCode  " +
                 " ) s6";
         List<PassPercentVO> list = super.findAllBySql(PassPercentVO.class, sql);
         return list;
