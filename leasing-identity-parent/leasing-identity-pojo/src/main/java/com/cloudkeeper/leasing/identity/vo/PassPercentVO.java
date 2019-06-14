@@ -18,6 +18,10 @@ public class PassPercentVO implements Serializable {
     @ApiModelProperty(value = "镇名", position = 10, required = true)
     private String tn;
 
+    /** 镇编码 */
+    @ApiModelProperty(value = "镇编码", position = 10, required = true)
+    private String townCode;
+
     /** 镇名 */
     @ApiModelProperty(value = "待审核", position = 10, required = true)
     private Integer waitCheck;

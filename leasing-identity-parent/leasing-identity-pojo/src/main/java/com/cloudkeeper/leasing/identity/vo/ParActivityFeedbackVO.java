@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ParActivityPicture;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 移动端执行记录 VO
@@ -47,7 +49,7 @@ public class ParActivityFeedbackVO extends BaseVO {
 
     /** 图片地址 */
     @ApiModelProperty(value = "图片地址", position = 10, required = true)
-    private String imageUrl;
+    private List<ParActivityPicture> imageUrl;
 
 
 }

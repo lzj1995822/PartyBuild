@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerformDTO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
@@ -18,4 +19,5 @@ public interface ParActivityPerformService extends BaseService<ParActivityPerfor
 //    Page<ParActivityPerform> listAll(String activityId, String orgId, Pageable pageable);
     List<PassPercentVO> percent(String activityId);
     List<TownDetailVO> townDetail(String activityId, String town);
+    ParActivityPerformVO check(ParActivityPerformDTO parActivityPerformDTO);
 }

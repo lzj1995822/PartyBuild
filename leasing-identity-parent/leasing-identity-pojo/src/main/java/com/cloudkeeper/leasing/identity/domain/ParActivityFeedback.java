@@ -14,11 +14,9 @@ import lombok.experimental.Accessors;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 移动端执行记录
@@ -63,8 +61,8 @@ public class ParActivityFeedback extends BaseEntity {
     /** 视频 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     @JsonIgnore
-    @OneToOne(mappedBy = "parActivityFeedback")
-    private ParActivityPicture parActivityPicture;
+    @OneToMany(mappedBy = "parActivityFeedback")
+    private List<ParActivityPicture> parActivityPicture;
 
     @Nonnull
     @Override
@@ -72,7 +70,7 @@ public class ParActivityFeedback extends BaseEntity {
         T convert = super.convert(clazz);
         ParActivityFeedbackVO parActivityFeedbackVO = (ParActivityFeedbackVO) convert;
         if(!StringUtils.isEmpty(this.parActivityPicture)){
-            parActivityFeedbackVO.setImageUrl(this.parActivityPicture.getImageUrl());
+            parActivityFeedbackVO.setImageUrl(this.parActivityPicture);
         }
 
         return (T) parActivityFeedbackVO;

@@ -12,19 +12,27 @@ import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
+import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
+import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.ZoneId;
+import java.util.*;
 
 /**
  * 活动 service
@@ -40,6 +48,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     private final ParActivityReleaseFileServiceImpl parActivityReleaseFileServiceImpl;
     /** 组织 */
     private final SysDistrictServiceImpl sysDistrictServiceImpl;
+
+    /** 组织 */
+    private final SysUserService sysUserService;
 
     @Override
     protected BaseRepository<ParActivity> getBaseRepository() {
@@ -150,7 +161,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 ParActivityObject parActivityObject = new ParActivityObject();
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setOrganizationId(sysDistricts.get(i).getDistrictId());
-                parActivityObject.setStatus("1");
+                parActivityObject.setStatus("0");
                 parActivityObjectService.save(parActivityObject);
             }
         }else {
@@ -184,7 +195,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                             parActivityObject.setActivityId(activityId);
                             parActivityObject.setOrganizationId(sysDistrict.getDistrictId());
                             parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(sysDistrict.getDistrictId()).get(0).getAttachTo());
-                            parActivityObject.setStatus("1");
+                            parActivityObject.setStatus("0");
                             parActivityObjectService.save(parActivityObject);
                         }
 
@@ -195,7 +206,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cids.get(i));
                         parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cids.get(i)).get(0).getAttachTo());
-                        parActivityObject.setStatus("1");
+                        parActivityObject.setStatus("0");
                         parActivityObjectService.save(parActivityObject);
                     }
                     }else{
@@ -207,7 +218,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                         parActivityObject.setActivityId(activityId);
                         parActivityObject.setOrganizationId(cidss.get(j));
                         parActivityObject.setAttachTo(sysDistrictServiceImpl.sysDistrictsByDistrictId(cidss.get(j)).get(0).getAttachTo());
-                        parActivityObject.setStatus("1");
+                        parActivityObject.setStatus("0");
                         parActivityObjectService.save(parActivityObject);
                     }
                 }
@@ -217,8 +228,162 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     //更新进度信息
-    private void updateProgress(String activityId) {
-        String sql = "";
+    private  List<PassPercentVO> getFinishRatio(String activityId) {
+        // 新结构统计sql
+        String sql = "SELECT " +
+                " attachTo as townCode, " +
+                " waitCheck, " +
+                " passed, " +
+                " fail, " +
+                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " SD.attachTo, " +
+                " COUNT( CASE WHEN PO.STATUS = 1 THEN 1 ELSE NULL END ) waitCheck, " +
+                " COUNT( CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END ) passed, " +
+                " COUNT( CASE WHEN PO.STATUS = 3 OR PO.STATUS = 0 THEN 1 ELSE NULL END ) fail  " +
+                "FROM " +
+                " PAR_ActivityObject PO " +
+                " LEFT JOIN SYS_District SD ON PO.organizationId = SD.districtId  " +
+                "WHERE " +
+                " PO.activityId = '" + activityId + "'  " +
+                " AND SD.isDelete = 0 " +
+                "GROUP BY " +
+                " SD.attachTo  " +
+                " ) a";
+        return  super.findAllBySql(PassPercentVO.class, sql);
+    }
 
+    private PassPercentVO getTotalPercent(String activityId) {
+        String sql = "SELECT " +
+                " waitCheck, " +
+                " passed, " +
+                " fail, " +
+                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " COUNT( CASE WHEN PO.STATUS = 1 THEN 1 ELSE NULL END ) waitCheck, " +
+                " COUNT( CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END ) passed, " +
+                " COUNT( CASE WHEN PO.STATUS = 3 OR PO.STATUS = 0 THEN 1 ELSE NULL END ) fail  " +
+                "FROM " +
+                " PAR_ActivityObject PO LEFT join SYS_District SD on PO.organizationId = SD.districtId " +
+                "WHERE " +
+                " PO.activityId = 'fe93f412-8e30-4a54-bd16-24871c19ce5f' " +
+                " AND SD.isDelete = 0 " +
+                " ) a";
+        return  super.findBySql(PassPercentVO.class, sql);
+    }
+
+    // 更新进度
+    public ParActivity updateProgress(String activityId) {
+        Optional<ParActivity> byId = parActivityRepository.findById(activityId);
+        if (!byId.isPresent()) {
+            return null;
+        }
+        ParActivity parActivity = byId.get();
+
+        List<PassPercentVO> finishRatio = this.getFinishRatio(activityId);
+        for (PassPercentVO item : finishRatio) {
+            BigDecimal value =  item.getFinishRatio();
+            switch (item.getTownCode()) {
+                case "0104":
+                    parActivity.setBaiTuPercent(value);
+                    break;
+                case "0103":
+                    parActivity.setGuoZhuangPercent(value);
+                    break;
+                case "0107":
+                    parActivity.setBaoHuaPercent(value);
+                    break;
+                case "0106":
+                    parActivity.setBianChengPercent(value);
+                    break;
+                case "0102":
+                    parActivity.setHouBaiPercent(value);
+                    break;
+                case "0111":
+                    parActivity.setKaiFaPercent(value);
+                    break;
+                case "0112":
+                    parActivity.setMaoShanFengJingPercent(value);
+                    break;
+                case "0105":
+                    parActivity.setMaoShanPercent(value);
+                    break;
+                case "0108":
+                    parActivity.setTianWangPercent(value);
+                    break;
+                case "0109":
+                    parActivity.setHuaYangPercent(value);
+                    break;
+                case  "0101":
+                    parActivity.setXiaShuPercent(value);
+                    break;
+            }
+        }
+
+        BigDecimal totalPercent = this.getTotalPercent(activityId).getFinishRatio();
+        parActivity.setTotalPercent(totalPercent);
+        return this.save(parActivity);
+    }
+
+    @Override
+    public Page<ParActivity> handleDifferentRole(ParActivitySearchable parActivitySearchable, Pageable pageable) {
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(getCurrentPrincipalId());
+        if (!optionalById.isPresent()) {
+            return null;
+        }
+        SysUser sysUser = optionalById.get();
+        String districtCode = sysUser.getSysDistrict().getDistrictId();
+        String roleCode = sysUser.getRole().getCode();
+        DetachedCriteria detachedCriteria = getDetachedCriteria(parActivitySearchable);
+         if (roleCode.equals("TOWN_REVIEWER")) {
+            List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByDistrictCode(districtCode);
+            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+        } else if (roleCode.equals("COUNTRY_SIDE_ACTOR")) {
+            List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByOrganizationId(districtCode);
+            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+        }
+         //不加其他查询条件默认为市级
+        int resultCount = getTotalCount(detachedCriteria);
+        detachedCriteria.addOrder(Order.desc("month"));
+        return super.findAll(detachedCriteria, pageable,resultCount);
+    }
+
+    private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
+            detachedCriteria.add(Restrictions.eq("districtId", parActivitySearchable.getDistrictID()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getContext())) {
+            detachedCriteria.add(Restrictions.like("context", parActivitySearchable.getContext()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTitle())) {
+            detachedCriteria.add(Restrictions.like("title", parActivitySearchable.getTitle()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getTaskType())) {
+            detachedCriteria.add(Restrictions.eq("taskType", parActivitySearchable.getTaskType()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getType())) {
+            detachedCriteria.add(Restrictions.eq("type", parActivitySearchable.getType()));
+        }
+        if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.le("month", lastDay()));
+        } else if ("PLAN".equals(parActivitySearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.ge("month", lastDay()));
+        }
+        return  detachedCriteria;
+    }
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date date = ca.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
     }
 }
