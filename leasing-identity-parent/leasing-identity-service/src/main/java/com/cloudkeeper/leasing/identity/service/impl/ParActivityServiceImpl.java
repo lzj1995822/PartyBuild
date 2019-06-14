@@ -162,6 +162,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setOrganizationId(sysDistricts.get(i).getDistrictId());
                 parActivityObject.setStatus("1");
+                parActivityObject.setAttachTo(sysDistricts.get(i).getAttachTo());
                 parActivityObjectService.save(parActivityObject);
             }
         }else {
