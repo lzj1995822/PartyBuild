@@ -32,7 +32,10 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("isWorking", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("isWorking", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("activityId", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withMatcher("organizationId", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withMatcher("attachTo", ExampleMatcher.GenericPropertyMatchers.exact());
     }
 
     @Override

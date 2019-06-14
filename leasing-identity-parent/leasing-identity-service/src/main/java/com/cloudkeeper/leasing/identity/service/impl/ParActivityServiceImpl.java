@@ -67,7 +67,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("context", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -162,6 +162,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setOrganizationId(sysDistricts.get(i).getDistrictId());
                 parActivityObject.setStatus("0");
+                parActivityObject.setAttachTo(sysDistricts.get(i).getAttachTo());
                 parActivityObjectService.save(parActivityObject);
             }
         }else {

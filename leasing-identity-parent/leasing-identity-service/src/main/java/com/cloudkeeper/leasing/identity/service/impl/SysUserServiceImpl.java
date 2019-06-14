@@ -62,7 +62,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("userName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("password", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("portrait", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("phone", ExampleMatcher.GenericPropertyMatchers.contains());
     }
@@ -70,14 +70,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     @Nonnull
     @Override
     public SysUser save(@Nonnull SysUser entity) {
-        if(!StringUtils.isEmpty(entity.getOrganizationId())){
-            SysDistrict byId = sysDistrictService.findById(entity.getOrganizationId());
-            entity.setDistrictId(byId.getDistrictId());
-        }
-        if(StringUtils.isEmpty(entity.getPassword())){
+        //新增时给密码赋值并加密
+        if(StringUtils.isEmpty(entity.getId())){
             entity.setPassword(MD5Util.computeMD5("123456"));
         }else{
-            entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+            Optional<SysUser> byId = sysUserRepository.findById(entity.getId());
+            if (byId.isPresent()){
+                SysUser sysUser = byId.get();
+                //判断是否修改了密码（前台传的密码值是否和数据库相同，不同，说明修改了密码，进行加密）
+                if(!sysUser.getPassword().equals(entity.getPassword())){
+                    entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+                }
+            }
         }
         return super.save(entity);
     }

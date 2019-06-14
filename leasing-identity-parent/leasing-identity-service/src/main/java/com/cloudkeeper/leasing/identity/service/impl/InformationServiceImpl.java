@@ -41,7 +41,7 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
         return super.defaultExampleMatcher()
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("districtID", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
     @Override
