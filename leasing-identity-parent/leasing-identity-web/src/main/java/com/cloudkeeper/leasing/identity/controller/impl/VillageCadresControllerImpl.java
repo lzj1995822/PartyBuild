@@ -93,4 +93,13 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         return Result.of(villageCadresVOPage);
     }
 
+    @Override
+    public Result<Long> countALl(@RequestBody VillageCadresSearchable villageCadresSearchable) {
+        Long aLong = villageCadresService.countAllByDistrictId(villageCadresSearchable.getDistrictId());
+        return Result.of(aLong);
+    }
+
+
+
+
 }

@@ -83,4 +83,13 @@ public interface VillageCadresController {
     Result<Page<VillageCadresVO>> page(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    /**
+     * 村干部数量
+     * @param
+     * @return 村干部管理 VO 分页
+     */
+    @ApiOperation(value = "村干部数量", notes = "村干部数量", position = 6)
+    @PostMapping("/countall")
+    Result<Long> countALl(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
+
 }

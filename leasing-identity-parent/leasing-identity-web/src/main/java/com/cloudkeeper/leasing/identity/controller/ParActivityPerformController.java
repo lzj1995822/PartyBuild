@@ -123,4 +123,15 @@ public interface ParActivityPerformController {
     @ApiOperation(value = "审核", notes = "审核", position = 6)
     @PostMapping("/check")
     Result<ParActivityPerformVO> check(@ApiParam(value = "审核记录 DTO", required = true) @RequestBody @Validated ParActivityPerformDTO parActivityPerformDTO);
+
+    /**
+     * 活动执行次数
+     * @param
+     * @return 任务执行记录 VO 集合
+     */
+    @ApiOperation(value = "执行次数", notes = "执行次数", position = 6)
+    @PostMapping("/countall")
+    Result<Long> countAll();
+
+
 }

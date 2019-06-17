@@ -110,4 +110,10 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         ParActivityPerformVO parActivityPerformVO = parActivityPerformService.check(parActivityPerformDTO);
         return Result.ofUpdateSuccess(parActivityPerformVO);
     }
+
+    @Override
+    public Result<Long> countAll() {
+        Long aLong = parActivityPerformService.countAll();
+        return Result.of(aLong);
+    }
 }

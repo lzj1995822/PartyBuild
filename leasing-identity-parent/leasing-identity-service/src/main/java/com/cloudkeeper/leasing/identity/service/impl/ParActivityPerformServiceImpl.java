@@ -167,4 +167,11 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         }
        return null;
     }
+
+    @Override
+    public Long countAll() {
+        long count = parActivityPerformRepository.count();
+        return count;
+    }
+
 }
