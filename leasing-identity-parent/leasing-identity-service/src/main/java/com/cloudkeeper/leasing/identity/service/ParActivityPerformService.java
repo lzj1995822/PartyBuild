@@ -20,5 +20,5 @@ public interface ParActivityPerformService extends BaseService<ParActivityPerfor
     List<PassPercentVO> percent(String activityId);
     List<TownDetailVO> townDetail(String activityId, String town);
     ParActivityPerformVO check(ParActivityPerformDTO parActivityPerformDTO);
-    Long countAll();
+    Integer countAll(String districtId);
 }

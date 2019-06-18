@@ -169,9 +169,9 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
     }
 
     @Override
-    public Long countAll() {
-        long count = parActivityPerformRepository.count();
-        return count;
+    public Integer countAll(String districtId) {
+        Integer integer = parActivityPerformRepository.countAll(districtId);
+        return integer;
     }
 
 }

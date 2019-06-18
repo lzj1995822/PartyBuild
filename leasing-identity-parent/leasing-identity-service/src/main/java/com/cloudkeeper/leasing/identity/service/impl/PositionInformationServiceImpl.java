@@ -39,4 +39,10 @@ public class PositionInformationServiceImpl extends BaseServiceImpl<PositionInfo
                 .withMatcher("hotDegree", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+
+    @Override
+    public Integer countAllByDistrictId(String districtId) {
+        Integer integer = positionInformationRepository.countAllByDistrictIdStartingWith(districtId);
+        return integer;
+    }
 }

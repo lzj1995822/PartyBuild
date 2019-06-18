@@ -131,7 +131,7 @@ public interface ParActivityPerformController {
      */
     @ApiOperation(value = "执行次数", notes = "执行次数", position = 6)
     @PostMapping("/countall")
-    Result<Long> countAll();
+    Result<Integer> countAll(@RequestBody ParActivityPerformSearchable parActivityPerformSearchable);
 
 
 }

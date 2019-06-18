@@ -41,4 +41,8 @@ public class ParActivityPerformSearchable extends BaseSearchable {
     @ApiModelProperty(value = "数据源", position = 10, required = true)
     private Integer source;
 
+    /** districtId */
+    @ApiModelProperty(value = "组织id", position = 10, required = true)
+    private String districtId;
+
 }

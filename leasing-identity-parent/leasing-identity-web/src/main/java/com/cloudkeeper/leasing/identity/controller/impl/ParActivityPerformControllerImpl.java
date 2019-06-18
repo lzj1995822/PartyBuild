@@ -112,8 +112,9 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
     }
 
     @Override
-    public Result<Long> countAll() {
-        Long aLong = parActivityPerformService.countAll();
-        return Result.of(aLong);
+    public Result<Integer> countAll(@RequestBody ParActivityPerformSearchable parActivityPerformSearchable) {
+        Integer integer = parActivityPerformService.countAll(parActivityPerformSearchable.getDistrictId());
+        return Result.of(integer);
     }
+
 }

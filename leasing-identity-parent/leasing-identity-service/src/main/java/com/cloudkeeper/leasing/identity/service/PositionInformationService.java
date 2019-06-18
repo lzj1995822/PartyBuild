@@ -8,5 +8,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  * @author cqh
  */
 public interface PositionInformationService extends BaseService<PositionInformation> {
-
+    //统计阵地数量
+    Integer countAllByDistrictId(String districtId);
 }
