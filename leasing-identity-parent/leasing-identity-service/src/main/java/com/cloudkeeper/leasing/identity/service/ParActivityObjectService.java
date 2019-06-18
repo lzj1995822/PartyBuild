@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.service;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.base.service.BaseService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,4 +21,9 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
     List<String> findActivityIdsByOrganizationId(String organizationId);
 
     ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId);
+
+    //统计数量,计算完成率
+    BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status);
+
+
 }

@@ -77,6 +77,14 @@ public class VillageCadresDTO extends BaseEditDTO {
     @ApiModelProperty(value = "任职经历", position = 10, required = true)
     private String postExperience;
 
+    /** 职位 */
+    @ApiModelProperty(value = "职位", position = 10, required = true)
+    private String post;
+
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 10, required = true)
+    private String districtId;
+
 
 
 

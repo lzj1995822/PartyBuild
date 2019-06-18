@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -52,6 +53,17 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     public List<String> findActivityIdsByOrganizationId(String organizationId) {
         return parActivityObjectRepository.findActivityIdsByOrganizationId(organizationId);
     }
+
+    @Override
+    public BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status) {
+        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"0");
+        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId, "2");
+        BigDecimal total = new BigDecimal(sum);
+        BigDecimal finished = new BigDecimal(completeSum);
+        return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
+    }
+
+
 
     @Override
     public ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId) {

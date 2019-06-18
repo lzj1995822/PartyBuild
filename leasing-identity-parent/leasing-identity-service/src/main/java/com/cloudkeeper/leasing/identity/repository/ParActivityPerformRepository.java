@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,4 +31,8 @@ public interface ParActivityPerformRepository extends BaseRepository<ParActivity
 //    Page<ParActivityPerform> listAll(String activityId, String orgId, Pageable pageable);
 
     Optional<ParActivityPerform> findByActivityIDAndOrganizationId(String activityId, String organizationId);
+
+    @Query(value = "SELECT COUNT(1) from PAR_ActivityPerform as par LEFT JOIN SYS_District as d on par.organizationId = d.id where d.districtId LIKE :districtId%", nativeQuery = true)
+    Integer countAll(@Param("districtId") String districtId);
+
 }

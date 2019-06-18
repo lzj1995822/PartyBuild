@@ -12,4 +12,6 @@ import org.springframework.data.domain.Pageable;
  */
 public interface VillageCadresService extends BaseService<VillageCadres> {
 
+    Long countAllByDistrictId(String districtId);
+
 }
