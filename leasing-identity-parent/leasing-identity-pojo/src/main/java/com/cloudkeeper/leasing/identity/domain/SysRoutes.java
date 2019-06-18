@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -78,6 +80,7 @@ public class SysRoutes extends BaseEntity implements Comparable{
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 13)
     @OneToMany(mappedBy = "sysRoutes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private List<SysRoutes> children;
 
     @Override

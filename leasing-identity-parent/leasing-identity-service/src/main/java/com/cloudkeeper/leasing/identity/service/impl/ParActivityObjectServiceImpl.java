@@ -52,4 +52,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     public List<String> findActivityIdsByOrganizationId(String organizationId) {
         return parActivityObjectRepository.findActivityIdsByOrganizationId(organizationId);
     }
+
+    @Override
+    public ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId) {
+        return parActivityObjectRepository.findByOrganizationIdAndActivityId(organizationId, activityId);
+    }
 }

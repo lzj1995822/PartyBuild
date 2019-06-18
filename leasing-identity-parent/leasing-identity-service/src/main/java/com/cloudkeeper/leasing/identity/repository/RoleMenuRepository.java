@@ -36,5 +36,6 @@ public interface RoleMenuRepository extends BaseRepository<RoleMenu> {
 //    @Nonnull
 //    @Query("select distinct cirm.menuCode from RoleMenu cirm where exists (select 'X' from OrganizationRole cior where cirm.roleId = cior.roleId and exists (select 'X' from PrincipalOrganization cipo where cipo.organizationId = cior.organizationId and cipo.principalId = ?1))")
 //    List<String> findAllMenuCodeByPrincipalId(@Nonnull String principalId);
-
+    @Nonnull
+    List<RoleMenu> findAllByRoleIdOrderBySysRoutesCreatedAtAsc(@Nonnull String roleId);
 }

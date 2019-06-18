@@ -71,19 +71,19 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu> implements Ro
         if (!optionalById.isPresent()) {
             return new ArrayList<>();
         }
-        List<RoleMenu> roleMenus = roleMenuRepository.findAllByRoleIdOrderByCreatedAtAsc(optionalById.get().getRoleID());
+        List<RoleMenu> roleMenus = roleMenuRepository.findAllByRoleIdOrderBySysRoutesCreatedAtAsc(optionalById.get().getRoleID());
         ArrayList<SysRoutes> sysRoutes = roleMenus.stream().map(item -> item.getSysRoutes()).collect(Collectors.toCollection(ArrayList::new));
         ArrayList<SysRoutes> firstMenus = sysRoutes.stream().filter(item -> item.getParentId() == null).collect(Collectors.toCollection(ArrayList::new));
         ArrayList<SysRoutes> childMenus = sysRoutes.stream().filter(item -> item.getParentId() != null).collect(Collectors.toCollection(ArrayList::new));
-        firstMenus.stream().forEach(it -> {
-            it.setChildren(new ArrayList<>());
-            for (SysRoutes item : childMenus) {
-                if (item.getParentId().equals(it.getId())) {
-                    it.getChildren().add(item);
+
+        for (SysRoutes item : firstMenus) {
+            item.getChildren().clear();
+            for (SysRoutes subItem : childMenus) {
+                if (item.getId().equals(subItem.getParentId())) {
+                    item.getChildren().add(subItem);
                 }
             }
-        });
-        Collections.sort(firstMenus);
+        }
         return firstMenus;
     }
 }

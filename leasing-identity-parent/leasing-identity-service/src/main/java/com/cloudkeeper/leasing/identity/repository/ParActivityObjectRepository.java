@@ -30,4 +30,6 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
 
 
     Optional<ParActivityObject> findByActivityIdAndOrganizationId(String activityId,String organizationId);
+
+    ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId);
 }
