@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
 import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -79,5 +80,9 @@ public class ExaScoreControllerImpl implements ExaScoreController {
         Page<ExaScoreVO> exaScoreVOPage = ExaScore.convert(exaScorePage, ExaScoreVO.class);
         return Result.of(exaScoreVOPage);
     }
-
+    @Override
+    public Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "分页参数", required = true) Pageable pageable, String sort,String year){
+        List<ExamScoreVO> examScoreVOList = exaScoreService.scoreCun(pageable,sort,year);
+        return Result.of(examScoreVOList);
+    }
 }

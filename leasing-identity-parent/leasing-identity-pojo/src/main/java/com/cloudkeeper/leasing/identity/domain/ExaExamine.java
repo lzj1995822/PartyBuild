@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -54,7 +55,7 @@ public class ExaExamine extends BaseEntity {
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 28)
