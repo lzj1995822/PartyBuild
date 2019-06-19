@@ -83,13 +83,13 @@ public class SysUser extends BaseEntity {
 
     /** 角色 */
     @ApiModelProperty(value = "角色", position = 28)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "roleID", insertable = false, updatable = false)
     private Role role;
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 28)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "organizationId", insertable = false, updatable = false)
     private SysDistrict sysDistrict;
 
@@ -101,9 +101,11 @@ public class SysUser extends BaseEntity {
         SysUserVO sysUserVO = (SysUserVO) convert;
         if(!StringUtils.isEmpty(this.role) ){
             sysUserVO.setRoleName(this.role.getName());
+            sysUserVO.setRoleCode(this.role.getCode());
         }
         if(!StringUtils.isEmpty(this.sysDistrict)){
             sysUserVO.setOrganizationName(this.sysDistrict.getDistrictName());
+            sysUserVO.setDistrictId(this.sysDistrict.getDistrictId());
         }
         return (T) sysUserVO;
     }

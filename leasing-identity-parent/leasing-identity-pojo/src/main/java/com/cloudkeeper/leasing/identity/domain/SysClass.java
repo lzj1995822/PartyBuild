@@ -39,9 +39,9 @@ public class SysClass extends BaseEntity {
     private String des;
 
     @ApiModelProperty(value = "属性集合")
-    @OneToMany(mappedBy = "sysClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sysClass", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("sort asc")
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     private List<SysClassProperty> properties;
 
 }

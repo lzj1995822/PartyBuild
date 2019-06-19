@@ -10,12 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.*;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,11 +86,13 @@ public class SysDistrict extends BaseEntity {
      */
     @ApiModelProperty(value = "类型", position = 10, required = true)
     @OneToMany(mappedBy = "sysDistrict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<SysDistrict> children = new HashSet<>();
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "attachTo",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @JsonIgnore

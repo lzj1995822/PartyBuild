@@ -75,12 +75,13 @@ public class SysRoutes extends BaseEntity implements Comparable{
     /** 路由meta */
     @ApiModelProperty(value = "路由meta", position = 13)
     @OneToOne(mappedBy = "sysRoutes")
+    @Fetch(FetchMode.JOIN)
     private SysRoutesMeta meta;
 
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 13)
-    @OneToMany(mappedBy = "sysRoutes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "sysRoutes")
+    @Fetch(FetchMode.JOIN)
     private List<SysRoutes> children;
 
     @Override
