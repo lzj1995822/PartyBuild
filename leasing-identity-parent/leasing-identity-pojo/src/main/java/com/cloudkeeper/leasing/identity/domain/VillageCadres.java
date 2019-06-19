@@ -97,6 +97,11 @@ public class VillageCadres extends BaseEntity {
     @Column(length = 60)
     private String postExperience;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 10, required = true)
+    @Column(length = 60)
+    private String districtId;
+
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
     @OneToOne(mappedBy = "villageCadres")

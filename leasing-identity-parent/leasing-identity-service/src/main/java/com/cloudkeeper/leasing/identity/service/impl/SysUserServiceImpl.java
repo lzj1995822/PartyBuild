@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.SysLoginNoteService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
+import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import liquibase.util.MD5Util;
 import liquibase.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +107,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
        /* sysUser.setPassword("不告诉你");*/
-        map.put("user", sysUser);
+        map.put("user", sysUser.convert(SysUserVO.class));
         saveLoginNote("登录成功",sysUser);
         updateLoginTime(sysUser);
         return Result.of("登录成功！", map);

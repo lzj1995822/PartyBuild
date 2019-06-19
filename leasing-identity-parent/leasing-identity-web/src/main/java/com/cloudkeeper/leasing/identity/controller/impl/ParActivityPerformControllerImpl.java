@@ -110,4 +110,11 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         ParActivityPerformVO parActivityPerformVO = parActivityPerformService.check(parActivityPerformDTO);
         return Result.ofUpdateSuccess(parActivityPerformVO);
     }
+
+    @Override
+    public Result<Integer> countAll(@RequestBody ParActivityPerformSearchable parActivityPerformSearchable) {
+        Integer integer = parActivityPerformService.countAll(parActivityPerformSearchable.getDistrictId());
+        return Result.of(integer);
+    }
+
 }

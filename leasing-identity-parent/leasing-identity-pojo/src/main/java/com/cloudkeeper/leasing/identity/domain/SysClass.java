@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -37,8 +39,9 @@ public class SysClass extends BaseEntity {
     private String des;
 
     @ApiModelProperty(value = "属性集合")
-    @OneToMany(mappedBy = "sysClass")
+    @OneToMany(mappedBy = "sysClass", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("sort asc")
+    @Fetch(FetchMode.JOIN)
     private List<SysClassProperty> properties;
 
 }

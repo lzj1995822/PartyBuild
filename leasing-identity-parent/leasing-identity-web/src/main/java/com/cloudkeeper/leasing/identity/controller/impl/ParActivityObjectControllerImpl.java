@@ -80,4 +80,15 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObjectVOPage);
     }
 
+    /**
+     * 根据组织di和活动id查对应的对象记录
+     * @param parActivityObjectDTO
+     * @return
+     */
+    @Override
+    public Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO) {
+        ParActivityObject parActivityObject = parActivityObjectService.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(), parActivityObjectDTO.getActivityId());
+        return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
+    }
+
 }

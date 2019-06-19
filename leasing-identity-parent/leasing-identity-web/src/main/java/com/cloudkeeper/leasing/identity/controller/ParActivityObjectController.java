@@ -83,4 +83,8 @@ public interface ParActivityObjectController {
     Result<Page<ParActivityObjectVO>> page(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+
+    @ApiOperation(value = "根据组织id和活动id查", position = 6)
+    @PostMapping("/findByOrganizationIdAndActivityId")
+    Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO);
 }

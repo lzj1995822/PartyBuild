@@ -167,4 +167,11 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         }
        return null;
     }
+
+    @Override
+    public Integer countAll(String districtId) {
+        Integer integer = parActivityPerformRepository.countAll(districtId);
+        return integer;
+    }
+
 }

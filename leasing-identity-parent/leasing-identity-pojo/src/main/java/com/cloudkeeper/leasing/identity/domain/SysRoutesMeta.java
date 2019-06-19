@@ -31,7 +31,7 @@ public class SysRoutesMeta extends BaseEntity {
     @Column(length = 36)
     private String routeId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "routeId", insertable = false, updatable = false)
     private SysRoutes sysRoutes;

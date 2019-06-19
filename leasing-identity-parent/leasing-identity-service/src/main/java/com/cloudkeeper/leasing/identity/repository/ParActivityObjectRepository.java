@@ -28,6 +28,11 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
     @Query(value = "SELECT DISTINCT activityId FROM PAR_ActivityObject WHERE organizationId = ? ",nativeQuery=true)
     List<String> findActivityIdsByOrganizationId(String organizationId);
 
+    Integer countAllByOrganizationIdStartingWithAndStatus(String organizationId,String status);
+
+
 
     Optional<ParActivityObject> findByActivityIdAndOrganizationId(String activityId,String organizationId);
+
+    ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId);
 }

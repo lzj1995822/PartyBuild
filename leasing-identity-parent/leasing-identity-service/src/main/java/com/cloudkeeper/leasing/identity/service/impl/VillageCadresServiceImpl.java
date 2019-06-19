@@ -42,7 +42,13 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 .withMatcher("education", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("identityCard", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("contact", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("postExperience", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public Long countAllByDistrictId(String districtId) {
+        Long aLong = villageCadresRepository.countAllByDistrictIdStartingWith(districtId);
+        return aLong;
+    }
 }

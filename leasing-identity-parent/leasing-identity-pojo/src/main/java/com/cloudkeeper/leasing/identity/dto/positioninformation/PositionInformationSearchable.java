@@ -57,4 +57,7 @@ public class PositionInformationSearchable extends BaseSearchable {
     @ApiModelProperty(value = "热度", position = 10, required = true)
     private Integer hotDegree;
 
+    /** 经纬度 */
+    @ApiModelProperty(value = "经纬度", position = 10, required = true)
+    private String lonLat;
 }
