@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineDTO;
 import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineSearchable;
 import com.cloudkeeper.leasing.identity.service.ExaExamineService;
 import com.cloudkeeper.leasing.identity.vo.ExaExamineVO;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -79,5 +80,19 @@ public class ExaExamineControllerImpl implements ExaExamineController {
         Page<ExaExamineVO> exaExamineVOPage = ExaExamine.convert(exaExaminePage, ExaExamineVO.class);
         return Result.of(exaExamineVOPage);
     }
+
+    @Override
+    public Result<List<ExamScoreVO>> scoreTown(String year){
+        List<ExamScoreVO> examScoreVOList = exaExamineService.scoreTown(year);
+        return Result.of(examScoreVOList);
+    }
+
+    @Override
+    public Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "镇名", required = true) @PathVariable String townName){
+        List<ExamScoreVO> examScoreVOList = exaExamineService.scoreCun(townName);
+        return Result.of(examScoreVOList);
+    }
+
+
 
 }

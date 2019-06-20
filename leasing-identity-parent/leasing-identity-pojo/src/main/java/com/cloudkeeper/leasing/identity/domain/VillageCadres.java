@@ -102,6 +102,13 @@ public class VillageCadres extends BaseEntity {
     @Column(length = 60)
     private String districtId;
 
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
+
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
     @OneToOne(mappedBy = "villageCadres")
@@ -115,6 +122,9 @@ public class VillageCadres extends BaseEntity {
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
         if(!StringUtils.isEmpty(this.cadrePosition)){
             villageCadresVO.setPost(this.cadrePosition.getPost());
+        }
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
         }
         return (T) villageCadresVO;
     }

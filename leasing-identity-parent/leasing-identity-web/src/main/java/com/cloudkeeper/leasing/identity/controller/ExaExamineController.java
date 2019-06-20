@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineDTO;
 import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineSearchable;
 import com.cloudkeeper.leasing.identity.vo.ExaExamineVO;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -83,4 +84,20 @@ public interface ExaExamineController {
     Result<Page<ExaExamineVO>> page(@ApiParam(value = "考核审核查询条件", required = true) @RequestBody ExaExamineSearchable exaExamineSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+
+    /**
+     * 列表查询各镇分数
+     * @return 考核审核分数 VO 集合
+     */
+    @ApiOperation(value = "列表查询各镇分数", notes = "", position = 5)
+    @PostMapping("/scoreTown")
+    Result<List<ExamScoreVO>> scoreTown(@ApiParam(value = "年份", required = true)String year);
+
+    /**
+     * 列表查询各村分数
+     * @return 考核审核分数 VO 集合
+     */
+    @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
+    @PostMapping("/scoreCun")
+    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "镇名", required = true) @PathVariable String townName);
 }
