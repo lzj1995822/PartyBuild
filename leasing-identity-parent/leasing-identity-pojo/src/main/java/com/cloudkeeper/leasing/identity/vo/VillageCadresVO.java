@@ -85,4 +85,8 @@ public class VillageCadresVO extends BaseVO {
     @ApiModelProperty(value = "所属组织", position = 10, required = true)
     private String districtId;
 
+    /** 所属组织名称 */
+    @ApiModelProperty(value = "所属组织名称", position = 10, required = true)
+    private String districtName;
+
 }
