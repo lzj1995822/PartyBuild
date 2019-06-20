@@ -271,7 +271,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 "FROM " +
                 " PAR_ActivityObject PO LEFT join SYS_District SD on PO.organizationId = SD.districtId " +
                 "WHERE " +
-                " PO.activityId = 'fe93f412-8e30-4a54-bd16-24871c19ce5f' " +
+                " PO.activityId = '" + activityId + "'  " +
                 " AND SD.isDelete = 0 " +
                 " ) a";
         return  super.findBySql(PassPercentVO.class, sql);
