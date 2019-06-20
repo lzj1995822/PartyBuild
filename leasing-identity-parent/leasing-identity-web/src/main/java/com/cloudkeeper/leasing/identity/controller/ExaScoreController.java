@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
 import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -83,4 +84,11 @@ public interface ExaScoreController {
     Result<Page<ExaScoreVO>> page(@ApiParam(value = "考核积分查询条件", required = true) @RequestBody ExaScoreSearchable exaScoreSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    /**
+     * 列表查询各村分数
+     * @return 考核审核分数 VO 集合
+     */
+    @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
+    @PostMapping("/scoreCunPercentAll")
+    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "分页参数", required = true) Pageable pageable, String sort,String year);
 }

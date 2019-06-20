@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -73,6 +75,7 @@ public class SysClassProperty extends BaseEntity {
     @ApiModelProperty(value = "该属性是对象，所关联的对象", position = 17)
     @OneToOne
     @JoinColumn(name = "objectId", insertable = false, updatable = false)
+    @Fetch(FetchMode.JOIN)
     private SysClass obj;
 
     /** 是否必填*/

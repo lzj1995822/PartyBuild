@@ -73,6 +73,10 @@ public class SysUserVO extends BaseVO {
     @ApiModelProperty(value = "角色名", position = 26, required = true)
     private String roleName;
 
+    /** 角色编码 */
+    @ApiModelProperty(value = "角色编码", position = 26, required = true)
+    private String roleCode;
+
     /** 组织名 */
     @ApiModelProperty(value = "组织名", position = 26, required = true)
     private String organizationName;
@@ -80,5 +84,9 @@ public class SysUserVO extends BaseVO {
     /** 组织id */
     @ApiModelProperty(value = "组织districtId", position = 26, required = true)
     private String districtId;
+
+    /** 组织districtName */
+    @ApiModelProperty(value = "districtName", position = 26, required = true)
+    private String districtName;
 
 }
