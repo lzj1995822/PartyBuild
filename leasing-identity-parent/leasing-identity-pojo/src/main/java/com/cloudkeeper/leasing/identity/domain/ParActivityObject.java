@@ -55,6 +55,10 @@ public class ParActivityObject extends BaseEntity {
     @Column(length = 60)
     private String attachTo;
 
+    /** 区分执行终端 */
+    @ApiModelProperty(value = "区分执行终端", position = 10, required = true)
+    private Integer source;
+
     /** 活动信息 */
     @ApiModelProperty(value = "活动信息", position = 10, required = true)
     @OneToOne

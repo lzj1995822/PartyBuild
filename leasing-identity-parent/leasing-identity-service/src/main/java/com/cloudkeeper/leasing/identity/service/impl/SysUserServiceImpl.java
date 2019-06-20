@@ -14,6 +14,8 @@ import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.SysLoginNoteService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import liquibase.util.MD5Util;
 import liquibase.util.StringUtils;
@@ -104,12 +106,15 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         }
         String token = TokenUtil.of(sysUser.getId());
         redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_TOKEN_KEY + sysUser.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
-        Map<String, Object> map = new HashMap<>();
-        map.put("token", token);
        /* sysUser.setPassword("不告诉你");*/
-        map.put("user", sysUser.convert(SysUserVO.class));
         saveLoginNote("登录成功",sysUser);
         updateLoginTime(sysUser);
+
+
+        SysUserVO convert = sysUser.convert(SysUserVO.class);
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", token);
+        map.put("user", convert);
         return Result.of("登录成功！", map);
     }
 

@@ -89,4 +89,6 @@ public class SysUserVO extends BaseVO {
     @ApiModelProperty(value = "districtName", position = 26, required = true)
     private String districtName;
 
+    private SysDistrictVO sysDistrict;
+
 }

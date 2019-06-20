@@ -37,4 +37,7 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     */
     Set<SysDistrictTreeVO> getTree(String districtId);
 
+
+    List<SysDistrict> findAllByDistrictLevel(Integer level);
+
 }

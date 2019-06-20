@@ -25,5 +25,6 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
     //统计数量,计算完成率
     BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status);
 
-
+    // 初始化之前的活动对应活动对象
+    void initPerActivity();
 }

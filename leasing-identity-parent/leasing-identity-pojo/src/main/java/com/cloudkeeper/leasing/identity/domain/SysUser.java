@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -106,6 +107,7 @@ public class SysUser extends BaseEntity {
         if(!StringUtils.isEmpty(this.sysDistrict)){
             sysUserVO.setOrganizationName(this.sysDistrict.getDistrictName());
             sysUserVO.setDistrictId(this.sysDistrict.getDistrictId());
+            sysUserVO.setSysDistrict(this.sysDistrict.convert(SysDistrictVO.class));
         }
         return (T) sysUserVO;
     }

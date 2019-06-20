@@ -87,4 +87,7 @@ public interface ParActivityObjectController {
     @ApiOperation(value = "根据组织id和活动id查", position = 6)
     @PostMapping("/findByOrganizationIdAndActivityId")
     Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO);
+
+    @GetMapping("/init")
+    Result<Boolean> init();
 }

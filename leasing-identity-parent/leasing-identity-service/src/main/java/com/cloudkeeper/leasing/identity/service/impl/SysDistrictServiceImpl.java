@@ -98,6 +98,11 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return this.translateToVO(sysDistricts);
     }
 
+    @Override
+    public List<SysDistrict> findAllByDistrictLevel(Integer level) {
+        return sysDistrictRepository.findAllByDistrictLevel(level);
+    }
+
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
         for (SysDistrict sysDistrict: sysDistricts) {
