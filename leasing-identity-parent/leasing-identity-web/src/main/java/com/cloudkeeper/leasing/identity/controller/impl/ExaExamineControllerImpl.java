@@ -88,8 +88,8 @@ public class ExaExamineControllerImpl implements ExaExamineController {
     }
 
     @Override
-    public Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "镇名", required = true) @PathVariable String townName){
-        List<ExamScoreVO> examScoreVOList = exaExamineService.scoreCun(townName);
+    public Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "年份", required = true) @PathVariable String year,@ApiParam(value = "镇名", required = true) @PathVariable String townName){
+        List<ExamScoreVO> examScoreVOList = exaExamineService.scoreCun(year,townName);
         return Result.of(examScoreVOList);
     }
 

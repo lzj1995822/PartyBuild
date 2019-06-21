@@ -92,26 +92,55 @@ public class ExaExamineServiceImpl extends BaseServiceImpl<ExaExamine> implement
     }
 
     @Override
-    public List<ExamScoreVO> scoreCun(String town) {
-        if(StringUtils.isEmpty(town)  ){
+    public List<ExamScoreVO> scoreCun(String year,String town) {
+        if(StringUtils.isEmpty(town) || StringUtils.isEmpty(year) ){
             return null;
         }
-        String sql = " " +
-                " " +
-                " SELECT sa.score exam, " +
-                " sa.districtName cun, " +
-                " sa.attachTo, " +
-                " ds.districtName town from  " +
-                " (SELECT " +
-                " e.score, " +
-                " e.remark, " +
-                " e.createTime, " +
-                " s.districtName, " +
-                " s.attachTo  " +
+        String sql = "SELECT S3.exam,S3.cun,S3.districtName town from( " +
+                "SELECT " +
+                " a.exam, " +
+                " a.cun, " +
+                " a.attachTo, " +
+                " a.districtId, " +
+                " a.exscore, " +
+                " district.districtName " +
                 "FROM " +
-                " EXA_Examine e " +
-                " LEFT JOIN SYS_District s ON e.organizationId = s.id  " +
-                " ) sa,SYS_District ds WHERE sa.attachTo = ds.districtId and ds.isDelete = 0 and ds.districtName='"+town+"'";
+                " ( " +
+                " SELECT S0.cun,S0.attachTo,S0.districtId,examine.score exscore,S0.exam+isnull(examine.score,0) exam from  " +
+                " ( " +
+                "SELECT SUM " +
+                " ( score ) exam, " +
+                " districtName cun, " +
+                " attachTo, " +
+                " districtId  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " es.activityId, " +
+                " es.score, " +
+                " es.createTime, " +
+                " sd.districtName, " +
+                " sd.attachTo, " +
+                " sd.id districtId " +
+                "FROM " +
+                " EXA_Score es " +
+                " LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
+                "WHERE " +
+                " sd.districtLevel = 3  " +
+                " AND sd.isDelete = 0  " +
+                " AND es.createTime BETWEEN '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' " +
+                " ) S1  " +
+                "GROUP BY " +
+                " districtName, " +
+                " districtId, " +
+                " attachTo " +
+                " )S0 left join  " +
+                " ( select sum(score) score,organizationId from  EXA_Examine  " +
+                " where createTime between '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' group by organizationId) examine " +
+                "  on S0.districtId = examine.organizationId " +
+                " ) a,SYS_District district where a.attachTo = district.districtId " +
+                " ) S3 where districtName = '"+town+"' " +
+                " order by S3.exam desc";
         List<ExamScoreVO> list = super.findAllBySql(ExamScoreVO.class, sql);
         return  list;
     }

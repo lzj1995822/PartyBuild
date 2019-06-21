@@ -95,9 +95,11 @@ public interface ExaExamineController {
 
     /**
      * 列表查询各村分数
+     *  @param year 镇名
+     * @param townName 年份
      * @return 考核审核分数 VO 集合
      */
     @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
-    @PostMapping("/scoreCun")
-    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "镇名", required = true) @PathVariable String townName);
+    @PostMapping("/scoreCun{year}Y{townName}T")
+    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "年份", required = true) @PathVariable String year,@ApiParam(value = "镇名", required = true) @PathVariable String townName);
 }

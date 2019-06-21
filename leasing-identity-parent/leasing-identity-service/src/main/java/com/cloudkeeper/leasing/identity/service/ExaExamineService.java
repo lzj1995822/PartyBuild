@@ -16,5 +16,5 @@ public interface ExaExamineService extends BaseService<ExaExamine> {
 
     List<ExamScoreVO> scoreTown(String year);
 
-    List<ExamScoreVO> scoreCun(String town);
+    List<ExamScoreVO> scoreCun(String year,String town);
 }
