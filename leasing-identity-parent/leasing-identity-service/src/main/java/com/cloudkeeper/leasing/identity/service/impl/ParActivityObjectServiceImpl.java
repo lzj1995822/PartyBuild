@@ -4,7 +4,12 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
+import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
+import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
+import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
+import com.cloudkeeper.leasing.identity.service.ParActivityService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 任务对象 service
@@ -22,7 +28,17 @@ import java.util.List;
 public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObject> implements ParActivityObjectService {
 
     /** 任务对象 repository */
-    private final ParActivityObjectRepository parActivityObjectRepository;
+    @Autowired
+    private ParActivityObjectRepository parActivityObjectRepository;
+
+    @Autowired
+    private ParActivityRepository parActivityRepository;
+
+    @Autowired
+    private ParActivityPerformRepository parActivityPerformRepository;
+
+    @Autowired
+    private SysDistrictService sysDistrictService;
 
     @Override
     protected BaseRepository<ParActivityObject> getBaseRepository() {
@@ -63,10 +79,32 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
     }
 
-
     @Override
     public ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId) {
         return parActivityObjectRepository.findByOrganizationIdAndActivityId(organizationId, activityId);
+    }
+
+    @Override
+    public void initPerActivity() {
+        List<ParActivity> parActivities = parActivityRepository.findAll();
+        List<SysDistrict> sysDistricts = sysDistrictService.findAllByDistrictLevel(3);
+        for (ParActivity parActivity: parActivities) {
+            for (SysDistrict sysDistrict: sysDistricts) {
+                ParActivityObject parActivityObject = new ParActivityObject();
+                parActivityObject.setActivityId(parActivity.getId());
+                parActivityObject.setOrganizationId(sysDistrict.getDistrictId());
+                parActivityObject.setAttachTo(sysDistrict.getAttachTo());
+                Optional<ParActivityPerform> byActivityIDAndOrganizationId = parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivity.getId(), sysDistrict.getId());
+                if (byActivityIDAndOrganizationId.isPresent()) {
+                    ParActivityPerform parActivityPerform = byActivityIDAndOrganizationId.get();
+                    parActivityObject.setStatus(parActivityPerform.getStatus());
+                    parActivityObject.setSource(parActivityPerform.getSource());
+                } else {
+                    parActivityObject.setStatus("0");
+                }
+                super.save(parActivityObject);
+            }
+        }
     }
 
 }

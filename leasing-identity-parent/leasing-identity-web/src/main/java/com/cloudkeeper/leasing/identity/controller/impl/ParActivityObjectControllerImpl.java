@@ -91,4 +91,10 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
     }
 
+    @Override
+    public Result<Boolean> init() {
+        parActivityObjectService.initPerActivity();
+        return Result.of(true);
+    }
+
 }

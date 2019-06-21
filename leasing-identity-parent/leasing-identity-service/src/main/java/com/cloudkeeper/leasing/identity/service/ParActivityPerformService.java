@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 任务执行记录 service
@@ -21,4 +22,6 @@ public interface ParActivityPerformService extends BaseService<ParActivityPerfor
     List<TownDetailVO> townDetail(String activityId, String town);
     ParActivityPerformVO check(ParActivityPerformDTO parActivityPerformDTO);
     Integer countAll(String districtId);
+
+    Optional<ParActivityPerform> findByActivityIDAndOrganizationId(String activityId, String organizationId);
 }

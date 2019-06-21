@@ -174,4 +174,9 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         return integer;
     }
 
+    @Override
+    public Optional<ParActivityPerform> findByActivityIDAndOrganizationId(String activityId, String organizationId) {
+        return parActivityPerformRepository.findByActivityIDAndOrganizationId(activityId, organizationId);
+    }
+
 }
