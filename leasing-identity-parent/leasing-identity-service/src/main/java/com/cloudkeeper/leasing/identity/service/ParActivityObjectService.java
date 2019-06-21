@@ -23,7 +23,7 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
     ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId);
 
     //统计数量,计算完成率
-    BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status);
+    BigDecimal handleActivityCompleteRate(String organizationId);
 
 
 }

@@ -55,18 +55,18 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     }
 
     @Override
-    public BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status) {
-        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"0");
-        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId, "2");
+    public BigDecimal handleActivityCompleteRate(String organizationId) {
+        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWith(organizationId);
+        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"2");
         BigDecimal total = new BigDecimal(sum);
         BigDecimal finished = new BigDecimal(completeSum);
         return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
     }
 
 
-
     @Override
     public ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId) {
         return parActivityObjectRepository.findByOrganizationIdAndActivityId(organizationId, activityId);
     }
+
 }
