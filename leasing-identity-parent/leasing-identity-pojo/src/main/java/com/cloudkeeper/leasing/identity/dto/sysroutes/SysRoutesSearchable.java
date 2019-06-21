@@ -49,4 +49,9 @@ public class SysRoutesSearchable extends BaseSearchable {
     @ApiModelProperty(value = "路由描述", position = 11)
     private String des;
 
+    /** 路由等级 */
+    @ApiModelProperty(value = "路由等级", position = 11)
+    private Integer level;
+
+
 }

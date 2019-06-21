@@ -33,11 +33,6 @@ public class SysClassProperty extends BaseEntity {
     @Column(length = 36)
     private String classId;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "classId", insertable = false, updatable = false)
-    private SysClass sysClass;
-
     /** 属性名 */
     @ApiModelProperty(value = "属性名", position = 3, required = true)
     @Column(length = 36)

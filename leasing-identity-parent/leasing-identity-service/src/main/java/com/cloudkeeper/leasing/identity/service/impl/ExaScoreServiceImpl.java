@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ExaScore;
 import com.cloudkeeper.leasing.identity.repository.ExaScoreRepository;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
+import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -132,6 +133,122 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
                 "WHERE " +
                 " row_number > ( "+pageable.getPageNumber()+" ) * "+pageable.getPageSize()+"";
         List<ExamScoreVO> list = super.findAllBySql(ExamScoreVO.class, sql);
+        return  list;
+    }
+    @Override
+    public List<ExamScorePercentVO> percentTown(String year){
+        String sql = "SELECT S006.*,sysDis.districtName town from ( " +
+                "SELECT S001.attachTo,ROUND(CAST(S001.number AS FLOAT)/S002.numbers, 3) score from( " +
+                "SELECT sum(number) number,attachTo from ( " +
+                "SELECT S0.districtName,count(districtName) number,S0.attachTo from ( " +
+                "SELECT S1.*,pac.month from (  " +
+                "SELECT pa.id,pa.status,sd.districtName,sd.attachTo,pa.activityId from PAR_ActivityObject pa,SYS_District sd where pa.organizationId = sd.districtId and sd.isDelete=0 and sd.districtLevel = 3  and pa.status = 2 " +
+                ") S1,PAR_Activity pac WHERE pac.id = S1.activityId and pac.month BETWEEN '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' " +
+                ") S0 GROUP BY districtName,attachTo " +
+                ") S004 group by attachTo " +
+                ") S001, " +
+                "( " +
+                "SELECT sum(numbers) numbers,attachTo from ( " +
+                "SELECT S0.districtName,count(districtName) numbers,S0.attachTo from ( " +
+                "SELECT S1.*,pac.month from ( " +
+                "SELECT pa.id,pa.status,sd.districtName,sd.attachTo,pa.activityId from PAR_ActivityObject pa,SYS_District sd where pa.organizationId = sd.districtId and sd.isDelete=0 and sd.districtLevel = 3   " +
+                ") S1,PAR_Activity pac WHERE pac.id = S1.activityId and pac.month BETWEEN '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' " +
+                ") S0 GROUP BY districtName,attachTo " +
+                ") S005 group by attachTo " +
+                ") S002 where S001.attachTo = S002.attachTo " +
+                ") S006,SYS_District sysDis WHERE S006.attachTo = sysDis.districtId " +
+                "ORDER BY score desc " +
+                " " +
+                " " ;
+        List<ExamScorePercentVO> list = super.findAllBySql(ExamScorePercentVO.class, sql);
+        return  list;
+    }
+    @Override
+    public List<ExamScorePercentVO> percentCun(String year,String townName){
+        String sql = "SELECT * from ( " +
+                "SELECT S003.districtName cun,S003.score,sysDis.districtName town from ( " +
+                "SELECT " +
+                " S001.districtName, " +
+                " ROUND( CAST( S001.number AS FLOAT ) / S002.numbers, 3 ) score, " +
+                " S001.attachTo  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " S0.districtName, " +
+                " count( districtName ) number, " +
+                " S0.attachTo  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " S1.*, " +
+                " pac.MONTH  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " pa.id, " +
+                " pa.STATUS, " +
+                " sd.districtName, " +
+                " sd.attachTo, " +
+                " pa.activityId  " +
+                "FROM " +
+                " PAR_ActivityObject pa, " +
+                " SYS_District sd  " +
+                "WHERE " +
+                " pa.organizationId = sd.districtId  " +
+                " AND sd.isDelete = 0  " +
+                " AND sd.districtLevel = 3  " +
+                " AND pa.STATUS = 2  " +
+                " ) S1, " +
+                " PAR_Activity pac  " +
+                "WHERE " +
+                " pac.id = S1.activityId  " +
+                " AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
+                " AND '"+year+"-12-31 23:59:59'  " +
+                " ) S0  " +
+                "GROUP BY " +
+                " districtName, " +
+                " attachTo  " +
+                " ) S001, " +
+                " ( " +
+                "SELECT " +
+                " S0.districtName, " +
+                " count( districtName ) numbers, " +
+                " S0.attachTo  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " S1.*, " +
+                " pac.MONTH  " +
+                "FROM " +
+                " ( " +
+                "SELECT " +
+                " pa.id, " +
+                " pa.STATUS, " +
+                " sd.districtName, " +
+                " sd.attachTo, " +
+                " pa.activityId  " +
+                "FROM " +
+                " PAR_ActivityObject pa, " +
+                " SYS_District sd  " +
+                "WHERE " +
+                " pa.organizationId = sd.districtId  " +
+                " AND sd.isDelete = 0  " +
+                " AND sd.districtLevel = 3  " +
+                " ) S1, " +
+                " PAR_Activity pac  " +
+                "WHERE " +
+                " pac.id = S1.activityId  " +
+                " AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
+                " AND '"+year+"-12-31 23:59:59'  " +
+                " ) S0  " +
+                "GROUP BY " +
+                " districtName, " +
+                " attachTo  " +
+                " ) S002  " +
+                "WHERE " +
+                " S001.districtName = S002.districtName) S003,SYS_District sysDis where sysDis.districtId = S003.attachTo " +
+                " ) S005 where S005.town = '"+townName+"' order by score desc" ;
+        List<ExamScorePercentVO> list = super.findAllBySql(ExamScorePercentVO.class, sql);
         return  list;
     }
 
