@@ -108,4 +108,14 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.ofDeleteSuccess();
     }
 
+    @Override
+    public Result updateProject() {
+        List<ParActivity> all = parActivityService.findAll();
+        all.stream().forEach(item -> {
+            parActivityService.updateProgress(item.getId());
+        });
+        return Result.of("更新成功");
+    }
+
+
 }

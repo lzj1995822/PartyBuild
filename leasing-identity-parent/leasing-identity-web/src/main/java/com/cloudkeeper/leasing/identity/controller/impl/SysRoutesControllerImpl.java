@@ -68,9 +68,7 @@ public class SysRoutesControllerImpl implements SysRoutesController {
     @Override
     public Result<List<SysRoutesVO>> list(@ApiParam(value = "系统路由查询条件", required = true) @RequestBody SysRoutesSearchable sysRoutesSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysRoutes.class);
-        detachedCriteria.add(Restrictions.isNull("parentId"));
-        List<SysRoutes> sysRoutesList = sysRoutesService.findAll(detachedCriteria);
+        List<SysRoutes> sysRoutesList = sysRoutesService.findAll(sysRoutesSearchable);
         List<SysRoutesVO> sysRoutesVOList = SysRoutes.convert(sysRoutesList, SysRoutesVO.class);
         return Result.of("菜单加载成功", sysRoutesVOList);
     }

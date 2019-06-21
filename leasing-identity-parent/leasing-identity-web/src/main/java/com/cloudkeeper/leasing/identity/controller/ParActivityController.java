@@ -104,4 +104,7 @@ public interface ParActivityController {
     Result<Page<ParActivityVO>> page(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    @ApiOperation(value = "手动更新进度", notes = "手动更新进度", position = 6)
+    @PostMapping("/updateProgress")
+    Result updateProject();
 }

@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 类属性配置 VO
@@ -60,10 +61,15 @@ public class SysRoutesVO extends BaseVO {
 
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 15)
-    private List<SysRoutes> children;
+    private Set<SysRoutes> children;
 
     /** 对应类*/
     @ApiModelProperty(value = "对应类", position = 17)
     private SysClass sysClass;
+
+    /** 路由等级 */
+    @ApiModelProperty(value = "路由等级", position = 11)
+    private Integer level;
+
 
 }

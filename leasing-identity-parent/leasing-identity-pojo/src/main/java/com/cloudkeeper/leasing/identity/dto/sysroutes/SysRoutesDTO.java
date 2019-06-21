@@ -54,4 +54,9 @@ public class SysRoutesDTO extends BaseEditDTO {
     @ApiModelProperty(value = "路由元对象", position = 11)
     private SysRoutesMetaDTO meta;
 
+    /** 路由等级 */
+    @ApiModelProperty(value = "路由等级", position = 11)
+    private Integer level;
+
+
 }

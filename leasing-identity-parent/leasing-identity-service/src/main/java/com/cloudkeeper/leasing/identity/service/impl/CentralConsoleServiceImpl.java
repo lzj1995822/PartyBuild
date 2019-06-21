@@ -49,7 +49,7 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             centralConsoleVo.setVillageCadresNumber(villageCadresService.countAllByDistrictId(districtId));
             centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId));
             centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));
-            centralConsoleVo.setActivityCompleteRate(parActivityObjectService.countAllByOrganizationIdStartingWithAndStatus(districtId,""));
+            centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId));
         }
         return centralConsoleVo;
     }
