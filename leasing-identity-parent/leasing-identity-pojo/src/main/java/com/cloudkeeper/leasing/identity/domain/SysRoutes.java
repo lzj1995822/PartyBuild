@@ -17,6 +17,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 类属性配置
@@ -36,11 +37,6 @@ public class SysRoutes extends BaseEntity implements Comparable{
     @ApiModelProperty(value = "父路由id", position = 1, required = true)
     @Column(length = 36)
     private String parentId;
-
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "parentId", insertable = false, updatable = false)
-    private SysRoutes sysRoutes;
 
     /** 类id */
     @ApiModelProperty(value = "类id", position = 3, required = true)
@@ -80,9 +76,10 @@ public class SysRoutes extends BaseEntity implements Comparable{
 
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 13)
-    @OneToMany(mappedBy = "sysRoutes")
+    @OneToMany
+    @JoinColumn(name = "parentId")
     @Fetch(FetchMode.JOIN)
-    private List<SysRoutes> children;
+    private Set<SysRoutes> children;
 
     @Override
     public int compareTo(Object roleMenu) {
