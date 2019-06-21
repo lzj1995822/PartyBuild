@@ -68,6 +68,10 @@ public class SysRoutes extends BaseEntity implements Comparable{
     @Column(length = 200)
     private String des;
 
+    /** 路由等级 */
+    @ApiModelProperty(value = "路由等级", position = 11)
+    private Integer level;
+
     /** 路由meta */
     @ApiModelProperty(value = "路由meta", position = 13)
     @OneToOne(mappedBy = "sysRoutes")

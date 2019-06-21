@@ -2,7 +2,10 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
+import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;

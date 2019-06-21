@@ -49,7 +49,8 @@ public class SysRoutesServiceImpl extends BaseServiceImpl<SysRoutes> implements 
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("path", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("component", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("des", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("des", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("level", ExampleMatcher.GenericPropertyMatchers.exact());
     }
 
     @Nonnull
