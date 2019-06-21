@@ -30,7 +30,7 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
 
     Integer countAllByOrganizationIdStartingWithAndStatus(String organizationId,String status);
 
-
+    Integer countAllByOrganizationIdStartingWith(String organizationId);
 
     Optional<ParActivityObject> findByActivityIdAndOrganizationId(String activityId,String organizationId);
 

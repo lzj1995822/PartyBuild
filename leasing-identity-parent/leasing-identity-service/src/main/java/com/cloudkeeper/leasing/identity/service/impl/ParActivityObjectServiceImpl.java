@@ -2,10 +2,7 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
-import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
@@ -27,6 +24,7 @@ import java.util.Optional;
  * @author lxw
  */
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObject> implements ParActivityObjectService {
 
     /** 任务对象 repository */
@@ -73,9 +71,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     }
 
     @Override
-    public BigDecimal countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status) {
-        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"0");
-        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId, "2");
+    public BigDecimal handleActivityCompleteRate(String organizationId) {
+        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWith(organizationId);
+        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"2");
         BigDecimal total = new BigDecimal(sum);
         BigDecimal finished = new BigDecimal(completeSum);
         return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
