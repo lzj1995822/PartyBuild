@@ -55,6 +55,7 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
         MessageCenter messageCenter = new MessageCenter();
         messageCenter.setBusinessId(activityId);
         messageCenter.setType(taskType);
+        messageCenter.setIsRead(0);
         if(taskType=="distLearning"){
             SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
             messageCenter.setDistrictName(sysDistrictByDistrictId.getDistrictName());
