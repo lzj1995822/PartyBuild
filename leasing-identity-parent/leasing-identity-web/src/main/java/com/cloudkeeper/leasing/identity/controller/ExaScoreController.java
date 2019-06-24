@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
 import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.Api;
@@ -110,4 +111,13 @@ public interface ExaScoreController {
     @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
     @PostMapping("/percentCun{year}Y{townName}T")
     Result<List<ExamScorePercentVO>> percentCun(@ApiParam(value = "年份", required = true) @PathVariable String year, @ApiParam(value = "镇名", required = true) @PathVariable String townName);
+
+    /**
+     * 列表查询总数据
+     *  @param year 镇名
+     * @return 总数据 VO 集合
+     */
+    @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
+    @PostMapping("/examScoreAll")
+     Result<List<ExamScoreAllVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable,@ApiParam(value = "年份", required = true)String year,@ApiParam(value = "搜索", required = true)String search);
 }

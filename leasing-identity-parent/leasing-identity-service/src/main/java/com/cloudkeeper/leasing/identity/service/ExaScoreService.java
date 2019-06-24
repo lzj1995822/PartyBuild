@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.identity.domain.ExaScore;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
@@ -18,4 +19,5 @@ public interface ExaScoreService extends BaseService<ExaScore> {
     List<ExamScorePercentVO> percentTown(String year);
     List<ExamScorePercentVO> percentCun(String year,String townName);
     List<ExamScoreVO> scoreCun(Pageable pageable, String sort,String year);
+    List<ExamScoreAllVO> examScoreAll(Pageable pageable,String year,String search);
 }

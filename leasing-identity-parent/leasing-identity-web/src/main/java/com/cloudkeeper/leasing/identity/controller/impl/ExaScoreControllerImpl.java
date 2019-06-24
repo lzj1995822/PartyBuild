@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
 import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
@@ -96,4 +97,10 @@ public class ExaScoreControllerImpl implements ExaScoreController {
         List<ExamScorePercentVO> list = exaScoreService.percentCun(year,townName);
         return Result.of(list);
     }
+    @Override
+    public Result<List<ExamScoreAllVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable,@ApiParam(value = "年份", required = true)String year,@ApiParam(value = "搜索", required = true)String search){
+        List<ExamScoreAllVO> list = exaScoreService.examScoreAll(pageable ,year,search);
+        return Result.of(list);
+    }
+
 }
