@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.identity.domain.SysConfiguration;
 import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationDTO;
 import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationSearchable;
 import com.cloudkeeper.leasing.identity.vo.SysConfigurationVO;
@@ -82,5 +83,14 @@ public interface SysConfigurationController {
     @PostMapping("/page")
     Result<Page<SysConfigurationVO>> page(@ApiParam(value = "系统属性配置查询条件", required = true) @RequestBody SysConfigurationSearchable sysConfigurationSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+    /**
+     * 处理测试用户
+     */
+    @ApiOperation(value = "编辑逻辑删除", notes = "编辑逻辑删除", position = 3)
+    @PutMapping("/{id}isDelete")
+    void updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
+                                       @ApiParam(value = "系统属性配置 DTO", required = true) @RequestBody @Validated SysConfigurationDTO sysConfigurationDTO);
+
 
 }

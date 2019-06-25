@@ -2,7 +2,10 @@ package com.cloudkeeper.leasing.identity.repository;
 
 import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -29,4 +32,13 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
      */
     @Nonnull
     List<SysUser> findAllByOrganizationId(@Nonnull String organizationId);
+
+    /**
+     * 逻辑删除
+    */
+    @Modifying@Transactional
+    @Query(value = "update SYS_User set isDelete= ? where id = ?",nativeQuery = true)
+    Integer save(Integer isDelete,String id);
+
+
 }

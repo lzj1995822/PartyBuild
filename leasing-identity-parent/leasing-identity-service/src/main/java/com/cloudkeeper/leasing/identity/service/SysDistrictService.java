@@ -40,4 +40,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
 
     List<SysDistrict> findAllByDistrictLevel(Integer level);
 
+    void save(Integer isDelete,String id);
+
 }

@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserDTO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,4 +20,7 @@ public interface SysUserService extends BaseService<SysUser> {
      * @return map
      */
     Result<Map<String,Object>> login(SysUserDTO sysUserDTO);
+
+    void save(Integer isDelete,String id);
+
 }
