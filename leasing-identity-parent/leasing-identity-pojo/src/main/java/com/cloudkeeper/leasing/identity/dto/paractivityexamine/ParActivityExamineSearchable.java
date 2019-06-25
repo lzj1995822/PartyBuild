@@ -35,6 +35,6 @@ public class ParActivityExamineSearchable extends BaseSearchable {
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间", position = 10, required = true)
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
 }

@@ -49,4 +49,20 @@ public class ParActivityPerformDTO extends BaseEditDTO {
     @ApiModelProperty(value = "审核说明", position = 10, required = true)
     private String remark;
 
+    /** 活动类型 */
+    @ApiModelProperty(value = "活动类型", position = 10, required = true)
+    private String type;
+
+    /** 活动类型 */
+    @ApiModelProperty(value = "分数", position = 10, required = true)
+    private Integer score;
+
+    /** 活动截止时间 */
+    @ApiModelProperty(value = "活动截止时间", position = 10, required = true)
+    private LocalDate activityTime;
+
+    /** 创建时间 */
+    @ApiModelProperty(value = "创建时间", position = 10, required = true)
+    private LocalDateTime createTime;
+
 }

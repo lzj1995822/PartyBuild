@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -41,6 +42,6 @@ public class ParActivityExamine extends BaseEntity {
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
 }

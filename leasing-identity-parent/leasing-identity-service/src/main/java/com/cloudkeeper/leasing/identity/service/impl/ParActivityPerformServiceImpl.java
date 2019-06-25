@@ -2,14 +2,13 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.ParActivity;
-import com.cloudkeeper.leasing.identity.domain.ParActivityExamine;
-import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
-import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerformDTO;
+import com.cloudkeeper.leasing.identity.repository.ExaScoreRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityExamineRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
+import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
@@ -25,7 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +48,11 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
 
     private final ParActivityExamineRepository parActivityExamineRepository;
 
+    private final ExaScoreRepository exaScoreRepository;
+
     private final ParActivityService parActivityService;
+
+    private final ParActivityObjectService parActivityObjectService;
     @Override
     protected BaseRepository<ParActivityPerform> getBaseRepository() {
         return parActivityPerformRepository;
@@ -153,12 +161,26 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
             //ParActivityObject更新
             ParActivityObject parActivityObject = parActivityObjectFind.get();
             parActivityObject.setStatus(parActivityPerformDTO.getStatus());
-            parActivityObjectRepository.save(parActivityObject);
+
+            parActivityObjectService.save(parActivityObject);
             //Exam添加
             ParActivityExamine parActivityExamine = new ParActivityExamine();
             parActivityExamine.setPId(parActivityPerform.getId());
+            String[] strs=parActivityPerformDTO.getCreateTime().toString().split("T");
+            LocalDate beginDateTime = LocalDate.parse(strs[0], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            System.out.println(beginDateTime);
+            parActivityExamine.setCreateTime(beginDateTime);
             parActivityExamine.setRemark(parActivityPerformDTO.getRemark());
             parActivityExamineRepository.save(parActivityExamine);
+            //EXA_Score添加
+            ExaScore exaScore = new ExaScore();
+            exaScore.setActivityId(parActivityPerformDTO.getActivityID());
+            exaScore.setActivityTime(parActivityPerformDTO.getActivityTime());
+            exaScore.setCreateTime(parActivityPerformDTO.getCreateTime());
+            exaScore.setOrganizationId(parActivityPerformDTO.getOrganizationId());
+            exaScore.setScore(parActivityPerformDTO.getScore());
+            exaScore.setType(parActivityPerformDTO.getType());
+            exaScoreRepository.save(exaScore);
 
             if(parActivityPerformDTO.getStatus().equals("2")){
                 parActivityService.updateProgress(parActivityPerformDTO.getActivityID());
