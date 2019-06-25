@@ -3,9 +3,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.SysConfigurationController;
 import com.cloudkeeper.leasing.identity.domain.SysConfiguration;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationDTO;
 import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationSearchable;
 import com.cloudkeeper.leasing.identity.service.SysConfigurationService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysConfigurationVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,11 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
 
     /** 系统属性配置 service */
     private final SysConfigurationService sysConfigurationService;
+
+    private final SysUserService sysUserService;
+
+    private final SysDistrictService sysDistrictService;
+
 
     @Override
     public Result<SysConfigurationVO> findOne(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id) {
@@ -78,6 +87,19 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
         Page<SysConfiguration> sysConfigurationPage = sysConfigurationService.findAll(sysConfigurationSearchable, pageable);
         Page<SysConfigurationVO> sysConfigurationVOPage = SysConfiguration.convert(sysConfigurationPage, SysConfigurationVO.class);
         return Result.of(sysConfigurationVOPage);
+    }
+
+    @Override
+    public void updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
+                          @ApiParam(value = "系统属性配置 DTO", required = true) @RequestBody @Validated SysConfigurationDTO sysConfigurationDTO) {
+        SysConfiguration convert = sysConfigurationDTO.convert(SysConfiguration.class);
+        String codeValue = convert.getCodeValue();
+        Integer integer = Integer.valueOf(codeValue);
+        sysUserService.save(integer,"6a97c2d9-ae44-402e-b117-2a1b55ded4d8");
+        sysUserService.save(integer,"6bc3aad9-78cb-4a79-9154-fdf02dec1fe4");
+        sysDistrictService.save(integer,"2c80b704-65e8-46a3-8222-3c0cb8fddfdc");
+        sysDistrictService.save(integer,"b526c2e7-ec30-439b-b298-7bed0d853db7");
+        sysConfigurationService.save(convert);
     }
 
 }

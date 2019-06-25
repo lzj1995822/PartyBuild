@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
@@ -26,6 +27,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
 
     /** 组织 repository */
     private final SysDistrictRepository sysDistrictRepository;
+
 
     @Override
     protected BaseRepository<SysDistrict> getBaseRepository() {
@@ -102,6 +104,12 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     public List<SysDistrict> findAllByDistrictLevel(Integer level) {
         return sysDistrictRepository.findAllByDistrictLevel(level);
     }
+
+    @Override
+    public void save(Integer isDelete, String id) {
+        sysDistrictRepository.save(isDelete,id);
+    }
+
 
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();

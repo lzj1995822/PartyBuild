@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -117,6 +118,14 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         map.put("user", convert);
         return Result.of("登录成功！", map);
     }
+
+    @Override
+    public void save(Integer isDelete, String id) {
+        sysUserRepository.save(isDelete,id);
+    }
+
+
+
 
     /*
     * 保存登录日志
