@@ -74,13 +74,16 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         if(StringUtils.isEmpty(activityId)){
             return null;
         }
-        String sql =  "SELECT s6.*, ROUND(cast(s6.passed as FLOAT)/(s6.waitCheck + s6.passed + s6.fail),3)  as finishRatio from ( " +
+        String sql =  "SELECT s6.*, " +
+                "ROUND( cast( s6.passed AS FLOAT ) / ( s6.waitCheck + s6.passed + s6.fail ), 3 ) AS finishRatio  " +
+                "FROM " +
+                " ( " +
                 "SELECT " +
                 " S5.tn, " +
                 " townCode, " +
                 " COUNT( CASE WHEN sa = 1 THEN 1 ELSE NULL END ) waitCheck, " +
                 " COUNT( CASE WHEN sa = 2 THEN 1 ELSE NULL END ) passed, " +
-                " COUNT( CASE WHEN sa = 3 OR sa IS NULL THEN 1 ELSE NULL END ) fail  " +
+                " COUNT( CASE WHEN sa = 3 OR sa IS NULL OR sa = 0 THEN 1 ELSE NULL END ) fail  " +
                 "FROM " +
                 " ( " +
                 "SELECT " +
@@ -88,27 +91,30 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
                 " S3.cun cn, " +
                 " S3.attachTo townCode, " +
                 " S3.cunId cd, " +
-                " S4.STATUS sa, " +
-                " S4.ActivityID aid  " +
+                " S4.status sa, " +
+                " S4.activityId aid  " +
                 "FROM " +
                 " ( " +
                 "SELECT " +
                 " S1.districtName town, " +
                 " S0.districtName cun, " +
+                " S0.districtId districtId, " +
                 " S0.attachTo, " +
                 " S0.id cunId  " +
                 "FROM " +
                 " SYS_District S0 " +
                 " LEFT JOIN ( SELECT * FROM SYS_District sd WHERE sd.districtLevel = 2 ) S1 ON S0.attachTo = S1.districtId  " +
                 "WHERE " +
-                " S0.districtLevel = 3  " +
+                " S0.districtLevel = 3 and S0.isDelete = 0 " +
                 " ) S3 " +
-                " LEFT JOIN PAR_ActivityPerform S4 ON S3.cunId = S4.organizationId  " +
-                " AND S4.ActivityID = '"+activityId+"'  " +
+                " , PAR_ActivityObject S4 WHERE S3.districtId = S4.organizationId  " +
+                " AND S4.activityId = '"+activityId+"' " +
                 " ) S5  " +
                 "GROUP BY " +
-                " tn, townCode  " +
-                " ) s6";
+                " tn, " +
+                " townCode  " +
+                " ) s6 " +
+                " order by finishRatio desc";
         List<PassPercentVO> list = super.findAllBySql(PassPercentVO.class, sql);
         return list;
     }
