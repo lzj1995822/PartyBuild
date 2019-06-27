@@ -96,5 +96,18 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         parActivityObjectService.initPerActivity();
         return Result.of(true);
     }
+    @Override
+    public  Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
+                                                      @ApiParam(value = "排序条件", required = true) Sort sort){
+        List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.execute(parActivityObjectDTO,sort);
+        return Result.of(parActivityObjectVO);
+    }
+
+    @Override
+    public  Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
+                                                      @ApiParam(value = "排序条件", required = true) Sort sort){
+        List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.executeOver(parActivityObjectDTO,sort);
+        return Result.of(parActivityObjectVO);
+    }
 
 }

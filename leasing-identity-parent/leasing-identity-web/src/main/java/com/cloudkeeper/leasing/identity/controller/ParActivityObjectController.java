@@ -90,4 +90,26 @@ public interface ParActivityObjectController {
 
     @GetMapping("/init")
     Result<Boolean> init();
+
+    /**
+     * 执行
+     * @param parActivityObjectDTO 活动id
+     * @param  sort 组织ID
+     * @return 任务对象 VO 分页
+     */
+    @ApiOperation(value = "执行", notes = "activityId 活动id，organizationId 组织ID", position = 6)
+    @PostMapping("/execute")
+    Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
+                                              @ApiParam(value = "排序条件", required = true) Sort sort);
+
+    /**
+     * 结束执行
+     * @param parActivityObjectDTO 活动id
+     * @param  sort 组织ID
+     * @return 任务对象 VO 分页
+     */
+    @ApiOperation(value = "结束执行", notes = "activityId 活动id，organizationId 组织ID", position = 6)
+    @PostMapping("/executeOver")
+    Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
+                                              @ApiParam(value = "排序条件", required = true) Sort sort);
 }

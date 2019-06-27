@@ -2,23 +2,26 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.ParActivity;
-import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
-import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
-import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
-import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
-import com.cloudkeeper.leasing.identity.service.ParActivityService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
+import com.cloudkeeper.leasing.identity.service.*;
+import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
+import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
+import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +46,14 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Autowired
     private SysDistrictService sysDistrictService;
 
+    @Autowired
+    private SysDistrictRepository sysDistrictRepository;
+
+    @Autowired
+    private SysConfigurationService sysConfigurationService;
+
+    @Autowired
+    private DynamicTaskService dynamicTaskService;
     @Override
     protected BaseRepository<ParActivityObject> getBaseRepository() {
         return parActivityObjectRepository;
@@ -88,6 +99,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     }
 
     @Override
+    @Transactional
     public void initPerActivity() {
         List<ParActivity> parActivities = parActivityRepository.findAll();
         List<SysDistrict> sysDistricts = sysDistrictService.findAllByDistrictLevel(3);
@@ -109,5 +121,59 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
             }
         }
     }
+    @Override
+    @Transactional
+    public List<ParActivityObjectVO> execute(ParActivityObjectDTO parActivityObjectDTO, Sort sort){
+        if(StringUtils.isEmpty(parActivityObjectDTO.getActivityId()) ||StringUtils.isEmpty(parActivityObjectDTO.getOrganizationId())  ){
+            return null;
+        }
+//        //更新Object
+//        ParActivityObject parActivityObject =super.findById(parActivityObjectDTO.getId());
+//        parActivityObject.setStatus("1");
+//        parActivityObject.setIsWorking("1");
+//        ParActivityObject newObject = super.save(parActivityObject);
+//
+//        //取得组织长短ID
+//        SysDistrict districtId = sysDistrictRepository.findSysDistrictByDistrictId(parActivityObjectDTO.getOrganizationId());
+//        Optional<ParActivityPerform> parActivityPerform = parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivityObjectDTO.getActivityId(),districtId.getId());
+//        //判断是否perform有值，有：更新SOURCE
+//        if(parActivityPerform.isPresent()){
+//            ParActivityPerform parPerform = parActivityPerform.get();
+//            parPerform.setSource(2);
+//            parActivityPerformRepository.save(parPerform);
+//
+//        }//无：新增
+//        else {
+//            ParActivityPerform perform = new ParActivityPerform();
+//            perform.setOrganizationId(districtId.getId());
+//            perform.setStatus("1");
+//            perform.setActivityID(parActivityObjectDTO.getActivityId());
+//            perform.setSource(1);
+//            parActivityPerformRepository.save(perform);
+//        }
+//
+//
+//        SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
+//        String codeValue = sysConfiguration.getCodeValue();
 
+        String str = parActivityObjectDTO.getActivityId() + parActivityObjectDTO.getOrganizationId();
+        dynamicTaskService.startCron1(str);
+
+
+//        ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
+//        List<ParActivityObjectVO> list = new ArrayList<>();
+//        list.add(convert);
+//        return list;
+        return null;
+    }
+    @Override
+    @Transactional
+    public List<ParActivityObjectVO> executeOver(ParActivityObjectDTO parActivityObjectDTO, Sort sort) {
+        if (StringUtils.isEmpty(parActivityObjectDTO.getActivityId()) || StringUtils.isEmpty(parActivityObjectDTO.getOrganizationId())) {
+            return null;
+        }
+        String str = parActivityObjectDTO.getActivityId() + parActivityObjectDTO.getOrganizationId();
+        dynamicTaskService.stopCron1(str);
+        return null;
+    }
 }
