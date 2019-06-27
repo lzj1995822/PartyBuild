@@ -92,11 +92,13 @@ public class EasyNVRServiceImpl implements EasyNVRService {
             token = login(ipPort, USERNAME, PASSWORD);
         }
         if (StringUtils.isEmpty(token)) {
+            logger.warn("令牌为空");
             return null;
         }
-//        if (!isOnline(ipPort, channelNumber, token)) {
-//            return null;
-//        }
+        if (!isOnline(ipPort, channelNumber, token)) {
+            logger.warn("摄像头不在线");
+            return null;
+        }
         String reqUrl = "http://".concat(ipPort).concat(CATCH_IMG_URL_SUFFIX).concat("?channel=").concat(channelNumber);
         HttpHeaders headers = new HttpHeaders();
         List cookies = new ArrayList();
@@ -115,6 +117,13 @@ public class EasyNVRServiceImpl implements EasyNVRService {
         return picUrl;
     }
 
+    /**
+     * 监控点是否在线
+     * @param ipPort ip 加  端口
+     * @param channelNumber
+     * @param token 令牌
+     * @return
+     */
     private Boolean isOnline(String ipPort, String channelNumber, String token) {
         String reqUrl = "http://".concat(ipPort).concat(CHANNEL_URL_SUFFIX).concat("?channel=").concat(channelNumber);
         HttpHeaders headers = new HttpHeaders();
@@ -127,7 +136,12 @@ public class EasyNVRServiceImpl implements EasyNVRService {
         Boolean online =  false;
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            JsonNode onlineNode = jsonNode.path("EasyDarwin").path("Body").path("Channels").get(0).path("Online");
+            JsonNode channelNode = jsonNode.path("EasyDarwin").path("Body").path("Channels");
+            if (channelNode.size() == 0) {
+                logger.warn("通道不存在");
+                return null;
+            }
+            JsonNode onlineNode = channelNode.get(0).path("Online");
             online = objectMapper.writeValueAsString(onlineNode).equals("1");
         } catch (JsonProcessingException e) {
             e.printStackTrace();

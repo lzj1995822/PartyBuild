@@ -24,7 +24,7 @@ public class EasyNVRServiceTest {
 
     @Test
     public void catchTest() {
-        String s = easyNVRService.catchPic("02987617140000441");
+        String s = easyNVRService.catchPic("02987617140001550");
         System.out.println(s);
         assertNotNull(s);
     }
