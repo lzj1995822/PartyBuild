@@ -12,7 +12,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 系统java类
@@ -39,10 +39,10 @@ public class SysClass extends BaseEntity {
     private String des;
 
     @ApiModelProperty(value = "属性集合")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany
     @JoinColumn(name = "classId")
     @OrderBy("sort asc")
     @Fetch(FetchMode.JOIN)
-    private List<SysClassProperty> properties;
+    private Set<SysClassProperty> properties;
 
 }
