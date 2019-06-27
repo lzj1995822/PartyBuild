@@ -57,6 +57,7 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
             acceptInformation.setCreatTime(information.getCreatedAt());
             acceptInformation.setTitle(information.getTitle());
             acceptInformation.setInformationId(information.getId());
+            acceptInformation.setStatus("0");
             acceptInformation.setObjs(item);
             acceptInformationService.save(acceptInformation);
         }
