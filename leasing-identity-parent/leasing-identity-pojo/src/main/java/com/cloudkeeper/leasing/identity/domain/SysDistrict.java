@@ -92,7 +92,7 @@ public class SysDistrict extends BaseEntity {
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attachTo",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @JsonIgnore
