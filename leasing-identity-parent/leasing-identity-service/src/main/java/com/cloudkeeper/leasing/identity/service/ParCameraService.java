@@ -9,4 +9,5 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface ParCameraService extends BaseService<ParCamera> {
 
+    ParCamera findByNumber(String boxNumber);
 }

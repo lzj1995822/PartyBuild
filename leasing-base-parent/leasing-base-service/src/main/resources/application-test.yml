@@ -5,13 +5,16 @@ spring:
   # 数据库配置
   datasource:
     # 连接地址
-    url: jdbc:mysql://localhost:3306/leasing-boot?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    # url: jdbc:mysql://localhost:3306/leasing-boot?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy
     # 用户名
-    username: root
-    # 密码
-    password: root
+    #    username: lxw
+    username: asherlv
+    # 密码-
+    password: q243485
     # 驱动类型
-    driver-class-name: com.mysql.jdbc.Driver
+    #   driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     # 连接池类型
     type: com.alibaba.druid.pool.DruidDataSource
 
@@ -28,7 +31,7 @@ spring:
       time-between-eviction-runs-millis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
       min-evictable-idle-time-millis: 30000
-      validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1 FROM SYS_USER
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
@@ -74,7 +77,7 @@ spring:
       # 表更新策略
       ddl-auto: none
     #数据库方言
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.SQLServer2008Dialect
 
   # activiti 6
   activiti:
@@ -90,7 +93,7 @@ spring:
   liquibase:
     # sql语句存放位置
     change-log: classpath:/db/changelog/master.xml
-    enabled: true
+    enabled: false
   redis:
     host: localhost
     port: 6379
@@ -99,3 +102,10 @@ spring:
   cache:
     redis:
       time-to-live: 1d
+fdfs:
+  soTimeout: 500
+  connectTimeout: 600
+  thumbImage:             #缩略图生成参数
+    width: 150
+    height: 150
+  trackerList: 172.16.0.199:22122

@@ -37,4 +37,8 @@ public class ParCameraServiceImpl extends BaseServiceImpl<ParCamera> implements 
                 .withMatcher("remark", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public ParCamera findByNumber(String boxNumber) {
+        return parCameraRepository.findByNumber(boxNumber);
+    }
 }

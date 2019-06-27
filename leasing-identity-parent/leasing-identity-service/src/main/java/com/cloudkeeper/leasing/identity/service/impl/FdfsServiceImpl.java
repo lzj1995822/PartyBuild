@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -39,6 +40,12 @@ public class FdfsServiceImpl implements FdfsService {
      */
     public String uploadFile(MultipartFile file) throws IOException {
         StorePath storePath = storageClient.uploadFile(file.getInputStream(), file.getSize(), FilenameUtils.getExtension(file.getOriginalFilename()), null);
+        return getResAccessUrl(storePath);
+    }
+
+    @Override
+    public String uploadFile(InputStream inputStream, Long size, String fileName) throws IOException {
+        StorePath storePath = storageClient.uploadFile(inputStream, size, FilenameUtils.getExtension(fileName), null);
         return getResAccessUrl(storePath);
     }
 
