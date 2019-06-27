@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -44,24 +46,25 @@ public class Information extends BaseEntity {
     @Column(length = 60)
     private LocalDateTime releaseTime;
 
-    /** 发布对象*/
-    @ApiModelProperty(value = "发布对象", position = 10, required = true)
+    /** 发布组织*/
+    @ApiModelProperty(value = "发布组织", position = 10, required = true)
     @Column(length = 60)
     private String districtID;
 
-    /** 发布人  */
-    @ApiModelProperty(value = "发布人", position = 24)
+    /** 发布组织名称*/
+    @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
-    @JoinColumn(name = "createdBy", insertable = false, updatable = false)
-    private SysUser sysUser;
+    @JoinColumn(name = "districtID",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
 
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         InformationVO informationVO = (InformationVO) convert;
-        if(!StringUtils.isEmpty(this.sysUser)){
-            informationVO.setName(this.sysUser.getName());
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            informationVO.setName(this.sysDistrict.getDistrictName());
         }
         return (T) informationVO;
     }

@@ -4,11 +4,13 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.AcceptInformation;
 import com.cloudkeeper.leasing.identity.domain.Information;
+import com.cloudkeeper.leasing.identity.domain.MessageCenter;
 import com.cloudkeeper.leasing.identity.dto.information.InformationDTO;
 import com.cloudkeeper.leasing.identity.repository.AcceptInformationRepository;
 import com.cloudkeeper.leasing.identity.repository.InformationRepository;
 import com.cloudkeeper.leasing.identity.service.AcceptInformationService;
 import com.cloudkeeper.leasing.identity.service.InformationService;
+import com.cloudkeeper.leasing.identity.service.MessageCenterService;
 import com.cloudkeeper.leasing.identity.vo.InformationVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
     private final InformationRepository informationRepository;
 
     private final AcceptInformationService acceptInformationService;
+
+    private final MessageCenterService messageCenterService;
 
     @Override
     protected BaseRepository<Information> getBaseRepository() {
@@ -60,6 +64,15 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
             acceptInformation.setStatus("0");
             acceptInformation.setObjs(item);
             acceptInformationService.save(acceptInformation);
+
+            MessageCenter messageCenter = new MessageCenter();
+            messageCenter.setBusinessId(information.getId());
+            messageCenter.setType("information");
+            messageCenter.setIsRead(0);
+            messageCenter.setDistrictId(item);
+            messageCenter.setTitle(information.getTitle());
+            messageCenter.setContent("[通知公告] " +'"'+information.getTitle()+'"'+"待查收");
+            messageCenterService.save(messageCenter);
         }
         return informationVO;
     }
