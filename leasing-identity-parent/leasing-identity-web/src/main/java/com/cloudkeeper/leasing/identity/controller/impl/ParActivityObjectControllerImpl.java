@@ -9,16 +9,26 @@ import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,8 +85,11 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     @Override
     public Result<Page<ParActivityObjectVO>> page(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
-        Page<ParActivityObject> parActivityObjectPage = parActivityObjectService.findAll(parActivityObjectSearchable, pageable);
-        Page<ParActivityObjectVO> parActivityObjectVOPage = ParActivityObject.convert(parActivityObjectPage, ParActivityObjectVO.class);
+        DetachedCriteria detachedCriteria = getDetachedCriteria(parActivityObjectSearchable);
+        Integer totalCount = parActivityObjectService.getTotalCount(detachedCriteria);
+        detachedCriteria.addOrder(Order.desc("p.month"));
+        Page<ParActivityObject> all = parActivityObjectService.findAll(detachedCriteria, pageable, totalCount);
+        Page<ParActivityObjectVO> parActivityObjectVOPage = ParActivityObject.convert(all, ParActivityObjectVO.class);
         return Result.of(parActivityObjectVOPage);
     }
 
@@ -110,4 +123,34 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObjectVO);
     }
 
+
+    private DetachedCriteria getDetachedCriteria(ParActivityObjectSearchable parActivityObjectSearchable) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);
+        detachedCriteria.createAlias("parActivity","p");
+        if (!StringUtils.isEmpty(parActivityObjectSearchable.getAttachTo())) {
+            detachedCriteria.add(Restrictions.eq("attachTo", parActivityObjectSearchable.getAttachTo()));
+        }
+        if (!StringUtils.isEmpty(parActivityObjectSearchable.getOrganizationId())) {
+            detachedCriteria.add(Restrictions.eq("organizationId", parActivityObjectSearchable.getOrganizationId()));
+        }
+        if (!StringUtils.isEmpty(parActivityObjectSearchable.getStatus())) {
+            detachedCriteria.add(Restrictions.eq("status", parActivityObjectSearchable.getStatus()));
+        }
+        if ("ACTIVE".equals(parActivityObjectSearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.le("p.month", lastDay()));
+        } else if ("PLAN".equals(parActivityObjectSearchable.getCurrentStatus())) {
+            detachedCriteria.add(Restrictions.ge("p.month", lastDay()));
+        }
+        return detachedCriteria;
+    }
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date date = ca.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
+    }
 }

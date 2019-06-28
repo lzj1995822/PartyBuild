@@ -45,4 +45,7 @@ public class ParActivityObjectSearchable extends BaseSearchable {
     @ApiModelProperty(value = "关联组织", position = 10, required = true)
     private String attachTo;
 
+    /** 活动当前状态 */
+    @ApiModelProperty(value = "活动当前状态", position = 10, required = true)
+    private String currentStatus;
 }
