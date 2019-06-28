@@ -22,9 +22,9 @@ public class EasyNVRControllerImpl implements EasyNVRController {
     public Result<String> findOne(String number,String activityId, String organizationId) {
         String pathUri = easyNVRService.catchPic(number,activityId,organizationId);
         if (!StringUtils.isEmpty(pathUri)) {
-            return  Result.of(pathUri);
+            return  Result.of(200,"抓图成功",pathUri);
         }
-            return Result.of("无数据");
+            return Result.of(200, "抓图失败");
 
     }
 }
