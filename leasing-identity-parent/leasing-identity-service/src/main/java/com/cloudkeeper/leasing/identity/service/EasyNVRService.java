@@ -9,5 +9,7 @@ public interface EasyNVRService {
      * @param boxNumber 机顶盒序列号
      * @return 图片地址
      */
-    String catchPic(String boxNumber);
+    String catchPic(String boxNumber,String activityId, String organizationId);
+
+
 }

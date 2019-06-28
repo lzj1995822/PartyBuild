@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +21,9 @@ public interface EasyNVRController {
      * 截图
      */
     @ApiOperation(value = "截图", notes = "截图", position = 1)
-    @GetMapping("/{number}number")
-    Result<Boolean> findOne(@ApiParam(value = "机顶盒编号", required = true) @PathVariable String number);
+    @Authorization(required = false)
+    @GetMapping("/number")
+    Result<String> findOne(@ApiParam(value = "机顶盒编号", required = true) String number,
+                            @ApiParam(value = "活动Id", required = true)  String activityId,
+                            @ApiParam(value = "组织Id", required = true)  String organizationId);
 }

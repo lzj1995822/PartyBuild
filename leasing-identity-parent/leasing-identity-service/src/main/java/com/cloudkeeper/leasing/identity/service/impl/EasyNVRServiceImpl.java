@@ -1,9 +1,11 @@
 package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.identity.domain.ParCamera;
+import com.cloudkeeper.leasing.identity.domain.ParPictureInfro;
 import com.cloudkeeper.leasing.identity.service.EasyNVRService;
 import com.cloudkeeper.leasing.identity.service.FdfsService;
 import com.cloudkeeper.leasing.identity.service.ParCameraService;
+import com.cloudkeeper.leasing.identity.service.ParPictureInfroService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,10 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +51,8 @@ public class EasyNVRServiceImpl implements EasyNVRService {
     private RestTemplate restTemplate = new RestTemplate();
 
     private final FdfsService fdfsService;
+
+    private final ParPictureInfroService parPictureInfroService;
 
     @Override
     public String login(String ipPort, String username, String password) {
@@ -81,7 +87,8 @@ public class EasyNVRServiceImpl implements EasyNVRService {
     }
 
     @Override
-    public String catchPic(String boxNumber)  {
+    @Transactional
+    public String catchPic(String boxNumber,String activityId, String organizationId)  {
         String fullUrl = getFullUrl(boxNumber);
         String ipPort = getIPPort(fullUrl);
         String port = ipPort.split(":")[1];
@@ -113,6 +120,18 @@ public class EasyNVRServiceImpl implements EasyNVRService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if(!StringUtils.isEmpty(picUrl)){
+            //存入电视截图
+            ParPictureInfro parPictureInfro = new ParPictureInfro();
+            parPictureInfro.setImageURL(picUrl);
+            parPictureInfro.setCreateTime(LocalDateTime.now());
+            parPictureInfro.setOrganizationId(organizationId);
+            parPictureInfro.setStudyContent(activityId);
+            parPictureInfroService.save(parPictureInfro);
+        }
+
+
         return picUrl;
     }
 
