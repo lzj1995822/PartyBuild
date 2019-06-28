@@ -127,44 +127,40 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         if(StringUtils.isEmpty(parActivityObjectDTO.getActivityId()) ||StringUtils.isEmpty(parActivityObjectDTO.getOrganizationId())  ){
             return null;
         }
-//        //更新Object
-//        ParActivityObject parActivityObject =super.findById(parActivityObjectDTO.getId());
-//        parActivityObject.setStatus("1");
-//        parActivityObject.setIsWorking("1");
-//        ParActivityObject newObject = super.save(parActivityObject);
-//
-//        //取得组织长短ID
-//        SysDistrict districtId = sysDistrictRepository.findSysDistrictByDistrictId(parActivityObjectDTO.getOrganizationId());
-//        Optional<ParActivityPerform> parActivityPerform = parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivityObjectDTO.getActivityId(),districtId.getId());
-//        //判断是否perform有值，有：更新SOURCE
-//        if(parActivityPerform.isPresent()){
-//            ParActivityPerform parPerform = parActivityPerform.get();
-//            parPerform.setSource(2);
-//            parActivityPerformRepository.save(parPerform);
-//
-//        }//无：新增
-//        else {
-//            ParActivityPerform perform = new ParActivityPerform();
-//            perform.setOrganizationId(districtId.getId());
-//            perform.setStatus("1");
-//            perform.setActivityID(parActivityObjectDTO.getActivityId());
-//            perform.setSource(1);
-//            parActivityPerformRepository.save(perform);
-//        }
-//
-//
-//        SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
-//        String codeValue = sysConfiguration.getCodeValue();
+        //更新Object
+        ParActivityObject parActivityObject =parActivityObjectRepository.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(),parActivityObjectDTO.getActivityId());
+        parActivityObject.setStatus("1");
+        parActivityObject.setIsWorking("1");
+        ParActivityObject newObject = super.save(parActivityObject);
 
-        String str = parActivityObjectDTO.getActivityId() + parActivityObjectDTO.getOrganizationId();
-        dynamicTaskService.startCron1(str);
+        //取得组织长短ID
+        SysDistrict districtId = sysDistrictRepository.findSysDistrictByDistrictId(parActivityObjectDTO.getOrganizationId());
+        Optional<ParActivityPerform> parActivityPerform = parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivityObjectDTO.getActivityId(),districtId.getId());
+        //判断是否perform有值，有：更新SOURCE
+        if(parActivityPerform.isPresent()){
+            ParActivityPerform parPerform = parActivityPerform.get();
+            parPerform.setSource(2);
+            parActivityPerformRepository.save(parPerform);
+        }//无：新增
+        else {
+            ParActivityPerform perform = new ParActivityPerform();
+            perform.setOrganizationId(districtId.getId());
+            perform.setStatus("1");
+            perform.setActivityID(parActivityObjectDTO.getActivityId());
+            perform.setSource(1);
+            parActivityPerformRepository.save(perform);
+        }
 
 
-//        ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
-//        List<ParActivityObjectVO> list = new ArrayList<>();
-//        list.add(convert);
-//        return list;
-        return null;
+        SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
+        String codeValue = sysConfiguration.getCodeValue();
+
+        ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
+        convert.setCodeValue(codeValue);
+        List<ParActivityObjectVO> list = new ArrayList<>();
+        list.add(convert);
+
+        return list;
     }
     @Override
     @Transactional
@@ -172,8 +168,13 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         if (StringUtils.isEmpty(parActivityObjectDTO.getActivityId()) || StringUtils.isEmpty(parActivityObjectDTO.getOrganizationId())) {
             return null;
         }
-        String str = parActivityObjectDTO.getActivityId() + parActivityObjectDTO.getOrganizationId();
-        dynamicTaskService.stopCron1(str);
-        return null;
+        //更新Object
+        ParActivityObject parActivityObject =super.findById(parActivityObjectDTO.getId());
+        parActivityObject.setIsWorking("0");
+        ParActivityObject newObject = super.save(parActivityObject);
+        ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
+        List<ParActivityObjectVO> list = new ArrayList<>();
+        list.add(convert);
+        return list;
     }
 }

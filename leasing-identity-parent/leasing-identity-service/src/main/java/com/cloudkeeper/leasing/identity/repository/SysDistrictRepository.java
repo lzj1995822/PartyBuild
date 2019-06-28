@@ -35,5 +35,10 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
     @Query(value = "update SYS_District set isDelete= ? where id = ?",nativeQuery = true)
     Integer save(Integer isDelete,String id);
 
+    @Transactional
+    @Modifying
+    @Query(value = "delete from SYS_District where id =?",nativeQuery = true)
+    void deleteByDisId(String id);
+
 
 }

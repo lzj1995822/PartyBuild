@@ -109,7 +109,10 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     public void save(Integer isDelete, String id) {
         sysDistrictRepository.save(isDelete,id);
     }
-
+    @Override
+    public void deleteByDisId(String id){
+        sysDistrictRepository.deleteByDisId(id);
+    }
 
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();

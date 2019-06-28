@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
@@ -20,6 +21,8 @@ import java.util.List;
  * @author lxw
  */
 @Api(value = "任务对象", tags = "任务对象")
+@RestController
+@CrossOrigin(allowCredentials="true", allowedHeaders="*", methods={RequestMethod.GET,RequestMethod.POST}, origins="*")
 @RequestMapping("/parActivityObject")
 public interface ParActivityObjectController {
 

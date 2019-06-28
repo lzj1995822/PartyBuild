@@ -69,7 +69,11 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         sysDistrictService.deleteById(id);
         return Result.ofDeleteSuccess();
     }
-
+    @Override
+    public Result deleteByDisId(@ApiParam(value = "组织id", required = true) @PathVariable String id){
+        sysDistrictService.deleteByDisId(id);
+        return Result.ofDeleteSuccess();
+    }
     @Override
     public Result<List<SysDistrictVO>> list(@ApiParam(value = "组织查询条件", required = true) @RequestBody SysDistrictSearchable sysDistrictSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,17 +40,29 @@ public class DynamicTaskServiceImpl implements DynamicTaskService {
         return threadPoolTaskScheduler;
     }
 
-    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
 
-        final Runnable beeper = new Runnable() {
-            public void run() {
-                System.out.println("beep");
-            }
-        };
+
 
 
     public Result startCron1(String idStr) {
-        timeMap.put(idStr,scheduler.scheduleAtFixedRate(beeper, 0, 10, TimeUnit.SECONDS));
+        timeMap.put(idStr,scheduler.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                Calendar cal=Calendar.getInstance();
+
+                //用Calendar类提供的方法获取年、月、日、时、分、秒
+                int year  =cal.get(Calendar.YEAR);   //年
+                int month =cal.get(Calendar.MONTH)+1;  //月  默认是从0开始  即1月获取到的是0
+                int day   =cal.get(Calendar.DAY_OF_MONTH);  //日，即一个月中的第几天
+                int hour  =cal.get(Calendar.HOUR_OF_DAY);  //小时
+                int minute=cal.get(Calendar.MINUTE);   //分
+                int second=cal.get(Calendar.SECOND);  //秒
+
+                //拼接成字符串输出
+                String date=year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second;
+
+                System.out.println("beep" + date);
+            }
+        }, 0, 10, TimeUnit.SECONDS));
 
         System.out.println("DynamicTask.startCron1()");
         System.out.println(timeMap);

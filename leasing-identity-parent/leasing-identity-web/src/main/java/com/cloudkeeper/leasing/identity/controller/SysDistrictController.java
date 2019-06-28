@@ -65,6 +65,15 @@ public interface SysDistrictController {
     Result delete(@ApiParam(value = "组织id", required = true) @PathVariable String id);
 
     /**
+     * 删除
+     * @param id 组织id
+     * @return 删除结果
+     */
+    @ApiOperation(value = "删除", notes = "删除", position = 4)
+    @PostMapping("/{id}delId")
+    Result deleteByDisId(@ApiParam(value = "组织id", required = true) @PathVariable String id);
+
+    /**
      * 列表查询
      * @param sysDistrictSearchable 组织查询条件
      * @param sort 排序条件

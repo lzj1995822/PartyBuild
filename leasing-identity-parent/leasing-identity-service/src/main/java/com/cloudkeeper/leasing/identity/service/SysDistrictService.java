@@ -42,4 +42,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
 
     void save(Integer isDelete,String id);
 
+    void deleteByDisId(String id);
+
 }

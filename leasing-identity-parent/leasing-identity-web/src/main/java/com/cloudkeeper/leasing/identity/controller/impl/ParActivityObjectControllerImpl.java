@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParActivityObjectController;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
@@ -110,6 +111,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(true);
     }
     @Override
+    @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.execute(parActivityObjectDTO,sort);
@@ -117,6 +119,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     }
 
     @Override
+    @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.executeOver(parActivityObjectDTO,sort);

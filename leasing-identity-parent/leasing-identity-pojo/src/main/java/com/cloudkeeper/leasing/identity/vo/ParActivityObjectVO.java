@@ -78,6 +78,12 @@ public class ParActivityObjectVO extends BaseVO {
     @ApiModelProperty(value = "组织名字", position = 10, required = true)
     private String districtName;
 
+    /** 间隔 */
+    @ApiModelProperty(value = "间隔", position = 10, required = true)
+    private String codeValue;
+
+
+
 
 
 
