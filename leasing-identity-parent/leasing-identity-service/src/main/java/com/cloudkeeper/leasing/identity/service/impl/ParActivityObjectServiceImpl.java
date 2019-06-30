@@ -13,6 +13,8 @@ import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
@@ -21,9 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 /**
  * 任务对象 service
@@ -51,6 +55,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
 
     @Autowired
     private SysConfigurationService sysConfigurationService;
+
+    @Autowired
+    private ParCameraService parCameraService;
 
     @Autowired
     private DynamicTaskService dynamicTaskService;
@@ -176,5 +183,35 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         List<ParActivityObjectVO> list = new ArrayList<>();
         list.add(convert);
         return list;
+    }
+
+    @Override
+    public List<ParActivityObjectVO> TVIndexDetailList(String number) {
+        ParCamera byNumber = parCameraService.findByNumber(number);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);
+        detachedCriteria.add(Restrictions.eq("organizationId", byNumber.getOrganization().getDistrictId()));
+        detachedCriteria.createAlias("parActivity", "p");
+        detachedCriteria.add(Restrictions.between("p.month", firstDay(), lastDay()));
+        return ParActivityObject.convert(findAll(detachedCriteria), ParActivityObjectVO.class);
+    }
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return toLocalDate(ca);
+    }
+
+    private LocalDate firstDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        return toLocalDate(ca);
+    }
+
+    private LocalDate toLocalDate(Calendar calendar) {
+        Date date = calendar.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
     }
 }

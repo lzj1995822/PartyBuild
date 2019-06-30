@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParActivityController;
 import com.cloudkeeper.leasing.identity.domain.ParActivity;
@@ -8,6 +9,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
+import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
@@ -115,6 +117,12 @@ public class ParActivityControllerImpl implements ParActivityController {
             parActivityService.updateProgress(item.getId());
         });
         return Result.of("更新成功");
+    }
+
+    @Override
+    @Authorization(required = false)
+    public Result<TVIndexVO> tv() {
+        return parActivityService.tvIndex();
     }
 
 

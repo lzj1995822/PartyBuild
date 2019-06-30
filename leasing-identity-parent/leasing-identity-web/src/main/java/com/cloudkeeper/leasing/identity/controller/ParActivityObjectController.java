@@ -115,4 +115,7 @@ public interface ParActivityObjectController {
     @PostMapping("/executeOver")
     Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                               @ApiParam(value = "排序条件", required = true) Sort sort);
+
+    @GetMapping("/number/{number}")
+    Result<List<ParActivityObjectVO>> TVIndexDetailList(@PathVariable String number);
 }

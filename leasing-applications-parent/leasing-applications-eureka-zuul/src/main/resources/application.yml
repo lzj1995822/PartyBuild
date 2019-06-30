@@ -13,6 +13,8 @@ eureka:
       instance-id: ${spring.cloud.client.ip-address}:${server.port}
 
 zuul:
+  sensitive-headers: Access-Control-Allow-Origin
+  ignored-headers: Access-Control-Allow-Origin,H-APP-Id,Token,APPToken
   prefix: /api
   routes:
     api-identity:
