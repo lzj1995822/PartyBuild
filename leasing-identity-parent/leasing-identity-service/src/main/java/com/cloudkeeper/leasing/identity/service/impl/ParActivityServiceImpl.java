@@ -13,6 +13,7 @@ import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
+import com.cloudkeeper.leasing.identity.service.TVSignInService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
     /** 组织 */
     private final SysUserService sysUserService;
+
+    private final TVSignInService tvSignInService;
 
     @Override
     protected BaseRepository<ParActivity> getBaseRepository() {
@@ -129,6 +132,19 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         return results;
     }
+    //生成远教签到记录
+    private void handleRecord(String activityId,List<DistLearningActivityVideo> video,List<String> districtIdList){
+        for(int i= 0;i<districtIdList.size();i++){
+            for(int j=0;j<video.size();j++){
+                TVSignIn tvSignIn = new TVSignIn();
+                tvSignIn.setActivityId(activityId);
+                tvSignIn.setOrganizationId(districtIdList.get(i));
+                tvSignIn.setVideoId(video.get(i).getId());
+                tvSignInService.save(tvSignIn);
+            }
+        }
+    }
+
 
     public void deleteAll(String id){
         parActivityRepository.deletePar(id);
@@ -156,7 +172,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         if(taskObject.getSid().size()!=0){
             SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
             sysDistrictSearchable.setDistrictLevel(3);
-           List<SysDistrict> sysDistricts = sysDistrictServiceImpl.findAll(sysDistrictSearchable);
+            List<SysDistrict> sysDistricts = sysDistrictServiceImpl.findAll(sysDistrictSearchable);
             for(int i=0;i<sysDistricts.size();i++){
                 ParActivityObject parActivityObject = new ParActivityObject();
                 parActivityObject.setActivityId(activityId);
