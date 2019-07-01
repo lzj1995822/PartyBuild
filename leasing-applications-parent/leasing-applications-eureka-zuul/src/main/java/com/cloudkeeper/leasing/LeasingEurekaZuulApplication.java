@@ -13,18 +13,6 @@ import org.springframework.web.filter.CorsFilter;
 //@EnableDiscoveryClient
 @EnableZuulProxy
 public class LeasingEurekaZuulApplication {
-    @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setMaxAge(18000L);
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(LeasingEurekaZuulApplication.class, args);

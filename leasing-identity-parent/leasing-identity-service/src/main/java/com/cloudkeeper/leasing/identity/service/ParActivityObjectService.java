@@ -33,4 +33,11 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
 
     List<ParActivityObjectVO> execute(ParActivityObjectDTO parActivityObjectDTO,Sort sort);
     List<ParActivityObjectVO> executeOver(ParActivityObjectDTO parActivityObjectDTO,Sort sort);
+
+    /**
+     * 根据机顶盒编号拿所有当月要执行的任务
+     * @param number
+     * @return
+     */
+    List<ParActivityObjectVO> TVIndexDetailList(String number);
 }

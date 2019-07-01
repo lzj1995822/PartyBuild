@@ -1,9 +1,11 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -107,4 +108,9 @@ public interface ParActivityController {
     @ApiOperation(value = "手动更新进度", notes = "手动更新进度", position = 6)
     @PostMapping("/updateProgress")
     Result updateProject();
+
+    @ApiOperation(value = "获取当前执行的任务以及下月要执行的任务", notes = "手动更新进度", position = 6)
+    @Authorization(required = false)
+    @GetMapping("/tv/index")
+    Result<TVIndexVO> tv();
 }

@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.service.impl;
 
+import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.*;
@@ -16,6 +17,7 @@ import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.service.TVSignInService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
+import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -369,6 +371,21 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return super.findAll(detachedCriteria, pageable,resultCount);
     }
 
+    @Override
+    public Result<TVIndexVO> tvIndex() {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        detachedCriteria.add(Restrictions.between("month", firstDay(), lastDay()));
+        List<ParActivity> currentMonth = findAll(detachedCriteria);
+        List<ParActivityVO> currentMonthVO = ParActivity.convert(currentMonth, ParActivityVO.class);
+
+        detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        detachedCriteria.add(Restrictions.between("month", nextMonthFirstDay(), nextMonthLastDay()));
+        List<ParActivity> nextMonth = findAll(detachedCriteria);
+        List<ParActivityVO> nextMonthVO = ParActivity.convert(nextMonth, ParActivityVO.class);
+
+        return Result.of(new TVIndexVO(currentMonthVO, nextMonthVO));
+    }
+
     private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
         if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
@@ -394,10 +411,34 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return  detachedCriteria;
     }
 
+    private LocalDate nextMonthLastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.MONTH, 1);
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return toLocalDate(ca);
+    }
+
+    private LocalDate nextMonthFirstDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.MONTH, 1);
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        return toLocalDate(ca);
+    }
+
     private LocalDate lastDay() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
-        Date date = ca.getTime();
+        return toLocalDate(ca);
+    }
+
+    private LocalDate firstDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        return toLocalDate(ca);
+    }
+
+    private LocalDate toLocalDate(Calendar calendar) {
+        Date date = calendar.getTime();
         Instant instant = date.toInstant();
         ZoneId zone = ZoneId.systemDefault();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);

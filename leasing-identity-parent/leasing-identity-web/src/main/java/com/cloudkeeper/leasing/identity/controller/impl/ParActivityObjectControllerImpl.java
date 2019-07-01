@@ -126,6 +126,13 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObjectVO);
     }
 
+    @Override
+    @Authorization(required = false)
+    public  Result<List<ParActivityObjectVO>> TVIndexDetailList(@PathVariable String number){
+        List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.TVIndexDetailList(number);
+        return Result.of(parActivityObjectVO);
+    }
+
 
     private DetachedCriteria getDetachedCriteria(ParActivityObjectSearchable parActivityObjectSearchable) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);
