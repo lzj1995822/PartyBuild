@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -123,4 +124,8 @@ public class ParActivityVO extends BaseVO {
     /** 视频 */
     @ApiModelProperty(value = "视频", position = 10, required = true)
     private List<DistLearningActivityVideo> video = new LinkedList();
+
+    /** 返回数据 */
+    @ApiModelProperty(value = "返回数据", position = 10, required = true)
+    private List<String> backList = new ArrayList<>();
 }

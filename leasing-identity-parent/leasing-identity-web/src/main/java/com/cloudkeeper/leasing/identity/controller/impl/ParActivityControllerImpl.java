@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +54,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     }
 
     @Override
+    @Transactional
     public Result<ParActivityVO> add(@ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO) {
         ParActivityVO parActivityVO = parActivityService.save(parActivityDTO);
         sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivityVO.getId());
