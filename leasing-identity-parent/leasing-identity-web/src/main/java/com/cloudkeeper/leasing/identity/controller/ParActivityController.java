@@ -30,7 +30,9 @@ public interface ParActivityController {
      * @param id 活动id
      * @return 活动 VO
      */
+
     @ApiOperation(value = "查询", notes = "查询", position = 1)
+    @Authorization(required = false)
     @GetMapping("/{id}id")
     Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id);
 

@@ -138,6 +138,16 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         ParActivityObject parActivityObject =parActivityObjectRepository.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(),parActivityObjectDTO.getActivityId());
         parActivityObject.setStatus("1");
         parActivityObject.setIsWorking("1");
+        if(!StringUtils.isEmpty(parActivityObject.getSource())){
+            if(parActivityObject.getSource() == 1){
+                parActivityObject.setSource(2);
+            }else{
+                parActivityObject.setSource(1);
+            }
+        }else {
+            parActivityObject.setSource(1);
+        }
+
         ParActivityObject newObject = super.save(parActivityObject);
 
         //取得组织长短ID
@@ -176,7 +186,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
             return null;
         }
         //更新Object
-        ParActivityObject parActivityObject =super.findById(parActivityObjectDTO.getId());
+        ParActivityObject parActivityObject =parActivityObjectRepository.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(),parActivityObjectDTO.getActivityId());
         parActivityObject.setIsWorking("0");
         ParActivityObject newObject = super.save(parActivityObject);
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);

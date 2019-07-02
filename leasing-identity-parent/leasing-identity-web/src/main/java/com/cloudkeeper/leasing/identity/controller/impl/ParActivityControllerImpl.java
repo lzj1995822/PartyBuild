@@ -48,6 +48,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     private final SysLogService sysLogService;
 
     @Override
+    @Authorization(required = false)
     public Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         Optional<ParActivity> parActivityOptional = parActivityService.findOptionalById(id);
         return parActivityOptional.map(parActivity -> Result.of(parActivity.convert(ParActivityVO.class))).orElseGet(Result::ofNotFound);
