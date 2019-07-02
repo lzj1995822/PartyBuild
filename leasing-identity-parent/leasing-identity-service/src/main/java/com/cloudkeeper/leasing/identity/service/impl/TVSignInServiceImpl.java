@@ -51,4 +51,15 @@ public class TVSignInServiceImpl extends BaseServiceImpl<TVSignIn> implements TV
         }
         return null;
     }
+
+    @Override
+    public TVSignIn updateFlag(String id, Integer flag) {
+        Optional<TVSignIn> byId = tVSignInRepository.findById(id);
+        if(byId.isPresent()){
+            TVSignIn tvSignIn = byId.get();
+            tvSignIn.setFlag(flag);
+            tVSignInRepository.save(tvSignIn);
+        }
+        return null;
+    }
 }

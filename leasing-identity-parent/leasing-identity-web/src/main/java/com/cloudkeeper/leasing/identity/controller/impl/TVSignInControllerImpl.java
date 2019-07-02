@@ -90,4 +90,9 @@ public class TVSignInControllerImpl implements TVSignInController {
        return Result.of(200);
     }
 
+    @Override
+    public void updateFlag(String id, Integer flag) {
+        tVSignInService.updateFlag(id,flag);
+    }
+
 }

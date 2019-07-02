@@ -11,4 +11,6 @@ import com.cloudkeeper.leasing.identity.dto.tvsignin.TVSignInDTO;
 public interface TVSignInService extends BaseService<TVSignIn> {
 
     TVSignIn save( String id,Integer type,String username);
+
+    TVSignIn updateFlag(String id,Integer flag);
 }
