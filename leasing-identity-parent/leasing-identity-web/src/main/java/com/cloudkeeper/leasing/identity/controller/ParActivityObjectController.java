@@ -112,6 +112,7 @@ public interface ParActivityObjectController {
      * @return 任务对象 VO 分页
      */
     @ApiOperation(value = "结束执行", notes = "activityId 活动id，organizationId 组织ID", position = 6)
+    @Authorization(required = false)
     @PostMapping("/executeOver")
     Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                               @ApiParam(value = "排序条件", required = true) Sort sort);
