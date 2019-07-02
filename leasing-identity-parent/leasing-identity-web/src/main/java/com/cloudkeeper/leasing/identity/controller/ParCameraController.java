@@ -83,4 +83,6 @@ public interface ParCameraController {
     Result<Page<ParCameraVO>> page(@ApiParam(value = "监控信息查询条件", required = true) @RequestBody ParCameraSearchable parCameraSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    @GetMapping("/number/{number}")
+    Result<ParCameraVO> findByNumber(@PathVariable String number);
 }

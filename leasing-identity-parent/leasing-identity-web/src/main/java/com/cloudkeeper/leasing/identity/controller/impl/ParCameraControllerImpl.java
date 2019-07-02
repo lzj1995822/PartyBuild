@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParCameraController;
 import com.cloudkeeper.leasing.identity.domain.ParCamera;
@@ -78,6 +79,13 @@ public class ParCameraControllerImpl implements ParCameraController {
         Page<ParCamera> parCameraPage = parCameraService.findAll(parCameraSearchable, pageable);
         Page<ParCameraVO> parCameraVOPage = ParCamera.convert(parCameraPage, ParCameraVO.class);
         return Result.of(parCameraVOPage);
+    }
+
+    @Override
+    @Authorization(required = false)
+    public Result<ParCameraVO> findByNumber(@PathVariable String number) {
+        ParCamera byNumber = parCameraService.findByNumber(number);
+        return Result.of(byNumber.convert(ParCameraVO.class));
     }
 
 }

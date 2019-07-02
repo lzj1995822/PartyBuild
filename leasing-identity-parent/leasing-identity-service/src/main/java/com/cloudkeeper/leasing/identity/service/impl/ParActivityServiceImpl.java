@@ -65,6 +65,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     private  final DistLearningActivityVideoServiceImpl distLearningActivityVideoService;
 
     private final ParActivityObjectService parActivityObjectService;
+
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -78,20 +79,20 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("alarmTime", ExampleMatcher.GenericPropertyMatchers.contains());
     }
+
     //重写save方法
     @Nonnull
     @Override
     public ParActivityVO save(@Nonnull ParActivityDTO parActivityDTO) {
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
-
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
-        if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
-            handleVideoFiles(parActivity.getId(),parActivityDTO.getVideo());
-        }
-
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
         par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
+        if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
+            List<DistLearningActivityVideo> distLearningActivityVideos = handleVideoFiles(parActivity.getId(), parActivityDTO.getVideo());
+            handleRecord(parActivity.getId(),distLearningActivityVideos,par.getBackList());
+        }
         return par;
     }
 
@@ -102,7 +103,6 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         all.stream().forEach(item -> {
             parActivityReleaseFileServiceImpl.deleteById(item.getId());
         });
-
         ArrayList<ParActivityReleaseFile> results = new ArrayList<>();
         if(!StringUtils.isEmpty(fileUrls)) {
             fileUrls.stream().forEach(item -> {
@@ -143,7 +143,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 TVSignIn tvSignIn = new TVSignIn();
                 tvSignIn.setActivityId(activityId);
                 tvSignIn.setOrganizationId(districtIdList.get(i));
-                tvSignIn.setVideoId(video.get(i).getId());
+                tvSignIn.setVideoId(video.get(j).getId());
+                tvSignIn.setFlag(0);
                 tvSignInService.save(tvSignIn);
             }
         }
