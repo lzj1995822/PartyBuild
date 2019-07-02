@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.TVSignInController;
 import com.cloudkeeper.leasing.identity.domain.TVSignIn;
@@ -80,6 +81,7 @@ public class TVSignInControllerImpl implements TVSignInController {
         return Result.of(tVSignInVOPage);
     }
 
+    @Authorization(required = false)
     @Override
     public Result<TVSignInVO> update(@PathVariable String id, @PathVariable Integer type, @PathVariable String username) {
         TVSignIn save = tVSignInService.save(id, type, username);
