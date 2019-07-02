@@ -65,6 +65,7 @@ public class TVSignInControllerImpl implements TVSignInController {
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<TVSignInVO>> list(@ApiParam(value = "远教视频签到记录查询条件", required = true) @RequestBody TVSignInSearchable tVSignInSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
