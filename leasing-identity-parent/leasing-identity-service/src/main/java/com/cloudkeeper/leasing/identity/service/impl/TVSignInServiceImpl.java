@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -41,11 +42,12 @@ public class TVSignInServiceImpl extends BaseServiceImpl<TVSignIn> implements TV
         if(byId.isPresent()){
             TVSignIn tvSignIn = byId.get();
             if(type==0){
-                tvSignIn.setSignInRecord(tvSignIn.getSignInRecord()+" "+username);
+                tvSignIn.setSignInRecord(StringUtils.isEmpty(tvSignIn.getSignInRecord())? username: (tvSignIn.getSignInRecord()+" "+username));
             }
             if(type==1){
-                tvSignIn.setSignOutRecord(tvSignIn.getSignOutRecord()+" "+username);
+                tvSignIn.setSignOutRecord(StringUtils.isEmpty(tvSignIn.getSignOutRecord())? username: (tvSignIn.getSignOutRecord()+" "+username));
             }
+            tVSignInRepository.save(tvSignIn);
         }
         return null;
     }

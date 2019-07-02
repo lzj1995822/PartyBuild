@@ -88,7 +88,7 @@ public interface TVSignInController {
      * @param id 远教视频签到记录id
      */
     @ApiOperation(value = "更新", notes = "更新", position = 3)
-    @PutMapping("/{id}record")
-    Result<TVSignInVO> update(String id ,Integer type,String username);
+    @PutMapping("/record")
+    Result update(String id ,Integer type,String username);
 
 }
