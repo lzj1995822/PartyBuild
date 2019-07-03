@@ -37,7 +37,7 @@ public class TVSignInServiceImpl extends BaseServiceImpl<TVSignIn> implements TV
     }
 
     @Override
-    public TVSignIn save(String id, Integer type, String username) {
+    public synchronized TVSignIn save(String id, Integer type, String username) {
         Optional<TVSignIn> byId = tVSignInRepository.findById(id);
         if(byId.isPresent()){
             TVSignIn tvSignIn = byId.get();
@@ -47,6 +47,17 @@ public class TVSignInServiceImpl extends BaseServiceImpl<TVSignIn> implements TV
             if(type==1){
                 tvSignIn.setSignOutRecord(StringUtils.isEmpty(tvSignIn.getSignOutRecord())? username: (tvSignIn.getSignOutRecord()+" "+username));
             }
+            tVSignInRepository.save(tvSignIn);
+        }
+        return null;
+    }
+
+    @Override
+    public TVSignIn updateFlag(String id, Integer flag) {
+        Optional<TVSignIn> byId = tVSignInRepository.findById(id);
+        if(byId.isPresent()){
+            TVSignIn tvSignIn = byId.get();
+            tvSignIn.setFlag(flag);
             tVSignInRepository.save(tvSignIn);
         }
         return null;

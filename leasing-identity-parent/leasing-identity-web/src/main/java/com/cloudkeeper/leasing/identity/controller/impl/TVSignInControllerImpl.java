@@ -46,6 +46,7 @@ public class TVSignInControllerImpl implements TVSignInController {
         return Result.ofAddSuccess(tVSignIn.convert(TVSignInVO.class));
     }
 
+    @Authorization(required = false)
     @Override
     public Result<TVSignInVO> update(@ApiParam(value = "远教视频签到记录id", required = true) @PathVariable String id,
         @ApiParam(value = "远教视频签到记录 DTO", required = true) @RequestBody @Validated TVSignInDTO tVSignInDTO) {
@@ -65,6 +66,7 @@ public class TVSignInControllerImpl implements TVSignInController {
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<TVSignInVO>> list(@ApiParam(value = "远教视频签到记录查询条件", required = true) @RequestBody TVSignInSearchable tVSignInSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
@@ -86,6 +88,11 @@ public class TVSignInControllerImpl implements TVSignInController {
     public Result update(String id,Integer type,String username) {
        tVSignInService.save(id, type, username);
        return Result.of(200);
+    }
+
+    @Override
+    public void updateFlag(String id, Integer flag) {
+        tVSignInService.updateFlag(id,flag);
     }
 
 }

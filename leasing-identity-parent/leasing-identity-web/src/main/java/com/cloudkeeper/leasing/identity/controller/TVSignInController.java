@@ -91,4 +91,11 @@ public interface TVSignInController {
     @PutMapping("/record")
     Result update(String id ,Integer type,String username);
 
+    /**
+     * 更新视频flag
+     */
+    @ApiOperation(value = "更新", notes = "更新", position = 3)
+    @PutMapping("/updateflag")
+    void updateFlag(String id ,Integer flag);
+
 }
