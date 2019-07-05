@@ -4,8 +4,13 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.identity.domain.CadrePosition;
 import com.cloudkeeper.leasing.identity.domain.PositionInformation;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.dto.cadreposition.CadrePositionSearchable;
 import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformationSearchable;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.service.CadrePositionService;
 import com.cloudkeeper.leasing.identity.service.GisService;
 import com.cloudkeeper.leasing.identity.service.PositionInformationService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
@@ -27,6 +32,8 @@ public class GisServiceImpl extends BaseServiceImpl<BaseEntity> implements GisSe
 
     private final VillageCadresService villageCadresService;
 
+    private final CadrePositionService cadrePositionService;
+
     @Override
     protected BaseRepository<BaseEntity> getBaseRepository() { return null; }
 
@@ -35,10 +42,10 @@ public class GisServiceImpl extends BaseServiceImpl<BaseEntity> implements GisSe
         List<PositionInformation> all = positionInformationService.findAll();
         List<PositionInformationVO> voList = PositionInformation.convert(all, PositionInformationVO.class);
         List<GisVO> list = new ArrayList<>();
-        PositionInformationSearchable searchable = new PositionInformationSearchable();
+        VillageCadresSearchable searchable = new VillageCadresSearchable();
         for(int i=0;i<voList.size();i++){
             searchable.setDistrictId(voList.get(i).getDistrictId());
-            searchable.setType("SECRETARY");
+            searchable.setPost("SECRETARY");
             GisVO gisVO = new GisVO();
             gisVO.setId(voList.get(i).getId());
             gisVO.setPositionName(voList.get(i).getName());
@@ -48,7 +55,8 @@ public class GisServiceImpl extends BaseServiceImpl<BaseEntity> implements GisSe
             gisVO.setPositionIntroduction(StringUtils.isEmpty(voList.get(i).getIntroduction())? "":voList.get(i).getIntroduction());
             gisVO.setPositionLonLat(voList.get(i).getLonLat());
             gisVO.setPositionCadresNumber(villageCadresService.countAllByDistrictId(voList.get(i).getDistrictId()));
-            gisVO.setPositionCadreName(villageCadresService.findAll(searchable).size()==0 ? "": villageCadresService.findAll(searchable).get(0).getName());
+            List<VillageCadres> villageCadresAll = villageCadresService.findAll(searchable);
+            gisVO.setPositionCadreName(villageCadresAll.size()>0 ?  villageCadresAll.get(0).getName():"");
             list.add(gisVO);
         }
         return list;

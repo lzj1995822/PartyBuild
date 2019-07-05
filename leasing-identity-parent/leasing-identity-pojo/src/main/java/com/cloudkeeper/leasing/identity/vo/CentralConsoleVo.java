@@ -25,6 +25,9 @@ public class CentralConsoleVo extends BaseVO {
     //村干部数量
     private Long villageCadresNumber;
 
+    //村书记数量
+    private Integer villageSecretaryNumber;
+
     //活动执行次数
     private Integer activityPerformNumber;
 
@@ -36,4 +39,6 @@ public class CentralConsoleVo extends BaseVO {
 
     //所属组织数量
     private Integer orgnizationNumber;
+
+
 }

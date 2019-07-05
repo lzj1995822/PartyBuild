@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
     //活动完成率
     private final ParActivityObjectService parActivityObjectService;
 
+   //岗位（通过岗位拿村书记数量）
+    private final  CadrePositionService cadrePositionService;
 
 
     @Override
@@ -50,6 +53,7 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId));
             centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));
             centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId));
+            centralConsoleVo.setVillageSecretaryNumber(cadrePositionService.countVillageSecretaryNumber(districtId,"SECRETARY"));
         }
         return centralConsoleVo;
     }
