@@ -91,6 +91,7 @@ public class TVSignInControllerImpl implements TVSignInController {
     }
 
     @Override
+    @Authorization(required = false)
     public void updateFlag(String id, Integer flag) {
         tVSignInService.updateFlag(id,flag);
     }
