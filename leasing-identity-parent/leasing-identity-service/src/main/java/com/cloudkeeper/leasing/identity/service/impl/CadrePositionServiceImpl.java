@@ -36,4 +36,9 @@ public class CadrePositionServiceImpl extends BaseServiceImpl<CadrePosition> imp
                 .withMatcher("post", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public Integer countVillageSecretaryNumber(String districtId, String post) {
+        Integer integer = cadrePositionRepository.countAllByDistrictIdStartingWithAndPostAndCadreIdNotNull(districtId, post);
+        return integer;
+    }
 }

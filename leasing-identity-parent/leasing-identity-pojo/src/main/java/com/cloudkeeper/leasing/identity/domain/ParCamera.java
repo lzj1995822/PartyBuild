@@ -80,5 +80,4 @@ public class ParCamera extends BaseEntity {
         }
         return (T) parCameraVO;
     }
-
 }
