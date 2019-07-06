@@ -38,7 +38,7 @@
         <hibernate-validator.varsion>6.0.12.Final</hibernate-validator.varsion>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
         <guava.version>20.0</guava.version>
-        <sqljdbc4.version>2.0</sqljdbc4.version>
+        <sqljdbc4.version>4.0</sqljdbc4.version>
     </properties>
 
     <dependencies>
@@ -114,6 +114,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>sqljdbc4</artifactId>
+                <version>${sqljdbc4.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -121,11 +127,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>sqljdbc4</artifactId>
-                <version>${sqljdbc4.version}</version>
-            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -149,7 +151,6 @@
             <url>http://clojars.org/repo/</url>
         </repository>
     </repositories>
-
 </project>
 
 
