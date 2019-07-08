@@ -114,12 +114,6 @@
             </dependency>
 
             <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>sqljdbc4</artifactId>
-                <version>${sqljdbc4.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -127,6 +121,12 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>sqljdbc4</artifactId>
+                <version>${sqljdbc4.version}</version>
+                <systemPath>${basedir}/lib/sqljdbc4-4.0.jar</systemPath>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -151,6 +151,7 @@
             <url>http://clojars.org/repo/</url>
         </repository>
     </repositories>
+
 </project>
 
 
