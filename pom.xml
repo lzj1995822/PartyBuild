@@ -126,7 +126,7 @@
                 <artifactId>sqljdbc4</artifactId>
                 <version>${sqljdbc4.version}</version>
                 <scope>system</scope>
-                <systemPath>${basedir}/lib/sqljdbc4-4.0.jar</systemPath>
+                <systemPath>/maven_local_repo/sqljdbc4-4.0.jar</systemPath>
             </dependency>
 
         </dependencies>
