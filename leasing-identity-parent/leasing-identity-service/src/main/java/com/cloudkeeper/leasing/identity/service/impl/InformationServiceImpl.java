@@ -65,14 +65,7 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
             acceptInformation.setObjs(item);
             acceptInformationService.save(acceptInformation);
 
-            MessageCenter messageCenter = new MessageCenter();
-            messageCenter.setBusinessId(information.getId());
-            messageCenter.setType("information");
-            messageCenter.setIsRead(0);
-            messageCenter.setDistrictId(item);
-            messageCenter.setTitle(information.getTitle());
-            messageCenter.setContent("[通知公告] " +'"'+information.getTitle()+'"'+"待查收");
-            messageCenterService.save(messageCenter);
+            messageCenterService.save(information.getId(),item,"information");
         }
         return informationVO;
     }

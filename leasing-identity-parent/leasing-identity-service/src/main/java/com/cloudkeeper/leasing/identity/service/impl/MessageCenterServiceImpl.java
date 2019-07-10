@@ -2,15 +2,13 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.identity.domain.Information;
 import com.cloudkeeper.leasing.identity.domain.MessageCenter;
 import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.repository.MessageCenterRepository;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
-import com.cloudkeeper.leasing.identity.service.MessageCenterService;
-import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
-import com.cloudkeeper.leasing.identity.service.ParActivityService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -31,10 +29,12 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
     private final MessageCenterRepository messageCenterRepository;
 
     //活动
-    private final ParActivityObjectService parActivityObjectService;
+    private final ParActivityService parActivityService;
 
     //组织
     private final SysDistrictRepository sysDistrictRepository;
+
+    private final InformationService informationService;
 
 
     @Override
@@ -57,16 +57,26 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
         messageCenter.setType(taskType);
         messageCenter.setIsRead(0);
         if(taskType=="distLearning"){
+            ParActivity byId = parActivityService.findById(activityId);
             SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
+            messageCenter.setTitle(byId.getTitle());
             messageCenter.setDistrictName(sysDistrictByDistrictId.getDistrictName());
             messageCenter.setDistrictId(sysDistrictByDistrictId.getAttachTo());
             messageCenter.setContent("[远教任务] "+messageCenter.getDistrictName()+'"'+messageCenter.getTitle()+'"'+"待审核");
         }
         if(taskType=="party"){
+            ParActivity byId1 = parActivityService.findById(activityId);
             SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
+            messageCenter.setTitle(byId1.getTitle());
             messageCenter.setDistrictName(sysDistrictByDistrictId.getDistrictName());
             messageCenter.setDistrictId(sysDistrictByDistrictId.getAttachTo());
             messageCenter.setContent("[党建任务] "+messageCenter.getDistrictName()+'"'+messageCenter.getTitle()+'"'+"待审核");
+        }
+        if(taskType=="information"){
+            Information byId = informationService.findById(activityId);
+            messageCenter.setDistrictId(districtId);
+            messageCenter.setTitle(byId.getTitle());
+            messageCenter.setContent("[通知公告] " +'"'+messageCenter.getTitle()+'"'+"待查收");
         }
         return super.save(messageCenter);
     }
