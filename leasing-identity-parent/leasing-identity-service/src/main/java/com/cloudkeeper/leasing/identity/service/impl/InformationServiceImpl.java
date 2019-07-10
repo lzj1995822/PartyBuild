@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.domain.MessageCenter;
 import com.cloudkeeper.leasing.identity.dto.information.InformationDTO;
 import com.cloudkeeper.leasing.identity.repository.AcceptInformationRepository;
 import com.cloudkeeper.leasing.identity.repository.InformationRepository;
+import com.cloudkeeper.leasing.identity.repository.MessageCenterRepository;
 import com.cloudkeeper.leasing.identity.service.AcceptInformationService;
 import com.cloudkeeper.leasing.identity.service.InformationService;
 import com.cloudkeeper.leasing.identity.service.MessageCenterService;
@@ -34,6 +35,7 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
     private final AcceptInformationService acceptInformationService;
 
     private final MessageCenterService messageCenterService;
+
 
     @Override
     protected BaseRepository<Information> getBaseRepository() {

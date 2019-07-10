@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.Information;
 import com.cloudkeeper.leasing.identity.domain.MessageCenter;
 import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.repository.InformationRepository;
 import com.cloudkeeper.leasing.identity.repository.MessageCenterRepository;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 /**
  * 消息中心 service
@@ -34,7 +36,8 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
     //组织
     private final SysDistrictRepository sysDistrictRepository;
 
-    private final InformationService informationService;
+
+    private final InformationRepository informationRepository;
 
 
     @Override
@@ -73,10 +76,13 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
             messageCenter.setContent("[党建任务] "+messageCenter.getDistrictName()+'"'+messageCenter.getTitle()+'"'+"待审核");
         }
         if(taskType=="information"){
-            Information byId = informationService.findById(activityId);
-            messageCenter.setDistrictId(districtId);
-            messageCenter.setTitle(byId.getTitle());
-            messageCenter.setContent("[通知公告] " +'"'+messageCenter.getTitle()+'"'+"待查收");
+            Optional<Information> byId = informationRepository.findById(activityId);
+            if(byId.isPresent()){
+                Information information = byId.get();
+                messageCenter.setDistrictId(districtId);
+                messageCenter.setTitle(information.getTitle());
+                messageCenter.setContent("[通知公告] " +'"'+messageCenter.getTitle()+'"'+"待查收");
+            }
         }
         return super.save(messageCenter);
     }
