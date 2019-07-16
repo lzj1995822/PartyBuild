@@ -100,6 +100,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
      * @return
      */
     @Override
+    @Authorization(required = false)
     public Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO) {
         ParActivityObject parActivityObject = parActivityObjectService.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(), parActivityObjectDTO.getActivityId());
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));

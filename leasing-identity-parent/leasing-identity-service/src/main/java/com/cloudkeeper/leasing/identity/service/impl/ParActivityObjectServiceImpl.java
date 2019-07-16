@@ -60,6 +60,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     private ParCameraService parCameraService;
 
     @Autowired
+    private MessageCenterService messageCenterService;
+
+    @Autowired
     private DynamicTaskService dynamicTaskService;
     @Override
     protected BaseRepository<ParActivityObject> getBaseRepository() {
@@ -176,7 +179,6 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         convert.setCodeValue(codeValue);
         List<ParActivityObjectVO> list = new ArrayList<>();
         list.add(convert);
-
         return list;
     }
     @Override
@@ -192,6 +194,8 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
         List<ParActivityObjectVO> list = new ArrayList<>();
         list.add(convert);
+        //消息中心添加
+        messageCenterService.save(parActivityObjectDTO.getActivityId(),parActivityObjectDTO.getOrganizationId(),"party");
         return list;
     }
 
