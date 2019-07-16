@@ -41,7 +41,8 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
                 .withMatcher("attachTo", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("subDistrictNum", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("districtType", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 
