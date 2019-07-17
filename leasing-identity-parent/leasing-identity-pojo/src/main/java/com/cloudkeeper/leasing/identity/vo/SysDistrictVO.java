@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.PositionInformation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 组织 VO
@@ -64,6 +66,14 @@ public class SysDistrictVO extends BaseVO {
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)
     private String districtType;
+
+    /** 经纬度 */
+    @ApiModelProperty(value = "经纬度", position = 10, required = true)
+    private String location;
+
+    /** 阵地信息 */
+    @ApiModelProperty(value = "阵地信息", position = 10, required = true)
+    private List<PositionInformation> positionInformation;
 
 
 }

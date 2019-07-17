@@ -60,6 +60,8 @@ public class SysDistrictSearchable extends BaseSearchable {
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)
     private String districtType;
-
+    /** 经纬度 */
+    @ApiModelProperty(value = "经纬度", position = 10, required = true)
+    private String location;
 
 }

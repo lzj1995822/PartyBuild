@@ -19,6 +19,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -81,6 +82,17 @@ public class SysDistrict extends BaseEntity {
     @Column(length = 60)
     private String districtType;
 
+    /** 经纬度 */
+    @ApiModelProperty(value = "经纬度", position = 10, required = true)
+    @Column(length = 60)
+    private String location;
+
+    @ApiModelProperty(value = "阵地信息", position = 10, required = true)
+    @OneToMany
+    @JsonIgnore
+    @JoinColumn(name = "districtId", referencedColumnName = "districtId", insertable = false, updatable = false)
+    private List<PositionInformation> positionInformation;
+
     /**
      * 子组织
      */
@@ -105,6 +117,9 @@ public class SysDistrict extends BaseEntity {
         SysDistrictVO sysDistrictVO = (SysDistrictVO) convert;
         if(!StringUtils.isEmpty(this.sysDistrict)){
             sysDistrictVO.setParentName(this.sysDistrict.getDistrictName());
+        }
+        if(!StringUtils.isEmpty(this.positionInformation)){
+            sysDistrictVO.setPositionInformation(this.positionInformation);
         }
         return (T) sysDistrictVO;
     }
