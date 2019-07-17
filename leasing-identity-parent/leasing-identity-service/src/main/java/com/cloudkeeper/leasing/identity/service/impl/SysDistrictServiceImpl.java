@@ -38,7 +38,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("districtName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("attachTo", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("attachTo", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("subDistrictNum", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("districtType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains())
