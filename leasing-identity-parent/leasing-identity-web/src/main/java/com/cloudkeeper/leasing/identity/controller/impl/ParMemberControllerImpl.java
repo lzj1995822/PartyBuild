@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.ParMember;
 import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberDTO;
 import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberSearchable;
 import com.cloudkeeper.leasing.identity.service.ParMemberService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParMemberVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ParMemberControllerImpl implements ParMemberController {
     /** 党员管理 service */
     private final ParMemberService parMemberService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParMemberVO> findOne(@ApiParam(value = "党员管理id", required = true) @PathVariable String id) {
         Optional<ParMember> parMemberOptional = parMemberService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class ParMemberControllerImpl implements ParMemberController {
     @Override
     public Result<ParMemberVO> add(@ApiParam(value = "党员管理 DTO", required = true) @RequestBody @Validated ParMemberDTO parMemberDTO) {
         ParMember parMember = parMemberService.save(parMemberDTO.convert(ParMember.class));
+        String  msg= parMemberService.actionLog("添加","[党员信息]", parMember.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parMemberService.getTableName(),parMember.getId());
         return Result.ofAddSuccess(parMember.convert(ParMemberVO.class));
     }
 
@@ -55,12 +60,17 @@ public class ParMemberControllerImpl implements ParMemberController {
         ParMember parMember = parMemberOptional.get();
         BeanUtils.copyProperties(parMemberDTO, parMember);
         parMember = parMemberService.save(parMember);
+        String  msg= parMemberService.actionLog("修改","[党员信息]", parMember.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parMemberService.getTableName(),parMember.getId());
         return Result.ofUpdateSuccess(parMember.convert(ParMemberVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "党员管理id", required = true) @PathVariable String id) {
+        ParMember parMember = parMemberService.findById(id);
         parMemberService.deleteById(id);
+        String  msg= parMemberService.actionLog("删除","[党员信息]", parMember.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parMemberService.getTableName(),parMember.getId());
         return Result.ofDeleteSuccess();
     }
 

@@ -58,7 +58,8 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Transactional
     public Result<ParActivityVO> add(@ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated ParActivityDTO parActivityDTO) {
         ParActivityVO parActivityVO = parActivityService.save(parActivityDTO);
-        sysLogService.pushLog(this.getClass().getName(),"发布活动",parActivityService.getTableName(),parActivityVO.getId());
+        String  msg= parActivityService.actionLog("发布", parActivityVO.getTaskType(), parActivityVO.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,parActivityService.getTableName(),parActivityVO.getId());
         return Result.ofAddSuccess(parActivityVO);
     }
 
@@ -72,12 +73,18 @@ public class ParActivityControllerImpl implements ParActivityController {
         ParActivity parActivity = parActivityOptional.get();
         BeanUtils.copyProperties(parActivityDTO, parActivity);
         parActivity = parActivityService.save(parActivity);
+
+        String  msg= parActivityService.actionLog("修改", parActivity.getTaskType(), parActivity.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,parActivityService.getTableName(),parActivity.getId());
         return Result.ofUpdateSuccess(parActivity.convert(ParActivityVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
+        ParActivity byId = parActivityService.findById(id);
         parActivityService.deleteById(id);
+        String  msg= parActivityService.actionLog("删除", byId.getTaskType(), byId.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,parActivityService.getTableName(),byId.getId());
         return Result.ofDeleteSuccess();
     }
 

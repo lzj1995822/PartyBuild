@@ -269,4 +269,20 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         List<Map<String, Object>> list = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
         return BeanConverts.mapToObj(clazz, list);
     }
+
+    @Override
+    public String actionLog(String action, String taskType, String title) {
+        String type;
+        if(taskType=="Party"){
+            type="[党建任务]";
+        }
+        else if(taskType=="DistLearning"){
+            type="[远教任务]";
+        }
+        else{
+            type=taskType;
+        }
+        String msg = action + type+'"'+title+'"';
+        return msg;
+    }
 }

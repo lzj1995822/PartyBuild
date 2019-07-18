@@ -37,7 +37,8 @@ public class SysLogServiceImpl extends BaseServiceImpl<SysLog> implements SysLog
         return super.defaultExampleMatcher()
                 .withMatcher("controllerName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("msg", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("tableName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("tableName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("actor", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     public SysLogVO pushLog(String controllerName, String msg, String tableName, String businessId) {

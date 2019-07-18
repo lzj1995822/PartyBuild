@@ -41,4 +41,7 @@ public class SysLogVO extends BaseVO {
     @ApiModelProperty(value = "涉及业务id", position = 10, required = true)
     private String bussinessId;
 
+    @ApiModelProperty(value = "操作人", position = 10, required = true)
+    private String actor;
+
 }
