@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.service.ParCameraService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +21,9 @@ public class ParCameraServiceImpl extends BaseServiceImpl<ParCamera> implements 
 
     /** 监控信息 repository */
     private final ParCameraRepository parCameraRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     @Override
     protected BaseRepository<ParCamera> getBaseRepository() {
@@ -40,5 +44,13 @@ public class ParCameraServiceImpl extends BaseServiceImpl<ParCamera> implements 
     @Override
     public ParCamera findByNumber(String boxNumber) {
         return parCameraRepository.findByNumber(boxNumber);
+    }
+
+    @Override
+    public ParCamera redisIp(String key) {
+        ParCamera parCamera = new ParCamera();
+        parCamera.setIP(redisTemplate.boundValueOps(key).get());
+        parCamera.setOrganizationId(key);
+        return  parCamera;
     }
 }

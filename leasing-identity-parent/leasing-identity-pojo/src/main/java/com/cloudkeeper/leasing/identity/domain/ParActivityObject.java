@@ -85,11 +85,14 @@ public class ParActivityObject extends BaseEntity {
             parActivityObjectVO.setMonth(this.parActivity.getMonth());
             parActivityObjectVO.setContext(this.parActivity.getContext());
             parActivityObjectVO.setScore(this.parActivity.getScore());
-            parActivityObjectVO.setDistrictId(this.sysDistrict.getId());
         }
         if(!StringUtils.isEmpty(this.sysDistrict)){
+            parActivityObjectVO.setDistrictId(this.sysDistrict.getId());
             parActivityObjectVO.setDistrictName(this.sysDistrict.getDistrictName());
             parActivityObjectVO.setDistrictId(this.sysDistrict.getId());
+            parActivityObjectVO.setLocation(this.sysDistrict.getLocation());
+            parActivityObjectVO.setParentName(this.sysDistrict.getSysDistrict().getDistrictName());
+            parActivityObjectVO.setParCamera(this.sysDistrict.getParCamera());
         }
         return (T) parActivityObjectVO;
     }

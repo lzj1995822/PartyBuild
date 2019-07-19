@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface ParCameraRepository extends BaseRepository<ParCamera> {
 
     ParCamera findByNumber(String boxNumber);
+
+
 }

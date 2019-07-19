@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.identity.domain.ParCamera;
 import com.cloudkeeper.leasing.identity.dto.parcamera.ParCameraDTO;
 import com.cloudkeeper.leasing.identity.dto.parcamera.ParCameraSearchable;
 import com.cloudkeeper.leasing.identity.vo.ParCameraVO;
@@ -85,4 +86,7 @@ public interface ParCameraController {
 
     @GetMapping("/number/{number}")
     Result<ParCameraVO> findByNumber(@PathVariable String number);
+
+    @GetMapping("/redisIp")
+    Result<ParCamera> findRedisIp(String key);
 }

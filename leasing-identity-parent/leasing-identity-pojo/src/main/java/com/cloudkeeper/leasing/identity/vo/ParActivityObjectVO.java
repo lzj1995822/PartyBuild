@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ParCamera;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 任务对象 VO
@@ -82,9 +84,17 @@ public class ParActivityObjectVO extends BaseVO {
     @ApiModelProperty(value = "间隔", position = 10, required = true)
     private String codeValue;
 
+   /** 位置 **/
+    @ApiModelProperty(value = "位置",position = 12,required = true)
+    private  String location;
 
+    /** 父级**/
+    @ApiModelProperty(value = "父级",position = 12,required = true)
+    private  String parentName;
 
-
+    /** 直播地址**/
+    @ApiModelProperty(value = "直播地址",position = 12,required = true)
+    private List<ParCamera> parCamera;
 
 
 

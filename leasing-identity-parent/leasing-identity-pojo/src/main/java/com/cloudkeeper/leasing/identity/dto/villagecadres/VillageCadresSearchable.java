@@ -43,15 +43,15 @@ public class VillageCadresSearchable extends BaseSearchable {
 
     /** 出生日期 */
     @ApiModelProperty(value = "出生日期", position = 10, required = true)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     /** 姓入党时间 */
     @ApiModelProperty(value = "姓入党时间", position = 10, required = true)
-    private LocalDateTime partyTime;
+    private LocalDate partyTime;
 
     /** 工作时间 */
     @ApiModelProperty(value = "工作时间", position = 10, required = true)
-    private LocalDateTime workTime;
+    private LocalDate workTime;
 
     /** 籍贯 */
     @ApiModelProperty(value = "籍贯", position = 10, required = true)

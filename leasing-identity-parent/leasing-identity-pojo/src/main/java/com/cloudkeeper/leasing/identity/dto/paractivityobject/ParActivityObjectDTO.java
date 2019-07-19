@@ -45,4 +45,8 @@ public class ParActivityObjectDTO extends BaseEditDTO {
     @ApiModelProperty(value = "关联组织", position = 10, required = true)
     private String attachTo;
 
+    /** 摄像头Number */
+    @ApiModelProperty(value = "摄像头Number", position = 10, required = true)
+    private String number;
+
 }

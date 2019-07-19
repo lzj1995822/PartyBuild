@@ -110,6 +110,12 @@ public class SysDistrict extends BaseEntity {
     @JsonIgnore
     private SysDistrict sysDistrict;
 
+    @ApiModelProperty(value = "摄像头信息", position = 10, required = true)
+    @OneToMany(mappedBy = "sysDistrict")
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<ParCamera> parCamera;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
