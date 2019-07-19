@@ -234,4 +234,8 @@ public interface BaseService<T> {
      * @return
      */
     <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
+
+    String actionLog(String action,String taskType,String title);
+
+
 }

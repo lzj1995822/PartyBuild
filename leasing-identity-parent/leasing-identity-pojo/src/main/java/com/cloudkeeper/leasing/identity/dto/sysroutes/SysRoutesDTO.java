@@ -58,5 +58,8 @@ public class SysRoutesDTO extends BaseEditDTO {
     @ApiModelProperty(value = "路由等级", position = 11)
     private Integer level;
 
+    /** 是否可视 */
+    @ApiModelProperty(value = "是否可视", position = 12)
+    private Integer visible;
 
 }

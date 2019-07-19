@@ -41,4 +41,8 @@ public class SysLogDTO extends BaseEditDTO {
     @ApiModelProperty(value = "涉及业务id", position = 10, required = true)
     private String bussinessId;
 
+    /** 操作人 */
+    @ApiModelProperty(value = "操作人", position = 10, required = true)
+    private String actor;
+
 }
