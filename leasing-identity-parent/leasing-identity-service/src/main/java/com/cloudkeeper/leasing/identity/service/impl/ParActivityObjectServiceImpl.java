@@ -1,13 +1,12 @@
 package com.cloudkeeper.leasing.identity.service.impl;
 
+import com.cloudkeeper.leasing.base.constant.AuthorizationConstants;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
+import com.cloudkeeper.leasing.base.utils.TokenUtil;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
-import com.cloudkeeper.leasing.identity.repository.ParActivityObjectRepository;
-import com.cloudkeeper.leasing.identity.repository.ParActivityPerformRepository;
-import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
-import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
+import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
@@ -16,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 任务对象 service
@@ -48,6 +50,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     private ParActivityPerformRepository parActivityPerformRepository;
 
     @Autowired
+    private ParCameraRepository parCameraRepository;
+
+    @Autowired
     private SysDistrictService sysDistrictService;
 
     @Autowired
@@ -58,6 +63,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
 
     @Autowired
     private ParCameraService parCameraService;
+
+    /** redis 操作 */
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     private MessageCenterService messageCenterService;
@@ -175,6 +183,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
         String codeValue = sysConfiguration.getCodeValue();
 
+        //redis存入摄像头数据number
+        redisTemplate.boundValueOps(parActivityObjectDTO.getOrganizationId()).set(parCameraRepository.findByNumber(parActivityObjectDTO.getNumber()).getIP());
+
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
         convert.setCodeValue(codeValue);
         List<ParActivityObjectVO> list = new ArrayList<>();
@@ -191,6 +202,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         ParActivityObject parActivityObject =parActivityObjectRepository.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(),parActivityObjectDTO.getActivityId());
         parActivityObject.setIsWorking("0");
         ParActivityObject newObject = super.save(parActivityObject);
+
+        redisTemplate.delete(parActivityObjectDTO.getOrganizationId());
+System.out.println(redisTemplate.boundValueOps("name").get());
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
         List<ParActivityObjectVO> list = new ArrayList<>();
         list.add(convert);
@@ -203,7 +217,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     public List<ParActivityObjectVO> TVIndexDetailList(String number) {
         ParCamera byNumber = parCameraService.findByNumber(number);
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);
-        detachedCriteria.add(Restrictions.eq("organizationId", byNumber.getOrganization().getDistrictId()));
+        detachedCriteria.add(Restrictions.eq("organizationId", byNumber.getSysDistrict().getDistrictId()));
         detachedCriteria.createAlias("parActivity", "p");
         detachedCriteria.add(Restrictions.between("p.month", firstDay(), lastDay()));
         return ParActivityObject.convert(findAll(detachedCriteria), ParActivityObjectVO.class);

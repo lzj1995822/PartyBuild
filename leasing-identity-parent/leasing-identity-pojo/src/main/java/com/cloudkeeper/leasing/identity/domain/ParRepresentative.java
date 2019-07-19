@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -46,12 +47,12 @@ public class ParRepresentative extends BaseEntity {
     /** 出生日期 */
     @ApiModelProperty(value = "出生日期", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     /** 入党时间 */
     @ApiModelProperty(value = "入党时间", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime joinDate;
+    private LocalDate joinDate;
 
     /** 学历 */
     @ApiModelProperty(value = "学历", position = 10, required = true)

@@ -39,11 +39,11 @@ public class ParRepresentativeDTO extends BaseEditDTO {
 
     /** 出生日期 */
     @ApiModelProperty(value = "出生日期", position = 10, required = true)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     /** 入党时间 */
     @ApiModelProperty(value = "入党时间", position = 10, required = true)
-    private LocalDateTime joinDate;
+    private LocalDate joinDate;
 
     /** 学历 */
     @ApiModelProperty(value = "学历", position = 10, required = true)

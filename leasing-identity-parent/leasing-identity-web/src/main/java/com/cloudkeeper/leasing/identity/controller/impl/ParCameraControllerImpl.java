@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,6 +87,11 @@ public class ParCameraControllerImpl implements ParCameraController {
     public Result<ParCameraVO> findByNumber(@PathVariable String number) {
         ParCamera byNumber = parCameraService.findByNumber(number);
         return Result.of(byNumber.convert(ParCameraVO.class));
+    }
+    @Override
+    public Result<ParCamera> findRedisIp(String key){
+        ParCamera parCamera = parCameraService.redisIp(key);
+        return Result.of(parCamera);
     }
 
 }

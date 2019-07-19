@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -55,17 +56,17 @@ public class VillageCadres extends BaseEntity {
     /** 出生日期 */
     @ApiModelProperty(value = "出生日期", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     /** 入党时间 */
     @ApiModelProperty(value = "姓入党时间", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime partyTime;
+    private LocalDate partyTime;
 
     /** 工作时间 */
     @ApiModelProperty(value = "工作时间", position = 10, required = true)
     @Column(length = 60)
-    private LocalDateTime workTime;
+    private LocalDate workTime;
 
     /** 籍贯 */
     @ApiModelProperty(value = "籍贯", position = 10, required = true)

@@ -67,16 +67,16 @@ public class ParCamera extends BaseEntity {
     @ApiModelProperty(value = "部门", position = 24)
     @ManyToOne
     @JoinColumn(name = "organizationId", insertable = false, updatable = false)
-    private Organization organization;
+    private SysDistrict sysDistrict;
 
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         ParCameraVO parCameraVO = (ParCameraVO) convert;
-        if(!StringUtils.isEmpty(this.organization)){
-            parCameraVO.setName(this.organization.getDistrictName());
-            parCameraVO.setOrganizationId(this.organization.getDistrictId());
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            parCameraVO.setName(this.sysDistrict.getDistrictName());
+            parCameraVO.setOrganizationId(this.sysDistrict.getDistrictId());
         }
         return (T) parCameraVO;
     }
