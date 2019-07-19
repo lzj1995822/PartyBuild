@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.ParRepresentative;
 import com.cloudkeeper.leasing.identity.dto.parrepresentative.ParRepresentativeDTO;
 import com.cloudkeeper.leasing.identity.dto.parrepresentative.ParRepresentativeSearchable;
 import com.cloudkeeper.leasing.identity.service.ParRepresentativeService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParRepresentativeVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ParRepresentativeControllerImpl implements ParRepresentativeControl
     /** 党代表 service */
     private final ParRepresentativeService parRepresentativeService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParRepresentativeVO> findOne(@ApiParam(value = "党代表id", required = true) @PathVariable String id) {
         Optional<ParRepresentative> parRepresentativeOptional = parRepresentativeService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class ParRepresentativeControllerImpl implements ParRepresentativeControl
     @Override
     public Result<ParRepresentativeVO> add(@ApiParam(value = "党代表 DTO", required = true) @RequestBody @Validated ParRepresentativeDTO parRepresentativeDTO) {
         ParRepresentative parRepresentative = parRepresentativeService.save(parRepresentativeDTO.convert(ParRepresentative.class));
+        String  msg= parRepresentativeService.actionLog("新增","[党代表信息]", parRepresentative.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parRepresentativeService.getTableName(),parRepresentative.getId());
         return Result.ofAddSuccess(parRepresentative.convert(ParRepresentativeVO.class));
     }
 
@@ -55,12 +60,17 @@ public class ParRepresentativeControllerImpl implements ParRepresentativeControl
         ParRepresentative parRepresentative = parRepresentativeOptional.get();
         BeanUtils.copyProperties(parRepresentativeDTO, parRepresentative);
         parRepresentative = parRepresentativeService.save(parRepresentative);
+        String  msg= parRepresentativeService.actionLog("修改","[党代表信息]", parRepresentative.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parRepresentativeService.getTableName(),parRepresentative.getId());
         return Result.ofUpdateSuccess(parRepresentative.convert(ParRepresentativeVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "党代表id", required = true) @PathVariable String id) {
+        ParRepresentative parRepresentative = parRepresentativeService.findById(id);
         parRepresentativeService.deleteById(id);
+        String  msg= parRepresentativeService.actionLog("删除","[党代表信息]", parRepresentative.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parRepresentativeService.getTableName(),parRepresentative.getId());
         return Result.ofDeleteSuccess();
     }
 

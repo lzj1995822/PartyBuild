@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.Role;
 import com.cloudkeeper.leasing.identity.dto.role.RoleDTO;
 import com.cloudkeeper.leasing.identity.dto.role.RoleSearchable;
 import com.cloudkeeper.leasing.identity.service.RoleService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.RoleVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class RoleControllerImpl implements RoleController {
     /** 角色 service */
     private final RoleService roleService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<RoleVO> findOne(@ApiParam(value = "角色id", required = true) @PathVariable String id) {
         Optional<Role> roleOptional = roleService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class RoleControllerImpl implements RoleController {
     @Override
     public Result<RoleVO> add(@ApiParam(value = "角色dto", required = true) @RequestBody @Validated RoleDTO roleDTO) {
         Role role = roleService.save(roleDTO.convert(Role.class));
+        String  msg= roleService.actionLog("新增","[角色信息]", role.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,roleService.getTableName(),role.getId());
         return Result.ofAddSuccess(role.convert(RoleVO.class));
     }
 
@@ -55,12 +60,17 @@ public class RoleControllerImpl implements RoleController {
         Role role = roleOptional.get();
         BeanUtils.copyProperties(roleDTO, role);
         role = roleService.save(role);
+        String  msg= roleService.actionLog("修改","[角色信息]", role.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,roleService.getTableName(),role.getId());
         return Result.ofUpdateSuccess(role.convert(RoleVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "角色id", required = true) @PathVariable String id) {
+        Role role = roleService.findById(id);
         roleService.deleteById(id);
+        String  msg= roleService.actionLog("删除","[角色信息]", role.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,roleService.getTableName(),role.getId());
         return Result.ofDeleteSuccess();
     }
 

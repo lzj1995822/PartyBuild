@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.CadrePosition;
 import com.cloudkeeper.leasing.identity.dto.cadreposition.CadrePositionDTO;
 import com.cloudkeeper.leasing.identity.dto.cadreposition.CadrePositionSearchable;
 import com.cloudkeeper.leasing.identity.service.CadrePositionService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.CadrePositionVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class CadrePositionControllerImpl implements CadrePositionController {
     /** 岗位管理 service */
     private final CadrePositionService cadrePositionService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<CadrePositionVO> findOne(@ApiParam(value = "岗位管理id", required = true) @PathVariable String id) {
         Optional<CadrePosition> cadrePositionOptional = cadrePositionService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class CadrePositionControllerImpl implements CadrePositionController {
     @Override
     public Result<CadrePositionVO> add(@ApiParam(value = "岗位管理 DTO", required = true) @RequestBody @Validated CadrePositionDTO cadrePositionDTO) {
         CadrePosition cadrePosition = cadrePositionService.save(cadrePositionDTO.convert(CadrePosition.class));
+        String  msg= cadrePositionService.actionLog("新增","[岗位信息]", cadrePosition.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,cadrePositionService.getTableName(),cadrePosition.getId());
         return Result.ofAddSuccess(cadrePosition.convert(CadrePositionVO.class));
     }
 
@@ -55,12 +60,17 @@ public class CadrePositionControllerImpl implements CadrePositionController {
         CadrePosition cadrePosition = cadrePositionOptional.get();
         BeanUtils.copyProperties(cadrePositionDTO, cadrePosition);
         cadrePosition = cadrePositionService.save(cadrePosition);
+        String  msg= cadrePositionService.actionLog("修改","[岗位信息]", cadrePosition.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,cadrePositionService.getTableName(),cadrePosition.getId());
         return Result.ofUpdateSuccess(cadrePosition.convert(CadrePositionVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "岗位管理id", required = true) @PathVariable String id) {
+        CadrePosition cadrePosition = cadrePositionService.findById(id);
         cadrePositionService.deleteById(id);
+        String  msg= cadrePositionService.actionLog("删除","[岗位信息]", cadrePosition.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,cadrePositionService.getTableName(),cadrePosition.getId());
         return Result.ofDeleteSuccess();
     }
 

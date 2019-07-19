@@ -45,7 +45,7 @@ public class ParMemberControllerImpl implements ParMemberController {
     @Override
     public Result<ParMemberVO> add(@ApiParam(value = "党员管理 DTO", required = true) @RequestBody @Validated ParMemberDTO parMemberDTO) {
         ParMember parMember = parMemberService.save(parMemberDTO.convert(ParMember.class));
-        String  msg= parMemberService.actionLog("添加","[党员信息]", parMember.getName());
+        String  msg= parMemberService.actionLog("新增","[党员信息]", parMember.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,parMemberService.getTableName(),parMember.getId());
         return Result.ofAddSuccess(parMember.convert(ParMemberVO.class));
     }

@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
@@ -37,6 +38,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     /** 村干部管理 service */
     private final VillageCadresService villageCadresService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
         Optional<VillageCadres> villageCadresOptional = villageCadresService.findOptionalById(id);
@@ -46,6 +49,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
         VillageCadres villageCadres = villageCadresService.save(villageCadresDTO.convert(VillageCadres.class));
+        String  msg= villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofAddSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
@@ -59,12 +64,17 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         VillageCadres villageCadres = villageCadresOptional.get();
         BeanUtils.copyProperties(villageCadresDTO, villageCadres);
         villageCadres = villageCadresService.save(villageCadres);
+        String  msg= villageCadresService.actionLog("修改","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
+        VillageCadres villageCadres = villageCadresService.findById(id);
         villageCadresService.deleteById(id);
+        String  msg= villageCadresService.actionLog("删除","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofDeleteSuccess();
     }
 

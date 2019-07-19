@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.controller.VolunteerController;
 import com.cloudkeeper.leasing.identity.domain.Volunteer;
 import com.cloudkeeper.leasing.identity.dto.volunteer.VolunteerDTO;
 import com.cloudkeeper.leasing.identity.dto.volunteer.VolunteerSearchable;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VolunteerService;
 import com.cloudkeeper.leasing.identity.vo.VolunteerVO;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +34,8 @@ public class VolunteerControllerImpl implements VolunteerController {
     /** 志愿者 service */
     private final VolunteerService volunteerService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<VolunteerVO> findOne(@ApiParam(value = "志愿者id", required = true) @PathVariable String id) {
         Optional<Volunteer> volunteerOptional = volunteerService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class VolunteerControllerImpl implements VolunteerController {
     @Override
     public Result<VolunteerVO> add(@ApiParam(value = "志愿者 DTO", required = true) @RequestBody @Validated VolunteerDTO volunteerDTO) {
         Volunteer volunteer = volunteerService.save(volunteerDTO.convert(Volunteer.class));
+        String  msg= volunteerService.actionLog("新增","[党员志愿者信息]", volunteer.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerService.getTableName(),volunteer.getId());
         return Result.ofAddSuccess(volunteer.convert(VolunteerVO.class));
     }
 
@@ -55,12 +60,17 @@ public class VolunteerControllerImpl implements VolunteerController {
         Volunteer volunteer = volunteerOptional.get();
         BeanUtils.copyProperties(volunteerDTO, volunteer);
         volunteer = volunteerService.save(volunteer);
+        String  msg= volunteerService.actionLog("修改","[党员志愿者信息]", volunteer.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerService.getTableName(),volunteer.getId());
         return Result.ofUpdateSuccess(volunteer.convert(VolunteerVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "志愿者id", required = true) @PathVariable String id) {
+        Volunteer volunteer = volunteerService.findById(id);
         volunteerService.deleteById(id);
+        String  msg= volunteerService.actionLog("删除","[党员志愿者信息]", volunteer.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerService.getTableName(),volunteer.getId());
         return Result.ofDeleteSuccess();
     }
 
