@@ -98,6 +98,8 @@ public class ParCameraControllerImpl implements ParCameraController {
         ParCamera byNumber = parCameraService.findByNumber(number);
         return Result.of(byNumber.convert(ParCameraVO.class));
     }
+
+    @Authorization(required = false)
     @Override
     public Result<ParCamera> findRedisIp(String key){
         ParCamera parCamera = parCameraService.redisIp(key);

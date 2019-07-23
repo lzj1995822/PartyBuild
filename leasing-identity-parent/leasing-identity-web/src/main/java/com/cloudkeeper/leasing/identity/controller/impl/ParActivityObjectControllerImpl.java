@@ -78,6 +78,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityObjectVO>> list(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
