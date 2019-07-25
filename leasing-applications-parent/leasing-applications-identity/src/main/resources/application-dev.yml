@@ -120,3 +120,9 @@ fdfs:
     width: 150
     height: 150
   trackerList: 172.16.0.199:22122
+  pool:
+    max-total: -1
+    max-wait-millis: 5000
+    max-total-per-key: 50
+    max-idle-per-key: 10
+    min-idle-per-key: 5
