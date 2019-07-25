@@ -15,9 +15,7 @@ import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.service.TVSignInService;
-import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
-import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
-import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -26,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -408,6 +407,13 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return Result.of(new TVIndexVO(currentMonthVO, nextMonthVO));
     }
 
+    @Override
+    public Result<Map<String,List>> activityCompletion(String year, String districtId) {
+        Map<String, List> stringListMap = activitiesCompletion(year, districtId);
+        stringListMap.put("title",currentActivities(year));
+        return Result.of(stringListMap);
+    }
+
     private DetachedCriteria getDetachedCriteria(ParActivitySearchable parActivitySearchable) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
         if (!StringUtils.isEmpty(parActivitySearchable.getDistrictID())) {
@@ -465,5 +471,38 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ZoneId zone = ZoneId.systemDefault();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
         return localDateTime.toLocalDate();
+    }
+
+    private Map<String,List> activitiesCompletion(String year,String districtId){
+        String sql = "SELECT a.id as activityId,o.status,o.organizationId,d.districtName "+
+                "FROM PAR_Activity AS a "+
+                "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId "+
+                "LEFT JOIN SYS_District AS d ON d.districtId = o.organizationId "+
+                "WHERE year(month)="+year+"AND organizationId like "+"'"+districtId+"%"+"' "+
+                "ORDER BY organizationId ASC,month Asc , releaseTime Asc";
+        List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
+        Map<String,List> map  = new HashMap<>();
+       allBySql.forEach(item -> {
+           String key = item.getDistrictName();
+           if (map.containsKey(key)){
+               map.get(key).add(item);
+           }else{
+               List list = new ArrayList();
+               list.add(item);
+               map.put(key,list);
+           }
+       });
+        return map;
+    }
+
+    private List currentActivities(String year){
+        List list  = new ArrayList();
+        String sql = "SELECT * FROM PAR_Activity WHERE year(month)="+year+
+                " ORDER BY month Asc , releaseTime Asc";
+        List<ActivityVO> allBySql = super.findAllBySql(ActivityVO.class, sql);
+        for(int i=0;i<allBySql.size();i++){
+            list.add(allBySql.get(i).getTitle());
+        }
+        return list;
     }
 }
