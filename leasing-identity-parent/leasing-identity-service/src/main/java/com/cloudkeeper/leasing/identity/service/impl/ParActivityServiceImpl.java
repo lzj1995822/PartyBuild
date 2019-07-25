@@ -474,7 +474,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     private Map<String,List> activitiesCompletion(String year,String districtId){
-        String sql = "SELECT a.id as activityId,o.status,o.organizationId,d.districtName "+
+        String sql = "SELECT a.id as activityId,o.status,o.organizationId as districtId,d.districtName,d.id AS organizationId "+
                 "FROM PAR_Activity AS a "+
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId "+
                 "LEFT JOIN SYS_District AS d ON d.districtId = o.organizationId "+
