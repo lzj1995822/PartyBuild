@@ -85,12 +85,19 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     public ParActivityVO save(@Nonnull ParActivityDTO parActivityDTO) {
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
+        // 处理发布的附件
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
-        par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
+        // 新增需要处理任务对象
+        if (StringUtils.isEmpty(parActivityDTO.getId())) {
+            par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
+        }
         if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
             List<DistLearningActivityVideo> distLearningActivityVideos = handleVideoFiles(parActivity.getId(), parActivityDTO.getVideo());
-            handleRecord(parActivity.getId(),distLearningActivityVideos,par.getBackList());
+            if (StringUtils.isEmpty(parActivityDTO.getId())) {
+                // 新增需要处理远教签到记录
+                handleRecord(parActivity.getId(),distLearningActivityVideos,par.getBackList());
+            }
         }
         return par;
     }
