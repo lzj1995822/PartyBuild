@@ -29,10 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 活动 controller
@@ -134,5 +131,9 @@ public class ParActivityControllerImpl implements ParActivityController {
         return parActivityService.tvIndex();
     }
 
+    @Override
+    public Result<Map<String,List>> activitiesCompletion(String year, String districtId) {
+        return parActivityService.activityCompletion(year,districtId);
+    }
 
 }

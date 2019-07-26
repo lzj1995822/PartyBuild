@@ -15,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 活动 controller
@@ -115,4 +117,8 @@ public interface ParActivityController {
     @Authorization(required = false)
     @GetMapping("/tv/index")
     Result<TVIndexVO> tv();
+
+    @ApiOperation(value = "各个村活动完成情况（统计汇总）", notes = "统计汇总", position = 6)
+    @PostMapping("/list/completion")
+    Result<Map<String,List>> activitiesCompletion(String year, String districtId);
 }
