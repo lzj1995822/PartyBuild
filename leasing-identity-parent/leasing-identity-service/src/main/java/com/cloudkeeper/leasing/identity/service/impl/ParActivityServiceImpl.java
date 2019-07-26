@@ -11,6 +11,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityRe
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
@@ -51,6 +52,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     /** 组织 */
     private final SysDistrictServiceImpl sysDistrictServiceImpl;
 
+    private  final SysDistrictRepository sysDistrictRepository;
+
     /** 组织 */
     private final SysUserService sysUserService;
 
@@ -89,10 +92,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         // 处理发布的附件
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
-        // 新增需要处理任务对象
         if (StringUtils.isEmpty(parActivityDTO.getId())) {
-            par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
+            par.setBackList(handleNewObject(parActivity.getId(), parActivityDTO.getNewObject()));
         }
+        //par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
         if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
             List<DistLearningActivityVideo> distLearningActivityVideos = handleVideoFiles(parActivity.getId(), parActivityDTO.getVideo());
             if (StringUtils.isEmpty(parActivityDTO.getId())) {
@@ -277,6 +280,48 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
     }
 
+    /**
+     * 处理新被指派的对象
+     * @param activityId
+     * @param newObject
+     * @return
+     */
+
+    private List<String> handleNewObject(String activityId, NewObject newObject) {
+        if(!StringUtils.isEmpty(newObject)&&!StringUtils.isEmpty(activityId)){
+            List<String> backList = new ArrayList<>();
+            List<SysDistrict> sysDistrictsAL= new ArrayList<>();
+            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+           String list[] = new String[2];
+            if(newObject.isCountryside()){
+                list[0] = "Party";
+            }
+            if(newObject.isOffice()){
+                list[1] = "Office";
+            }
+            if(!StringUtils.isEmpty(list)){
+                detachedCriteria.add(Restrictions.in("districtType", list));
+            }
+            detachedCriteria.add(Restrictions.eq("districtLevel", 3));
+            sysDistrictsAL = sysDistrictServiceImpl.findAll(detachedCriteria);
+
+            for(int i=0;i<sysDistrictsAL.size();i++){
+                backList.add(sysDistrictsAL.get(i).getDistrictId());
+                ParActivityObject parActivityObject = new ParActivityObject();
+                parActivityObject.setOrganizationId(sysDistrictsAL.get(i).getDistrictId());
+                parActivityObject.setIsWorking("0");
+                parActivityObject.setActivityId(activityId);
+                parActivityObject.setStatus("0");
+                parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
+                parActivityObjectService.save(parActivityObject);
+            }
+            return backList;
+        }
+       else {
+           return null;
+        }
+
+    }
     //更新进度信息
     private  List<PassPercentVO> getFinishRatio(String activityId) {
         // 新结构统计sql

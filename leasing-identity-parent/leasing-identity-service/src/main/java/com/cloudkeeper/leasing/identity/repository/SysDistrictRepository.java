@@ -27,6 +27,8 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     SysDistrict findSysDistrictByDistrictId(String districtId);
 
+    List<SysDistrict> findAllByDistrictTypeAndDistrictLevel(String districtType,int districtLevel);
+
 
     /**
      * 逻辑删除
