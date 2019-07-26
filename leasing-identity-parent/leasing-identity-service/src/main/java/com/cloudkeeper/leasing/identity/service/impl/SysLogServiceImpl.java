@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SysLog;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.repository.SysLogRepository;
+import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysLogVO;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * 系统日志 service
@@ -25,7 +28,9 @@ public class SysLogServiceImpl extends BaseServiceImpl<SysLog> implements SysLog
     /** 系统日志 repository */
     private final SysLogRepository sysLogRepository;
 
-    private final SysUserService sysUserService;
+   // private final SysUserService sysUserService;
+
+    private final SysUserRepository sysUserRepository;
 
     @Override
     protected BaseRepository<SysLog> getBaseRepository() {
@@ -43,7 +48,8 @@ public class SysLogServiceImpl extends BaseServiceImpl<SysLog> implements SysLog
 
     public SysLogVO pushLog(String controllerName, String msg, String tableName, String businessId) {
         String userId = (String) super.getHttpSession().getAttribute(AuthorizationConstants.CURRENT_USER_ID);
-        SysUser sysUser = sysUserService.findById(userId);
+        Optional<SysUser> byId = sysUserRepository.findById(userId);
+        SysUser sysUser = byId.get();
         SysLog sysLog = super.save(new SysLog(controllerName, msg, tableName, businessId, sysUser.getName()));
         return sysLog.convert(SysLogVO.class);
     }

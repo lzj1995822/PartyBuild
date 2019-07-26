@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.PositionInformation;
 import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformationDTO;
 import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformationSearchable;
 import com.cloudkeeper.leasing.identity.service.PositionInformationService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.PositionInformationVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class PositionInformationControllerImpl implements PositionInformationCon
     /** 阵地信息 service */
     private final PositionInformationService positionInformationService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<PositionInformationVO> findOne(@ApiParam(value = "阵地信息id", required = true) @PathVariable String id) {
         Optional<PositionInformation> positionInformationOptional = positionInformationService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class PositionInformationControllerImpl implements PositionInformationCon
     @Override
     public Result<PositionInformationVO> add(@ApiParam(value = "阵地信息 DTO", required = true) @RequestBody @Validated PositionInformationDTO positionInformationDTO) {
         PositionInformation positionInformation = positionInformationService.save(positionInformationDTO.convert(PositionInformation.class));
+        String  msg= positionInformationService.actionLog("新增","[基本阵地信息]", positionInformation.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,positionInformationService.getTableName(),positionInformation.getId());
         return Result.ofAddSuccess(positionInformation.convert(PositionInformationVO.class));
     }
 
@@ -55,12 +60,17 @@ public class PositionInformationControllerImpl implements PositionInformationCon
         PositionInformation positionInformation = positionInformationOptional.get();
         BeanUtils.copyProperties(positionInformationDTO, positionInformation);
         positionInformation = positionInformationService.save(positionInformation);
+        String  msg= positionInformationService.actionLog("修改","[基本阵地信息]", positionInformation.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,positionInformationService.getTableName(),positionInformation.getId());
         return Result.ofUpdateSuccess(positionInformation.convert(PositionInformationVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "阵地信息id", required = true) @PathVariable String id) {
+        PositionInformation positionInformation = positionInformationService.findById(id);
         positionInformationService.deleteById(id);
+        String  msg= positionInformationService.actionLog("删除","[基本阵地信息]", positionInformation.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,positionInformationService.getTableName(),positionInformation.getId());
         return Result.ofDeleteSuccess();
     }
 

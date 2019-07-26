@@ -12,18 +12,19 @@ import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserDTO;
 import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.SysLoginNoteService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import liquibase.util.MD5Util;
-import liquibase.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Nonnull;
@@ -55,6 +56,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     /** 组织*/
     private final SysDistrictService sysDistrictService;
 
+    private final SysLogService sysLogService;
+
     @Override
     protected BaseRepository<SysUser> getBaseRepository() {
         return sysUserRepository;
@@ -77,14 +80,29 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         //新增时给密码赋值并加密
         if(StringUtils.isEmpty(entity.getId())){
             entity.setPassword(MD5Util.computeMD5("123456"));
+            String  msg = super.actionLog("新增","[用户信息]", entity.getName());
+            sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),entity.getId());
         }else{
             Optional<SysUser> byId = sysUserRepository.findById(entity.getId());
             if (byId.isPresent()){
                 SysUser sysUser = byId.get();
-                //判断是否修改了密码（前台传的密码值是否和数据库相同，不同，说明修改了密码，进行加密）
-                if(!sysUser.getPassword().equals(entity.getPassword())){
-                    entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+                //判断是否重置密码
+                if(StringUtils.isEmpty(entity.getPassword())){
+                    entity.setPassword(MD5Util.computeMD5("123456"));
+                    String  msg = super.actionLog("重置","[用户密码]", sysUser.getName());
+                    sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),sysUser.getId());
                 }
+                //判断是否修改了密码（前台传的密码值是否和数据库相同，不同，说明修改了密码，进行加密）
+                else if(!sysUser.getPassword().equals(entity.getPassword())){
+                    entity.setPassword(MD5Util.computeMD5(entity.getPassword()));
+                    String  msg = super.actionLog("修改","[用户密码]", sysUser.getName());
+                    sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),sysUser.getId());
+                }
+                else{
+                    String  msg = super.actionLog("修改","[用户信息]", sysUser.getName());
+                    sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),sysUser.getId());
+                }
+
             }
         }
         return super.save(entity);

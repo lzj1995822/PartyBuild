@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import io.swagger.annotations.ApiParam;
@@ -36,6 +37,8 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     /** 组织 service */
     private final SysDistrictService sysDistrictService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<SysDistrictVO> findOne(@ApiParam(value = "组织id", required = true) @PathVariable String id) {
         Optional<SysDistrict> sysDistrictOptional = sysDistrictService.findOptionalById(id);
@@ -48,6 +51,8 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         convert.setEnable(1);
         convert.setScore(0);
         SysDistrict sysDistrict = sysDistrictService.save(convert);
+        String  msg= sysDistrictService.actionLog("新增","[组织信息]", sysDistrict.getDistrictName());
+        sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());
         return Result.ofAddSuccess(sysDistrict.convert(SysDistrictVO.class));
     }
 
@@ -61,12 +66,17 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         SysDistrict sysDistrict = sysDistrictOptional.get();
         BeanUtils.copyProperties(sysDistrictDTO, sysDistrict);
         sysDistrict = sysDistrictService.save(sysDistrict);
+        String  msg= sysDistrictService.actionLog("修改","[组织信息]", sysDistrict.getDistrictName());
+        sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());
         return Result.ofUpdateSuccess(sysDistrict.convert(SysDistrictVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "组织id", required = true) @PathVariable String id) {
+        SysDistrict sysDistrict = sysDistrictService.findById(id);
         sysDistrictService.deleteById(id);
+        String  msg= sysDistrictService.actionLog("删除","[组织信息]", sysDistrict.getDistrictName());
+        sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());
         return Result.ofDeleteSuccess();
     }
     @Override

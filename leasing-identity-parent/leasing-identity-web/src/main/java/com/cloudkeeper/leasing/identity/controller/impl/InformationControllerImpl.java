@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.Information;
 import com.cloudkeeper.leasing.identity.dto.information.InformationDTO;
 import com.cloudkeeper.leasing.identity.dto.information.InformationSearchable;
 import com.cloudkeeper.leasing.identity.service.InformationService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.InformationVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,8 @@ public class InformationControllerImpl implements InformationController {
     /** 消息通知 service */
     private final InformationService informationService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<InformationVO> findOne(@ApiParam(value = "消息通知id", required = true) @PathVariable String id) {
         Optional<Information> informationOptional = informationService.findOptionalById(id);
@@ -42,7 +45,10 @@ public class InformationControllerImpl implements InformationController {
 
     @Override
     public Result<InformationVO> add(@ApiParam(value = "消息通知 DTO", required = true) @RequestBody @Validated InformationDTO informationDTO) {
-        return Result.ofAddSuccess(informationService.save(informationDTO));
+        Information information = informationService.save(informationDTO.convert(Information.class));
+        String  msg= informationService.actionLog("发布","[通知公告]", information.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,informationService.getTableName(),information.getId());
+        return Result.ofAddSuccess(information.convert(InformationVO.class));
     }
 
     @Override
@@ -55,12 +61,17 @@ public class InformationControllerImpl implements InformationController {
         Information information = informationOptional.get();
         BeanUtils.copyProperties(informationDTO, information);
         information = informationService.save(information);
+        String  msg= informationService.actionLog("修改","[通知公告]", information.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,informationService.getTableName(),information.getId());
         return Result.ofUpdateSuccess(information.convert(InformationVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "消息通知id", required = true) @PathVariable String id) {
+        Information information = informationService.findById(id);
         informationService.deleteById(id);
+        String  msg= informationService.actionLog("删除","[通知公告]", information.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,informationService.getTableName(),information.getId());
         return Result.ofDeleteSuccess();
     }
 

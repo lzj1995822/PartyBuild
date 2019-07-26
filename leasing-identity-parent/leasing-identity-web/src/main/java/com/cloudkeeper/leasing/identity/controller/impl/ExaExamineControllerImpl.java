@@ -3,9 +3,12 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ExaExamineController;
 import com.cloudkeeper.leasing.identity.domain.ExaExamine;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineDTO;
 import com.cloudkeeper.leasing.identity.dto.exaexamine.ExaExamineSearchable;
 import com.cloudkeeper.leasing.identity.service.ExaExamineService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ExaExamineVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import io.swagger.annotations.ApiParam;
@@ -34,6 +37,10 @@ public class ExaExamineControllerImpl implements ExaExamineController {
     /** 考核审核 service */
     private final ExaExamineService exaExamineService;
 
+    private final SysLogService sysLogService;
+
+    private final SysDistrictService sysDistrictService;
+
     @Override
     public Result<ExaExamineVO> findOne(@ApiParam(value = "考核审核id", required = true) @PathVariable String id) {
         Optional<ExaExamine> exaExamineOptional = exaExamineService.findOptionalById(id);
@@ -43,6 +50,9 @@ public class ExaExamineControllerImpl implements ExaExamineController {
     @Override
     public Result<ExaExamineVO> add(@ApiParam(value = "考核审核 DTO", required = true) @RequestBody @Validated ExaExamineDTO exaExamineDTO) {
         ExaExamine exaExamine = exaExamineService.save(exaExamineDTO.convert(ExaExamine.class));
+        SysDistrict sysDistrict = sysDistrictService.findById(exaExamine.getOrganizationId());
+        String  msg = exaExamineService.actionLog( "修改"+'"'+sysDistrict.getDistrictName()+'"',"[考核积分]",exaExamine.getScore().toString());
+        sysLogService.pushLog(this.getClass().getName(),msg,exaExamineService.getTableName(),exaExamine.getId());
         return Result.ofAddSuccess(exaExamine.convert(ExaExamineVO.class));
     }
 
@@ -56,6 +66,7 @@ public class ExaExamineControllerImpl implements ExaExamineController {
         ExaExamine exaExamine = exaExamineOptional.get();
         BeanUtils.copyProperties(exaExamineDTO, exaExamine);
         exaExamine = exaExamineService.save(exaExamine);
+
         return Result.ofUpdateSuccess(exaExamine.convert(ExaExamineVO.class));
     }
 

@@ -29,10 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 活动 controller
@@ -71,12 +68,10 @@ public class ParActivityControllerImpl implements ParActivityController {
             return Result.ofLost();
         }
         ParActivity parActivity = parActivityOptional.get();
-        BeanUtils.copyProperties(parActivityDTO, parActivity);
-        parActivity = parActivityService.save(parActivity);
-
+        ParActivityVO save = parActivityService.save(parActivityDTO);
         String  msg= parActivityService.actionLog("修改", parActivity.getTaskType(), parActivity.getTitle());
         sysLogService.pushLog(this.getClass().getName(),msg,parActivityService.getTableName(),parActivity.getId());
-        return Result.ofUpdateSuccess(parActivity.convert(ParActivityVO.class));
+        return Result.ofUpdateSuccess(save);
     }
 
     @Override
@@ -136,5 +131,9 @@ public class ParActivityControllerImpl implements ParActivityController {
         return parActivityService.tvIndex();
     }
 
+    @Override
+    public Result<Map<String,List>> activitiesCompletion(String year, String districtId) {
+        return parActivityService.activityCompletion(year,districtId);
+    }
 
 }

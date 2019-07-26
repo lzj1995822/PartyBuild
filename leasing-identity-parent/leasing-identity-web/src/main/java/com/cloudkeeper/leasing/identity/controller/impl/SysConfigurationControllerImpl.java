@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationDTO
 import com.cloudkeeper.leasing.identity.dto.sysconfiguration.SysConfigurationSearchable;
 import com.cloudkeeper.leasing.identity.service.SysConfigurationService;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysConfigurationVO;
 import io.swagger.annotations.ApiParam;
@@ -41,6 +42,8 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
 
     private final SysDistrictService sysDistrictService;
 
+    private final SysLogService sysLogService;
+
 
     @Override
     public Result<SysConfigurationVO> findOne(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id) {
@@ -64,6 +67,8 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
         SysConfiguration sysConfiguration = sysConfigurationOptional.get();
         BeanUtils.copyProperties(sysConfigurationDTO, sysConfiguration);
         sysConfiguration = sysConfigurationService.save(sysConfiguration);
+        String  msg = sysLogService.actionLog("修改","[系统配置]", sysConfiguration.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,sysConfigurationService.getTableName(),sysConfiguration.getId());
         return Result.ofUpdateSuccess(sysConfiguration.convert(SysConfigurationVO.class));
     }
 

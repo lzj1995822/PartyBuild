@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,8 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     /** 任务对象 service */
     private final ParActivityObjectService parActivityObjectService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParActivityObjectVO> findOne(@ApiParam(value = "任务对象id", required = true) @PathVariable String id) {
         Optional<ParActivityObject> parActivityObjectOptional = parActivityObjectService.findOptionalById(id);
@@ -75,6 +78,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityObjectVO>> list(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
@@ -116,6 +120,8 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     public  Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.execute(parActivityObjectDTO,sort);
+        String  msg = parActivityObjectService.actionLog("执行",parActivityObjectVO.get(0).getTaskType(), parActivityObjectVO.get(0).getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,parActivityObjectService.getTableName(),parActivityObjectVO.get(0).getId());
         return Result.of(parActivityObjectVO);
     }
 
@@ -124,6 +130,8 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     public  Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.executeOver(parActivityObjectDTO,sort);
+        String  msg = parActivityObjectService.actionLog("执行完成",parActivityObjectVO.get(0).getTaskType(), parActivityObjectVO.get(0).getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,parActivityObjectService.getTableName(),parActivityObjectVO.get(0).getId());
         return Result.of(parActivityObjectVO);
     }
 

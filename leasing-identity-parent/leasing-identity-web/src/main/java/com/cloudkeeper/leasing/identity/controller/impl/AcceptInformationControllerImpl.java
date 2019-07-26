@@ -6,6 +6,8 @@ import com.cloudkeeper.leasing.identity.domain.AcceptInformation;
 import com.cloudkeeper.leasing.identity.dto.acceptinformation.AcceptInformationDTO;
 import com.cloudkeeper.leasing.identity.dto.acceptinformation.AcceptInformationSearchable;
 import com.cloudkeeper.leasing.identity.service.AcceptInformationService;
+import com.cloudkeeper.leasing.identity.service.InformationService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.AcceptInformationVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,8 @@ public class AcceptInformationControllerImpl implements AcceptInformationControl
     /** 接收公告 service */
     private final AcceptInformationService acceptInformationService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<AcceptInformationVO> findOne(@ApiParam(value = "接收公告id", required = true) @PathVariable String id) {
         Optional<AcceptInformation> acceptInformationOptional = acceptInformationService.findOptionalById(id);
@@ -55,6 +59,8 @@ public class AcceptInformationControllerImpl implements AcceptInformationControl
         AcceptInformation acceptInformation = acceptInformationOptional.get();
         BeanUtils.copyProperties(acceptInformationDTO, acceptInformation);
         acceptInformation = acceptInformationService.save(acceptInformation);
+        String  msg= acceptInformationService.actionLog("查收","[通知公告]", acceptInformation.getInformation().getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,acceptInformationService.getTableName(),acceptInformation.getId());
         return Result.ofUpdateSuccess(acceptInformation.convert(AcceptInformationVO.class));
     }
 

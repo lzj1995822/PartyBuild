@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.ParCamera;
 import com.cloudkeeper.leasing.identity.dto.parcamera.ParCameraDTO;
 import com.cloudkeeper.leasing.identity.dto.parcamera.ParCameraSearchable;
 import com.cloudkeeper.leasing.identity.service.ParCameraService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ParCameraVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class ParCameraControllerImpl implements ParCameraController {
     /** 监控信息 service */
     private final ParCameraService parCameraService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ParCameraVO> findOne(@ApiParam(value = "监控信息id", required = true) @PathVariable String id) {
         Optional<ParCamera> parCameraOptional = parCameraService.findOptionalById(id);
@@ -44,6 +47,8 @@ public class ParCameraControllerImpl implements ParCameraController {
     @Override
     public Result<ParCameraVO> add(@ApiParam(value = "监控信息 DTO", required = true) @RequestBody @Validated ParCameraDTO parCameraDTO) {
         ParCamera parCamera = parCameraService.save(parCameraDTO.convert(ParCamera.class));
+        String  msg= parCameraService.actionLog("新增","[监控信息]", parCamera.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parCameraService.getTableName(),parCamera.getId());
         return Result.ofAddSuccess(parCamera.convert(ParCameraVO.class));
     }
 
@@ -57,12 +62,17 @@ public class ParCameraControllerImpl implements ParCameraController {
         ParCamera parCamera = parCameraOptional.get();
         BeanUtils.copyProperties(parCameraDTO, parCamera);
         parCamera = parCameraService.save(parCamera);
+        String  msg= parCameraService.actionLog("修改","[监控信息]", parCamera.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parCameraService.getTableName(),parCamera.getId());
         return Result.ofUpdateSuccess(parCamera.convert(ParCameraVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "监控信息id", required = true) @PathVariable String id) {
+        ParCamera parCamera = parCameraService.findById(id);
         parCameraService.deleteById(id);
+        String  msg= parCameraService.actionLog("删除","[监控信息]", parCamera.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,parCameraService.getTableName(),parCamera.getId());
         return Result.ofDeleteSuccess();
     }
 
@@ -88,6 +98,8 @@ public class ParCameraControllerImpl implements ParCameraController {
         ParCamera byNumber = parCameraService.findByNumber(number);
         return Result.of(byNumber.convert(ParCameraVO.class));
     }
+
+    @Authorization(required = false)
     @Override
     public Result<ParCamera> findRedisIp(String key){
         ParCamera parCamera = parCameraService.redisIp(key);

@@ -2,9 +2,11 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VolunteerGroupController;
+import com.cloudkeeper.leasing.identity.domain.SysLog;
 import com.cloudkeeper.leasing.identity.domain.VolunteerGroup;
 import com.cloudkeeper.leasing.identity.dto.volunteergroup.VolunteerGroupDTO;
 import com.cloudkeeper.leasing.identity.dto.volunteergroup.VolunteerGroupSearchable;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VolunteerGroupService;
 import com.cloudkeeper.leasing.identity.vo.VolunteerGroupVO;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +35,8 @@ public class VolunteerGroupControllerImpl implements VolunteerGroupController {
     /** 志愿者服务队伍 service */
     private final VolunteerGroupService volunteerGroupService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<VolunteerGroupVO> findOne(@ApiParam(value = "志愿者服务队伍id", required = true) @PathVariable String id) {
         Optional<VolunteerGroup> volunteerGroupOptional = volunteerGroupService.findOptionalById(id);
@@ -42,6 +46,8 @@ public class VolunteerGroupControllerImpl implements VolunteerGroupController {
     @Override
     public Result<VolunteerGroupVO> add(@ApiParam(value = "志愿者服务队伍 DTO", required = true) @RequestBody @Validated VolunteerGroupDTO volunteerGroupDTO) {
         VolunteerGroup volunteerGroup = volunteerGroupService.save(volunteerGroupDTO.convert(VolunteerGroup.class));
+        String  msg= volunteerGroupService.actionLog("新增","[志愿者服务队伍信息]", volunteerGroup.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerGroupService.getTableName(),volunteerGroup.getId());
         return Result.ofAddSuccess(volunteerGroup.convert(VolunteerGroupVO.class));
     }
 
@@ -55,12 +61,17 @@ public class VolunteerGroupControllerImpl implements VolunteerGroupController {
         VolunteerGroup volunteerGroup = volunteerGroupOptional.get();
         BeanUtils.copyProperties(volunteerGroupDTO, volunteerGroup);
         volunteerGroup = volunteerGroupService.save(volunteerGroup);
+        String  msg= volunteerGroupService.actionLog("修改","[志愿者服务队伍信息]", volunteerGroup.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerGroupService.getTableName(),volunteerGroup.getId());
         return Result.ofUpdateSuccess(volunteerGroup.convert(VolunteerGroupVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "志愿者服务队伍id", required = true) @PathVariable String id) {
+        VolunteerGroup volunteerGroup = volunteerGroupService.findById(id);
         volunteerGroupService.deleteById(id);
+        String  msg= volunteerGroupService.actionLog("删除","[志愿者服务队伍信息]", volunteerGroup.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,volunteerGroupService.getTableName(),volunteerGroup.getId());
         return Result.ofDeleteSuccess();
     }
 

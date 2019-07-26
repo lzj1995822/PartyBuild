@@ -3,9 +3,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.constant.AuthorizationConstants;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.RoleMenuController;
+import com.cloudkeeper.leasing.identity.domain.Role;
 import com.cloudkeeper.leasing.identity.domain.RoleMenu;
+import com.cloudkeeper.leasing.identity.domain.SysLog;
 import com.cloudkeeper.leasing.identity.domain.SysRoutes;
 import com.cloudkeeper.leasing.identity.service.RoleMenuService;
+import com.cloudkeeper.leasing.identity.service.RoleService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.RoleMenuVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,10 @@ public class RoleMenuControllerImpl implements RoleMenuController {
     /** 角色菜单 service */
     private final RoleMenuService roleMenuService;
 
+    private final SysLogService sysLogService;
+
+    private final RoleService roleService;
+
     @Override
     public Result<List<RoleMenuVO>> findOne(@ApiParam(value = "角色id", required = true) @PathVariable String roleId) {
         List<RoleMenu> roleMenuList = roleMenuService.findAllByRoleId(roleId);
@@ -38,6 +46,9 @@ public class RoleMenuControllerImpl implements RoleMenuController {
     public Result<List<RoleMenuVO>> add(@ApiParam(value = "角色id", required = true) @PathVariable String roleId,
                                         @ApiParam(value = "角色菜单dto", required = true) @RequestBody List<String> menuCodeList) {
         List<RoleMenu> roleMenuList = roleMenuService.save(roleId, menuCodeList);
+        Role role = roleService.findById(roleId);
+        String  msg = roleMenuService.actionLog("配置","[角色权限]", role.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,roleMenuService.getTableName(),roleId);
         return Result.ofAddSuccess(RoleMenu.convert(roleMenuList, RoleMenuVO.class));
     }
 

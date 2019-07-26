@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.controller.WorkLedgerController;
 import com.cloudkeeper.leasing.identity.domain.WorkLedger;
 import com.cloudkeeper.leasing.identity.dto.workledger.WorkLedgerDTO;
 import com.cloudkeeper.leasing.identity.dto.workledger.WorkLedgerSearchable;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.WorkLedgerService;
 import com.cloudkeeper.leasing.identity.vo.WorkLedgerVO;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +34,8 @@ public class WorkLedgerControllerImpl implements WorkLedgerController {
     /** 工作台账 service */
     private final WorkLedgerService workLedgerService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<WorkLedgerVO> findOne(@ApiParam(value = "工作台账id", required = true) @PathVariable String id) {
         Optional<WorkLedger> workLedgerOptional = workLedgerService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class WorkLedgerControllerImpl implements WorkLedgerController {
     @Override
     public Result<WorkLedgerVO> add(@ApiParam(value = "工作台账 DTO", required = true) @RequestBody @Validated WorkLedgerDTO workLedgerDTO) {
         WorkLedger workLedger = workLedgerService.save(workLedgerDTO.convert(WorkLedger.class));
+        String  msg= workLedgerService.actionLog("新增","[工作台账信息]", workLedger.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,workLedgerService.getTableName(),workLedger.getId());
         return Result.ofAddSuccess(workLedger.convert(WorkLedgerVO.class));
     }
 
@@ -55,12 +60,17 @@ public class WorkLedgerControllerImpl implements WorkLedgerController {
         WorkLedger workLedger = workLedgerOptional.get();
         BeanUtils.copyProperties(workLedgerDTO, workLedger);
         workLedger = workLedgerService.save(workLedger);
+        String  msg= workLedgerService.actionLog("修改","[工作台账信息]", workLedger.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,workLedgerService.getTableName(),workLedger.getId());
         return Result.ofUpdateSuccess(workLedger.convert(WorkLedgerVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "工作台账id", required = true) @PathVariable String id) {
+        WorkLedger workLedger = workLedgerService.findById(id);
         workLedgerService.deleteById(id);
+        String  msg= workLedgerService.actionLog("删除","[工作台账信息]", workLedger.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,workLedgerService.getTableName(),workLedger.getId());
         return Result.ofDeleteSuccess();
     }
 

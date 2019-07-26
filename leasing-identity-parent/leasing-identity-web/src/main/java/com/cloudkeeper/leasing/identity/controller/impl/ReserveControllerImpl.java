@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.Reserve;
 import com.cloudkeeper.leasing.identity.dto.reserve.ReserveDTO;
 import com.cloudkeeper.leasing.identity.dto.reserve.ReserveSearchable;
 import com.cloudkeeper.leasing.identity.service.ReserveService;
+import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ReserveVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ReserveControllerImpl implements ReserveController {
     /** 后备人才 service */
     private final ReserveService reserveService;
 
+    private final SysLogService sysLogService;
+
     @Override
     public Result<ReserveVO> findOne(@ApiParam(value = "后备人才id", required = true) @PathVariable String id) {
         Optional<Reserve> reserveOptional = reserveService.findOptionalById(id);
@@ -42,6 +45,8 @@ public class ReserveControllerImpl implements ReserveController {
     @Override
     public Result<ReserveVO> add(@ApiParam(value = "后备人才 DTO", required = true) @RequestBody @Validated ReserveDTO reserveDTO) {
         Reserve reserve = reserveService.save(reserveDTO.convert(Reserve.class));
+        String  msg= reserveService.actionLog("新增","[后备人才信息]", reserve.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,reserveService.getTableName(),reserve.getId());
         return Result.ofAddSuccess(reserve.convert(ReserveVO.class));
     }
 
@@ -55,12 +60,17 @@ public class ReserveControllerImpl implements ReserveController {
         Reserve reserve = reserveOptional.get();
         BeanUtils.copyProperties(reserveDTO, reserve);
         reserve = reserveService.save(reserve);
+        String  msg= reserveService.actionLog("修改","[后备人才信息]", reserve.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,reserveService.getTableName(),reserve.getId());
         return Result.ofUpdateSuccess(reserve.convert(ReserveVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "后备人才id", required = true) @PathVariable String id) {
+        Reserve reserve = reserveService.findById(id);
         reserveService.deleteById(id);
+        String  msg= reserveService.actionLog("删除","[后备人才信息]", reserve.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,reserveService.getTableName(),reserve.getId());
         return Result.ofDeleteSuccess();
     }
 

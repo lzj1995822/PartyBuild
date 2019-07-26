@@ -10,7 +10,10 @@ import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 活动 service
@@ -33,4 +36,6 @@ public interface ParActivityService extends BaseService<ParActivity> {
      * @return
      */
     Result<TVIndexVO> tvIndex();
+
+    Result<Map<String, List>> activityCompletion(String year, String districtId);
 }
