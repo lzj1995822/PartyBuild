@@ -40,4 +40,7 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
      * @return
      */
     List<ParActivityObjectVO> TVIndexDetailList(String number);
+
+    //活动待审核数量
+    Integer waitCheckNumber(String organizationId);
 }

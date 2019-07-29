@@ -142,6 +142,12 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObjectVO);
     }
 
+    @Override
+    public Result<Integer> waitCheckNumber( @PathVariable String organizationId) {
+        Integer integer = parActivityObjectService.waitCheckNumber(organizationId);
+        return Result.of(integer);
+    }
+
 
     private DetachedCriteria getDetachedCriteria(ParActivityObjectSearchable parActivityObjectSearchable) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);

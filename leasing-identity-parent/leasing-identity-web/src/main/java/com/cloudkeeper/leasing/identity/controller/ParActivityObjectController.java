@@ -84,7 +84,7 @@ public interface ParActivityObjectController {
     @ApiOperation(value = "分页查询", notes = "分页查询<br/>page：第几页，默认为0，是第一页<br/>size：分页大小, 默认为10<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 6)
     @PostMapping("/page")
     Result<Page<ParActivityObjectVO>> page(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
-        @ApiParam(value = "分页参数", required = true) Pageable pageable);
+                                           @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
 
     @ApiOperation(value = "根据组织id和活动id查", position = 6)
@@ -121,4 +121,7 @@ public interface ParActivityObjectController {
 
     @GetMapping("/number/{number}")
     Result<List<ParActivityObjectVO>> TVIndexDetailList(@PathVariable String number);
+
+    @GetMapping("/checkNumber/organizationId{organizationId}")
+    Result<Integer> waitCheckNumber(@PathVariable String organizationId);
 }

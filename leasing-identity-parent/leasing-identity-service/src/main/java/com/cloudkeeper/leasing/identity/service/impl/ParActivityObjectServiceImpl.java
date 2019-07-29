@@ -204,7 +204,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         ParActivityObject newObject = super.save(parActivityObject);
 
         redisTemplate.delete(parActivityObjectDTO.getOrganizationId());
-System.out.println(redisTemplate.boundValueOps("name").get());
+        System.out.println(redisTemplate.boundValueOps("name").get());
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
         List<ParActivityObjectVO> list = new ArrayList<>();
         list.add(convert);
@@ -221,6 +221,12 @@ System.out.println(redisTemplate.boundValueOps("name").get());
         detachedCriteria.createAlias("parActivity", "p");
         detachedCriteria.add(Restrictions.between("p.month", firstDay(), lastDay()));
         return ParActivityObject.convert(findAll(detachedCriteria), ParActivityObjectVO.class);
+    }
+
+    @Override
+    public Integer waitCheckNumber(String organizationId) {
+        Integer integer = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId, "1");
+        return integer;
     }
 
     private LocalDate lastDay() {
