@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -85,6 +85,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     //重写save方法
     @Nonnull
     @Override
+    @Transactional
     public ParActivityVO save(@Nonnull ParActivityDTO parActivityDTO) {
         ParActivity p = parActivityDTO.convert(ParActivity.class);
         ParActivity parActivity = super.save(p);
@@ -134,13 +135,15 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         List<DistLearningActivityVideo> results = new ArrayList<>();
         if(!StringUtils.isEmpty(video)) {
             video.stream().forEach(item -> {
-                DistLearningActivityVideo distLearningActivityVideo = new DistLearningActivityVideo();
-                distLearningActivityVideo.setActivityId(activityId);
-                distLearningActivityVideo.setName(item.getName());
-                distLearningActivityVideo.setLengthOfTime(item.getLengthOfTime());
-                distLearningActivityVideo.setVideoCover("http://172.16.0.152:8082/cms/res/appPoster/stb/"+item.getVideoCover());
-                String mp4 = item.getVideoUrl().split("\\=")[1];
-                distLearningActivityVideo.setVideoUrl("http://172.16.1.140:9391/vod/"+mp4+".mp4");
+                    DistLearningActivityVideo distLearningActivityVideo = new DistLearningActivityVideo();
+                    distLearningActivityVideo.setActivityId(activityId);
+                    distLearningActivityVideo.setName(item.getName());
+                    distLearningActivityVideo.setLengthOfTime(item.getLengthOfTime());
+                    distLearningActivityVideo.setVideoCover("http://172.16.0.152:8082/cms/res/appPoster/stb/" + item.getVideoCover());
+                    if (item.getVideoUrl().split("\\=").length > 1) {
+                        String mp4 = item.getVideoUrl().split("\\=")[1];
+                        distLearningActivityVideo.setVideoUrl("http://172.16.1.140:9391/vod/" + mp4 + ".mp4");
+                    }
                 results.add(distLearningActivityVideoService.save(distLearningActivityVideo));
             });
         }
