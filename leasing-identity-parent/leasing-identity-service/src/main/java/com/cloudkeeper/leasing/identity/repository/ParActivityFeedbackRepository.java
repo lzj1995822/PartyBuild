@@ -21,6 +21,6 @@ import java.util.List;
 @Repository
 public interface ParActivityFeedbackRepository extends BaseRepository<ParActivityFeedback> {
 
-
+    List<ParActivityFeedback> findAllBySnIdAndUserId(String snId,String userId);
 
 }

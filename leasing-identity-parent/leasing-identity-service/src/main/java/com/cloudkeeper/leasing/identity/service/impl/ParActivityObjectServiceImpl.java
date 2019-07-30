@@ -43,6 +43,24 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Autowired
     private ParActivityObjectRepository parActivityObjectRepository;
 
+    /**
+     * 电视截图
+     */
+    @Autowired
+    private ParPictureInfroRepository parPictureInfroRepository;
+
+    /**
+     * 手机截图
+     */
+    @Autowired
+    private ParActivityPictureRepository parActivityPictureRepository;
+
+    /**
+     * feedBack
+     */
+    @Autowired
+    private ParActivityFeedbackRepository parActivityFeedbackRepository;
+
     @Autowired
     private ParActivityRepository parActivityRepository;
 
@@ -51,6 +69,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
 
     @Autowired
     private ParCameraRepository parCameraRepository;
+
+    @Autowired
+    private SysUserRepository sysUserRepository;
 
     @Autowired
     private SysDistrictService sysDistrictService;
@@ -139,6 +160,13 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
             }
         }
     }
+
+    /**
+     * 电视端，手机端截图执行，根据phoneOrTv来判断
+     * @param parActivityObjectDTO
+     * @param sort
+     * @return
+     */
     @Override
     @Transactional
     public List<ParActivityObjectVO> execute(ParActivityObjectDTO parActivityObjectDTO, Sort sort){
@@ -148,7 +176,11 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         //更新Object
         ParActivityObject parActivityObject =parActivityObjectRepository.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(),parActivityObjectDTO.getActivityId());
         parActivityObject.setStatus("1");
-        parActivityObject.setIsWorking("1");
+        if(parActivityObjectDTO.getPhoneOrTv().equals("phone")){
+            parActivityObject.setIsWorking("0");
+        }else {
+            parActivityObject.setIsWorking("1");
+        }
         if(!StringUtils.isEmpty(parActivityObject.getSource())){
             if(parActivityObject.getSource() == 1){
                 parActivityObject.setSource(2);
@@ -167,6 +199,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         //判断是否perform有值，有：更新SOURCE
         if(parActivityPerform.isPresent()){
             ParActivityPerform parPerform = parActivityPerform.get();
+            parPerform.setStatus("1");
             parPerform.setSource(2);
             parActivityPerformRepository.save(parPerform);
         }//无：新增
@@ -179,12 +212,50 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
             parActivityPerformRepository.save(perform);
         }
 
+        //更新前先删除截图
+        if(parActivityObjectDTO.getPhoneOrTv().equals("phone")) {
+            List<SysUser> list = sysUserRepository.findAllByOrganizationId(districtId.getId());
+            List<String> feedBackIds = new ArrayList<>();
+            for(int i=0;i<list.size();i++){
+               List<ParActivityFeedback> listFeed = parActivityFeedbackRepository.findAllBySnIdAndUserId(parActivityObjectDTO.getActivityId(),list.get(i).getId());
+                for(int j=0;j<listFeed.size();j++){
+                    feedBackIds.add(listFeed.get(j).getId());
+                }
+            }
+            for(int i = 0;i<feedBackIds.size();i++){
+                parActivityPictureRepository.deleteAllByActivityID(feedBackIds.get(i));
+            }
+        }else {
+            parPictureInfroRepository.deleteAllByStudyContentAndOrganizationId(parActivityObjectDTO.getActivityId(),districtId.getId());
+        }
 
-        SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
+        //手机端执行,传入UserId,以及img
+        if(parActivityObjectDTO.getPhoneOrTv().equals("phone")) {
+            ParActivityFeedback parActivityFeedback = new ParActivityFeedback();
+            parActivityFeedback.setSnId(parActivityObjectDTO.getActivityId());
+            parActivityFeedback.setUserId(parActivityObjectDTO.getUserId());
+            LocalDateTime localDateTime = LocalDateTime.now();
+            parActivityFeedback.setTime(localDateTime);
+            parActivityFeedback.setFlag("1");
+
+            ParActivityFeedback addParActivityFeedBack = parActivityFeedbackRepository.save(parActivityFeedback);
+
+            for (String s : parActivityObjectDTO.getPhoneImgList()) {
+                ParActivityPicture parActivityPicture = new ParActivityPicture();
+                parActivityPicture.setActivityID(addParActivityFeedBack.getId());
+                parActivityPicture.setImageUrl(s);
+                parActivityPictureRepository.save(parActivityPicture);
+            }
+
+        }
+
+            SysConfiguration sysConfiguration = sysConfigurationService.findById("b19abd37-df80-4f73-8e8a-de2064720c7e");
         String codeValue = sysConfiguration.getCodeValue();
 
         //redis存入摄像头数据number
-        redisTemplate.boundValueOps(parActivityObjectDTO.getOrganizationId()).set(parCameraRepository.findByNumber(parActivityObjectDTO.getNumber()).getIP());
+        if(!StringUtils.isEmpty(parActivityObjectDTO.getNumber())){
+            redisTemplate.boundValueOps(parActivityObjectDTO.getOrganizationId()).set(parCameraRepository.findByNumber(parActivityObjectDTO.getNumber()).getIP());
+        }
 
         ParActivityObjectVO convert = newObject.convert(ParActivityObjectVO.class);
         convert.setCodeValue(codeValue);
