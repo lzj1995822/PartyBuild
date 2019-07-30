@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 任务对象 DTO
@@ -48,5 +49,17 @@ public class ParActivityObjectDTO extends BaseEditDTO {
     /** 摄像头Number */
     @ApiModelProperty(value = "摄像头Number", position = 10, required = true)
     private String number;
+
+    /**判断是否手机或电视端执行 */
+    @ApiModelProperty(value = "执行方法", position = 10, required = true)
+    private String phoneOrTv;
+
+    /**用户ID */
+    @ApiModelProperty(value = "用户ID", position = 10, required = true)
+    private String userId;
+
+    /**手机图片*/
+    @ApiModelProperty(value = "手机图片",position = 10,required = true)
+    private List<String> phoneImgList;
 
 }

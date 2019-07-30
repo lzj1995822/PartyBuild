@@ -11,4 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParPictureInfroRepository extends BaseRepository<ParPictureInfro> {
 
+    void deleteAllByStudyContentAndOrganizationId(String activityId,String organizationId);
+
+
 }
