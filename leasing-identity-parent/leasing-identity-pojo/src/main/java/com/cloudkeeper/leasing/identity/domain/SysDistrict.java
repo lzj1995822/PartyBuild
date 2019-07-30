@@ -34,6 +34,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "dbo.SYS_District")
+@Where(clause = "isDelete=0")
 public class SysDistrict extends BaseEntity {
 
     /** 组织Id */
