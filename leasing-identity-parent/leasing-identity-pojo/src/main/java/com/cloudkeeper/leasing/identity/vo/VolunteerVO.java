@@ -57,4 +57,13 @@ public class VolunteerVO extends BaseVO {
     @ApiModelProperty(value = "其他服务目录", position = 10)
     private String otherCategory;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
+    /** 组织名称 */
+    @ApiModelProperty(value = "组织名称", position = 33)
+    private String districtName;
+
+
 }

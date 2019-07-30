@@ -43,7 +43,8 @@ public class VolunteerGroupServiceImpl extends BaseServiceImpl<VolunteerGroup> i
                 .withMatcher("phoneNumber", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("qqNumber", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("basicSiution", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("basicSiution", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

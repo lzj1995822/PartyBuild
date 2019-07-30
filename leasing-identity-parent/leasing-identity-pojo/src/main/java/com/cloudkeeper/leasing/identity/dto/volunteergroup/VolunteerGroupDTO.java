@@ -89,4 +89,8 @@ public class VolunteerGroupDTO extends BaseEditDTO {
     @ApiModelProperty(value = "基本情况", position = 10, required = true)
     private String basicSiution;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
 }

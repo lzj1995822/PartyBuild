@@ -32,7 +32,8 @@ public class VolunteerServiceImpl extends BaseServiceImpl<Volunteer> implements 
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("category", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("promise", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("otherCategory", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("otherCategory", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

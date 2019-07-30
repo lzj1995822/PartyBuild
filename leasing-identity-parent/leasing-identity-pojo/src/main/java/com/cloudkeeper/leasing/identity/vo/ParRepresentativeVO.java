@@ -77,4 +77,13 @@ public class ParRepresentativeVO extends BaseVO {
     @ApiModelProperty(value = "备注", position = 10, required = true)
     private String remark;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
+    /** 组织名称 */
+    @ApiModelProperty(value = "组织名称", position = 33)
+    private String districtName;
+
+
 }

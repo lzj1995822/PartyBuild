@@ -37,7 +37,8 @@ public class ReserveServiceImpl extends BaseServiceImpl<Reserve> implements Rese
                 .withMatcher("category", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("unit", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("basicSituation", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("resume", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("resume", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

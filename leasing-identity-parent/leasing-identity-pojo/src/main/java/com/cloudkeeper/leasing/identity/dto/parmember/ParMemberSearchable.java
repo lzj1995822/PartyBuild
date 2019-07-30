@@ -25,6 +25,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ParMemberSearchable extends BaseSearchable {
 
+    /** 地址 */
+    @ApiModelProperty(value = "地址", position = 10, required = true)
+    private String address;
+
     /** 姓名 */
     @ApiModelProperty(value = "姓名", position = 10, required = true)
     private String name;
@@ -84,5 +88,9 @@ public class ParMemberSearchable extends BaseSearchable {
     /** 是否为党员志愿者 */
     @ApiModelProperty(value = "是否为党员志愿者", position = 10, required = true)
     private String isVolunteer;
+
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
 
 }

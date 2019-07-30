@@ -49,4 +49,13 @@ public class WorkLedgerVO extends BaseVO {
     @ApiModelProperty(value = "附件", position = 10, required = true)
     private String enclosure;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
+    /** 组织名称 */
+    @ApiModelProperty(value = "组织名称", position = 33)
+    private String districtName;
+
+
 }

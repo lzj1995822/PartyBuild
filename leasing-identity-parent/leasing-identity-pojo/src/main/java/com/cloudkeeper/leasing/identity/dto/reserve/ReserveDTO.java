@@ -73,4 +73,8 @@ public class ReserveDTO extends BaseEditDTO {
     @ApiModelProperty(value = "个人简历", position = 33)
     private String resume;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
 }

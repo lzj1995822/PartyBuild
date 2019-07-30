@@ -73,4 +73,12 @@ public class ReserveVO extends BaseVO {
     @ApiModelProperty(value = "个人简历", position = 33)
     private String resume;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
+    /** 组织名称 */
+    @ApiModelProperty(value = "组织名称", position = 33)
+    private String districtName;
+
 }

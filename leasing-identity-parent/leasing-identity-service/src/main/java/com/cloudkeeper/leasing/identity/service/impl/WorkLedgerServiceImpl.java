@@ -33,7 +33,8 @@ public class WorkLedgerServiceImpl extends BaseServiceImpl<WorkLedger> implement
                 .withMatcher("ledgerType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("workAddress", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("enclosure", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("enclosure", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

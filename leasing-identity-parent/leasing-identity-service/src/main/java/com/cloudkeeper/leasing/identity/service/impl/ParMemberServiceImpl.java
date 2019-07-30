@@ -39,6 +39,7 @@ public class ParMemberServiceImpl extends BaseServiceImpl<ParMember> implements 
                 .withMatcher("academicDegree", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("contact", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("isDifficulty", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("isVolunteer", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 

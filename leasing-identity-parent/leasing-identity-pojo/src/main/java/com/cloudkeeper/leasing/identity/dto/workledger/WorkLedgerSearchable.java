@@ -49,4 +49,8 @@ public class WorkLedgerSearchable extends BaseSearchable {
     @ApiModelProperty(value = "附件", position = 10, required = true)
     private String enclosure;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 33)
+    private String districtId;
+
 }

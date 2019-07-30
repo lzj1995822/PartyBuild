@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.WorkLedgerVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -57,5 +60,28 @@ public class WorkLedger extends BaseEntity {
     @ApiModelProperty(value = "附件", position = 10, required = true)
     @Column(length = 60)
     private String enclosure;
+
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 22, required = true)
+    @Column(length = 36)
+    private String districtId;
+
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
+    @Nonnull
+    @Override
+
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        WorkLedgerVO workLedgerVO = (WorkLedgerVO) convert;
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            workLedgerVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        return (T) workLedgerVO;
+    }
 
 }

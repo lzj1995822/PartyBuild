@@ -98,6 +98,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             //通过姓名模糊查询
             detachedCriteria.add(Restrictions.ilike("name", villageCadresSearchable.getName(), MatchMode.ANYWHERE));
         }
+        if(!StringUtils.isEmpty(villageCadresSearchable.getDistrictId())){
+            //通过组织模糊查询
+            detachedCriteria.add(Restrictions.ilike("districtId", villageCadresSearchable.getDistrictId(), MatchMode.START));
+        }
         Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable);
         Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);
         return Result.of(villageCadresVOPage);

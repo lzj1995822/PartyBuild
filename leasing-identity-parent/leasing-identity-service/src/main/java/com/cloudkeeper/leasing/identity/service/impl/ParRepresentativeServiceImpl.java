@@ -38,7 +38,8 @@ public class ParRepresentativeServiceImpl extends BaseServiceImpl<ParRepresentat
                 .withMatcher("politicalTrail", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("rewardPunish", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("opinion", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("remark", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("remark", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

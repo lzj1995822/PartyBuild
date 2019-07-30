@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.VolunteerGroupVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 
 /**
  * 志愿者服务队伍
@@ -90,6 +93,29 @@ public class VolunteerGroup extends BaseEntity {
     /** 基本情况 */
     @ApiModelProperty(value = "基本情况", position = 10, required = true)
     private String basicSiution;
+
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 22, required = true)
+    @Column(length = 36)
+    private String districtId;
+
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
+    @Nonnull
+    @Override
+
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        VolunteerGroupVO volunteerGroupVO = (VolunteerGroupVO) convert;
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            volunteerGroupVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        return (T) volunteerGroupVO;
+    }
 
 
 }

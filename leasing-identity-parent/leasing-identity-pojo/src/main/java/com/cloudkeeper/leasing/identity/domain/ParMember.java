@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.ParMemberVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -28,6 +31,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "PAR_Member")
 public class ParMember extends BaseEntity {
+
+    /** 地址 */
+    @ApiModelProperty(value = "地址", position = 10, required = true)
+    @Column(length = 60)
+    private String address;
 
     /** 姓名 */
     @ApiModelProperty(value = "姓名", position = 10, required = true)
@@ -103,5 +111,28 @@ public class ParMember extends BaseEntity {
     @ApiModelProperty(value = "是否为党员志愿者", position = 10, required = true)
     @Column(length = 60)
     private String isVolunteer;
+
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 22, required = true)
+    @Column(length = 36)
+    private String districtId;
+
+    /** 组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysDistrict;
+    @Nonnull
+    @Override
+
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        ParMemberVO parMemberVO = (ParMemberVO) convert;
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            parMemberVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        return (T) parMemberVO;
+    }
 
 }

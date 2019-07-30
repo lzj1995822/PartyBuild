@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.ParRepresentativeVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -93,4 +96,14 @@ public class ParRepresentative extends BaseEntity {
     @ApiModelProperty(value = "备注", position = 10, required = true)
     @Column(length = 60)
     private String remark;
+
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 22, required = true)
+    @Column(length = 36)
+    private String districtId;
+
+    /** 组织名称 */
+    @ApiModelProperty(value = "组织名称", position = 22, required = true)
+    @Column(length = 36)
+    private String districtName;
 }
