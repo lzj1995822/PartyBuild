@@ -273,10 +273,10 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     @Override
     public String actionLog(String action, String taskType, String title) {
         String type;
-        if(taskType=="Party"){
+        if(taskType.equals("Party")){
             type="[党建任务]";
         }
-        else if(taskType=="DistLearning"){
+        else if(taskType.equals("DistLearning")){
             type="[远教任务]";
         }
         else{
