@@ -124,7 +124,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
             return Result.of(Result.ResultCode.LOGIN_FAIL.getCode(), "用户名已被禁用！");
         }
         String token = TokenUtil.of(sysUser.getId());
-        token += sysUserDTO.getIsMobile();
         if (sysUserDTO.getIsMobile() == 1) {
             redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_APP_TOKEN_KEY + sysUser.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
         } else {
