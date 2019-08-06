@@ -26,4 +26,8 @@ public class PrincipalLoginDTO extends BaseDTO {
     @ApiModelProperty(value = "密码", position = 14, required = true)
     @NotBlank
     private String password;
+
+    @ApiModelProperty(value = "是否是手机端", position = 16, required = true)
+    private int isMobile;
+
 }

@@ -96,8 +96,10 @@ public class PrincipalServiceImpl extends BaseServiceImpl<Principal> implements 
             return Result.of(Result.ResultCode.LOGIN_FAIL.getCode(), "用户名已被禁用！");
         }
         String token = TokenUtil.of(principal.getId());
+        token += principalLoginDTO.getIsMobile();
         redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_TOKEN_KEY + principal.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
-        saveLog("成功", principal);
+        String msg = principalLoginDTO.getIsMobile() == 1 ?  "手机端登陆成功" : "电脑端登陆成功";
+        saveLog(msg, principal);
         return Result.of("登录成功！", token + "$" + principal.getId());
     }
 
