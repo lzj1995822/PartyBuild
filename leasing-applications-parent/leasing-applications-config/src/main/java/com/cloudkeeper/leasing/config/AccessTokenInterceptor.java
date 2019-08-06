@@ -65,8 +65,9 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             return false;
         }
         String principalId = claims.getId();
-        String token2 = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_TOKEN_KEY + principalId);
-        if (!token.equals(token2)) {
+        String appToken = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_APP_TOKEN_KEY + principalId);
+        String pcToken = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + principalId);
+        if (!token.equals(appToken) && !token.equals(pcToken)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             log.info("用户不存在或已失效，请重新登录");
             return false;

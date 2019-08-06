@@ -97,7 +97,11 @@ public class PrincipalServiceImpl extends BaseServiceImpl<Principal> implements 
         }
         String token = TokenUtil.of(principal.getId());
         token += principalLoginDTO.getIsMobile();
-        redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_TOKEN_KEY + principal.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
+        if (principalLoginDTO.getIsMobile() == 1) {
+            redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_APP_TOKEN_KEY + principal.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
+        } else {
+            redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + principal.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
+        }
         String msg = principalLoginDTO.getIsMobile() == 1 ?  "手机端登陆成功" : "电脑端登陆成功";
         saveLog(msg, principal);
         return Result.of("登录成功！", token + "$" + principal.getId());
