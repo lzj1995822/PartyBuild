@@ -73,4 +73,7 @@ public class SysUserDTO extends BaseEditDTO {
     @ApiModelProperty(value = "手机", position = 26, required = true)
     private String phone;
 
+    @ApiModelProperty(value = "是否是手机端", position = 16, required = true)
+    private int isMobile;
+
 }
