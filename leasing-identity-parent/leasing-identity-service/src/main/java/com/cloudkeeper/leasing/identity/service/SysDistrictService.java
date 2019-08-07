@@ -44,4 +44,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
 
     void deleteByDisId(String id);
 
+    String findMaxId(String districtId);
+
 }

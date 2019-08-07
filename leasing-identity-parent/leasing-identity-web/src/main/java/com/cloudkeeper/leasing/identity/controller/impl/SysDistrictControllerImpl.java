@@ -50,6 +50,8 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         SysDistrict convert = sysDistrictDTO.convert(SysDistrict.class);
         convert.setEnable(1);
         convert.setScore(0);
+        convert.setDistrictId(sysDistrictService.findMaxId(convert.getAttachTo()));
+        convert.setDistrictLevel(sysDistrictService.findMaxId(convert.getAttachTo()).length()==4? 2:3);
         SysDistrict sysDistrict = sysDistrictService.save(convert);
         String  msg= sysDistrictService.actionLog("新增","[组织信息]", sysDistrict.getDistrictName());
         sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());

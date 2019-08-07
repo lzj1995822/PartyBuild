@@ -42,5 +42,7 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
     @Query(value = "delete from SYS_District where id =?",nativeQuery = true)
     void deleteByDisId(String id);
 
+    @Query(value = "SELECT max(districtId) from SYS_District WHERE attachTo=? AND districtLevel = ?",nativeQuery = true)
+    String findMaxByDistrictIdAndDistrictLevel(String districtId,int districtLevel);
 
 }

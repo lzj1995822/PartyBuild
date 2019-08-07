@@ -116,6 +116,19 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         sysDistrictRepository.deleteByDisId(id);
     }
 
+    @Override
+    public String findMaxId(String districtId) {
+        String maxDistrictId = new String();
+        if(districtId.length()==2){
+            maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,2);
+        }
+        if(districtId.length()==4){
+            maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,3);
+        }
+        maxDistrictId = StringUtils.isEmpty(maxDistrictId) ? districtId+"01":"0"+ (Integer.valueOf(maxDistrictId) + 1);
+        return maxDistrictId;
+    }
+
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
         for (SysDistrict sysDistrict: sysDistricts) {
