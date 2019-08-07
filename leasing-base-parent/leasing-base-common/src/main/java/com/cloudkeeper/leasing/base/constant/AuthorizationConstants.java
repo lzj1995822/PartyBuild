@@ -10,7 +10,9 @@ public class AuthorizationConstants {
     public static final String CURRENT_USER_ID = "CURRENT_USER_ID";
 
     /** 存储当前登录用户id的字段名*/
-    public static final String REDIS_TOKEN_KEY = "identity:token:principalId:";
+    public static final String REDIS_WEB_TOKEN_KEY = "web:token:principalId:";
+
+    public static final String REDIS_APP_TOKEN_KEY = "app:token:principalId:";
 
     /** 存储当前登录用户的字段名*/
     public static final String CURRENT_USER = "CURRENT_USER";
