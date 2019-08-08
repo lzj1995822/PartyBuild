@@ -110,17 +110,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
 
     @Override
     public Result<Map<String, Object>> login(SysUserDTO sysUserDTO) {
+        String region = sysUserDTO.getIsMobile() == 1 ?  "APP" : "web";
         Optional<SysUser> sysUserOptional = sysUserRepository.findByUserName(sysUserDTO.getUserName());
         if (!sysUserOptional.isPresent()) {
             return Result.of(Result.ResultCode.LOGIN_FAIL.getCode(), "用户名或密码错误！");
         }
         SysUser sysUser = sysUserOptional.get();
         if (!sysUser.getPassword().equals(MD5Util.computeMD5(sysUserDTO.getPassword()))) {
-            saveLoginNote("密码错误",sysUser);
+            saveLoginNote("密码错误",region,sysUser);
             return Result.of(Result.ResultCode.LOGIN_FAIL.getCode(), "用户名或密码错误！");
         }
         if (BooleanEnum.TRUE.ordinal() == sysUser.getIsDelete()) {
-            saveLoginNote("用户名被禁用",sysUser);
+            saveLoginNote("用户名被禁用",region,sysUser);
             return Result.of(Result.ResultCode.LOGIN_FAIL.getCode(), "用户名已被禁用！");
         }
         String token = TokenUtil.of(sysUser.getId());
@@ -130,8 +131,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
             redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + sysUser.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
         }
         String msg = sysUserDTO.getIsMobile() == 1 ?  "手机端登陆成功" : "电脑端登陆成功";
+
        /* sysUser.setPassword("不告诉你");*/
-        saveLoginNote(msg,sysUser);
+        saveLoginNote(msg,region,sysUser);
         updateLoginTime(sysUser);
 
 
@@ -153,12 +155,12 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     /*
     * 保存登录日志
     * */
-    private void saveLoginNote(String msg ,SysUser sysUser){
+    private void saveLoginNote(String msg ,String region,SysUser sysUser){
         SysLoginNote sysLoginNote = new SysLoginNote();
         sysLoginNote.setUserId(sysUser.getId());
         sysLoginNote.setUserName(sysUser.getUserName());
         sysLoginNote.setCreateTime(LocalDateTime.now());
-        sysLoginNote.setRegion("web");
+        sysLoginNote.setRegion(region);
         sysLoginNote.setAction(msg);
         sysLoginNoteService.save(sysLoginNote);
     }
