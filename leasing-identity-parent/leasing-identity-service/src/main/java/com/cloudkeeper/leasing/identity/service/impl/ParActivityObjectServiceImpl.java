@@ -214,17 +214,17 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
 
         //更新前先删除截图
         if(parActivityObjectDTO.getPhoneOrTv().equals("phone")) {
-            List<SysUser> list = sysUserRepository.findAllByOrganizationId(districtId.getId());
-            List<String> feedBackIds = new ArrayList<>();
-            for(int i=0;i<list.size();i++){
-               List<ParActivityFeedback> listFeed = parActivityFeedbackRepository.findAllBySnIdAndUserId(parActivityObjectDTO.getActivityId(),list.get(i).getId());
-                for(int j=0;j<listFeed.size();j++){
-                    feedBackIds.add(listFeed.get(j).getId());
-                }
-            }
-            for(int i = 0;i<feedBackIds.size();i++){
-                parActivityPictureRepository.deleteAllByActivityID(feedBackIds.get(i));
-            }
+//            List<SysUser> list = sysUserRepository.findAllByOrganizationId(districtId.getId());
+//            List<String> feedBackIds = new ArrayList<>();
+//            for(int i=0;i<list.size();i++){
+//               List<ParActivityFeedback> listFeed = parActivityFeedbackRepository.findAllBySnIdAndUserId(parActivityObjectDTO.getActivityId(),list.get(i).getId());
+//                for(int j=0;j<listFeed.size();j++){
+//                    feedBackIds.add(listFeed.get(j).getId());
+//                }
+//            }
+//            for(int i = 0;i<feedBackIds.size();i++){
+//                parActivityPictureRepository.deleteAllByActivityID(feedBackIds.get(i));
+//            }
         }else {
             parPictureInfroRepository.deleteAllByStudyContentAndOrganizationId(parActivityObjectDTO.getActivityId(),districtId.getId());
         }

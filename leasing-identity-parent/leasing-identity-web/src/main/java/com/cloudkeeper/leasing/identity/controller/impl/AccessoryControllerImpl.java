@@ -101,5 +101,15 @@ public class AccessoryControllerImpl implements AccessoryController {
         return Result.ofAddSuccess(accessoryVOS);
     }
 
+    @Override
+    public Result<List<AccessoryVO>> singleBatch( @RequestParam("files") MultipartFile[] files) throws IOException {
+        List<AccessoryVO> accessoryVOS = new ArrayList<>();
+        for (int i = 0; i < files.length; i++){
+            Accessory accessory = accessoryService.save(new Accessory(), files[i]);
+            accessoryVOS.add(accessory.convert(AccessoryVO.class));
+        }
+        return Result.ofAddSuccess(accessoryVOS);
+    }
+
 
 }
