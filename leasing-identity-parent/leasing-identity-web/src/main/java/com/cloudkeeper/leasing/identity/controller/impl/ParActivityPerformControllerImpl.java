@@ -122,7 +122,7 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         ParActivity parActivity = parActivityService.findById(parActivityPerformVO.getActivityID());
         SysDistrict sysDistrict = sysDistrictService.findById(parActivityPerformVO.getOrganizationId());
         String action;
-        if(parActivityPerformVO.getStatus().equals(2)){
+        if(parActivityPerformVO.getStatus().equals("2")){
             action = "审核通过";
         }else{
             action = "审核驳回";
