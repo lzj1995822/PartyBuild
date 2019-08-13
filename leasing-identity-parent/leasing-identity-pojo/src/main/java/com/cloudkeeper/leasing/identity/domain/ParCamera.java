@@ -76,7 +76,7 @@ public class ParCamera extends BaseEntity {
         ParCameraVO parCameraVO = (ParCameraVO) convert;
         if(!StringUtils.isEmpty(this.sysDistrict)){
             parCameraVO.setName(this.sysDistrict.getDistrictName());
-            parCameraVO.setOrganizationId(this.sysDistrict.getDistrictId());
+            parCameraVO.setDistrictId(this.sysDistrict.getDistrictId());
         }
         return (T) parCameraVO;
     }

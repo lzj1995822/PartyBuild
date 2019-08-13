@@ -149,9 +149,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         sysUserRepository.save(isDelete,id);
     }
 
-
-
-
     /*
     * 保存登录日志
     * */

@@ -3,7 +3,9 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ParCamera;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.repository.ParCameraRepository;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.ParCameraService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class ParCameraServiceImpl extends BaseServiceImpl<ParCamera> implements 
     private final ParCameraRepository parCameraRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final SysDistrictRepository sysDistrictRepository;
 
 
     @Override
@@ -50,7 +54,8 @@ public class ParCameraServiceImpl extends BaseServiceImpl<ParCamera> implements 
     public ParCamera redisIp(String key) {
         ParCamera parCamera = new ParCamera();
         parCamera.setIP(redisTemplate.boundValueOps(key).get());
-        parCamera.setOrganizationId(key);
+        SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(key);
+        parCamera.setOrganizationId(byDistrictId.getId());
         return  parCamera;
     }
 }
