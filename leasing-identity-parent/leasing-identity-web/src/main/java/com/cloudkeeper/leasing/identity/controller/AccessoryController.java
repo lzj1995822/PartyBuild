@@ -99,4 +99,9 @@ public interface AccessoryController {
     @PostMapping(value = "/batch")
     @ApiOperation(value = "批量上传", notes = "批量上传", position = 6)
     Result<List<AccessoryVO>> addList(@ApiParam(value = "系统附件 DTO", required = true) List<AccessoryDTO> accessoryDTOs, @RequestParam("files") MultipartFile[] files) throws IOException;
+
+    @PostMapping(value = "/singleBatch")
+    @ApiOperation(value = "批量上传", notes = "批量上传", position = 8)
+    Result<List<AccessoryVO>> singleBatch(@RequestParam("files") MultipartFile[] files) throws IOException;
+
 }
