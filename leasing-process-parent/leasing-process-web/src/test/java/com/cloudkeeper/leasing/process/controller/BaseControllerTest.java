@@ -27,7 +27,7 @@ public class BaseControllerTest {
     @Before
     public void getHttpHeaders() {
         String principalId = "4f722cb9-86ff-499d-83ef-c691d0441104";
-        String token = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_TOKEN_KEY + principalId);
+        String token = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + principalId);
         httpHeaders = new HttpHeaders();
         httpHeaders.add(AuthorizationConstants.AUTHORIZATION, token);
     }

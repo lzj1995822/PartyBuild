@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -134,7 +136,7 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
 
     @Override
     public Result<Integer> countAll(@RequestBody ParActivityPerformSearchable parActivityPerformSearchable) {
-        Integer integer = parActivityPerformService.countAll(parActivityPerformSearchable.getDistrictId());
+        Integer integer = parActivityPerformService.countAll(parActivityPerformSearchable.getDistrictId(), String.valueOf(LocalDate.now().getYear()));
         return Result.of(integer);
     }
 

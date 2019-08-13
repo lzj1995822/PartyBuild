@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,8 +22,8 @@ public class CentralConsoleControllerImpl implements CentralConsoleController {
     private final CentralConsoleService centralConsoleService;
 
     @Override
-    public Result<CentralConsoleVo> dataStatistics() {
-        CentralConsoleVo centralConsoleVo = centralConsoleService.dataStatistics();
+    public Result<CentralConsoleVo> dataStatistics(@PathVariable String year) {
+        CentralConsoleVo centralConsoleVo = centralConsoleService.dataStatistics(year);
         return Result.of(centralConsoleVo);
     }
 }

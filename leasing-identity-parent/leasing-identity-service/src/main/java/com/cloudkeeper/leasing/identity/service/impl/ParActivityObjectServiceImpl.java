@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
+import com.cloudkeeper.leasing.identity.vo.CalNumberVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
@@ -24,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -124,11 +122,15 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     }
 
     @Override
-    public BigDecimal handleActivityCompleteRate(String organizationId) {
-        Integer sum = parActivityObjectRepository.countAllByOrganizationIdStartingWith(organizationId);
-        Integer completeSum = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId,"2");
-        BigDecimal total = new BigDecimal(sum);
-        BigDecimal finished = new BigDecimal(completeSum);
+    public BigDecimal handleActivityCompleteRate(String organizationId, String year) {
+        Integer yearNum = Integer.valueOf(year);
+
+        String sql = "SELECT  COUNT( CASE WHEN pao.status = 2 THEN 1 ELSE NULL END ) as finished, COUNT(pao.id) as total FROM PAR_ActivityObject pao " +
+                " LEFT JOIN PAR_Activity pa on pa.id = pao.activityId WHERE pao.organizationId like " +
+                " '" + organizationId + "%' And pa.month BETWEEN '" +year+ "-01-01' and '" + getLastDayByYear(yearNum).toString() + "'";
+        CalNumberVO bySql = findBySql(CalNumberVO.class, sql);
+        BigDecimal total = new BigDecimal(bySql.getTotal());
+        BigDecimal finished = new BigDecimal(bySql.getFinished());
         return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
     }
 
@@ -306,6 +308,14 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         return toLocalDate(ca);
     }
 
+    //    指定年份当前月最后一天
+    private LocalDate getLastDayByYear(Integer year) {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.YEAR, year);
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return toLocalDate(ca);
+    }
+
     private LocalDate firstDay() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.DAY_OF_MONTH, 1);
@@ -319,4 +329,5 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
         return localDateTime.toLocalDate();
     }
+
 }

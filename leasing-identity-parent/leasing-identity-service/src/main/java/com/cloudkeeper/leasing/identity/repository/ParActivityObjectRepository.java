@@ -5,6 +5,9 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import java.util.Optional;
@@ -28,9 +31,10 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
     @Query(value = "SELECT DISTINCT activityId FROM PAR_ActivityObject WHERE organizationId = ? ",nativeQuery=true)
     List<String> findActivityIdsByOrganizationId(String organizationId);
 
-    Integer countAllByOrganizationIdStartingWithAndStatus(String organizationId,String status);
+    Integer countAllByOrganizationIdStartingWithAndStatusAndCreatedAtBetween(String organizationId, String status, LocalDateTime start, LocalDateTime end);
+    Integer countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status);
 
-    Integer countAllByOrganizationIdStartingWith(String organizationId);
+    Integer countAllByOrganizationIdStartingWithAndCreatedAtBetween(String organizationId, LocalDateTime start, LocalDateTime end);
 
     Optional<ParActivityObject> findByActivityIdAndOrganizationId(String activityId,String organizationId);
 

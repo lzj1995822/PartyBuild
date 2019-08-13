@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
     }
 
     @Override
-    public CentralConsoleVo dataStatistics() {
+    public CentralConsoleVo dataStatistics(@NonNull String year) {
         String currentPrincipalId = getCurrentPrincipalId();
         Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
         CentralConsoleVo centralConsoleVo = new CentralConsoleVo();
@@ -50,9 +51,9 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             SysUser sysUser = optionalById.get();
             String districtId = sysUser.getDistrictId();
             centralConsoleVo.setVillageCadresNumber(villageCadresService.countAllByDistrictId(districtId));
-            centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId));
+            centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId, year));
             centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));
-            centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId));
+            centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId, year));
             centralConsoleVo.setVillageSecretaryNumber(cadrePositionService.countVillageSecretaryNumber(districtId,"SECRETARY"));
         }
         return centralConsoleVo;
