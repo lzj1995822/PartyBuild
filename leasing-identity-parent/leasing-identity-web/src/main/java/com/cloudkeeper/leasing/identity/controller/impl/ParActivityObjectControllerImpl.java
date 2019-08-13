@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -116,6 +117,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(true);
     }
     @Override
+    @Transactional
     @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
@@ -126,6 +128,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     }
 
     @Override
+    @Transactional
     @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
