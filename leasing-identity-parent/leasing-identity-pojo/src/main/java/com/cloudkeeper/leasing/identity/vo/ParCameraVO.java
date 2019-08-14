@@ -53,4 +53,8 @@ public class ParCameraVO extends BaseVO {
     @ApiModelProperty(value = "备注", position = 10, required = true)
     private String remark;
 
+    /** 组织districtId*/
+    @ApiModelProperty(value = "组织id", position = 10, required = true)
+    private String districtId;
+
 }

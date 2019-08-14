@@ -3,9 +3,11 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.SysUserController;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserDTO;
 import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserSearchable;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysUserVO;
 import io.swagger.annotations.ApiParam;
@@ -35,6 +37,8 @@ public class SysUserControllerImpl implements SysUserController {
     /** 系统用户 service */
     private final SysUserService sysUserService;
 
+    private final SysDistrictRepository sysDistrictRepository;
+
     @Override
     public Result<SysUserVO> findOne(@ApiParam(value = "系统用户id", required = true) @PathVariable String id) {
         Optional<SysUser> sysUserOptional = sysUserService.findOptionalById(id);
@@ -43,6 +47,8 @@ public class SysUserControllerImpl implements SysUserController {
 
     @Override
     public Result<SysUserVO> add(@ApiParam(value = "系统用户 DTO", required = true) @RequestBody @Validated SysUserDTO sysUserDTO) {
+        SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(sysUserDTO.getDistrictId());
+        sysUserDTO.setOrganizationId(byDistrictId.getId());
         SysUser sysUser = sysUserService.save(sysUserDTO.convert(SysUser.class));
         return Result.ofAddSuccess(sysUser.convert(SysUserVO.class));
     }
@@ -50,6 +56,8 @@ public class SysUserControllerImpl implements SysUserController {
     @Override
     public Result<SysUserVO> update(@ApiParam(value = "系统用户id", required = true) @PathVariable String id,
         @ApiParam(value = "系统用户 DTO", required = true) @RequestBody @Validated SysUserDTO sysUserDTO) {
+        SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(sysUserDTO.getDistrictId());
+        sysUserDTO.setOrganizationId(byDistrictId.getId());
         SysUser sysUser = sysUserService.save(sysUserDTO.convert(SysUser.class));
         return Result.ofUpdateSuccess(sysUser.convert(SysUserVO.class));
     }

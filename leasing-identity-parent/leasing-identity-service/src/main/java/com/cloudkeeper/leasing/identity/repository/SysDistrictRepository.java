@@ -45,4 +45,6 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
     @Query(value = "SELECT max(districtId) from SYS_District WHERE attachTo=? AND districtLevel = ?",nativeQuery = true)
     String findMaxByDistrictIdAndDistrictLevel(String districtId,int districtLevel);
 
+    SysDistrict findByDistrictId(String districtId);
+
 }
