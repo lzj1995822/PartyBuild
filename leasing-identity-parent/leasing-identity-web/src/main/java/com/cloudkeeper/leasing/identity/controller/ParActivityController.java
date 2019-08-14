@@ -98,6 +98,11 @@ public interface ParActivityController {
     Result<List<ParActivityVO>> list(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort);
 
+
+    @ApiOperation(value = "获取当月正在进行的活动情况", notes = "列表查询<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
+    @PostMapping("/currentMonth/list")
+    Result<List<ParActivityVO>> listByCurrentMonth();
+
     /**
      * 分页查询
      * @param parActivitySearchable 活动查询条件

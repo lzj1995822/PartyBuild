@@ -93,6 +93,14 @@ public class ParActivityControllerImpl implements ParActivityController {
     }
 
     @Override
+    public Result<List<ParActivityVO>> listByCurrentMonth() {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
+        detachedCriteria.add(Restrictions.between("month", firstDay(),lastDay()));
+        List<ParActivity> all = parActivityService.findAll(detachedCriteria);
+        return Result.of(ParActivity.convert(all, ParActivityVO.class));
+    }
+
+    @Override
     public Result<Page<ParActivityVO>> page(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
         Page<ParActivity> parActivityPage = parActivityService.handleDifferentRole(parActivitySearchable, pageable);
@@ -134,6 +142,27 @@ public class ParActivityControllerImpl implements ParActivityController {
     @Override
     public Result<Map<String,List>> activitiesCompletion(String year, String districtId) {
         return parActivityService.activityCompletion(year,districtId);
+    }
+
+
+    private LocalDate lastDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return toLocalDate(ca);
+    }
+
+    private LocalDate firstDay() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        return toLocalDate(ca);
+    }
+
+    private LocalDate toLocalDate(Calendar calendar) {
+        Date date = calendar.getTime();
+        Instant instant = date.toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+        return localDateTime.toLocalDate();
     }
 
 }
