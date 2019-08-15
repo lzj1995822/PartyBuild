@@ -87,51 +87,51 @@ public class ParActivity extends BaseEntity {
 
     /** 市完成进度 */
     @ApiModelProperty(value = "市完成进度", position = 10, required = true)
-    private BigDecimal totalPercent;
+    private BigDecimal totalPercent = BigDecimal.ZERO;
 
     /** 下蜀 */
     @ApiModelProperty(value = "下蜀", position = 10, required = true)
-    private BigDecimal xiaShuPercent;
+    private BigDecimal xiaShuPercent = BigDecimal.ZERO;
 
     /** 宝华 */
     @ApiModelProperty(value = "宝华", position = 10, required = true)
-    private BigDecimal baoHuaPercent;
+    private BigDecimal baoHuaPercent = BigDecimal.ZERO;
 
     /** 茅山 */
     @ApiModelProperty(value = "茅山", position = 10, required = true)
-    private BigDecimal maoShanPercent;
+    private BigDecimal maoShanPercent = BigDecimal.ZERO;
 
     /** 后白 */
     @ApiModelProperty(value = "后白", position = 10, required = true)
-    private BigDecimal houBaiPercent;
+    private BigDecimal houBaiPercent = BigDecimal.ZERO;
 
     /** 白兔 */
     @ApiModelProperty(value = "白兔", position = 10, required = true)
-    private BigDecimal baiTuPercent;
+    private BigDecimal baiTuPercent = BigDecimal.ZERO;
 
     /** 茅山风景区 */
     @ApiModelProperty(value = "茅山风景区", position = 10, required = true)
-    private BigDecimal maoShanFengJingPercent;
+    private BigDecimal maoShanFengJingPercent = BigDecimal.ZERO;
 
     /** 边城 */
     @ApiModelProperty(value = "边城", position = 10, required = true)
-    private BigDecimal bianChengPercent;
+    private BigDecimal bianChengPercent = BigDecimal.ZERO;
 
     /** 郭庄 */
     @ApiModelProperty(value = "郭庄", position = 10, required = true)
-    private BigDecimal guoZhuangPercent;
+    private BigDecimal guoZhuangPercent = BigDecimal.ZERO;
 
     /** 华阳 */
     @ApiModelProperty(value = "华阳", position = 10, required = true)
-    private BigDecimal huaYangPercent;
+    private BigDecimal huaYangPercent = BigDecimal.ZERO;
 
     /** 开发区 */
     @ApiModelProperty(value = "开发区", position = 10, required = true)
-    private BigDecimal kaiFaPercent;
+    private BigDecimal kaiFaPercent = BigDecimal.ZERO;
 
     /** 天王 */
     @ApiModelProperty(value = "天王", position = 10, required = true)
-    private BigDecimal tianWangPercent;
+    private BigDecimal tianWangPercent = BigDecimal.ZERO;
     /** 附件 */
     @ApiModelProperty(value = "附件", position = 10, required = true)
     @JsonIgnore
