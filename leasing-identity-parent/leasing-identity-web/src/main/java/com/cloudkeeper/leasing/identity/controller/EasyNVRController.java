@@ -26,4 +26,12 @@ public interface EasyNVRController {
     Result<String> findOne(@ApiParam(value = "机顶盒编号", required = true) String number,
                             @ApiParam(value = "活动Id", required = true)  String activityId,
                             @ApiParam(value = "组织Id", required = true)  String organizationId);
+
+    /**
+     * 检查是否在线
+     */
+    @ApiOperation(value = "检查是否在线", notes = "检查是否在线", position = 3)
+    @Authorization(required = false)
+    @GetMapping("/isOnline")
+    Result<String> isOnline(String number, String activityId, String organizationId);
 }

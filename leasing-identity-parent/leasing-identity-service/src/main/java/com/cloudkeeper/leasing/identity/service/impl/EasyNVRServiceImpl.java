@@ -2,10 +2,9 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.identity.domain.ParCamera;
 import com.cloudkeeper.leasing.identity.domain.ParPictureInfro;
-import com.cloudkeeper.leasing.identity.service.EasyNVRService;
-import com.cloudkeeper.leasing.identity.service.FdfsService;
-import com.cloudkeeper.leasing.identity.service.ParCameraService;
-import com.cloudkeeper.leasing.identity.service.ParPictureInfroService;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +52,8 @@ public class EasyNVRServiceImpl implements EasyNVRService {
     private final FdfsService fdfsService;
 
     private final ParPictureInfroService parPictureInfroService;
+
+    private final SysDistrictRepository sysDistrictRepository;
 
     @Override
     public String login(String ipPort, String username, String password) {
@@ -122,17 +123,42 @@ public class EasyNVRServiceImpl implements EasyNVRService {
         }
 
         if(!StringUtils.isEmpty(picUrl)){
+            SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(organizationId);
+            if (byDistrictId == null) {
+                return null;
+            } else {
+                ParPictureInfro parPictureInfro = new ParPictureInfro();
+                parPictureInfro.setImageURL(picUrl);
+                parPictureInfro.setCreateTime(LocalDateTime.now());
+                parPictureInfro.setOrganizationId(byDistrictId.getId());
+                parPictureInfro.setStudyContent(activityId);
+                parPictureInfroService.save(parPictureInfro);
+            }
             //存入电视截图
-            ParPictureInfro parPictureInfro = new ParPictureInfro();
-            parPictureInfro.setImageURL(picUrl);
-            parPictureInfro.setCreateTime(LocalDateTime.now());
-            parPictureInfro.setOrganizationId(organizationId);
-            parPictureInfro.setStudyContent(activityId);
-            parPictureInfroService.save(parPictureInfro);
+
         }
 
-
         return picUrl;
+    }
+
+    public Boolean isOnlineByUrl(String boxNumber,String activityId, String organizationId) {
+        String fullUrl = getFullUrl(boxNumber);
+        String ipPort = getIPPort(fullUrl);
+        String port = ipPort.split(":")[1];
+        String channelNumber = getChannelNumber(fullUrl);
+        String token = (String) redisTemplate.opsForValue().get(TOKEN_KEY + port);
+        if (StringUtils.isEmpty(token)) {
+            token = login(ipPort, USERNAME, PASSWORD);
+        }
+        if (StringUtils.isEmpty(token)) {
+            logger.warn("令牌为空");
+            return false;
+        }
+        if (!isOnline(ipPort, channelNumber, token)) {
+            logger.warn("摄像头不在线");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -142,7 +168,7 @@ public class EasyNVRServiceImpl implements EasyNVRService {
      * @param token 令牌
      * @return
      */
-    private Boolean isOnline(String ipPort, String channelNumber, String token) {
+    public Boolean isOnline(String ipPort, String channelNumber, String token) {
         String reqUrl = "http://".concat(ipPort).concat(CHANNEL_URL_SUFFIX).concat("?channel=").concat(channelNumber);
         HttpHeaders headers = new HttpHeaders();
         List cookies = new ArrayList();

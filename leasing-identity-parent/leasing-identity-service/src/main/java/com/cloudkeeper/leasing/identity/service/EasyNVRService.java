@@ -12,4 +12,6 @@ public interface EasyNVRService {
     String catchPic(String boxNumber,String activityId, String organizationId);
 
 
+    Boolean isOnlineByUrl(String boxNumber,String activityId, String organizationId);
+
 }
