@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -67,6 +69,7 @@ public class ParCamera extends BaseEntity {
     @ApiModelProperty(value = "部门", position = 24)
     @ManyToOne
     @JoinColumn(name = "organizationId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
 
     @Nonnull
