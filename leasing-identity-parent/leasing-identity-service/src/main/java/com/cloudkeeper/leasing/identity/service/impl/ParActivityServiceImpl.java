@@ -545,7 +545,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 "FROM PAR_Activity AS a " +
                 "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+
+                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+
                 "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
         Map<String,List> map  = new LinkedHashMap<>();
