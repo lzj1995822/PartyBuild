@@ -6,7 +6,7 @@ spring:
 #    url: jdbc:sqlserver://asher.wicp.vip:10858;DatabaseName=JRParty
 #    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=PartyBuild
 #    url: jdbc:sqlserver://47.103.42.176:15578;DatabaseName=PartyBuild
-    url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy
+    url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy2
     # 用户名
 #    username: lxw
     username: asherlv
@@ -99,7 +99,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-    password: abc123
+    password:
     database: 1
     timeout: 1s
     lettuce:
