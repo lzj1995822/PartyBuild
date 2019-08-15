@@ -45,10 +45,10 @@ public class InformationControllerImpl implements InformationController {
 
     @Override
     public Result<InformationVO> add(@ApiParam(value = "消息通知 DTO", required = true) @RequestBody @Validated InformationDTO informationDTO) {
-        Information information = informationService.save(informationDTO.convert(Information.class));
-        String  msg= informationService.actionLog("发布","[通知公告]", information.getTitle());
-        sysLogService.pushLog(this.getClass().getName(),msg,informationService.getTableName(),information.getId());
-        return Result.ofAddSuccess(information.convert(InformationVO.class));
+        InformationVO save = informationService.save(informationDTO);
+        String  msg= informationService.actionLog("发布","[通知公告]", save.getTitle());
+        sysLogService.pushLog(this.getClass().getName(),msg,informationService.getTableName(),save.getId());
+        return Result.ofAddSuccess(save);
     }
 
     @Override
