@@ -27,4 +27,16 @@ public class EasyNVRControllerImpl implements EasyNVRController {
             return Result.of(200, "抓图失败");
 
     }
+
+
+    @Override
+    @Authorization(required = false)
+    public Result<String> isOnline(String number,String activityId, String organizationId) {
+        Boolean isOnline = easyNVRService.isOnlineByUrl(number,activityId,organizationId);
+        if (isOnline) {
+            return  Result.of(200,"在线");
+        }
+        return Result.of(500, "不在线");
+
+    }
 }
