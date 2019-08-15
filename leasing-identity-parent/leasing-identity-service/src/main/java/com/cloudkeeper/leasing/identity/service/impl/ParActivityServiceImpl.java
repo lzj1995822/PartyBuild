@@ -529,14 +529,14 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     private Map<String,List> activitiesCompletion(String year,String districtId){
-        String sql = "SELECT a.id as activityId,o.status,o.organizationId as districtId,d.districtName,d.id AS organizationId "+
-                "FROM PAR_Activity AS a "+
-                "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId "+
-                "LEFT JOIN SYS_District AS d ON d.districtId = o.organizationId "+
-                "WHERE year(month)="+year+"AND organizationId like "+"'"+districtId+"%"+"' "+
-                "ORDER BY organizationId ASC,month Asc , releaseTime Asc";
+        String sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.id AS organizationId,d.districtName,o.status,o.id AS objectId " +
+                "FROM PAR_Activity AS a " +
+                "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
+                "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
+                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+
+                "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
-        Map<String,List> map  = new HashMap<>();
+        Map<String,List> map  = new LinkedHashMap<>();
        allBySql.forEach(item -> {
            String key = item.getDistrictName();
            if (map.containsKey(key)){
