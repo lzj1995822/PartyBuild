@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -87,8 +88,19 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     @Override
     @Transactional
     public ParActivityVO save(@Nonnull ParActivityDTO parActivityDTO) {
-        ParActivity p = parActivityDTO.convert(ParActivity.class);
-        ParActivity parActivity = super.save(p);
+        ParActivity parActivity;
+        if (!StringUtils.isEmpty(parActivityDTO.getId())){
+            Optional<ParActivity> optionalById = findOptionalById(parActivityDTO.getId());
+            if (!optionalById.isPresent()) {
+                return null;
+            }
+            parActivity = optionalById.get();
+            BeanUtils.copyProperties(parActivityDTO, parActivity);
+
+        } else {
+            parActivity = parActivityDTO.convert(ParActivity.class);
+        }
+        parActivity = super.save(parActivity);
         // 处理发布的附件
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
