@@ -325,6 +325,15 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setStatus("0");
                 parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
+                if(list[0]=="Party"&&list[1]!= "Office"){
+                    parActivityObject.setObjectType("1");
+                }
+                if(list[0]!="Party"&&list[1]== "Office"){
+                    parActivityObject.setObjectType("2");
+                }
+                if(list[0]=="Party"&&list[1]== "Office"){
+                    parActivityObject.setObjectType("3");
+                }
                 parActivityObjectService.save(parActivityObject);
             }
             return backList;

@@ -8,10 +8,7 @@ import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
-import com.cloudkeeper.leasing.identity.vo.CalNumberVO;
-import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
-import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
-import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -102,6 +99,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("isWorking", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("activityId", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("organizationId", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("attachTo", ExampleMatcher.GenericPropertyMatchers.exact());
     }
@@ -329,5 +327,36 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
         return localDateTime.toLocalDate();
     }
-
+    @Override
+    public  List<ExamScoreDetailVO> examScoreDetail(String districtName, String year){
+        List<ExamScoreDetailVO> exD = new ArrayList<>();
+        SysDistrict sysDistrict = sysDistrictRepository.findByDistrictName(districtName);
+        String districtId = sysDistrict.getDistrictId();
+        String sql = "SELECT " +
+                "S1.*, " +
+                "S2.districtName  " +
+                "FROM " +
+                "( " +
+                "SELECT " +
+                "p1.organizationId, " +
+                "p1.activityId, " +
+                "p2.title, " +
+                "p2.context, " +
+                "p2.STATUS sta, " +
+                "p2.score  " +
+                "p2.month "+
+                "FROM " +
+                "PAR_ActivityObject p1 " +
+                "LEFT JOIN PAR_Activity p2 ON p1.activityId = p2.id  " +
+                "AND organizationId = '"+districtId+"'  " +
+                "WHERE " +
+                "p2.MONTH BETWEEN '"+year+"-1-1'  " +
+                "AND '"+year+"-12-30'  " +
+                ") S1," +
+                "SYS_District S2  " +
+                "WHERE " +
+                "S1.organizationId = S2.districtID ORDER BY month asc";
+        exD = super.findAllBySql(ExamScoreDetailVO.class ,sql);
+        return exD;
+    }
 }
