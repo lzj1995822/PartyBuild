@@ -125,5 +125,5 @@ public interface ParActivityController {
 
     @ApiOperation(value = "各个村活动完成情况（统计汇总）", notes = "统计汇总", position = 6)
     @PostMapping("/list/completion")
-    Result<Map<String,List>> activitiesCompletion(String year, String districtId);
+    Result<Map<String,List>> activitiesCompletion(String year, String districtId, String objectType,String districtType);
 }

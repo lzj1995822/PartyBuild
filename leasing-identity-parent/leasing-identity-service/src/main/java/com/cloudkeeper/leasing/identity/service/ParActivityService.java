@@ -37,5 +37,5 @@ public interface ParActivityService extends BaseService<ParActivity> {
      */
     Result<TVIndexVO> tvIndex();
 
-    Result<Map<String, List>> activityCompletion(String year, String districtId);
+    Result<Map<String,List>> activityCompletion(String year, String districtId, String objectType,String districtType);
 }
