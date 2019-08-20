@@ -343,7 +343,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
                 "p2.title, " +
                 "p2.context, " +
                 "p2.STATUS sta, " +
-                "p2.score  " +
+                "p2.score, " +
                 "p2.month "+
                 "FROM " +
                 "PAR_ActivityObject p1 " +
