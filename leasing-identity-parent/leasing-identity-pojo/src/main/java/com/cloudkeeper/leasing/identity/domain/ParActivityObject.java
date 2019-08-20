@@ -73,6 +73,12 @@ public class ParActivityObject extends BaseEntity {
     @JoinColumn(name = "organizationId", referencedColumnName = "districtId", insertable = false, updatable = false)
     private SysDistrict sysDistrict;
 
+    /** 任务对象类型 */
+    @ApiModelProperty(value = "任务对象类型", position = 10, required = true)
+    @Column(length = 60)
+    private String objectType;
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

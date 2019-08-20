@@ -96,6 +96,10 @@ public class ParActivityObjectVO extends BaseVO {
     @ApiModelProperty(value = "直播地址",position = 12,required = true)
     private List<ParCamera> parCamera;
 
+    /** 任务对象类型 */
+    @ApiModelProperty(value = "任务对象类型", position = 10, required = true)
+    private String objectType;
+
 
 
 }

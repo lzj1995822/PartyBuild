@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.controller;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
@@ -124,4 +125,8 @@ public interface ParActivityObjectController {
 
     @GetMapping("/checkNumber/organizationId{organizationId}")
     Result<Integer> waitCheckNumber(@PathVariable String organizationId);
+
+    @ApiOperation(value="考核具体信息",notes= "查询" ,position = 0)
+    @PostMapping("/examScoreDetail")
+    Result<List<ExamScoreDetailVO>> examScoreDetail(@ApiParam(value="组织名字",required = true) String districtName,@ApiParam(value="年份",required=true) String year);
 }

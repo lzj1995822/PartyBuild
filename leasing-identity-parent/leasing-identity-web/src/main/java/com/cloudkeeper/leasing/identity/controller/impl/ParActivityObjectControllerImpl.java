@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectD
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -180,5 +181,10 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         ZoneId zone = ZoneId.systemDefault();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
         return localDateTime.toLocalDate();
+    }
+    @Override
+    public Result<List<ExamScoreDetailVO>> examScoreDetail(String districtName,String year){
+        List<ExamScoreDetailVO> list = parActivityObjectService.examScoreDetail(districtName,year);
+        return Result.of(200,"查询成功",list);
     }
 }

@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.service;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
+import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import org.springframework.data.domain.Sort;
 
@@ -43,4 +44,7 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
 
     //活动待审核数量
     Integer waitCheckNumber(String organizationId);
+
+    //考核具体信息
+    List<ExamScoreDetailVO> examScoreDetail(String districtName, String year);
 }

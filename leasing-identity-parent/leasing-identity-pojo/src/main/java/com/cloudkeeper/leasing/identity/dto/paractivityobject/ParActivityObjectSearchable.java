@@ -48,4 +48,8 @@ public class ParActivityObjectSearchable extends BaseSearchable {
     /** 活动当前状态 */
     @ApiModelProperty(value = "活动当前状态", position = 10, required = true)
     private String currentStatus;
+
+    /** 任务对象类型 */
+    @ApiModelProperty(value = "任务对象类型", position = 10, required = true)
+    private String objectType;
 }

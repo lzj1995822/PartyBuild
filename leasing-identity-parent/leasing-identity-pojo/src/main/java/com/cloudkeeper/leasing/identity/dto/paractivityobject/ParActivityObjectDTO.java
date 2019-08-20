@@ -62,4 +62,8 @@ public class ParActivityObjectDTO extends BaseEditDTO {
     @ApiModelProperty(value = "手机图片",position = 10,required = true)
     private List<String> phoneImgList;
 
+    /** 任务对象类型 */
+    @ApiModelProperty(value = "任务对象类型", position = 10, required = true)
+    private String objectType;
+
 }
