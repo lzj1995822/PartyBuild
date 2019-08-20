@@ -488,9 +488,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     @Override
-    public Result<Map<String,List>> activityCompletion(String year, String districtId) {
-        Map<String, List> stringListMap = activitiesCompletion(year, districtId);
-        stringListMap.put("title",currentActivities(year));
+    public Result<Map<String,List>> activityCompletion(String year, String districtId, String objectType,String districtType) {
+        Map<String, List> stringListMap = activitiesCompletion(year, districtId,objectType,districtType);
+        stringListMap.put("title",currentActivities(year,objectType));
         return Result.of(stringListMap);
     }
 
@@ -553,16 +553,16 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return localDateTime.toLocalDate();
     }
 
-    private Map<String,List> activitiesCompletion(String year,String districtId){
-        String sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.id AS organizationId,d.districtName,o.status,o.id AS objectId " +
+    private Map<String,List> activitiesCompletion(String year,String districtId,String objectType,String districtType){
+        String sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
                 "FROM PAR_Activity AS a " +
                 "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+
+                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType = "+objectType+"And d.districtType ="+"'"+districtType+"' "+
                 "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
         Map<String,List> map  = new LinkedHashMap<>();
-       allBySql.forEach(item -> {
+        allBySql.forEach(item -> {
            String key = item.getDistrictName();
            if (map.containsKey(key)){
                map.get(key).add(item);
@@ -575,9 +575,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return map;
     }
 
-    private List currentActivities(String year){
+    private List currentActivities(String year,String objectType){
         List list  = new ArrayList();
-        String sql = "SELECT * FROM PAR_Activity WHERE year(month)="+year+
+        String sql = "SELECT * FROM PAR_Activity WHERE year(month)="+year+ "And objectType = "+"'"+objectType+"' "+
                 " ORDER BY month Asc , releaseTime Asc";
         List<ActivityVO> allBySql = super.findAllBySql(ActivityVO.class, sql);
         for(int i=0;i<allBySql.size();i++){

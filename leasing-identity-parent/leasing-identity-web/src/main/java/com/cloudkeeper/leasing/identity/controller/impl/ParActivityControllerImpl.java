@@ -140,8 +140,8 @@ public class ParActivityControllerImpl implements ParActivityController {
     }
 
     @Override
-    public Result<Map<String,List>> activitiesCompletion(String year, String districtId) {
-        return parActivityService.activityCompletion(year,districtId);
+    public Result<Map<String,List>> activitiesCompletion(String year, String districtId, String objectType,String districtType) {
+        return parActivityService.activityCompletion(year,districtId,objectType,districtType);
     }
 
 
