@@ -32,6 +32,11 @@ public interface ParActivityRepository extends BaseRepository<ParActivity> {
     @Query(value = "delete from DistLearning_ActivityVideo where activityId =?",nativeQuery = true)
     void deleteVideo(String id);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update PAR_Activity set objectType=? where id=?",nativeQuery = true)
+    void updateObjectType(String type,String id);
+
 
 
 

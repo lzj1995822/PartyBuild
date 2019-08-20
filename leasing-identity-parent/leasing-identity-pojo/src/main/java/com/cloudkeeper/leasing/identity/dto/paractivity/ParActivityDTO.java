@@ -89,4 +89,6 @@ public class ParActivityDTO extends BaseEditDTO {
     @ApiModelProperty(value = "新的任务对象", position = 36)
     private NewObject newObject;
 
+    @ApiModelProperty(value="任务对象类型",position = 10,required = true)
+    private String objectType;
 }

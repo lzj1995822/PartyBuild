@@ -80,6 +80,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("alarmTime", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
@@ -327,12 +328,15 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
                 if(list[0]=="Party"&&list[1]!= "Office"){
                     parActivityObject.setObjectType("1");
+                    parActivityRepository.updateObjectType("1",activityId);
                 }
                 if(list[0]!="Party"&&list[1]== "Office"){
                     parActivityObject.setObjectType("2");
+                    parActivityRepository.updateObjectType("2",activityId);
                 }
                 if(list[0]=="Party"&&list[1]== "Office"){
                     parActivityObject.setObjectType("3");
+                    parActivityRepository.updateObjectType("3",activityId);
                 }
                 parActivityObjectService.save(parActivityObject);
             }

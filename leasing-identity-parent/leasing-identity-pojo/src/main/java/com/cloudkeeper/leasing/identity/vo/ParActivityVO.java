@@ -128,4 +128,7 @@ public class ParActivityVO extends BaseVO {
     /** 返回数据 */
     @ApiModelProperty(value = "返回数据", position = 10, required = true)
     private List<String> backList = new ArrayList<>();
+
+    @ApiModelProperty(value="任务对象类型",position = 10,required = true)
+    private String objectType;
 }

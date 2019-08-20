@@ -144,6 +144,9 @@ public class ParActivity extends BaseEntity {
     @OneToMany(mappedBy = "parActivity")
     private List<DistLearningActivityVideo> distLearningActivityVideo;
 
+    @ApiModelProperty(value="任务对象类型",position = 10,required = true)
+    @Column(length = 60)
+    private String objectType;
 
     @Nonnull
     @Override

@@ -73,5 +73,8 @@ public class ParActivitySearchable extends BaseSearchable {
     @ApiModelProperty(value = "等级", position = 10, required = true)
     private Integer districtLevel;
 
+    @ApiModelProperty(value="任务对象类型",position = 10,required = true)
+    private String objectType;
+
 
 }
