@@ -585,4 +585,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         return list;
     }
+    public  List<ParActivityAllVO> listAll(){
+        String sql = "SELECT * FROM PAR_Activity where isDelete=0 ORDER BY month desc";
+        List<ParActivityAllVO> allBySql = super.findAllBySql(ParActivityAllVO.class, sql);
+        return allBySql;
+    }
 }

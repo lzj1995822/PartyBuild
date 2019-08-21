@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
+import com.cloudkeeper.leasing.identity.vo.ParActivityAllVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import io.swagger.annotations.ApiParam;
@@ -91,6 +92,12 @@ public class ParActivityControllerImpl implements ParActivityController {
         List<ParActivityVO> parActivityVOList = ParActivity.convert(parActivityList, ParActivityVO.class);
         return Result.of(parActivityVOList);
     }
+
+    @Override
+    public Result<List<ParActivityAllVO>> listAll(){
+        List<ParActivityAllVO> parActivityList = parActivityService.listAll();
+        return Result.of(parActivityList);
+    };
 
     @Override
     public Result<List<ParActivityVO>> listByCurrentMonth() {

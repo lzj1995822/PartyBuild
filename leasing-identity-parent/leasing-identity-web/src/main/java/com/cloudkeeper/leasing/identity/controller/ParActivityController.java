@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.controller;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
+import com.cloudkeeper.leasing.identity.vo.ParActivityAllVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
@@ -98,6 +99,9 @@ public interface ParActivityController {
     Result<List<ParActivityVO>> list(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort);
 
+    @ApiOperation(value = "列表查询所有", position = 5)
+    @PostMapping("/listAll")
+    Result<List<ParActivityAllVO>> listAll();
 
     @ApiOperation(value = "获取当月正在进行的活动情况", notes = "列表查询<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
     @PostMapping("/currentMonth/list")

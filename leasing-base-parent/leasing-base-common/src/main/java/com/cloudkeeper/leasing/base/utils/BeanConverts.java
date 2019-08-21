@@ -13,7 +13,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,6 +114,12 @@ public class BeanConverts {
                 }
             } else if (property.getPropertyType().equals(BigDecimal.class)) {
                 value = BigDecimal.valueOf((double)value);
+            }else if(value instanceof Date){
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(((Date) value));
+                value  = LocalDate.of(cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH) + 1,
+                        cal.get(Calendar.DAY_OF_MONTH));;
             }
             try {
                 setter.invoke(d, value);

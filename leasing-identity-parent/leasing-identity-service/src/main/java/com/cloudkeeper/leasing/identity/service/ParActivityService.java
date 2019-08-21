@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
+import com.cloudkeeper.leasing.identity.vo.ParActivityAllVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityVO;
 import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import org.springframework.data.domain.Page;
@@ -38,4 +39,6 @@ public interface ParActivityService extends BaseService<ParActivity> {
     Result<TVIndexVO> tvIndex();
 
     Result<Map<String,List>> activityCompletion(String year, String districtId, String objectType,String districtType);
+
+    List<ParActivityAllVO> listAll();
 }
