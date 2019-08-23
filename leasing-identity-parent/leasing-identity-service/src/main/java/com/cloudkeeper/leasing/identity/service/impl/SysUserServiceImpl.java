@@ -130,7 +130,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         } else {
             redisTemplate.opsForValue().set(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + sysUser.getId(), token, TokenUtil.TTL_MILLIS, TimeUnit.MILLISECONDS);
         }
-        String msg = sysUserDTO.getIsMobile() == 1 ?  "手机端登陆成功" : "电脑端登陆成功";
+        String msg = sysUserDTO.getIsMobile() == 1 ?  "手机端登录成功" : "电脑端登录成功";
 
        /* sysUser.setPassword("不告诉你");*/
         saveLoginNote(msg,region,sysUser);

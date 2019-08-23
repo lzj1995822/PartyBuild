@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -47,6 +49,7 @@ public class SysLoginNote extends BaseEntity {
     /** 用户*/
     @ApiModelProperty(value = "用户", position = 24)
     @ManyToOne
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "userId", insertable = false, updatable = false)
     private SysUser user;
 
