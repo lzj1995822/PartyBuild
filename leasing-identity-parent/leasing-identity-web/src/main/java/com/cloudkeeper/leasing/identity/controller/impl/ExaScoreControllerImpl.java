@@ -3,9 +3,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ExaScoreController;
 import com.cloudkeeper.leasing.identity.domain.ExaScore;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
+import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.impl.SysDistrictServiceImpl;
 import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
@@ -35,6 +39,9 @@ public class ExaScoreControllerImpl implements ExaScoreController {
 
     /** 考核积分 service */
     private final ExaScoreService exaScoreService;
+
+    @Autowired
+    private final SysDistrictRepository sysDistrictRepository;
 
     @Override
     public Result<ExaScoreVO> findOne(@ApiParam(value = "考核积分id", required = true) @PathVariable String id) {
@@ -100,6 +107,27 @@ public class ExaScoreControllerImpl implements ExaScoreController {
     @Override
     public Result<List<ExamScoreAllVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable,@ApiParam(value = "年份", required = true)String year,@ApiParam(value = "搜索", required = true)String search){
         List<ExamScoreAllVO> list = exaScoreService.examScoreAll(pageable ,year,search);
+        List<SysDistrict> sysDistricts = sysDistrictRepository.findAllByDistrictLevel(3);
+        for(int i=0;i<sysDistricts.size();i++){
+            String sysName=sysDistricts.get(i).getDistrictName();
+                boolean isFlag = true;
+               for(int j=0;j<list.size()&&isFlag;j++){
+                if(list.get(j).getCun().equals(sysDistricts.get(i).getDistrictName())){
+                    isFlag = false;
+                }
+               }
+               if(isFlag){
+                   ExamScoreAllVO examScoreAllVO = new ExamScoreAllVO();
+                   examScoreAllVO.setCun(sysName);
+                   examScoreAllVO.setExam(0);
+                   examScoreAllVO.setScore(0.0);
+                   examScoreAllVO.setTown(sysDistrictRepository.findByDistrictId(sysDistricts.get(i).getAttachTo()).getDistrictName());
+                   examScoreAllVO.setTownExam(0);
+                   examScoreAllVO.setTownScore(0.0);
+                   list.add(examScoreAllVO);
+               }
+
+        }
         return Result.of(list);
     }
 
