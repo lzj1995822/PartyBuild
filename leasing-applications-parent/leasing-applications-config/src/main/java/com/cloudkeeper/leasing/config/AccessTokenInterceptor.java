@@ -47,9 +47,6 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             return true;
         }
         //从header中得到token
-        if (request.getRequestURL().indexOf("actuator") != -1 ){
-            return true;
-        }
         String token = request.getHeader(AuthorizationConstants.AUTHORIZATION);
         if (!StringUtils.hasText(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
