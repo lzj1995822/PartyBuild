@@ -97,7 +97,8 @@ spring:
     enabled: false
   # redis 配置
   redis:
-    host: localhost
+#    host: localhost
+    host: 172.16.0.199
     port: 6379
     password: abc123
     database: 1
