@@ -21,11 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,8 +109,23 @@ public class ExaScoreControllerImpl implements ExaScoreController {
     @Override
     public Result<List<ExamScoreAllVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable,@ApiParam(value = "年份", required = true)String year,@ApiParam(value = "搜索", required = true)String search){
         List<ExamScoreAllVO> list = exaScoreService.examScoreAll(pageable ,year,search);
-        List<SysDistrict> sysDistricts = sysDistrictRepository.findAllByDistrictLevel(3);
+        List<SysDistrict> sysDistricts=new ArrayList<>();
+        if(StringUtils.isEmpty(search)){
+            sysDistricts= sysDistrictRepository.findAllByDistrictLevel(3);
+        }else {
+            String topId = sysDistrictRepository.findByDistrictName(search).getDistrictId();
+            int lev = sysDistrictRepository.findByDistrictName(search).getDistrictLevel();
+            if(!StringUtils.isEmpty(topId)){
+                if(lev == 2){
+                    sysDistricts.addAll(sysDistrictRepository.findAllByAttachTo(topId));
+                }else if(lev == 3){
+                    sysDistricts.addAll(sysDistrictRepository.findAllByDistrictId(topId));
+                }
+            }
+        }
+
         for(int i=0;i<sysDistricts.size();i++){
+            if(sysDistricts.get(i).getDistrictName()!="句容市委"){
             String sysName=sysDistricts.get(i).getDistrictName();
                 boolean isFlag = true;
                for(int j=0;j<list.size()&&isFlag;j++){
@@ -126,7 +143,7 @@ public class ExaScoreControllerImpl implements ExaScoreController {
                    examScoreAllVO.setTownScore(0.0);
                    list.add(examScoreAllVO);
                }
-
+        }
         }
         return Result.of(list);
     }
