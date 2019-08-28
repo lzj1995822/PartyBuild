@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,11 +104,19 @@ public class AccessoryControllerImpl implements AccessoryController {
 
     @Override
     public Result<List<AccessoryVO>> singleBatch( @RequestParam("files") MultipartFile[] files) throws IOException {
+        System.out.print("批量上传开始时间：");
+        Date batchStartTime = new Date();
+        System.out.println(batchStartTime.getTime());
         List<AccessoryVO> accessoryVOS = new ArrayList<>();
         for (int i = 0; i < files.length; i++){
             Accessory accessory = accessoryService.save(new Accessory(), files[i]);
             accessoryVOS.add(accessory.convert(AccessoryVO.class));
         }
+        System.out.print("批量上传结束时间：");
+        Date batchEndTime = new Date();
+        System.out.println(batchEndTime.getTime());
+        System.out.print("批量上传耗时：");
+        System.out.println(batchEndTime.getTime() - batchStartTime.getTime());
         return Result.ofAddSuccess(accessoryVOS);
     }
 
