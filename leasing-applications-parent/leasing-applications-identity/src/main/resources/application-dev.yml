@@ -115,8 +115,8 @@ spring:
 #        use-key-prefix: true
         time-to-live: 1d
 fdfs:
-  soTimeout: 500
-  connectTimeout: 600
+  soTimeout: 5000
+  connectTimeout: 6000
   thumbImage:             #缩略图生成参数
     width: 150
     height: 150
@@ -125,5 +125,6 @@ fdfs:
     max-total: -1
     max-wait-millis: 5000
     max-total-per-key: 50
-    max-idle-per-key: 10
-    min-idle-per-key: 5
+    max-idle-per-key: 30
+    min-idle-per-key: 20
+    test-on-borrow: true
