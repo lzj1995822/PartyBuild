@@ -27,12 +27,16 @@ zuul:
       serviceId: api-company
       sensitive-headers:
       custom-sensitive-headers: true
+  host:
+    max-per-route-connections: 1000
+    max-total-connections: 2000
+  semaphore:
+    max-semaphores: 5000
 #  sensitive-headers:
 
 ribbon:
   ReadTimeout: 100000  # 单位毫秒数
   SocketTimeout: 100000
-
 hystrix:
   command:
     default:
@@ -40,3 +44,6 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 250000
+  threadpool:
+    default:
+      coreSize=500:
