@@ -53,6 +53,8 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
         return accessoryRepository;
     }
 
+    FafsTestServiceImpl f= new FafsTestServiceImpl();
+
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -67,8 +69,8 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
     public Accessory save(@Nonnull Accessory entity, MultipartFile multipartFile) throws IOException {
         try {
             entity.setName(multipartFile.getOriginalFilename());
-            entity.setPath(fdfsServiceImpl.uploadFile(multipartFile));
-        } catch (IOException e) {
+            entity.setPath(f.testUpload(multipartFile));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return super.save(entity);
