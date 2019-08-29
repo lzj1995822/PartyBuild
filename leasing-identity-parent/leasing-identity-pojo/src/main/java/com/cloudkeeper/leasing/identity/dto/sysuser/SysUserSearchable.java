@@ -72,4 +72,8 @@ public class SysUserSearchable extends BaseSearchable {
     /** 组织简介 */
     @ApiModelProperty(value = "组织简介", position = 28, required = true)
     private String introduction;
+
+    /** 上传路径 */
+    @ApiModelProperty(value = "上传路径", position = 26, required = true)
+    private String uploadIP;
 }

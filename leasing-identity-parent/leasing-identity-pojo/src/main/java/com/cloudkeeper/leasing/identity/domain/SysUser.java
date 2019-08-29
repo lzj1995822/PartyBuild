@@ -82,6 +82,10 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty(value = "组织简介", position = 26, required = true)
     private String introduction;
 
+    /** 上传路径 */
+    @ApiModelProperty(value = "上传路径", position = 26, required = true)
+    private String uploadIP;
+
     /** 角色 */
     @ApiModelProperty(value = "角色", position = 28)
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

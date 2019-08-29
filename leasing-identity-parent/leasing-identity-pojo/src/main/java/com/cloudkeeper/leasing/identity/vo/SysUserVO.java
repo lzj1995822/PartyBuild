@@ -91,4 +91,8 @@ public class SysUserVO extends BaseVO {
 
     private SysDistrictVO sysDistrict;
 
+    /** 上传路径 */
+    @ApiModelProperty(value = "上传路径", position = 26, required = true)
+    private String uploadIP;
+
 }
