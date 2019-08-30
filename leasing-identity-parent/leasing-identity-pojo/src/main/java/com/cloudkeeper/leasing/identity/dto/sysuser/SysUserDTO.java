@@ -76,4 +76,7 @@ public class SysUserDTO extends BaseEditDTO {
     @ApiModelProperty(value = "是否是手机端", position = 16, required = true)
     private int isMobile;
 
+    /** 上传路径 */
+    @ApiModelProperty(value = "上传路径", position = 26, required = true)
+    private String uploadIP;
 }
