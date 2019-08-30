@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -92,5 +94,14 @@ public interface SysUserController {
     @ApiOperation(value = "登录", notes = "登录", position = 4)
     @PostMapping("/login")
     Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO);
+
+    /**
+     * 权限验证接口
+     * @param  auth_token 请求对象
+     * @return
+     */
+    @ApiOperation(value = "权限验证", notes = "权限验证", position = 6)
+    @GetMapping("/auth")
+    String auth(String auth_token);
 
 }

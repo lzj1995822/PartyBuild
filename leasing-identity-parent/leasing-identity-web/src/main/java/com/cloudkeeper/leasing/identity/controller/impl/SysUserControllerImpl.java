@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.base.utils.TokenUtil;
 import com.cloudkeeper.leasing.identity.controller.SysUserController;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.domain.SysUser;
@@ -10,6 +11,8 @@ import com.cloudkeeper.leasing.identity.dto.sysuser.SysUserSearchable;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.SysUserVO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -17,11 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +45,10 @@ public class SysUserControllerImpl implements SysUserController {
     private final SysUserService sysUserService;
 
     private final SysDistrictRepository sysDistrictRepository;
+
+    /** redis 数据库操作模板类*/
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     public Result<SysUserVO> findOne(@ApiParam(value = "系统用户id", required = true) @PathVariable String id) {
@@ -88,6 +99,30 @@ public class SysUserControllerImpl implements SysUserController {
     @Authorization(required = false)
     public Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO) {
         return sysUserService.login(sysUserDTO);
+    }
+
+    @Override
+    @Authorization(required = false)
+    public String auth(String auth_token) {
+        //从header中得到token
+        String token = auth_token;
+        if (!StringUtils.hasText(token)) {
+            return "FAILD";
+        }
+        Claims claims;
+        try {
+            claims = TokenUtil.parseJWT(token);
+        } catch (ExpiredJwtException expiredJwtException) {
+            return "FAILD";
+        } catch (Exception exception) {
+            return "FAILD";
+        }
+        String principalId = claims.getId();
+        String appToken = redisTemplate.opsForValue().get("app:token:principalId:" + principalId);
+        if (!token.equals(appToken)) {
+            return "FAILD";
+        }
+        return "OK";
     }
 
 }
