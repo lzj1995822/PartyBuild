@@ -74,6 +74,7 @@ public class CadrePosition extends BaseEntity {
     @OneToOne
     @JsonIgnore
     @JoinColumn(name = "cadreId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private VillageCadres villageCadres;
 
 
