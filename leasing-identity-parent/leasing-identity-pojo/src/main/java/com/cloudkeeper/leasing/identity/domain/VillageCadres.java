@@ -59,7 +59,7 @@ public class VillageCadres extends BaseEntity {
     private LocalDate birth;
 
     /** 入党时间 */
-    @ApiModelProperty(value = "姓入党时间", position = 10, required = true)
+    @ApiModelProperty(value = "入党时间", position = 10, required = true)
     @Column(length = 60)
     private LocalDate partyTime;
 
@@ -115,6 +115,15 @@ public class VillageCadres extends BaseEntity {
     @OneToOne(mappedBy = "villageCadres")
     @NotFound(action = NotFoundAction.IGNORE)
     private CadrePosition cadrePosition;
+
+    @ApiModelProperty(value = "职称", position = 15)
+    private String trainingTitle;
+
+    @ApiModelProperty(value = "类型", position = 17)
+    private String type;
+
+    @ApiModelProperty(value = "财政负担类型", position = 19)
+    private String financialType;
 
     @Nonnull
     @Override
