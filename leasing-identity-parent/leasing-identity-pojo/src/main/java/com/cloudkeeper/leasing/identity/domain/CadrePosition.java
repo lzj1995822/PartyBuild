@@ -42,6 +42,19 @@ public class CadrePosition extends BaseEntity {
     @Column(length = 60)
     private String districtId;
 
+    /** 所属镇组织 */
+    @ApiModelProperty(value = "所属镇组织", position = 10, required = true)
+    @Column(length = 60)
+    private String parentDistrictId;
+
+    /** 镇组织 */
+    @ApiModelProperty(value = "镇组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "parentDistrictId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict sysParentDistrict;
+
+
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
@@ -88,6 +101,9 @@ public class CadrePosition extends BaseEntity {
         }
         if(!StringUtils.isEmpty((this.sysDistrict))){
             cadrePositionVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        if (!StringUtils.isEmpty(this.sysParentDistrict)) {
+            cadrePositionVO.setParentDistrictName(this.sysParentDistrict.getDistrictName());
         }
         return (T) cadrePositionVO;
     }

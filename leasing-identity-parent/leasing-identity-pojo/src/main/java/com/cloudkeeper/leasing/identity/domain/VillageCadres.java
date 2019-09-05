@@ -103,12 +103,24 @@ public class VillageCadres extends BaseEntity {
     @Column(length = 60)
     private String districtId;
 
+    /** 所属镇组织 */
+    @ApiModelProperty(value = "所属镇组织", position = 10, required = true)
+    @Column(length = 60)
+    private String parentDistrictId;
+
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
     @ManyToOne
     @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
+
+    /** 镇级组织 */
+    @ApiModelProperty(value = "组织", position = 24)
+    @ManyToOne
+    @JoinColumn(name = "parentDistrictId",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDistrict parentSysDistrict;
 
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
@@ -125,16 +137,23 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "财政负担类型", position = 19)
     private String financialType;
 
+    @ApiModelProperty(value = "职责", position = 19)
+    private String duty;
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
-        if(!StringUtils.isEmpty(this.cadrePosition)){
-            villageCadresVO.setPost(this.cadrePosition.getPost());
+        if (!StringUtils.isEmpty(this.cadrePosition)){
+            villageCadresVO.setPost(this.cadrePosition.getName());
         }
-        if(!StringUtils.isEmpty(this.sysDistrict)){
+        if (!StringUtils.isEmpty(this.sysDistrict)){
             villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        if (!StringUtils.isEmpty(this.parentSysDistrict)) {
+            villageCadresVO.setParentDistrictName(this.parentSysDistrict.getDistrictName());
         }
         return (T) villageCadresVO;
     }

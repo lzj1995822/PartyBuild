@@ -14,4 +14,9 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
 
     Long countAllByDistrictId(String districtId);
 
+    /**
+     * 初始化岗位
+     */
+    void initPost();
+
 }
