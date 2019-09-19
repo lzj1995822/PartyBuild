@@ -47,4 +47,7 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
 
     //考核具体信息
     List<ExamScoreDetailVO> examScoreDetail(String districtName, String year);
+
+    //后台计时器更新正在执行的活动
+    void updateIsWorking();
 }
