@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nonnull;
@@ -48,6 +51,9 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
     @Autowired
     @Qualifier("fdfsServiceImpl")
     private FdfsService fdfsServiceImpl;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     protected BaseRepository<Accessory> getBaseRepository() {
@@ -207,6 +213,15 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
                 }
             }
         }
+    }
+
+    @Override
+    public String getFromRedis(String uuid) {
+        String base64 = redisTemplate.opsForValue().get(uuid);
+        if (StringUtils.isEmpty(base64)) {
+            return null;
+        }
+        return base64;
     }
 
     private List<Accessory> list(Accessory accessory) {

@@ -9,4 +9,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface ParPictureInfroService extends BaseService<ParPictureInfro> {
 
+
+    ParPictureInfro findByRedisUuid(String redisUuid);
 }

@@ -46,4 +46,9 @@ public class ParActivityPicture extends BaseEntity {
     private ParActivityFeedback parActivityFeedback;
 
 
+    /** redis图片缓存id */
+    @ApiModelProperty(value = "redis图片缓存id", position = 10, required = true)
+    private String redisUuid;
+
+
 }
