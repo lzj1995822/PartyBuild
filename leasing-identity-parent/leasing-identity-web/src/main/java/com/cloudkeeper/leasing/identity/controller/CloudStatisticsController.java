@@ -20,7 +20,7 @@ public interface CloudStatisticsController {
     CloudResult<Integer> organizationNumber();
 
     @ApiOperation(value = "党员", notes = "党员数量", position = 1)
-    @PostMapping("/vartyMemberNumber")
+    @PostMapping("/partyMemberNumber")
     CloudResult<Integer> partyMemberNumber();
 
     @ApiOperation(value = "村干部", notes = "村干部", position = 1)
