@@ -84,6 +84,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     @Override
     public Result<List<ParActivityObjectVO>> list(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
+        parActivityObjectService.updateIsWorking();
         List<ParActivityObject> parActivityObjectList = parActivityObjectService.findAll(parActivityObjectSearchable, sort);
         List<ParActivityObjectVO> parActivityObjectVOList = ParActivityObject.convert(parActivityObjectList, ParActivityObjectVO.class);
         return Result.of(parActivityObjectVOList);

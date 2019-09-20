@@ -6,6 +6,8 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.base.utils.TokenUtil;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
+import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
+import com.cloudkeeper.leasing.identity.dto.parpictureinfro.ParPictureInfroSearchable;
 import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.*;
@@ -38,11 +40,16 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Autowired
     private ParActivityObjectRepository parActivityObjectRepository;
 
+    @Autowired
+    private ParActivityObjectService parActivityObjectService;
+
     /**
      * 电视截图
      */
     @Autowired
     private ParPictureInfroRepository parPictureInfroRepository;
+    @Autowired
+    private ParPictureInfroService parPictureInfroService;
 
     /**
      * 手机截图
@@ -358,5 +365,54 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
                 "S1.organizationId = S2.districtID ORDER BY month asc";
         exD = super.findAllBySql(ExamScoreDetailVO.class ,sql);
         return exD;
+    }
+
+  /*  private long calculateTime(String districtId,String activityId){
+        ParPictureInfroSearchable search = new ParPictureInfroSearchable();
+        List<SysDistrict> allByDistrictId = sysDistrictRepository.findAllByDistrictId(districtId);
+        search.setStudyContent(activityId);
+        search.setOrganizationId(allByDistrictId.get(0).getId());
+        List<ParPictureInfro> all = parPictureInfroService.findAll(search,new Sort(Sort.Direction.DESC, "createTime"));
+        long currentTime = System.currentTimeMillis();
+        long newPictureTime = all.get(0).getCreateTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+        long timeInterval = currentTime - newPictureTime;
+        return timeInterval;
+    }
+*/
+    @Override
+    public void updateIsWorking() {
+       /* ParActivityObjectSearchable search = new ParActivityObjectSearchable();
+        search.setIsWorking("1");
+        List<ParActivityObject> all = super.findAll(search);
+        if(all.size()>0){
+            for(ParActivityObject item: all) {
+                long temp = calculateTime(item.getOrganizationId(), item.getActivityId());
+                if(temp>3700000){
+                    item.setIsWorking("0");
+                    parActivityObjectRepository.save(item);
+                }
+            }
+        }*/
+
+        String sql = "SELECT o.id as objectId, max(p.CreateTime) as newTime from  PAR_ActivityObject AS o " +
+                "LEFT JOIN SYS_District AS s ON s.districtId = o.organizationId " +
+                "INNER JOIN PAR_Picture_Infro AS p ON p.StudyContent = o.activityId AND p.organizationId = s.id " +
+                "WHERE o.isWorking=1 " +
+                "GROUP BY o.id";
+        List<ActivityIsWorkingVO> objectList = super.findAllBySql(ActivityIsWorkingVO.class, sql);
+        if(objectList.size()>0){
+            objectList.forEach( item -> {
+                long currentTime = System.currentTimeMillis();
+                long newPictureTime = item.getNewTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+                long timeInterval = currentTime - newPictureTime;
+                if(timeInterval>370000){
+                    Optional<ParActivityObject> parActivityObject = parActivityObjectRepository.findById(item.getObjectId());
+                    ParActivityObject oldObject = parActivityObject.get();
+                    oldObject.setIsWorking("0");
+                    save(oldObject);
+                }
+            });
+        }
+
     }
 }
