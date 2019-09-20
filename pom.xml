@@ -141,21 +141,21 @@
         </dependencies>
     </dependencyManagement>
 
-<!--    <repositories>-->
-<!--        &lt;!&ndash; 阿里 jar 仓库 &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>maven-ali</id>-->
-<!--            <url>http://maven.aliyun.com/nexus/content/groups/public//</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--                <updatePolicy>always</updatePolicy>-->
-<!--                <checksumPolicy>fail</checksumPolicy>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--    </repositories>-->
+    <repositories>
+        <!-- 阿里 jar 仓库 -->
+        <repository>
+            <id>maven-ali</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public//</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>
 
