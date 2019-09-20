@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -45,6 +46,9 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
     @Override
     public CentralConsoleVo dataStatistics(@NonNull String year) {
         String currentPrincipalId = getCurrentPrincipalId();
+        if(StringUtils.isEmpty(currentPrincipalId)){
+            currentPrincipalId = "01";
+        }
         Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
         CentralConsoleVo centralConsoleVo = new CentralConsoleVo();
         if (optionalById.isPresent()){
