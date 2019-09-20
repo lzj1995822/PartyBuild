@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -103,5 +104,10 @@ public interface AccessoryController {
     @PostMapping(value = "/singleBatch")
     @ApiOperation(value = "批量上传", notes = "批量上传", position = 8)
     Result<List<AccessoryVO>> singleBatch(@RequestParam("files") MultipartFile[] files) throws IOException;
+
+    @GetMapping(value = "/getImage/{uuid}")
+    @ApiOperation(value = "从redis中获取图片", notes = "从redis中获取图片", position = 8)
+    void getFromRedis(@PathVariable String uuid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+
 
 }

@@ -18,4 +18,6 @@ public interface ParActivityPictureRepository extends BaseRepository<ParActivity
      */
     void deleteAllByActivityID(String activityId);
 
+    ParActivityPicture findByRedisUuid(String redisUuid);
+
 }

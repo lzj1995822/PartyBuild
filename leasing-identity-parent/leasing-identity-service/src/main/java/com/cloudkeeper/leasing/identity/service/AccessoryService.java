@@ -64,4 +64,6 @@ public interface AccessoryService extends BaseService<Accessory> {
     void download(String fileName, String filePath, HttpServletResponse response) throws IOException;
 
     void download(String fileName, InputStream inputStream, HttpServletResponse response) throws IOException;
+
+    String getFromRedis(String uuid);
 }

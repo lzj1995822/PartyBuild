@@ -1,9 +1,12 @@
 package com.cloudkeeper.leasing;
 
+import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
 import com.github.tobato.fastdfs.FdfsClientConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +22,7 @@ import javax.servlet.MultipartConfigElement;
 @EnableJpaAuditing
 @EnableCaching
 @EnableEurekaClient
+@ServletComponentScan
 @Import(FdfsClientConfig.class)
 public class LeasingApplicationsIdentity {
 
