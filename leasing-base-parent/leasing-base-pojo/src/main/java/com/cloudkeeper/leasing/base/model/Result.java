@@ -25,6 +25,9 @@ public class Result<T> {
     /** 返回内容*/
     private T content;
 
+    /** 返回信息*/
+    private int status;
+
     private Result(int code, String msg, T content) {
         this.code = code;
         this.msg = msg;

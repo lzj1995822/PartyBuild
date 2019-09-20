@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CentralConsoleController;
 import com.cloudkeeper.leasing.identity.service.CentralConsoleService;
@@ -21,6 +22,7 @@ public class CentralConsoleControllerImpl implements CentralConsoleController {
 
     private final CentralConsoleService centralConsoleService;
 
+    @Authorization(required = false)
     @Override
     public Result<CentralConsoleVo> dataStatistics(@PathVariable String year) {
         CentralConsoleVo centralConsoleVo = centralConsoleService.dataStatistics(year);
