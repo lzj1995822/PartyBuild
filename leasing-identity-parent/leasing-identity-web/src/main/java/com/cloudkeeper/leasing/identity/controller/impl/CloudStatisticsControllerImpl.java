@@ -34,45 +34,51 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
 
     private final ParMemberService parMemberService;
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<Integer> organizationNumber() {
+    public CloudResult<Integer> countOrganizationNumber() {
         Integer integer = sysDistrictService.countAllByDistrictId("01");
         return CloudResult.of(integer);
     }
 
     @Authorization(required = false)
     @Override
-    public CloudResult<Integer> partyMemberNumber() {
+    public CloudResult<Integer> countPartyMemberNumber() {
         Integer integer = parMemberService.countAll("01");
         return CloudResult.of(integer);
     }
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<Long> villageCadresNumber() {
+    public CloudResult<Long> countVillageCadresNumber() {
         Long aLong = villageCadresService.countAllByDistrictId("01");
         return CloudResult.of(aLong);
     }
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<Integer> villageSecretaryNumber() {
+    public CloudResult<Integer> countVillageSecretaryNumber() {
         Integer integer = cadrePositionService.countVillageSecretaryNumber("01", "SECRETARY");
         return CloudResult.of(integer);
     }
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<Integer> activityPerformNumber() {
+    public CloudResult<Integer> countActivityPerformNumber() {
         Integer integer = parActivityPerformService.countAllByStatus("");
         return  CloudResult.of(integer);
     }
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<Integer> activityFinishedNumber() {
+    public CloudResult<Integer> countActivityFinishedNumber() {
         Integer integer = parActivityPerformService.countAllByStatus("2");
         return  CloudResult.of(integer);
     }
 
+    @Authorization(required = false)
     @Override
-    public CloudResult<BigDecimal> activityCompleteRate() {
+    public CloudResult<BigDecimal> countActivityCompleteRate() {
         Integer integer = parActivityPerformService.countAllByStatus("");
         Integer integer1 = parActivityPerformService.countAllByStatus("2");
         float rate = (float)integer1/integer;
