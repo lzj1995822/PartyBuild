@@ -17,31 +17,31 @@ import java.math.BigDecimal;
 public interface CloudStatisticsController {
 
     @ApiOperation(value = "党组织数量", notes = "党组织数量", position = 1)
-    @GetMapping("/organizationNumber")
+    @PostMapping("/organizationNumber")
     CloudResult<Integer> countOrganizationNumber();
 
     @ApiOperation(value = "党员", notes = "党员数量", position = 1)
-    @GetMapping("/partyMemberNumber")
+    @PostMapping("/partyMemberNumber")
     CloudResult<Integer> countPartyMemberNumber();
 
     @ApiOperation(value = "村干部", notes = "村干部", position = 1)
-    @GetMapping("/villageCadresNumber")
+    @PostMapping("/villageCadresNumber")
     CloudResult<Long> countVillageCadresNumber();
 
     @ApiOperation(value = "村书记", notes = "村书记", position = 1)
-    @GetMapping("/villageSecretaryNumber")
+    @PostMapping("/villageSecretaryNumber")
     CloudResult<Integer> countVillageSecretaryNumber();
 
     @ApiOperation(value = "活动执行次数", notes = "活动执行次数", position = 1)
-    @GetMapping("/activityPerformNumber")
+    @PostMapping("/activityPerformNumber")
     CloudResult<Integer> countActivityPerformNumber();
 
     @ApiOperation(value = "活动完成次数", notes = "活动完成次数", position = 1)
-    @GetMapping("/activityFinishedNumber")
+    @PostMapping("/activityFinishedNumber")
     CloudResult<Integer> countActivityFinishedNumber();
 
     @ApiOperation(value = "活动完成率", notes = "活动完成率", position = 1)
-    @GetMapping("/activityCompleteRate")
+    @PostMapping("/activityCompleteRate")
     CloudResult<BigDecimal> countActivityCompleteRate();
 
 }
