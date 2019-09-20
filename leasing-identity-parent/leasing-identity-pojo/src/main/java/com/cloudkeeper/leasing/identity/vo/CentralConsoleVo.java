@@ -38,7 +38,13 @@ public class CentralConsoleVo extends BaseVO {
     private Integer positionNumber;
 
     //所属组织数量
-    private Integer orgnizationNumber;
+    private Integer organizationNumber;
+
+    //党员数量
+    private Integer parMemberNumber;
+
+
+
 
 
 }

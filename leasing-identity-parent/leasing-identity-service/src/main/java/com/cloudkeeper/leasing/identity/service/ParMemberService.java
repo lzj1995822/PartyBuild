@@ -9,4 +9,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface ParMemberService extends BaseService<ParMember> {
 
+    Integer countAll(String districtId);
+
 }

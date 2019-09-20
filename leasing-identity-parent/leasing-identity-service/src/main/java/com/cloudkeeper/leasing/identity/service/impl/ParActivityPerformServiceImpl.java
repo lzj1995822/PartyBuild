@@ -207,4 +207,9 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         return parActivityPerformRepository.findByActivityIDAndOrganizationId(activityId, organizationId);
     }
 
+    @Override
+    public Integer countAllByStatus(String status) {
+        return parActivityPerformRepository.countAllByStatus(status);
+    }
+
 }

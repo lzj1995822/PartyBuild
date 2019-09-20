@@ -129,6 +129,12 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return maxDistrictId;
     }
 
+    @Override
+    public Integer countAllByDistrictId(String districtId) {
+        Integer integer = sysDistrictRepository.countAllByDistrictIdStartingWith(districtId);
+        return integer;
+    }
+
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
         for (SysDistrict sysDistrict: sysDistricts) {

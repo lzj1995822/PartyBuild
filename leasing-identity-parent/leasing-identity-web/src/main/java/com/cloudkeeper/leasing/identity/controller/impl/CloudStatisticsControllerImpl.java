@@ -4,12 +4,15 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.CloudResult;
 import com.cloudkeeper.leasing.identity.controller.CloudStatisticsController;
-import com.cloudkeeper.leasing.identity.service.CentralConsoleService;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 /**
@@ -20,14 +23,61 @@ import java.util.Calendar;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CloudStatisticsControllerImpl implements CloudStatisticsController {
 
-    private final CentralConsoleService centralConsoleService;
+
+    private final SysDistrictService sysDistrictService;
+
+    private final VillageCadresService villageCadresService;
+
+    private final ParActivityPerformService parActivityPerformService;
+
+    private final CadrePositionService cadrePositionService;
+
+    private final ParMemberService parMemberService;
+
+    @Override
+    public CloudResult<Integer> organizationNumber() {
+        Integer integer = sysDistrictService.countAllByDistrictId("01");
+        return CloudResult.of(integer);
+    }
 
     @Authorization(required = false)
     @Override
-    public CloudResult<CentralConsoleVo> dataStatistics() {
-        Calendar date = Calendar.getInstance();
-        String year = String.valueOf(date.get(Calendar.YEAR));
-        CentralConsoleVo centralConsoleVo = centralConsoleService.dataStatistics(year);
-        return CloudResult.of(centralConsoleVo);
+    public CloudResult<Integer> partyMemberNumber() {
+        Integer integer = parMemberService.countAll("01");
+        return CloudResult.of(integer);
+    }
+
+    @Override
+    public CloudResult<Long> villageCadresNumber() {
+        Long aLong = villageCadresService.countAllByDistrictId("01");
+        return CloudResult.of(aLong);
+    }
+
+    @Override
+    public CloudResult<Integer> villageSecretaryNumber() {
+        Integer integer = cadrePositionService.countVillageSecretaryNumber("01", "SECRETARY");
+        return CloudResult.of(integer);
+    }
+
+    @Override
+    public CloudResult<Integer> activityPerformNumber() {
+        Integer integer = parActivityPerformService.countAllByStatus("");
+        return  CloudResult.of(integer);
+    }
+
+    @Override
+    public CloudResult<Integer> activityFinishedNumber() {
+        Integer integer = parActivityPerformService.countAllByStatus("2");
+        return  CloudResult.of(integer);
+    }
+
+    @Override
+    public CloudResult<BigDecimal> activityCompleteRate() {
+        Integer integer = parActivityPerformService.countAllByStatus("");
+        Integer integer1 = parActivityPerformService.countAllByStatus("2");
+        float rate = (float)integer1/integer;
+        DecimalFormat df = new DecimalFormat("0.0000");//保留4位小数
+        String activityCompleteRate = df.format(rate)+"%";
+        return CloudResult.of(activityCompleteRate);
     }
 }

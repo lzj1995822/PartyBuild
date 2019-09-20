@@ -37,6 +37,10 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
    //岗位（通过岗位拿村书记数量）
     private final  CadrePositionService cadrePositionService;
 
+    private final SysDistrictService sysDistrictService;
+
+    private final ParMemberService parMemberService;
+
 
     @Override
     protected BaseRepository<BaseEntity> getBaseRepository() {
@@ -47,13 +51,15 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
     public CentralConsoleVo dataStatistics(@NonNull String year) {
         String currentPrincipalId = getCurrentPrincipalId();
         if(StringUtils.isEmpty(currentPrincipalId)){
-            currentPrincipalId = "01";
+            currentPrincipalId = "1";
         }
         Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
         CentralConsoleVo centralConsoleVo = new CentralConsoleVo();
         if (optionalById.isPresent()){
             SysUser sysUser = optionalById.get();
             String districtId = sysUser.getDistrictId();
+            centralConsoleVo.setParMemberNumber(parMemberService.countAll(districtId));
+            centralConsoleVo.setOrganizationNumber(sysDistrictService.countAllByDistrictId(districtId));
             centralConsoleVo.setVillageCadresNumber(villageCadresService.countAllByDistrictId(districtId));
             centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId, year));
             centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));

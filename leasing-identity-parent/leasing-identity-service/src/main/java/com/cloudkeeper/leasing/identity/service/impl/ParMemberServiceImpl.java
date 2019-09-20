@@ -43,4 +43,9 @@ public class ParMemberServiceImpl extends BaseServiceImpl<ParMember> implements 
                 .withMatcher("isVolunteer", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public Integer countAll(String districtId) {
+        Integer integer = parMemberRepository.countAllByDistrictIdStartingWith(districtId);
+        return integer;
+    }
 }

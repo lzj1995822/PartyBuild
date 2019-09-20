@@ -129,7 +129,6 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Override
     public BigDecimal handleActivityCompleteRate(String organizationId, String year) {
         Integer yearNum = Integer.valueOf(year);
-
         String sql = "SELECT  COUNT( CASE WHEN pao.status = 2 THEN 1 ELSE NULL END ) as finished, COUNT(pao.id) as total FROM PAR_ActivityObject pao " +
                 " LEFT JOIN PAR_Activity pa on pa.id = pao.activityId WHERE pao.organizationId like " +
                 " '" + organizationId + "%' And pa.month BETWEEN '" +year+ "-01-01' and '" + getLastDayByYear(yearNum).toString() + "'";

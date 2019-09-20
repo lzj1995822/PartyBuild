@@ -35,4 +35,6 @@ public interface ParActivityPerformRepository extends BaseRepository<ParActivity
     @Query(value = "SELECT COUNT(1) from PAR_ActivityPerform as par LEFT JOIN SYS_District as d on par.organizationId = d.id LEFT JOIN PAR_Activity pa on par.ActivityID = pa.id where d.districtId LIKE :districtId% AND YEAR(pa.[month]) = :year", nativeQuery = true)
     Integer countAll(@Param("districtId") String districtId, @Param("year") String year);
 
+    Integer countAllByStatus(String status);
+
 }
