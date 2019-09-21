@@ -31,6 +31,9 @@ public class ImageRedisHandler extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static final String REDIS_IMG_URL = "http://122.97.218.162:21018/api/identity/accessory/getImage/";
+
+
     @Override
     public void run() {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
@@ -41,6 +44,7 @@ public class ImageRedisHandler extends Thread {
                 MultipartFile multipartFile = BASE64DecodedMultipartFile.base64ToMultipart(base64);
 
                 try {
+                    item = REDIS_IMG_URL + item;
                     ParActivityPictureSearchable parActivityPictureSearchable = new ParActivityPictureSearchable();
                     parActivityPictureSearchable.setImageUrl(item);
                     List<ParActivityPicture> all = parActivityPictureService.findAll(parActivityPictureSearchable);
