@@ -1,6 +1,6 @@
 server:
 #  port: 18081  # tomcat服务端口号
-  port: 18081  # tomcat服务端口号
+  port: 18085  # tomcat服务端口号
   tomcat:
     uri-encoding: utf-8
 spring:
