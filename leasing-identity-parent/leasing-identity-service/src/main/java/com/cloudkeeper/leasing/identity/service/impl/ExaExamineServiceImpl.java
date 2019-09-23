@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ExaExamine;
 import com.cloudkeeper.leasing.identity.repository.ExaExamineRepository;
 import com.cloudkeeper.leasing.identity.service.ExaExamineService;
+import com.cloudkeeper.leasing.identity.vo.CunScoreVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import lombok.RequiredArgsConstructor;
@@ -143,6 +144,39 @@ public class ExaExamineServiceImpl extends BaseServiceImpl<ExaExamine> implement
                 " order by S3.exam desc";
         List<ExamScoreVO> list = super.findAllBySql(ExamScoreVO.class, sql);
         return  list;
+    }
+
+    @Override
+    public List<CunScoreVO> cunScoreRank() {
+        String sql = "SELECT top 16 sysd.districtName+'-'+S000.cun as cun,S000.exam from  " +
+                "(SELECT exam,cun, attachTo, districtId, exscore FROM  " +
+                "(  SELECT S0.cun,S0.attachTo,S0.districtId,examine.score exscore,S0.exam+isnull(examine.score,0) exam from  " +
+                "( SELECT SUM( score ) exam, districtName cun, attachTo,districtId  FROM  " +
+                "(SELECT es.activityId,  es.score,  es.createTime, sd.districtName, sd.attachTo, sd.id districtId FROM EXA_Score es  "+
+                "LEFT JOIN SYS_District sd ON es.organizationId = sd.id WHERE sd.districtLevel = 3  AND sd.isDelete = 0 AND YEAR(es.createTime) = YEAR(GETDATE()) ) S1  " +
+                "GROUP BY  districtName,districtId,attachTo )S0 left join " +
+                "( select sum(score) score,organizationId from  EXA_Examine  " +
+                " where YEAR(createTime)=YEAR(GETDATE()) group by organizationId) examine  " +
+                " on S0.districtId = examine.organizationId  ) a ) S000,SYS_District sysd where S000.attachTo = sysd.districtId ORDER BY S000.exam desc ";
+        List<CunScoreVO> allBySql = findAllBySql(CunScoreVO.class, sql);
+        return allBySql;
+    }
+
+    @Override
+    public List<CunScoreVO> townScoreRank() {
+        String sql = "SELECT SUM(exam)/count(districtName) exam,districtName cun from " +
+                " (SELECT S000.cun,S000.exam,sysd.districtName from  " +
+                " (SELECT exam,cun, attachTo, districtId, exscore FROM  " +
+                " (SELECT S0.cun,S0.attachTo,S0.districtId,examine.score exscore,S0.exam+isnull(examine.score,0) exam from  " +
+                " ( SELECT SUM( score ) exam, districtName cun, attachTo,districtId  FROM  " +
+                " (SELECT es.activityId,  es.score,  es.createTime, sd.districtName, sd.attachTo, sd.id districtId FROM EXA_Score es LEFT JOIN SYS_District sd ON es.organizationId = sd.id WHERE sd.districtLevel = 3  AND sd.isDelete = 0 AND YEAR(es.createTime) = YEAR(GETDATE()) ) S1   " +
+                " GROUP BY  districtName,districtId,attachTo )S0 left join " +
+                "( select sum(score) score,organizationId from  EXA_Examine  " +
+                " where YEAR(createTime)=YEAR(GETDATE()) group by organizationId) examine  " +
+                " on S0.districtId = examine.organizationId  ) a ) S000,SYS_District sysd where S000.attachTo = sysd.districtId  " +
+                "  ) S001  GROUP BY districtName ORDER BY exam desc";
+        List<CunScoreVO> allBySql = findAllBySql(CunScoreVO.class, sql);
+        return allBySql;
     }
 
 }

@@ -198,7 +198,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
 
     @Override
     public Integer countAll(String districtId, String year) {
-        Integer integer = parActivityPerformRepository.countAll(districtId, year);
+        Integer integer = parActivityPerformRepository.countAllByDistrictIdAndYear(districtId, year);
         return integer;
     }
 
@@ -209,7 +209,13 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
 
     @Override
     public Integer countAllByStatus(String status) {
-        return parActivityPerformRepository.countAllByStatus(status);
+        Integer performsTotal;
+        if(StringUtils.isEmpty(status)){
+            performsTotal = parActivityPerformRepository.countAll();
+        }else{
+            performsTotal = parActivityPerformRepository.countAllByStatus(status);
+        }
+        return performsTotal;
     }
 
 }

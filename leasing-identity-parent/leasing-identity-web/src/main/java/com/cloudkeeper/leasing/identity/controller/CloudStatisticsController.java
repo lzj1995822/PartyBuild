@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.base.model.CloudResult;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
+import com.cloudkeeper.leasing.identity.vo.CurrentActivityVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Api(value = "云平台", tags = "云平台")
 @RequestMapping("/cloudStatistics")
@@ -43,5 +46,17 @@ public interface CloudStatisticsController {
     @ApiOperation(value = "活动完成率", notes = "活动完成率", position = 1)
     @PostMapping("/activityCompleteRate")
     CloudResult<BigDecimal> countActivityCompleteRate();
+
+    @ApiOperation(value = "当月通知公告和活动", notes = "当月通知公告和活动", position = 1)
+    @PostMapping("/currentActivity")
+    CloudResult<Map<String, Object>> listCurrent();
+
+    @ApiOperation(value = "年度村排名", notes = "年度村排名", position = 1)
+    @PostMapping("/cunRanking")
+    CloudResult<Map<String, Object>> cunRanking();
+
+    @ApiOperation(value = "年度镇排名", notes = "年度镇排名", position = 1)
+    @PostMapping("/townRanking")
+    CloudResult<Map<String, Object>> townRanking();
 
 }

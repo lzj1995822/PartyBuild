@@ -12,6 +12,7 @@ import com.cloudkeeper.leasing.identity.repository.MessageCenterRepository;
 import com.cloudkeeper.leasing.identity.service.AcceptInformationService;
 import com.cloudkeeper.leasing.identity.service.InformationService;
 import com.cloudkeeper.leasing.identity.service.MessageCenterService;
+import com.cloudkeeper.leasing.identity.vo.CurrentActivityVo;
 import com.cloudkeeper.leasing.identity.vo.InformationVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,17 @@ public class InformationServiceImpl extends BaseServiceImpl<Information> impleme
             messageCenterService.save(information.getId(),item,"information");
         }
         return informationVO;
+    }
+
+    @Override
+    public List<CurrentActivityVo> findCurrent() {
+        String sql="select '[通知公告]       '+ title as title,CONVERT(VARCHAR(100),createdAt,23) as creatTime from INF_information WHERE year(createdAt)=YEAR(GETDATE()) AND month(createdAt)=month(GETDATE()) " +
+                "UNION ALL " +
+                "SELECT '[党建任务]       '+title as title ,CONVERT(VARCHAR(100),month,23) as creatTime from PAR_Activity WHERE taskType='party' and year(month)=YEAR(GETDATE()) AND month(month)=month(GETDATE()) " +
+                "UNION ALL " +
+                "SELECT '[远教任务]       '+title as title,CONVERT(VARCHAR(100),month,23) as creatTime from PAR_Activity WHERE taskType='distLearning'and year(month)=YEAR(GETDATE()) AND month(month)=month(GETDATE()) ";
+        List<CurrentActivityVo> allBySql = findAllBySql(CurrentActivityVo.class, sql);
+        return allBySql;
     }
 
     @Override
