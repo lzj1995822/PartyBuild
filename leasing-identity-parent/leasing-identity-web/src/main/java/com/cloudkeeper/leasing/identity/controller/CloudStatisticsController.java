@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller;
 
 
 import com.cloudkeeper.leasing.base.model.CloudResult;
+import com.cloudkeeper.leasing.identity.vo.ActivityDashboardFormatVo;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
 import com.cloudkeeper.leasing.identity.vo.CurrentActivityVo;
 import io.swagger.annotations.Api;
@@ -45,7 +46,7 @@ public interface CloudStatisticsController {
 
     @ApiOperation(value = "活动完成率", notes = "活动完成率", position = 1)
     @PostMapping("/activityCompleteRate")
-    CloudResult<BigDecimal> countActivityCompleteRate();
+    CloudResult<ActivityDashboardFormatVo> countActivityCompleteRate();
 
     @ApiOperation(value = "当月通知公告和活动", notes = "当月通知公告和活动", position = 1)
     @PostMapping("/currentActivity")

@@ -5,10 +5,7 @@ import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.CloudResult;
 import com.cloudkeeper.leasing.identity.controller.CloudStatisticsController;
 import com.cloudkeeper.leasing.identity.service.*;
-import com.cloudkeeper.leasing.identity.vo.CunScoreVO;
-import com.cloudkeeper.leasing.identity.vo.CurrentActivityFormatVO;
-import com.cloudkeeper.leasing.identity.vo.CurrentActivityVo;
-import com.cloudkeeper.leasing.identity.vo.HistogramFormatVo;
+import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,20 +82,21 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
 
     @Authorization(required = false)
     @Override
-    public CloudResult<BigDecimal> countActivityCompleteRate() {
+    public CloudResult<ActivityDashboardFormatVo> countActivityCompleteRate() {
         Integer integer = parActivityPerformService.countAllByStatus("");
         Integer integer1 = parActivityPerformService.countAllByStatus("2");
-        float rate = (float)integer1/integer;
-        DecimalFormat df = new DecimalFormat("0.0000");//保留4位小数
+        float rate = (float)integer1/integer *100;
+        DecimalFormat df = new DecimalFormat("0.00");//保留4位小数
         BigDecimal activityCompleteRate = new BigDecimal(df.format(rate));
-        return CloudResult.of(activityCompleteRate);
+        ActivityDashboardFormatVo dashboardFormatVo = new ActivityDashboardFormatVo(100,0,"活动完成率","%",activityCompleteRate.doubleValue(),false);
+        return CloudResult.of(dashboardFormatVo);
     }
 
     @Authorization(required = false)
     @Override
     public CloudResult<Map<String, Object>> listCurrent() {
-        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("活动标题","left","title","",true,"50","2","");
-        CurrentActivityFormatVO formatTwo = new CurrentActivityFormatVO("创建时间","right","creatTime","",true,"50","2","");
+        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("活动标题","left","title","",true,"50","","");
+        CurrentActivityFormatVO formatTwo = new CurrentActivityFormatVO("创建时间","right","creatTime","",true,"50","","");
         List<CurrentActivityFormatVO> columns = new ArrayList<>();
         columns.add(formatOne);
         columns.add(formatTwo);
@@ -119,8 +117,8 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
     @Authorization(required = false)
     @Override
     public CloudResult<Map<String, Object>> cunRanking() {
-        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("村名","left","cun","",true,"50","2","");
-        CurrentActivityFormatVO formatTwo = new CurrentActivityFormatVO("得分","right","exam","",true,"50","2","");
+        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("村名","left","cun","",true,"50","","");
+        CurrentActivityFormatVO formatTwo = new CurrentActivityFormatVO("得分","right","exam","",true,"50","","");
         List<CurrentActivityFormatVO> columns = new ArrayList<>();
         columns.add(formatOne);
         columns.add(formatTwo);
