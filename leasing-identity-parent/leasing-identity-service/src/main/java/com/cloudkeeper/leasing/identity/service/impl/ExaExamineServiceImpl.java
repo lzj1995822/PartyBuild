@@ -148,7 +148,7 @@ public class ExaExamineServiceImpl extends BaseServiceImpl<ExaExamine> implement
 
     @Override
     public List<CunScoreVO> cunScoreRank() {
-        String sql = "SELECT top 16 sysd.districtName+'-'+S000.cun as cun,S000.exam from  " +
+        String sql = "SELECT top 30 sysd.districtName+'-'+S000.cun as cun,S000.exam from  " +
                 "(SELECT exam,cun, attachTo, districtId, exscore FROM  " +
                 "(  SELECT S0.cun,S0.attachTo,S0.districtId,examine.score exscore,S0.exam+isnull(examine.score,0) exam from  " +
                 "( SELECT SUM( score ) exam, districtName cun, attachTo,districtId  FROM  " +

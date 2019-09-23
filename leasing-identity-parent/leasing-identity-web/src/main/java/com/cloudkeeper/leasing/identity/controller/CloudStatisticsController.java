@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -59,5 +60,9 @@ public interface CloudStatisticsController {
     @ApiOperation(value = "年度镇排名", notes = "年度镇排名", position = 1)
     @PostMapping("/townRanking")
     CloudResult<Map<String, Object>> townRanking();
+
+    @ApiOperation(value = "年度镇排名", notes = "年度镇排名", position = 1)
+    @PostMapping("/runDays")
+    CloudResult<Integer> runDays() throws ParseException;
 
 }

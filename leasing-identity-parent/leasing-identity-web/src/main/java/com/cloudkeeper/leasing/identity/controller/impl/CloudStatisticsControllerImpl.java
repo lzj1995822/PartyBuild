@@ -11,8 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * 云平台
@@ -154,4 +161,22 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         map.put("series",series);
         return CloudResult.of(map);
     }
+
+    @Authorization(required = false)
+    @Override
+    public CloudResult<Integer> runDays(){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = df.parse("2019-09-01");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long pareTime =  date.getTime();
+        long currentTime = System.currentTimeMillis();
+        long between_days = (currentTime - pareTime) / (1000 * 3600 * 24);
+        Integer days = parseInt(String.valueOf(between_days));
+        return CloudResult.of(days);
+    }
+
 }
