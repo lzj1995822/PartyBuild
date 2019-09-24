@@ -39,12 +39,13 @@ public class ImageRedisHandler extends Thread {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         while (true) {
             List<String> imgKeys = redisTemplate.opsForList().range("IMGKEYS", 0, 20);
+            String redisUuid = null;
             for (String item : imgKeys) {
                 String base64 = (String) redisTemplate.opsForValue().get(item);
                 MultipartFile multipartFile = BASE64DecodedMultipartFile.base64ToMultipart(base64);
-
+                redisUuid = item;
+                item = REDIS_IMG_URL + item;
                 try {
-                    item = REDIS_IMG_URL + item;
                     ParActivityPictureSearchable parActivityPictureSearchable = new ParActivityPictureSearchable();
                     parActivityPictureSearchable.setImageUrl(item);
                     List<ParActivityPicture> all = parActivityPictureService.findAll(parActivityPictureSearchable);
@@ -52,7 +53,7 @@ public class ImageRedisHandler extends Thread {
                         ParActivityPicture parActivityPicture = all.get(0);
                         String path = fdfsService.uploadFile(multipartFile);
                         parActivityPicture.setImageUrl(path);
-                        parActivityPicture.setRedisUuid(item);
+                        parActivityPicture.setRedisUuid(redisUuid);
                         parActivityPictureService.save(parActivityPicture);
                         redisTemplate.opsForList().leftPop("IMGKEYS");
                         return;
@@ -64,7 +65,7 @@ public class ImageRedisHandler extends Thread {
                         ParPictureInfro parPictureInfro = all1.get(0);
                         String path = fdfsService.uploadFile(multipartFile);
                         parPictureInfro.setImageURL(path);
-                        parPictureInfro.setRedisUuid(item);
+                        parPictureInfro.setRedisUuid(redisUuid);
                         parPictureInfroService.save(parPictureInfro);
                         redisTemplate.opsForList().leftPop("IMGKEYS");
                     }
