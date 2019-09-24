@@ -70,46 +70,36 @@ public class SocketOneThread extends Thread {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            String msg = "";
-            DatagramSocket daSocket = new DatagramSocket();
-            //查询白名单
-            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"111\"}";
-
-            //访问服务地址
-//            String IP = "172.16.1.46";
-            String IP = "server.natappfree.cc";
-            int port = 35885;
-//            int port = 1019;
-            byte[] by = msg.getBytes();
-            //将服务器IP转化为InetAddress对象
-            try {
-                InetAddress server = InetAddress.getByName(IP);
-                DatagramPacket sendDp = new DatagramPacket(by,by.length,server,port);
-                try {
-
-                    daSocket.send(sendDp);
-                    //获取服务器返回信息
-//                    byte[] byResp = new byte[1024];
-//                    DatagramPacket receive = new DatagramPacket(byResp,byResp.length);
-//                    //接收数据
-//                    daSocket.receive(receive);
-//                    //输出内容
-//                    byte[] b = receive.getData();
-//                    int len = receive.getLength();
-//                    String s = new String(b,0,len);
-//                    System.out.println(s);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            String msg = "";
+//            DatagramSocket daSocket = new DatagramSocket();
+//            //查询白名单
+//            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"111\"}";
+//
+//            //访问服务地址
+////            String IP = "172.16.1.46";
+//            String IP = "server.natappfree.cc";
+//            int port = 35885;
+////            int port = 1019;
+//            byte[] by = msg.getBytes();
+//            //将服务器IP转化为InetAddress对象
+//            try {
+//                InetAddress server = InetAddress.getByName(IP);
+//                DatagramPacket sendDp = new DatagramPacket(by,by.length,server,port);
+//                try {
+//
+//                    daSocket.send(sendDp);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            } catch (UnknownHostException e) {
+//                e.printStackTrace();
+//            }
+//
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }
