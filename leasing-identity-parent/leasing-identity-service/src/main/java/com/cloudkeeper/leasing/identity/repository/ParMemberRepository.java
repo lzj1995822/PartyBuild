@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParMemberRepository extends BaseRepository<ParMember> {
 
+    Integer countAllByDistrictIdStartingWith(String districtId);
+
 }
