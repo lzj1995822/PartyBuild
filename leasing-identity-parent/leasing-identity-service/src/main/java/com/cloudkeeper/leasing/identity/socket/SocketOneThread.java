@@ -70,36 +70,36 @@ public class SocketOneThread extends Thread {
         }
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            String msg = "";
-//            DatagramSocket daSocket = new DatagramSocket();
-//            //查询白名单
-//            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"111\"}";
-//
-//            //访问服务地址
-////            String IP = "172.16.1.46";
-//            String IP = "server.natappfree.cc";
-//            int port = 35885;
-////            int port = 1019;
-//            byte[] by = msg.getBytes();
-//            //将服务器IP转化为InetAddress对象
-//            try {
-//                InetAddress server = InetAddress.getByName(IP);
-//                DatagramPacket sendDp = new DatagramPacket(by,by.length,server,port);
-//                try {
-//
-//                    daSocket.send(sendDp);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            } catch (UnknownHostException e) {
-//                e.printStackTrace();
-//            }
-//
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) {
+        try {
+            String msg = "";
+            DatagramSocket daSocket = new DatagramSocket();
+            //查询白名单
+            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"111\"}";
+
+            //访问服务地址
+//            String IP = "172.16.1.46";
+            String IP = "dwxp4b21n3.52http.tech";
+            int port = 14949;
+//            int port = 1019;
+            byte[] by = msg.getBytes();
+            //将服务器IP转化为InetAddress对象
+            try {
+                InetAddress server = InetAddress.getByName(IP);
+                DatagramPacket sendDp = new DatagramPacket(by,by.length,server,port);
+                try {
+
+                    daSocket.send(sendDp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
