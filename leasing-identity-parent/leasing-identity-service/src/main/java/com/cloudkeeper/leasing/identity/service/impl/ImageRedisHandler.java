@@ -39,7 +39,7 @@ public class ImageRedisHandler extends Thread {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         while (true) {
             List<String> imgKeys = redisTemplate.opsForList().range("IMGKEYS", 0, 20);
-            String redisUuid = null;
+            String redisUuid;
             for (String item : imgKeys) {
                 String base64 = (String) redisTemplate.opsForValue().get(item);
                 MultipartFile multipartFile = BASE64DecodedMultipartFile.base64ToMultipart(base64);
@@ -55,8 +55,9 @@ public class ImageRedisHandler extends Thread {
                         parActivityPicture.setImageUrl(path);
                         parActivityPicture.setRedisUuid(redisUuid);
                         parActivityPictureService.save(parActivityPicture);
-                        redisTemplate.opsForList().leftPop("IMGKEYS");
-                        return;
+                        redisTemplate.opsForList().remove("IMGKEYS", 0, redisUuid);
+                        redisTemplate.delete(redisUuid);
+                        continue;
                     }
                     ParPictureInfroSearchable parPictureInfroSearchable = new ParPictureInfroSearchable();
                     parPictureInfroSearchable.setImageURL(item);
@@ -67,7 +68,8 @@ public class ImageRedisHandler extends Thread {
                         parPictureInfro.setImageURL(path);
                         parPictureInfro.setRedisUuid(redisUuid);
                         parPictureInfroService.save(parPictureInfro);
-                        redisTemplate.opsForList().leftPop("IMGKEYS");
+                        redisTemplate.opsForList().remove("IMGKEYS", 0, redisUuid);
+                        redisTemplate.delete(redisUuid);
                     }
                 } catch (Exception e) {
                     logger.warn("图片保存失败，图片丢失");
