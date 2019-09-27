@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SumPerHour;
 import com.cloudkeeper.leasing.identity.repository.SumPerHourRepository;
 import com.cloudkeeper.leasing.identity.service.SumPerHourService;
+import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -50,5 +53,16 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
             sumPerHourRepository.save(sumPerHour);
         }
 
+    }
+
+    public List<HeatMapVO> getHeatMapData(LocalDateTime startTime, LocalDateTime endTime) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String sql = "SELECT sd.districtId, sd.districtName, SUM(sph.total) as total, sd.location FROM Sum_Per_Hour sph LEFT JOIN Position_Information pin on sph.positionId = pin.id " +
+                " LEFT JOIN SYS_District sd on sd.districtId = pin.districtId" +
+                " WHERE 1=1 AND sph.endTime >= '" + startTime.format(dateTimeFormatter) + "' and " +
+                " sph.endTime < '" + endTime.format(dateTimeFormatter) + "'" +
+                " GROUP BY sd.districtId,sd.districtName,sd.location";
+        List<HeatMapVO> allBySql = super.findAllBySql(HeatMapVO.class, sql);
+        return allBySql;
     }
 }

@@ -71,6 +71,7 @@
             <groupId>org.csource</groupId>
             <artifactId>fastdfs-client-java</artifactId>
             <version>1.27-RELEASE</version>
+            <systemPath>${basedir}/lib/fastdfs-client-java-1.27-RELEASE.jar</systemPath>
         </dependency>
     </dependencies>
 

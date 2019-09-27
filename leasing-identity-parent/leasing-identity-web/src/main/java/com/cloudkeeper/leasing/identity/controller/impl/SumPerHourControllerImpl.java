@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.SumPerHour;
 import com.cloudkeeper.leasing.identity.dto.sumperhour.SumPerHourDTO;
 import com.cloudkeeper.leasing.identity.dto.sumperhour.SumPerHourSearchable;
 import com.cloudkeeper.leasing.identity.service.SumPerHourService;
+import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
 import com.cloudkeeper.leasing.identity.vo.SumPerHourVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +79,11 @@ public class SumPerHourControllerImpl implements SumPerHourController {
         Page<SumPerHour> sumPerHourPage = sumPerHourService.findAll(sumPerHourSearchable, pageable);
         Page<SumPerHourVO> sumPerHourVOPage = SumPerHour.convert(sumPerHourPage, SumPerHourVO.class);
         return Result.of(sumPerHourVOPage);
+    }
+
+    @Override
+    public Result<List<HeatMapVO>> getHeatMapData(@RequestBody SumPerHourDTO sumPerHourDTO) {
+        return Result.of(sumPerHourService.getHeatMapData(sumPerHourDTO.getStartTime(),sumPerHourDTO.getEndTime()));
     }
 
 }

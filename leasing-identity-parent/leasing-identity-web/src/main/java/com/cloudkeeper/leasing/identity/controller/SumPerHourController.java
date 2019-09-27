@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.identity.dto.sumperhour.SumPerHourDTO;
 import com.cloudkeeper.leasing.identity.dto.sumperhour.SumPerHourSearchable;
+import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
 import com.cloudkeeper.leasing.identity.vo.SumPerHourVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import sun.plugin2.main.client.CALayerProvider;
 
 import java.util.List;
 
@@ -82,5 +84,10 @@ public interface SumPerHourController {
     @PostMapping("/page")
     Result<Page<SumPerHourVO>> page(@ApiParam(value = "每小时人流量查询条件", required = true) @RequestBody SumPerHourSearchable sumPerHourSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+
+    @ApiOperation(value = "热力图数据")
+    @PostMapping("/getHeatMapData")
+    Result<List<HeatMapVO>> getHeatMapData(@RequestBody SumPerHourDTO sumPerHourDTO);
 
 }
