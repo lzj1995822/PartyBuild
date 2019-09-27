@@ -60,7 +60,6 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
         return accessoryRepository;
     }
 
-    FafsTestServiceImpl f= new FafsTestServiceImpl();
 
     @Override
     public ExampleMatcher defaultExampleMatcher() {
@@ -74,22 +73,12 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
 
     @Override
     public Accessory save(@Nonnull Accessory entity, MultipartFile multipartFile) throws IOException {
-        System.out.print("文件大小：");
-        System.out.println(multipartFile.getSize());
-        System.out.print("开始上传时间");
-        Date startTime = new Date();
-        System.out.println(startTime.getTime());
         try {
             entity.setName(multipartFile.getOriginalFilename());
-            entity.setPath(f.testUpload(multipartFile));
+            entity.setPath(fdfsServiceImpl.uploadFile(multipartFile));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.print("上传结束时间");
-        Date endTime = new Date();
-        System.out.print(endTime.getTime());
-        System.out.print("单次上传耗时：");
-        System.out.println(endTime.getTime() - startTime.getTime());
         return super.save(entity);
     }
 
