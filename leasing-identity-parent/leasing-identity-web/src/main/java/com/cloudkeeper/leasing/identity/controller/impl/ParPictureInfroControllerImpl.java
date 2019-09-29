@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParPictureInfroController;
 import com.cloudkeeper.leasing.identity.domain.ParPictureInfro;
@@ -64,6 +65,7 @@ public class ParPictureInfroControllerImpl implements ParPictureInfroController 
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<ParPictureInfroVO>> list(@ApiParam(value = "电视截图查询条件", required = true) @RequestBody ParPictureInfroSearchable parPictureInfroSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

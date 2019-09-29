@@ -46,4 +46,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
 
     String findMaxId(String districtId);
 
+    Integer countAllByDistrictId(String districtId);
+
 }

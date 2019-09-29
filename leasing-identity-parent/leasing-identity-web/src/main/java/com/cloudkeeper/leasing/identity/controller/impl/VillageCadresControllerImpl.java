@@ -10,9 +10,7 @@ import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -102,7 +100,15 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             //通过组织模糊查询
             detachedCriteria.add(Restrictions.ilike("districtId", villageCadresSearchable.getDistrictId(), MatchMode.START));
         }
-        Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable);
+        Integer total = villageCadresService.getTotalCount(detachedCriteria);
+        pageable.getSort().forEach(item -> {
+            if (item.isAscending()) {
+                detachedCriteria.addOrder(Order.asc(item.getProperty()));
+            } else {
+                detachedCriteria.addOrder(Order.desc(item.getProperty()));
+            }
+        });
+        Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable, total);
         Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);
         return Result.of(villageCadresVOPage);
     }
@@ -111,6 +117,18 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     public Result<Long> countALl(@RequestBody VillageCadresSearchable villageCadresSearchable) {
         Long aLong = villageCadresService.countAllByDistrictId(villageCadresSearchable.getDistrictId());
         return Result.of(aLong);
+    }
+
+    @Override
+    public Result<String> initPost() {
+        try {
+            villageCadresService.initPost();
+        } catch (Exception e) {
+            System.out.println(e);
+            return Result.of("false");
+        }
+
+        return Result.of("true");
     }
 
 

@@ -24,4 +24,6 @@ public interface ParActivityPerformService extends BaseService<ParActivityPerfor
     Integer countAll(String districtId, String year);
 
     Optional<ParActivityPerform> findByActivityIDAndOrganizationId(String activityId, String organizationId);
+
+    Integer countAllByStatus(String status);
 }

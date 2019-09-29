@@ -92,4 +92,10 @@ public interface VillageCadresController {
     @PostMapping("/countall")
     Result<Long> countALl(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
 
+    /**
+     * 初始化岗位
+     * @return
+     */
+    @GetMapping("/initPost")
+    Result<String> initPost();
 }

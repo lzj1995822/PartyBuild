@@ -13,5 +13,5 @@ public interface ParPictureInfroRepository extends BaseRepository<ParPictureInfr
 
     void deleteAllByStudyContentAndOrganizationId(String activityId,String organizationId);
 
-
+    ParPictureInfro findByRedisUuid(String redisUuid);
 }

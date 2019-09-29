@@ -33,6 +33,10 @@ public class CadrePositionVO extends BaseVO {
     @ApiModelProperty(value = "所属组织", position = 10, required = true)
     private String districtId;
 
+    /** 所属镇组织id */
+    @ApiModelProperty(value = "所属镇组织id", position = 10, required = true)
+    private String parentDistrictId;
+
     /** 工作地址 */
     @ApiModelProperty(value = "工作地址", position = 10, required = true)
     private String workPlace;
@@ -56,5 +60,10 @@ public class CadrePositionVO extends BaseVO {
     /** 所属组织 */
     @ApiModelProperty(value = "所属组织", position = 10, required = true)
     private String districtName;
+
+    /** 所属镇组织 */
+    @ApiModelProperty(value = "所属镇组织", position = 10, required = true)
+    private String parentDistrictName;
+
 
 }

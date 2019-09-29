@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 村干部管理 VO
@@ -88,5 +86,22 @@ public class VillageCadresVO extends BaseVO {
     /** 所属组织名称 */
     @ApiModelProperty(value = "所属组织名称", position = 10, required = true)
     private String districtName;
+
+    /** 所属镇级组织名称 */
+    @ApiModelProperty(value = "所属组织名称", position = 10, required = true)
+    private String parentDistrictName;
+
+    @ApiModelProperty(value = "职称", position = 15)
+    private String trainingTitle;
+
+    @ApiModelProperty(value = "类型", position = 17)
+    private String type;
+
+    @ApiModelProperty(value = "财政负担类型", position = 19)
+    private String financialType;
+
+    /** 所属镇组织 */
+    @ApiModelProperty(value = "所属镇组织", position = 21, required = true)
+    private String parentDistrictId;
 
 }

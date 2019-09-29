@@ -35,4 +35,8 @@ public class ParPictureInfroServiceImpl extends BaseServiceImpl<ParPictureInfro>
                 .withMatcher("studyContent", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public ParPictureInfro findByRedisUuid(String redisUuid) {
+        return parPictureInfroRepository.findByRedisUuid(redisUuid);
+    }
 }

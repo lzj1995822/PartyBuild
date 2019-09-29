@@ -48,4 +48,8 @@ public class ParPictureInfro extends BaseEntity {
     @Column(name = "StudyContent",length = 60)
     private String studyContent;
 
+    /** 数据库图片缓存的id */
+    @ApiModelProperty(value = "数据库图片缓存的id", position = 12)
+    private String redisUuid;
+
 }

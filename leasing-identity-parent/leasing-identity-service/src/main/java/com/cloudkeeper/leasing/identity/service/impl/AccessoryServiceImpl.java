@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nonnull;
@@ -49,12 +52,14 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
     @Qualifier("fdfsServiceImpl")
     private FdfsService fdfsServiceImpl;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     @Override
     protected BaseRepository<Accessory> getBaseRepository() {
         return accessoryRepository;
     }
 
-    FafsTestServiceImpl f= new FafsTestServiceImpl();
 
     @Override
     public ExampleMatcher defaultExampleMatcher() {
@@ -68,22 +73,12 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
 
     @Override
     public Accessory save(@Nonnull Accessory entity, MultipartFile multipartFile) throws IOException {
-        System.out.print("文件大小：");
-        System.out.println(multipartFile.getSize());
-        System.out.print("开始上传时间");
-        Date startTime = new Date();
-        System.out.println(startTime.getTime());
         try {
             entity.setName(multipartFile.getOriginalFilename());
-            entity.setPath(f.testUpload(multipartFile));
+            entity.setPath(fdfsServiceImpl.uploadFile(multipartFile));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.print("上传结束时间");
-        Date endTime = new Date();
-        System.out.print(endTime.getTime());
-        System.out.print("单次上传耗时：");
-        System.out.println(endTime.getTime() - startTime.getTime());
         return super.save(entity);
     }
 
@@ -207,6 +202,15 @@ public class AccessoryServiceImpl extends BaseServiceImpl<Accessory> implements 
                 }
             }
         }
+    }
+
+    @Override
+    public String getFromRedis(String uuid) {
+        String base64 = redisTemplate.opsForValue().get(uuid);
+        if (StringUtils.isEmpty(base64)) {
+            return null;
+        }
+        return base64;
     }
 
     private List<Accessory> list(Accessory accessory) {

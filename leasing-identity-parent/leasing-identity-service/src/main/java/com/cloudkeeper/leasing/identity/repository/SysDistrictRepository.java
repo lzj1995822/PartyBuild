@@ -49,4 +49,6 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     SysDistrict findByDistrictId(String districtId);
 
+    Integer countAllByDistrictIdStartingWith(String districtId);
+
 }

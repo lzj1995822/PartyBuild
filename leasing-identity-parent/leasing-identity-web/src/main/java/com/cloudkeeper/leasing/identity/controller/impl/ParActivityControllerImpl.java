@@ -97,8 +97,9 @@ public class ParActivityControllerImpl implements ParActivityController {
     public Result<List<ParActivityAllVO>> listAll(){
         List<ParActivityAllVO> parActivityList = parActivityService.listAll();
         return Result.of(parActivityList);
-    };
+    }
 
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityVO>> listByCurrentMonth() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);

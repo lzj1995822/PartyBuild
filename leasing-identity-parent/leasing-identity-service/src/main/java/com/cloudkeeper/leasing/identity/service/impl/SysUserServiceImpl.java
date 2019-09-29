@@ -79,7 +79,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
     public SysUser save(@Nonnull SysUser entity) {
         //新增时给密码赋值并加密
         if(StringUtils.isEmpty(entity.getId())){
-            entity.setPassword(MD5Util.computeMD5("123456"));
+            entity.setPassword(MD5Util.computeMD5("Jrdj96296"));
             String  msg = super.actionLog("新增","[用户信息]", entity.getName());
             sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),entity.getId());
         }else{
@@ -88,7 +88,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
                 SysUser sysUser = byId.get();
                 //判断是否重置密码
                 if(StringUtils.isEmpty(entity.getPassword())){
-                    entity.setPassword(MD5Util.computeMD5("123456"));
+                    entity.setPassword(MD5Util.computeMD5("Jrdj96296"));
                     String  msg = super.actionLog("重置","[用户密码]", sysUser.getName());
                     sysLogService.pushLog(this.getClass().getName(),msg,super.getTableName(),sysUser.getId());
                 }

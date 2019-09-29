@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ParActivityPicture;
+import com.cloudkeeper.leasing.identity.domain.ParPictureInfro;
 import com.cloudkeeper.leasing.identity.repository.ParActivityPictureRepository;
 import com.cloudkeeper.leasing.identity.service.ParActivityPictureService;
 import lombok.RequiredArgsConstructor;
@@ -33,4 +34,8 @@ public class ParActivityPictureServiceImpl extends BaseServiceImpl<ParActivityPi
                 .withMatcher("ImageUrl", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public ParActivityPicture findByRedisUuid(String redisUuid) {
+        return parActivityPictureRepository.findByRedisUuid(redisUuid);
+    }
 }
