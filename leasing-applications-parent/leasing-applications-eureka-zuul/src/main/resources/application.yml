@@ -1,5 +1,7 @@
 server:
   port: 8762
+  tomcat:
+    max-threads: 500
 spring:
   application:
     name: zuul

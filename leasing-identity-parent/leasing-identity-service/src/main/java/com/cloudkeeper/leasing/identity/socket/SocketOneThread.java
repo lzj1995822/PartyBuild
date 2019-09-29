@@ -1,5 +1,7 @@
 package com.cloudkeeper.leasing.identity.socket;
 
+import com.cloudkeeper.leasing.identity.repository.PeopleStreamRepository;
+import com.cloudkeeper.leasing.identity.service.PeopleStreamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,24 +12,34 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Component
-public class SocketThread extends Thread {
+public class SocketOneThread extends Thread {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(30);
 
-    private static final Integer PORT = 1019;
+    private static final Integer PORT = 1020;
 
     private DatagramSocket ds = null;
 
-    public SocketThread() {
+    private PeopleStreamRepository peopleStreamRepository;
+
+    public PeopleStreamRepository getPeopleStreamRepository() {
+        return peopleStreamRepository;
+    }
+
+    public void setPeopleStreamRepository(PeopleStreamRepository peopleStreamRepository) {
+        this.peopleStreamRepository = peopleStreamRepository;
+    }
+
+    public SocketOneThread() {
         if (ds == null) {
             try {
                 ds = new DatagramSocket(PORT);
-                log.info("创建UDP连接成功");
+                log.info("[Port 1020]创建UDP连接成功");
             } catch (SocketException e) {
                 e.printStackTrace();
-                log.error("创建UDP连接失败", e);
+                log.error("[Port 1020]创建UDP连接失败", e);
             }
         }
     }
@@ -35,18 +47,19 @@ public class SocketThread extends Thread {
     @Override
     public void run() {
         DatagramPacket receive = null;
-        log.info("服务已启动，进入长连接状态等待请求中");
+        log.info("[Port 1020]服务已启动，进入长连接状态等待请求中");
         while (true) {
             byte[] receiveData = new byte[1024];
             receive = new DatagramPacket(receiveData, receiveData.length);
-
+            log.info("[Port 1020]建立连接");
             try {
                 ds.receive(receive);
                 TaskHandler taskHandler = new TaskHandler();
                 taskHandler.setDatagramPacket(receive);
+                taskHandler.setPeopleStreamRepository(this.peopleStreamRepository);
                 threadPool.execute(taskHandler);
             } catch (IOException e) {
-                log.error("服务端异常",e);
+                log.error("[Port 1020]服务端异常",e);
             }
         }
     }
@@ -62,11 +75,13 @@ public class SocketThread extends Thread {
             String msg = "";
             DatagramSocket daSocket = new DatagramSocket();
             //查询白名单
-            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"\"}";
+            msg = "{\"sign\":\"whiteList\",\"operator_system\":\"111\"}";
 
             //访问服务地址
-            String IP = "172.16.1.92";
-            int port = 1019;
+//            String IP = "172.16.1.46";
+            String IP = "dwxp4b21n3.52http.tech";
+            int port = 14949;
+//            int port = 1019;
             byte[] by = msg.getBytes();
             //将服务器IP转化为InetAddress对象
             try {
@@ -75,16 +90,6 @@ public class SocketThread extends Thread {
                 try {
 
                     daSocket.send(sendDp);
-                    //获取服务器返回信息
-//                    byte[] byResp = new byte[1024];
-//                    DatagramPacket receive = new DatagramPacket(byResp,byResp.length);
-//                    //接收数据
-//                    daSocket.receive(receive);
-//                    //输出内容
-//                    byte[] b = receive.getData();
-//                    int len = receive.getLength();
-//                    String s = new String(b,0,len);
-//                    System.out.println(s);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

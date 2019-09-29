@@ -31,15 +31,20 @@ public class ImageRedisHandler extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static final String REDIS_IMG_URL = "http://122.97.218.162:21018/api/identity/accessory/getImage/";
+
+
     @Override
     public void run() {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         while (true) {
             List<String> imgKeys = redisTemplate.opsForList().range("IMGKEYS", 0, 20);
+            String redisUuid;
             for (String item : imgKeys) {
                 String base64 = (String) redisTemplate.opsForValue().get(item);
                 MultipartFile multipartFile = BASE64DecodedMultipartFile.base64ToMultipart(base64);
-
+                redisUuid = item;
+                item = REDIS_IMG_URL + item;
                 try {
                     ParActivityPictureSearchable parActivityPictureSearchable = new ParActivityPictureSearchable();
                     parActivityPictureSearchable.setImageUrl(item);
@@ -48,10 +53,11 @@ public class ImageRedisHandler extends Thread {
                         ParActivityPicture parActivityPicture = all.get(0);
                         String path = fdfsService.uploadFile(multipartFile);
                         parActivityPicture.setImageUrl(path);
-                        parActivityPicture.setRedisUuid(item);
+                        parActivityPicture.setRedisUuid(redisUuid);
                         parActivityPictureService.save(parActivityPicture);
-                        redisTemplate.opsForList().leftPop("IMGKEYS");
-                        return;
+                        redisTemplate.opsForList().remove("IMGKEYS", 0, redisUuid);
+                        redisTemplate.delete(redisUuid);
+                        continue;
                     }
                     ParPictureInfroSearchable parPictureInfroSearchable = new ParPictureInfroSearchable();
                     parPictureInfroSearchable.setImageURL(item);
@@ -60,9 +66,10 @@ public class ImageRedisHandler extends Thread {
                         ParPictureInfro parPictureInfro = all1.get(0);
                         String path = fdfsService.uploadFile(multipartFile);
                         parPictureInfro.setImageURL(path);
-                        parPictureInfro.setRedisUuid(item);
+                        parPictureInfro.setRedisUuid(redisUuid);
                         parPictureInfroService.save(parPictureInfro);
-                        redisTemplate.opsForList().leftPop("IMGKEYS");
+                        redisTemplate.opsForList().remove("IMGKEYS", 0, redisUuid);
+                        redisTemplate.delete(redisUuid);
                     }
                 } catch (Exception e) {
                     logger.warn("图片保存失败，图片丢失");

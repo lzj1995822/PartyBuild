@@ -67,11 +67,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.csource</groupId>
-            <artifactId>fastdfs-client-java</artifactId>
-            <version>1.27-RELEASE</version>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>

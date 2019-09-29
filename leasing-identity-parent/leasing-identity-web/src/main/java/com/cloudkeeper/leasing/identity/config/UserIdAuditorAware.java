@@ -21,7 +21,11 @@ public class UserIdAuditorAware implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        String principalId = (String) session.getAttribute(AuthorizationConstants.CURRENT_USER_ID);
+        String principalId = null;
+        try {
+            principalId  = (String) session.getAttribute(AuthorizationConstants.CURRENT_USER_ID);
+        } catch (IllegalStateException e) {
+        }
         return Optional.ofNullable(principalId);
     }
 }
