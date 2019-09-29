@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformat
 import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformationSearchable;
 import com.cloudkeeper.leasing.identity.vo.PositionInformationVO;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.PositionNumberVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -83,4 +84,10 @@ public interface PositionInformationController {
     Result<Page<PositionInformationVO>> page(@ApiParam(value = "阵地信息查询条件", required = true) @RequestBody PositionInformationSearchable positionInformationSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    /**
+     * 阵地个数
+     */
+    @ApiOperation(value = "阵地个数", notes = "阵地个数")
+    @PostMapping("/positionNumber")
+    Result<PositionNumberVO> positionNumber(@ApiParam(value = "组织ID", required = true)String  districtId);
 }

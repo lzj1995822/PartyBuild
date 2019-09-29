@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.dto.positioninformation.PositionInformat
 import com.cloudkeeper.leasing.identity.service.PositionInformationService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.PositionInformationVO;
+import com.cloudkeeper.leasing.identity.vo.PositionNumberVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -89,5 +90,9 @@ public class PositionInformationControllerImpl implements PositionInformationCon
         Page<PositionInformationVO> positionInformationVOPage = PositionInformation.convert(positionInformationPage, PositionInformationVO.class);
         return Result.of(positionInformationVOPage);
     }
-
+    @Override
+    public Result<PositionNumberVO> positionNumber(@ApiParam(value = "组织ID", required = true)String  districtId){
+        PositionNumberVO positionNumberVO = positionInformationService.positionNumber(districtId);
+        return Result.of(200,"success",positionNumberVO);
+    }
 }

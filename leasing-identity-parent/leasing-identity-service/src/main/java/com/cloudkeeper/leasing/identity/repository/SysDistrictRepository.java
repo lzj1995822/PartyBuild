@@ -31,6 +31,7 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     SysDistrict findByDistrictName(String districtName);
 
+
     /**
      * 逻辑删除
      */
