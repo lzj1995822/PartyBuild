@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.CloudResult;
+import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CloudStatisticsController;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.*;
@@ -44,6 +45,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
 
     private final ExaExamineService exaExamineService;
 
+    private final ParActivityObjectService parActivityObjectService;
 
     @Authorization(required = false)
     @Override
@@ -179,4 +181,17 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(days);
     }
 
+    @Authorization(required = false)
+    @Override
+    public Result<List<CloudActivityRateVO>> townMonthRate() {
+        List<CloudActivityRateVO> cloudActivityRateVOS = parActivityObjectService.townMonthRate();
+        return Result.of(cloudActivityRateVOS) ;
+    }
+
+    @Authorization(required = false)
+    @Override
+    public Result<List<CloudActivityCunFinishedVO>> cunMonthObject(String attachTo) {
+        List<CloudActivityCunFinishedVO> cloudActivityCunFinishedVOS = parActivityObjectService.cunMonthObject(attachTo);
+        return Result.of(cloudActivityCunFinishedVOS);
+    }
 }

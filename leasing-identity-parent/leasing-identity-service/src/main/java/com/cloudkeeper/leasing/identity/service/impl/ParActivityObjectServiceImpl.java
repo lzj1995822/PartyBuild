@@ -414,4 +414,30 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         }
 
     }
+
+    @Override
+    public List<CloudActivityRateVO> townMonthRate() {
+        String sql = "SELECT temp.*,s.districtName,s.location,ROUND(cast(temp.finished AS FLOAT)/temp.total, 2) AS rate " +
+                "from (select attachTo,count( CASE WHEN temptable.status = 2 THEN 1 ELSE NULL END) finished ,COUNT(*) as total " +
+                "from (SELECT o.id, o.activityId,o.status,o.organizationId,o.attachTo,a.title,a.month from PAR_ActivityObject as o  " +
+                "LEFT JOIN PAR_Activity AS a ON a.id = o.activityId  " +
+                "WHERE YEAR(a.month) = YEAR(GETDATE()) AND MONTH(a.month) = MONTH(GETDATE())) as temptable  " +
+                "GROUP BY attachTo) as temp  " +
+                "LEFT JOIN SYS_District as s ON s.districtID = temp.attachTo";
+        List<CloudActivityRateVO> allBySql = super.findAllBySql(CloudActivityRateVO.class, sql);
+        return allBySql;
+    }
+
+    @Override
+    public List<CloudActivityCunFinishedVO> cunMonthObject(String attachTo) {
+        String sql = "SELECT temp.*,s.districtName,s.location  " +
+                "FROM (select organizationId,count( CASE WHEN temptable.status = 2 THEN 1 ELSE NULL END) finished ,count( CASE WHEN temptable.status !=2 THEN 1 ELSE NULL END) unfinished  " +
+                "from (SELECT o.id, o.activityId,o.status,o.organizationId,o.attachTo,a.title,a.month from PAR_ActivityObject as o " +
+                "LEFT JOIN PAR_Activity AS a ON a.id = o.activityId  " +
+                "WHERE YEAR(a.month) = YEAR(GETDATE()) AND MONTH(a.month) = MONTH(GETDATE()) AND o.attachTo= "+ attachTo + ") as temptable  " +
+                "GROUP BY organizationId) as temp " +
+                "LEFT JOIN SYS_District as s ON s.districtID = organizationId";
+        List<CloudActivityCunFinishedVO> allBySql = super.findAllBySql(CloudActivityCunFinishedVO.class, sql);
+        return allBySql;
+    }
 }

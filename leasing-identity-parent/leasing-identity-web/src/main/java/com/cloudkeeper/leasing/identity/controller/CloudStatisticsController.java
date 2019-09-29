@@ -2,9 +2,8 @@ package com.cloudkeeper.leasing.identity.controller;
 
 
 import com.cloudkeeper.leasing.base.model.CloudResult;
-import com.cloudkeeper.leasing.identity.vo.ActivityDashboardFormatVo;
-import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
-import com.cloudkeeper.leasing.identity.vo.CurrentActivityVo;
+import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,5 +63,13 @@ public interface CloudStatisticsController {
     @ApiOperation(value = "年度镇排名", notes = "年度镇排名", position = 1)
     @PostMapping("/runDays")
     CloudResult<Integer> runDays() throws ParseException;
+
+    @ApiOperation(value = "月度镇活动完成率", notes = "月度镇活动完成率", position = 1)
+    @PostMapping("/townMonthRate")
+    Result<List<CloudActivityRateVO>> townMonthRate() ;
+
+    @ApiOperation(value = "月度村活动完成情况", notes = "月度村活动完成情况", position = 1)
+    @PostMapping("/cunMonthObject")
+    Result<List<CloudActivityCunFinishedVO>> cunMonthObject(String attachTo) ;
 
 }
