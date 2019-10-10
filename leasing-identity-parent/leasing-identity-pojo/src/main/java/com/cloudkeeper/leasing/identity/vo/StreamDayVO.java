@@ -25,4 +25,8 @@ public class StreamDayVO {
     @ApiModelProperty(value = "每小时统计人流总数", position = 10, required = true)
     private String monthDay;
 
+    @ApiModelProperty(value = "组织名称", position = 10, required = true)
+    private String districtName;
+
+
 }
