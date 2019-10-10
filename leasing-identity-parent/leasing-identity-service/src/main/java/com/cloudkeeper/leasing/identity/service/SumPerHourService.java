@@ -20,4 +20,8 @@ public interface SumPerHourService extends BaseService<SumPerHour> {
 
     Map<String,List<Integer>> RealLinkChart(String districtId);
 
+
+    // 统计单位内的各类阵地日人流量总计
+    Map<String, List> calDayStreamUnit(String interval, String districtId);
+
 }

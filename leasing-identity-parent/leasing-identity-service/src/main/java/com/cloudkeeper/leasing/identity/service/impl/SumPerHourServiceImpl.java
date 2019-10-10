@@ -8,16 +8,19 @@ import com.cloudkeeper.leasing.identity.repository.SumPerHourRepository;
 import com.cloudkeeper.leasing.identity.service.SumPerHourService;
 import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
 import com.cloudkeeper.leasing.identity.vo.LinkChartVo;
+import com.cloudkeeper.leasing.identity.vo.StreamDayVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 每小时人流量 service
@@ -87,4 +90,44 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
         }
         return map;
     }
+
+    @Override
+    public Map<String, List> calDayStreamUnit(String interval, String districtId) {
+        int defaultInterval = 7;
+        String defaultDistrictId = "01";
+        if (!StringUtils.isEmpty(interval)) {
+            defaultInterval = Integer.valueOf(interval);
+        }
+        if (!StringUtils.isEmpty(districtId)) {
+            defaultDistrictId = districtId;
+        }
+        //不算当日
+        defaultInterval++;
+        String sql = " SELECT sum(CASE WHEN temp.type = 'MEMBER_EDUCATION' THEN temp.total ELSE 0 END ) as memberEducation," +
+                " sum(CASE WHEN temp.type = 'PARTY_STUDIO' THEN temp.total ELSE 0 END ) as partyStudio," +
+                " sum(CASE WHEN temp.type = 'ORGANIZATIONAL_CONFERENCE' THEN temp.total ELSE 0 END ) as organizationalConference," +
+                " sum(CASE WHEN temp.type = 'PARTY_CARE' THEN temp.total ELSE 0 END ) as partyCare," +
+                " convert(varchar(10),temp.startTime,120) as monthDay" +
+                " From (" +
+                " SELECT s.total, pinfo.type, s.startTime from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id" +
+                " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId" +
+                " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId" +
+                " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -" + defaultInterval +", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE())" +
+                " and sdi.districtId like '" + defaultDistrictId + "%'" +
+                " ) temp" +
+                " GROUP BY convert(varchar(10),temp.startTime,120)";
+        List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
+        Map<String, List> map = new HashMap<>();
+        map.put("MEMBER_EDUCATION", allBySql.stream().map(StreamDayVO::getMemberEducation).collect(Collectors.toList()));
+        map.put("PARTY_STUDIO", allBySql.stream().map(StreamDayVO::getPartyStudio).collect(Collectors.toList()));
+        map.put("ORGANIZATIONAL_CONFERENCE", allBySql.stream().map(StreamDayVO::getOrganizationalConference).collect(Collectors.toList()));
+        map.put("PARTY_CARE", allBySql.stream().map(StreamDayVO::getPartyCare).collect(Collectors.toList()));
+        map.put("monthDay", allBySql.stream().map(StreamDayVO::getMonthDay).collect(Collectors.toList()));
+        return map;
+    }
+
+    //使用次数计算规则 某日总人流量除以该组织党员数乘以0.5之积 结果大于等于2 算作使用一次。
+    //业务逻辑意义是只要该组织下的一半的党员来过（一进一出）该阵地则算作使用一次
+
+
 }
