@@ -71,23 +71,17 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
     }
 
     @Override
-    public  Map<String,List<Integer>> RealLinkChart(String districtId) {
-        String sql = "SELECT s.positionId as positionId,s.startTime as startTime,s.endTime as endTime,s.total as total,p.type as type,p.districtId as districtId from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
-                "where s.startTime>DATEADD(HOUR, -313, GETDATE()) and districtId = '010806' " +
-                "ORDER BY type asc , startTime asc";
-        List<LinkChartVo> allBySql = super.findAllBySql(LinkChartVo.class, sql);
-        Map<String,List<Integer>> map  = new LinkedHashMap<>();
-        for(int i=0;i<allBySql.size();i++){
-            LinkChartVo item = allBySql.get(i);
-            String key = item.getType();
-            if(map.containsKey(key)) {
-                map.get(key).add(item.getTotal());
-            } else{
-                List temp = new ArrayList();
-                temp.add(item.getTotal());
-                map.put(key,temp);
-            }
-        }
+    public  Map<String,List> RealLinkChart(String districtId) {
+        String sql = "SELECT sum(CASE WHEN temp.type = 'MEMBER_EDUCATION' THEN temp.total ELSE 0 END ) as memberEducation, " +
+                            "sum(CASE WHEN temp.type = 'PARTY_STUDIO' THEN temp.total ELSE 0 END ) as partyStudio, " +
+                            "sum(CASE WHEN temp.type = 'ORGANIZATIONAL_CONFERENCE' THEN temp.total ELSE 0 END ) as organizationalConference, " +
+                            "sum(CASE WHEN temp.type = 'PARTY_CARE' THEN temp.total ELSE 0 END ) as partyCare,temp.startTime as monthDay  " +
+                "From (SELECT s.startTime ,s.total ,p.type  from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
+                "where s.startTime>DATEADD(HOUR, -353, GETDATE()) and districtId like '" + districtId + "%') as temp  " +
+                "GROUP BY startTime";
+        List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
+        Map<String, List> map = generateCommonMap(allBySql);
+        map.put("monthDay", allBySql.stream().map(StreamDayVO::getMonthDay).collect(Collectors.toList()));
         return map;
     }
 
@@ -178,7 +172,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " convert(varchar(10),temp.startTime,120) as monthDay " +
                 " From ( " +
                 " SELECT s.total, pinfo.type, s.startTime, sdi";
-        if (defaultDistrictId.equals("01")) {
+        if (defaultDistrictId.equals( "01")) {
             sql += "p";
         }
         sql += ".districtName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id " +
