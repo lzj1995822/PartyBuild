@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.SumPerHour;
 import com.cloudkeeper.leasing.identity.repository.SumPerHourRepository;
 import com.cloudkeeper.leasing.identity.service.SumPerHourService;
 import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
+import com.cloudkeeper.leasing.identity.vo.LinkChartVo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * 每小时人流量 service
@@ -64,5 +65,26 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " GROUP BY sd.districtId,sd.districtName,sd.location";
         List<HeatMapVO> allBySql = super.findAllBySql(HeatMapVO.class, sql);
         return allBySql;
+    }
+
+    @Override
+    public  Map<String,List<Integer>> RealLinkChart(String districtId) {
+        String sql = "SELECT s.positionId as positionId,s.startTime as startTime,s.endTime as endTime,s.total as total,p.type as type,p.districtId as districtId from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
+                "where s.startTime>DATEADD(HOUR, -313, GETDATE()) and districtId = '010806' " +
+                "ORDER BY type asc , startTime asc";
+        List<LinkChartVo> allBySql = super.findAllBySql(LinkChartVo.class, sql);
+        Map<String,List<Integer>> map  = new LinkedHashMap<>();
+        for(int i=0;i<allBySql.size();i++){
+            LinkChartVo item = allBySql.get(i);
+            String key = item.getType();
+            if(map.containsKey(key)) {
+                map.get(key).add(item.getTotal());
+            } else{
+                List temp = new ArrayList();
+                temp.add(item.getTotal());
+                map.put(key,temp);
+            }
+        }
+        return map;
     }
 }
