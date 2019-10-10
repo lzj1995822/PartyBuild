@@ -128,6 +128,31 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
     //统计各镇下行政村各阵地使用次数
     @Override
     public Map<String, List> calDayUsingTimes(String interval, String districtId) {
+        String sql = handleSql(interval,districtId);
+        List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
+        Map<String, List> map = generateCommonMap(allBySql);
+        map.put("districtName", allBySql.stream().map(StreamDayVO::getDistrictName).collect(Collectors.toList()));
+        return map;
+    }
+
+    // 雷达
+    @Override
+    public List<StreamDayVO> calDayUsingTimesRadar(String interval, String districtId) {
+        String sql = handleSql(interval,districtId);
+        List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
+        return allBySql;
+    }
+
+    private Map<String, List> generateCommonMap(List<StreamDayVO> list) {
+        Map<String, List> map = new HashMap<>();
+        map.put("MEMBER_EDUCATION", list.stream().map(StreamDayVO::getMemberEducation).collect(Collectors.toList()));
+        map.put("PARTY_STUDIO", list.stream().map(StreamDayVO::getPartyStudio).collect(Collectors.toList()));
+        map.put("ORGANIZATIONAL_CONFERENCE", list.stream().map(StreamDayVO::getOrganizationalConference).collect(Collectors.toList()));
+        map.put("PARTY_CARE", list.stream().map(StreamDayVO::getPartyCare).collect(Collectors.toList()));
+        return map;
+    }
+
+    private String handleSql(String interval, String districtId){
         int defaultInterval = 7;
         String defaultDistrictId = "01";
         if (!StringUtils.isEmpty(interval)) {
@@ -163,19 +188,8 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " and sdi.districtId like '" + defaultDistrictId + "%' " +
                 " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120) " +
                 ") temp2 GROUP BY temp2.districtName";
-        List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
-        Map<String, List> map = generateCommonMap(allBySql);
-        map.put("districtName", allBySql.stream().map(StreamDayVO::getDistrictName).collect(Collectors.toList()));
-        return map;
+        return sql;
     }
 
-    private Map<String, List> generateCommonMap(List<StreamDayVO> list) {
-        Map<String, List> map = new HashMap<>();
-        map.put("MEMBER_EDUCATION", list.stream().map(StreamDayVO::getMemberEducation).collect(Collectors.toList()));
-        map.put("PARTY_STUDIO", list.stream().map(StreamDayVO::getPartyStudio).collect(Collectors.toList()));
-        map.put("ORGANIZATIONAL_CONFERENCE", list.stream().map(StreamDayVO::getOrganizationalConference).collect(Collectors.toList()));
-        map.put("PARTY_CARE", list.stream().map(StreamDayVO::getPartyCare).collect(Collectors.toList()));
-        return map;
-    }
 
 }
