@@ -178,7 +178,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " convert(varchar(10),temp.startTime,120) as monthDay " +
                 " From ( " +
                 " SELECT s.total, pinfo.type, s.startTime, sdi";
-        if (defaultDistrictId == "01") {
+        if (defaultDistrictId.equals("01")) {
             sql += "p";
         }
         sql += ".districtName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id " +
@@ -187,7 +187,16 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE()) " +
                 " and sdi.districtId like '" + defaultDistrictId + "%' " +
                 " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120) " +
-                ") temp2 GROUP BY temp2.districtName";
+                ") temp2 ";
+        if (!defaultDistrictId.equals("01")) {
+            sql += "GROUP BY temp2.districtName";
+        } else {
+            String preix = "Select sum(temp3.memberEducation) as memberEducation, sum(temp3.partyStudio) as partyStudio," +
+                    "sum(temp3.organizationalConference) as organizationalConference,sum(temp3.partyCare) as partyCare," +
+                    " temp3.districtName from ( ";
+            String next = " ) temp3 group by temp3.districtName";
+            sql = preix + sql + next;
+        }
         return sql;
     }
 
