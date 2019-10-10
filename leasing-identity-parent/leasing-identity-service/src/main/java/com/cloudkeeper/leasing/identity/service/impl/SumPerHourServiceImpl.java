@@ -177,26 +177,41 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " MAX(temp.partyMemberTotal) as partyMemberTotal, " +
                 " convert(varchar(10),temp.startTime,120) as monthDay " +
                 " From ( " +
-                " SELECT s.total, pinfo.type, s.startTime, sdi";
-        if (defaultDistrictId.equals("01")) {
-            sql += "p";
-        }
-        sql += ".districtName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id " +
+                " SELECT s.total, pinfo.type, s.startTime, sdi.districtName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id " +
                 " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId " +
                 " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId " +
                 " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE()) " +
                 " and sdi.districtId like '" + defaultDistrictId + "%' " +
                 " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120) " +
-                ") temp2 ";
-        if (!defaultDistrictId.equals("01")) {
-            sql += "GROUP BY temp2.districtName";
-        } else {
-            String preix = "Select sum(temp3.memberEducation) as memberEducation, sum(temp3.partyStudio) as partyStudio," +
-                    "sum(temp3.organizationalConference) as organizationalConference,sum(temp3.partyCare) as partyCare," +
-                    " temp3.districtName from ( ";
-            String next = " ) temp3 group by temp3.districtName";
-            sql = preix + sql + next;
-        }
+                ") temp2 GROUP BY temp2.districtName";
+        if (defaultDistrictId.equals("01")) {
+            sql = "Select sum(temp3.memberEducation) as memberEducation, sum(temp3.partyStudio) as partyStudio,  " +
+                    "sum(temp3.organizationalConference) as organizationalConference,sum(temp3.partyCare) as partyCare,temp3.townName as districtName from (  " +
+                    "SELECT COUNT(CASE WHEN temp2.memberEducation >= 2 THEN 1 ELSE 0 END) AS memberEducation,  " +
+                    "COUNT(CASE WHEN temp2.partyStudio >= 2 THEN 1 ELSE 0 END) AS partyStudio,  " +
+                    "COUNT(CASE WHEN temp2.organizationalConference >= 2 THEN 1 ELSE 0 END) AS organizationalConference,  " +
+                    "COUNT(CASE WHEN temp2.partyCare >= 2 THEN 1 ELSE 0 END) AS partyCare,  " +
+                    "temp2.districtName,  " +
+                    "temp2.townName  " +
+                    "from (  " +
+                    " SELECT sum(CASE WHEN temp.type = 'MEMBER_EDUCATION' THEN temp.total ELSE 0 END ) as memberEducation,  " +
+                    " sum(CASE WHEN temp.type = 'PARTY_STUDIO' THEN temp.total ELSE 0 END ) as partyStudio,  " +
+                    " sum(CASE WHEN temp.type = 'ORGANIZATIONAL_CONFERENCE' THEN temp.total ELSE 0 END ) as organizationalConference,  " +
+                    " sum(CASE WHEN temp.type = 'PARTY_CARE' THEN temp.total ELSE 0 END ) as partyCare,  " +
+                    " temp.districtName,  " +
+                    " temp.townName,  " +
+                    " MAX(temp.partyMemberTotal) as partyMemberTotal,  " +
+                    " convert(varchar(10),temp.startTime,120) as monthDay  " +
+                    " From (  " +
+                    " SELECT s.total, pinfo.type, s.startTime, sdi.districtName,sdip.districtName as townName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id  " +
+                    " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId  " +
+                    " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId  " +
+                    " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE())  " +
+                    " and sdi.districtId like '01%'  " +
+                    " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120),temp.townName  " +
+                    ") temp2 GROUP BY temp2.districtName,temp2.townName  " +
+                    ") temp3 GROUP BY temp3.townName";
+        } 
         return sql;
     }
 
