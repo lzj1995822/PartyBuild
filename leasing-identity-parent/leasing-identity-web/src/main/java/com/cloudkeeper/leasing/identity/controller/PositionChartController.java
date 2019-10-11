@@ -20,12 +20,12 @@ import java.util.Map;
 public interface PositionChartController {
 
     @ApiOperation(value = "实时人流量折线图", notes = "实时人流量折线图", position = 1)
-    @PostMapping("/realLinkChart")
-    Result<Map<String,List>> realLinkChart(String districtId) ;
+    @PostMapping("/realLineChart")
+    Result<Map<String,List>> realLineChart(String districtId) ;
 
     @ApiOperation(value = "总人流量折线图", notes = "总人流量折线图", position = 1)
-    @PostMapping("/peakLinkChart")
-    Result<Map<String,List>> peakLinkChart(String interval,String districtId) ;
+    @PostMapping("/peakLineChart")
+    Result<Map<String,List>> peakLineChart(String interval,String districtId) ;
 
     @ApiOperation(value = "阵地使用次数柱状图", notes = "阵地使用次数柱状图", position = 1)
     @PostMapping("/useHistogram")

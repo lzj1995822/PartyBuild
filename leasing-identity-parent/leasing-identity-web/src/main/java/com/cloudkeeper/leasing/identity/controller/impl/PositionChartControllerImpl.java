@@ -23,13 +23,13 @@ public class PositionChartControllerImpl implements PositionChartController {
     private final SumPerHourService sumPerHourService;
 
     @Override
-    public Result<Map<String, List>> realLinkChart(String districtId) {
-        Map<String, List> maps = sumPerHourService.RealLinkChart(districtId);
+    public Result<Map<String, List>> realLineChart(String districtId) {
+        Map<String, List> maps = sumPerHourService.RealLineChart(districtId);
         return Result.of(maps);
     }
 
     @Override
-    public Result<Map<String, List>> peakLinkChart(String interval,String districtId) {
+    public Result<Map<String, List>> peakLineChart(String interval,String districtId) {
         Map<String, List> stringListMap = sumPerHourService.calDayStreamUnit(interval, districtId);
         return Result.of(stringListMap);
     }

@@ -19,7 +19,7 @@ public interface SumPerHourService extends BaseService<SumPerHour> {
 
     List<HeatMapVO> getHeatMapData(LocalDateTime startTime, LocalDateTime endTime);
 
-    Map<String,List> RealLinkChart(String districtId);
+    Map<String,List> RealLineChart(String districtId);
 
 
     // 统计单位内的各类阵地日人流量总计
