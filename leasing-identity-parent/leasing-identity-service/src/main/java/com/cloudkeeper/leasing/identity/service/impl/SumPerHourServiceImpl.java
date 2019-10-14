@@ -106,10 +106,11 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " SELECT s.total, pinfo.type, s.startTime from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id" +
                 " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId" +
                 " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId" +
-                " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -" + defaultInterval +", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE())" +
+                " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -" + defaultInterval +", GETDATE()) and s.startTime <= DATEADD(DD, -0, GETDATE())" +
                 " and sdi.districtId like '" + defaultDistrictId + "%'" +
                 " ) temp" +
-                " GROUP BY convert(varchar(10),temp.startTime,120)";
+                " GROUP BY convert(varchar(10),temp.startTime,120)"+
+                " order by monthDay asc";
         List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
         Map<String, List> map = generateCommonMap(allBySql);
         map.put("monthDay", allBySql.stream().map(StreamDayVO::getMonthDay).collect(Collectors.toList()));
@@ -174,7 +175,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                 " SELECT s.total, pinfo.type, s.startTime, sdi.districtName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id " +
                 " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId " +
                 " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId " +
-                " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE()) " +
+                " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -0, GETDATE()) " +
                 " and sdi.districtId like '" + defaultDistrictId + "%' " +
                 " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120) " +
                 ") temp2 GROUP BY temp2.districtName";
@@ -200,7 +201,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                     " SELECT s.total, pinfo.type, s.startTime, sdi.districtName,sdip.districtName as townName, sdi.partyMemberTotal from Sum_Per_Hour s LEFT JOIN Position_Information pinfo on s.positionId = pinfo.id  " +
                     " LEFT JOIN SYS_District sdi on sdi.districtId = pinfo.districtId  " +
                     " LEFT JOIN SYS_District sdip on sdi.attachTo = sdip.districtId  " +
-                    " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -1, GETDATE())  " +
+                    " WHERE sdi.isDelete = 0 and s.startTime >= DATEADD(DD, -"+defaultInterval+", GETDATE()) and s.startTime <= DATEADD(DD, -0, GETDATE())  " +
                     " and sdi.districtId like '01%'  " +
                     " ) temp GROUP BY temp.districtName, convert(varchar(10),temp.startTime,120),temp.townName  " +
                     ") temp2 GROUP BY temp2.districtName,temp2.townName  " +
