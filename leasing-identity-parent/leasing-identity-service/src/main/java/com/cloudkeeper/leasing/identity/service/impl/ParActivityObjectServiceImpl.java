@@ -440,4 +440,19 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         List<CloudActivityCunFinishedVO> allBySql = super.findAllBySql(CloudActivityCunFinishedVO.class, sql);
         return allBySql;
     }
+
+    @Override
+    public Integer countActivityPassNumber() {
+        String sql = "select count (1) from PAR_ActivityObject where CONVERT(varchar(10),modifiedAt,120) = CONVERT(varchar(10),GETDATE(),120) AND status = 2";
+        Integer bySql = super.findBySql(Integer.class, sql);
+        return bySql;
+    }
+
+    @Override
+    public Integer countActivityIsWorkingNumber() {
+        String  sql = "select count (1) from PAR_ActivityObject where isWorking = 1";
+        Integer bySql = super.findBySql(Integer.class, sql);
+        return bySql;
+    }
+
 }

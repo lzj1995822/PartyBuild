@@ -58,4 +58,11 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
 
     //云图地图村当月活动未完成和已完成数量
     List<CloudActivityCunFinishedVO> cunMonthObject(String attachTo);
+
+    //云图：今日活动审核通过的数量
+    Integer countActivityPassNumber();
+
+    //云图：今日正在执行的活动
+    Integer countActivityIsWorkingNumber();
+
 }

@@ -194,4 +194,25 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         List<CloudActivityCunFinishedVO> cloudActivityCunFinishedVOS = parActivityObjectService.cunMonthObject(attachTo);
         return Result.of(cloudActivityCunFinishedVOS);
     }
+
+    @Authorization(required = false)
+    @Override
+    public CloudResult<Integer> countActivityExecuteNumber() {
+        Integer integer = parActivityPerformService.countActivityExecuteNumber();
+        return CloudResult.of(integer);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public CloudResult<Integer> countActivityPassNumber() {
+        Integer integer = parActivityObjectService.countActivityPassNumber();
+        return CloudResult.of(integer);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public CloudResult<Integer> countActivityIsWorkingNumber() {
+        Integer integer = parActivityObjectService.countActivityPassNumber();
+        return CloudResult.of(integer);
+    }
 }

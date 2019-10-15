@@ -60,7 +60,7 @@ public interface CloudStatisticsController {
     @PostMapping("/townRanking")
     CloudResult<Map<String, Object>> townRanking();
 
-    @ApiOperation(value = "年度镇排名", notes = "年度镇排名", position = 1)
+    @ApiOperation(value = "运行多少天", notes = "运行多少天", position = 1)
     @PostMapping("/runDays")
     CloudResult<Integer> runDays() throws ParseException;
 
@@ -71,5 +71,18 @@ public interface CloudStatisticsController {
     @ApiOperation(value = "月度村活动完成情况", notes = "月度村活动完成情况", position = 1)
     @PostMapping("/cunMonthObject")
     Result<List<CloudActivityCunFinishedVO>> cunMonthObject(String attachTo) ;
+
+    @ApiOperation(value = "今日活动执行次数", notes = "今日活动执行次数", position = 1)
+    @PostMapping("/activityExecuteNumber")
+    CloudResult<Integer> countActivityExecuteNumber();
+
+    @ApiOperation(value = "今日活动审核通过个数", notes = "今日活动审核通过个数", position = 1)
+    @PostMapping("/activityPassNumber")
+    CloudResult<Integer> countActivityPassNumber();
+
+    @ApiOperation(value = "今日活动正在执行个数", notes = "今日活动正在执行个数", position = 1)
+    @PostMapping("/activityIsWorkingNumber")
+    CloudResult<Integer> countActivityIsWorkingNumber();
+
 
 }

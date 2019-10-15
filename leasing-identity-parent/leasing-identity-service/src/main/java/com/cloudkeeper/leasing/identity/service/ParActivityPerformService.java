@@ -26,4 +26,7 @@ public interface ParActivityPerformService extends BaseService<ParActivityPerfor
     Optional<ParActivityPerform> findByActivityIDAndOrganizationId(String activityId, String organizationId);
 
     Integer countAllByStatus(String status);
+
+    //云图：今日活动执行次数
+    Integer countActivityExecuteNumber();
 }

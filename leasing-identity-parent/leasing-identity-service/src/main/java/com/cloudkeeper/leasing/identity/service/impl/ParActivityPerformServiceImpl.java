@@ -218,4 +218,12 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
         return performsTotal;
     }
 
+    //云图：今日活动执行次数
+    @Override
+    public Integer countActivityExecuteNumber() {
+        String sql = "select count (1) from PAR_ActivityPerform where CONVERT(varchar(10),modifiedAt,120) = CONVERT(varchar(10),GETDATE(),120)";
+        Integer bySql = super.findBySql(Integer.class, sql);
+        return bySql;
+    }
+
 }
