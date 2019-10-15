@@ -207,6 +207,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
             ParActivityPerform parPerform = parActivityPerform.get();
             parPerform.setStatus("1");
             parPerform.setSource(2);
+            parPerform.setModifiedAt(LocalDateTime.now());
             parActivityPerformRepository.save(parPerform);
         }//无：新增
         else {
