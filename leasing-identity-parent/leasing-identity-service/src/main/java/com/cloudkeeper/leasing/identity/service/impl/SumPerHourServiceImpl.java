@@ -51,8 +51,11 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
             SumPerHour sumPerHour = new SumPerHour();
             sumPerHour.setTotal((int)item[0]);
             sumPerHour.setPositionId(String.valueOf(item[1]));
-            sumPerHour.setStartTime(((Timestamp)item[2]).toLocalDateTime());
-            sumPerHour.setEndTime(((Timestamp)item[3]).toLocalDateTime());
+            LocalDateTime endTime = LocalDateTime.now();
+            endTime = endTime.withMinute(0);
+            endTime = endTime.withSecond(0);
+            sumPerHour.setEndTime(endTime);
+            sumPerHour.setStartTime(endTime.minusHours(1));
             sumPerHour.setLocationCode(String.valueOf(item[4]));
             sumPerHourRepository.save(sumPerHour);
         }
@@ -79,7 +82,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                             "CONVERT(VARCHAR(100),temp.startTime,121) AS monthDay "+
                 "From (SELECT s.startTime ,s.total ,p.type  from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
                 "where s.startTime>DATEADD(HOUR, -7, GETDATE()) and districtId like '" + districtId + "%') as temp  " +
-                "GROUP BY startTime "+
+                "GROUP BY convert(VARCHAR(14),startTime,120) + '00:00' "+
                 "ORDER BY monthDay asc";
         List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
         Map<String, List> map = generateCommonMap(allBySql);
