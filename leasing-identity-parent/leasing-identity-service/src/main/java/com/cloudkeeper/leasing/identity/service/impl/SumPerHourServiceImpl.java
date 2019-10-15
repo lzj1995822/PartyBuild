@@ -80,9 +80,9 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                             "sum(CASE WHEN temp.type = 'ORGANIZATIONAL_CONFERENCE' THEN temp.total ELSE 0 END ) as organizationalConference, " +
                             "sum(CASE WHEN temp.type = 'PARTY_CARE' THEN temp.total ELSE 0 END ) as partyCare, " +
                             "CONVERT(VARCHAR(100),temp.startTime,121) AS monthDay "+
-                "From (SELECT s.startTime ,s.total ,p.type  from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
+                "From (SELECT convert(varchar(14), s.startTime, 120)+ '00:00' as startTime ,s.total ,p.type  from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
                 "where s.startTime>DATEADD(HOUR, -7, GETDATE()) and districtId like '" + districtId + "%') as temp  " +
-                "GROUP BY convert(VARCHAR(14),startTime,120) + '00:00' "+
+                "GROUP BY startTime "+
                 "ORDER BY monthDay asc";
         List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
         Map<String, List> map = generateCommonMap(allBySql);
