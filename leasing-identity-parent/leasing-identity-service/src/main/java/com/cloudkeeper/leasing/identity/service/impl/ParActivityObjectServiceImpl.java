@@ -454,7 +454,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
       /*  String  sql = "select count (1) from PAR_ActivityObject where isWorking = 1";
         List<String> bySql = super.findAllBySql(String.class, sql);
         Integer  a  = Integer.parseInt(bySql.get(0));*/
-        Integer integer = parActivityObjectRepository.countAllByIsWorking("2");
+        Integer integer = parActivityObjectRepository.countAllByIsWorking("1");
         return integer;
     }
 
