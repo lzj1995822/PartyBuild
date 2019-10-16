@@ -212,7 +212,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
     @Authorization(required = false)
     @Override
     public CloudResult<Integer> countActivityIsWorkingNumber() {
-        Integer integer = parActivityObjectService.countActivityPassNumber();
+        Integer integer = parActivityObjectService.countActivityIsWorkingNumber();
         return CloudResult.of(integer);
     }
 }

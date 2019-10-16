@@ -84,5 +84,4 @@ public interface CloudStatisticsController {
     @PostMapping("/activityIsWorkingNumber")
     CloudResult<Integer> countActivityIsWorkingNumber();
 
-
 }
