@@ -76,7 +76,7 @@ public class SysLogServiceImpl extends BaseServiceImpl<SysLog> implements SysLog
 
     @Override
     public List<CloudLogVO> getCloudLog() {
-        String sql = "SELECT top (5)  ('['+CONVERT(varchar(16),createdAt,121)+']'+actor+msg) as msg  FROM sys_log  " +
+        String sql = "SELECT top (3)  ('['+CONVERT(varchar(16),createdAt,121)+']'+actor+msg) as msg  FROM sys_log  " +
                 "where tableName in ('dbo.PAR_Activity','dbo.PAR_ActivityObject','dbo.PAR_ActivityPerform')  " +
                 "ORDER BY createdAt desc ";
         List<CloudLogVO> allBySql = super.findAllBySql(CloudLogVO.class, sql);
