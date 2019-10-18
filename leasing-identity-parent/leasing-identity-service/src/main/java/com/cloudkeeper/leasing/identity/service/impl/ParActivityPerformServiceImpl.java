@@ -218,7 +218,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
     //云图：今日活动执行次数
     @Override
     public Integer countActivityExecuteNumber() {
-        String sql = "select count(1) as number from PAR_ActivityPerform where CONVERT(varchar(10),modifiedAt,120) = CONVERT(varchar(10),GETDATE(),120)";
+        String sql = "select count(1) as number from PAR_ActivityPerform where CONVERT(varchar(10),modifiedAt,120) = CONVERT(varchar(10),GETDATE(),120) AND status = 1 ";
         List<CloudIntegerVO> allBySql = super.findAllBySql(CloudIntegerVO.class, sql);
         return allBySql.get(0).getNumber();
     }
