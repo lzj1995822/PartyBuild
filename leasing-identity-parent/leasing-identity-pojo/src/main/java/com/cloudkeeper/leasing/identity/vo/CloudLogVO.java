@@ -19,4 +19,11 @@ public class CloudLogVO {
     @ApiModelProperty(value = "信息", position = 10, required = true)
     private String  msg;
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
 }
