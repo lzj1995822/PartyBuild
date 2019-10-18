@@ -221,7 +221,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
     @Authorization(required = false)
     @Override
     public CloudResult<Map<String, Object>> getCloudLog() {
-        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("内容","left","msg","",true,"50","","");
+        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("内容","left","msg","",true,"214","","");
         List<CurrentActivityFormatVO> columns = new ArrayList<>();
         columns.add(formatOne);
         List<CloudLogVO> rows = new ArrayList<>();
