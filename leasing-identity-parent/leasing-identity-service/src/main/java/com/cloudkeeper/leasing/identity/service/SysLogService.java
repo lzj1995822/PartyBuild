@@ -2,7 +2,10 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.identity.domain.SysLog;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.vo.CloudLogVO;
 import com.cloudkeeper.leasing.identity.vo.SysLogVO;
+
+import java.util.List;
 
 /**
  * 系统日志 service
@@ -19,4 +22,6 @@ public interface SysLogService extends BaseService<SysLog> {
      * @return
      */
     SysLogVO pushLog(String controllerName, String msg, String tableName, String businessId);
+
+    List<CloudLogVO> getCloudLog();
 }

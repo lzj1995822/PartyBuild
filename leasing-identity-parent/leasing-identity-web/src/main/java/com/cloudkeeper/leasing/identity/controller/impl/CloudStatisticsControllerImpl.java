@@ -47,6 +47,8 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
 
     private final ParActivityObjectService parActivityObjectService;
 
+    private final SysLogService sysLogService;
+
     @Authorization(required = false)
     @Override
     public CloudResult<Integer> countOrganizationNumber() {
@@ -214,5 +216,24 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
     public CloudResult<Integer> countActivityIsWorkingNumber() {
         Integer integer = parActivityObjectService.countActivityIsWorkingNumber();
         return CloudResult.of(integer);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public CloudResult<Map<String, Object>> getCloudLog() {
+        CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("内容","left","msg","",true,"50","","");
+        List<CurrentActivityFormatVO> columns = new ArrayList<>();
+        columns.add(formatOne);
+        List<CloudLogVO> rows = new ArrayList<>();
+        List<CloudLogVO> log = sysLogService.getCloudLog();
+        log.forEach( item ->{
+            CloudLogVO temp = new CloudLogVO();
+            temp.setMsg(item.getMsg());
+            rows.add(temp);
+        });
+        Map<String, Object> map = new HashMap<>();
+        map.put("columns",columns);
+        map.put("rows",rows);
+        return CloudResult.of(map);
     }
 }

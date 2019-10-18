@@ -13,6 +13,7 @@ import com.cloudkeeper.leasing.identity.repository.SysLogRepository;
 import com.cloudkeeper.leasing.identity.repository.SysUserRepository;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.SysUserService;
+import com.cloudkeeper.leasing.identity.vo.CloudLogVO;
 import com.cloudkeeper.leasing.identity.vo.SysLogVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -70,5 +72,12 @@ public class SysLogServiceImpl extends BaseServiceImpl<SysLog> implements SysLog
         }
 
         return sysLog.convert(SysLogVO.class);
+    }
+
+    @Override
+    public List<CloudLogVO> getCloudLog() {
+        String sql = "";
+        List<CloudLogVO> allBySql = super.findAllBySql(CloudLogVO.class, sql);
+        return allBySql;
     }
 }

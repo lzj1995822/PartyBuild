@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.PositionInformationController;
 import com.cloudkeeper.leasing.identity.domain.PositionInformation;
@@ -75,6 +76,7 @@ public class PositionInformationControllerImpl implements PositionInformationCon
         return Result.ofDeleteSuccess();
     }
 
+    @Authorization(required = false)
     @Override
     public Result<List<PositionInformationVO>> list(@ApiParam(value = "阵地信息查询条件", required = true) @RequestBody PositionInformationSearchable positionInformationSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

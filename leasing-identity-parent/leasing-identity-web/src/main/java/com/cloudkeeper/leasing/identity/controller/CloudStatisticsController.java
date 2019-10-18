@@ -84,4 +84,8 @@ public interface CloudStatisticsController {
     @PostMapping("/activityIsWorkingNumber")
     CloudResult<Integer> countActivityIsWorkingNumber();
 
+    @ApiOperation(value = "活动log", notes = "活动log", position = 1)
+    @PostMapping("/getCloudLog")
+    CloudResult<Map<String, Object>> getCloudLog();
+
 }

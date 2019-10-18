@@ -282,7 +282,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         else{
             type=taskType;
         }
-        String msg = action + type+'"'+title+'"';
+        String msg = action +'"'+ type+'-'+title+'"';
         return msg;
     }
 }

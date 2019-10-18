@@ -125,11 +125,11 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         SysDistrict sysDistrict = sysDistrictService.findById(parActivityPerformVO.getOrganizationId());
         String action;
         if(parActivityPerformVO.getStatus().equals("2")){
-            action = "审核通过";
+            action = "审核通过了";
         }else{
-            action = "审核驳回";
+            action = "审核驳回了";
         }
-        String  msg = parActivityPerformService.actionLog(action +'"'+sysDistrict.getDistrictName()+'"'+"执行的",parActivity.getTaskType(), parActivity.getTitle());
+        String  msg = parActivityPerformService.actionLog(action + sysDistrict.getDistrictName()+"执行的",parActivity.getTaskType(), parActivity.getTitle());
         sysLogService.pushLog(this.getClass().getName(),msg,parActivityPerformService.getTableName(),parActivityPerformVO.getId());
         return Result.ofUpdateSuccess(parActivityPerformVO);
     }
