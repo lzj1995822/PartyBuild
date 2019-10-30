@@ -47,10 +47,16 @@ public class SysDistrict extends BaseEntity {
     @Column(length = 60)
     private String districtName;
 
-    /** 上级id */
+    /** 审核组织id */
     @ApiModelProperty(value = "attachTo", position = 10, required = true)
     @Column(length = 60)
     private String attachTo;
+
+    /** 上级id */
+    @ApiModelProperty(value = "orgParent", position = 10, required = true)
+    @Column(length = 60)
+    private String orgParent;
+
 
     /** 组织等级 */
     @ApiModelProperty(value = "组织等级", position = 10, required = true)
@@ -103,13 +109,21 @@ public class SysDistrict extends BaseEntity {
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<SysDistrict> children = new HashSet<>();
 
-    /** 组织 */
-    @ApiModelProperty(value = "组织", position = 24)
+    /** 审核组织 */
+    @ApiModelProperty(value = "审核组织", position = 24)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attachTo",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @JsonIgnore
     private SysDistrict sysDistrict;
+
+    /** 组织 */
+    @ApiModelProperty(value = "上级组织", position = 24)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "orgParent",referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @JsonIgnore
+    private SysDistrict parent;
 
     @ApiModelProperty(value = "摄像头信息", position = 10, required = true)
     @OneToMany(mappedBy = "sysDistrict")

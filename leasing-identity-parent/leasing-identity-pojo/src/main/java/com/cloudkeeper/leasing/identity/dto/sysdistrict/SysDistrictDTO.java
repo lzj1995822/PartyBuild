@@ -33,9 +33,13 @@ public class SysDistrictDTO extends BaseEditDTO {
     @ApiModelProperty(value = "组织名字", position = 10, required = true)
     private String districtName;
 
-    /** attachTo */
+    /** 审核组织 */
     @ApiModelProperty(value = "attachTo", position = 10, required = true)
     private String attachTo;
+
+    /** 上级组织 */
+    @ApiModelProperty(value = "orgParent", position = 10, required = true)
+    private String orgParent;
 
     /** 组织等级 */
     @ApiModelProperty(value = "组织等级", position = 10, required = true)

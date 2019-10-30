@@ -36,8 +36,11 @@ public class SysDistrictVO extends BaseVO {
     private String districtName;
 
     /** attachTo */
-    @ApiModelProperty(value = "attachTo", position = 10, required = true)
+    @ApiModelProperty(value = "审核组织id", position = 10, required = true)
     private String attachTo;
+
+    @ApiModelProperty(value = "上级组织id", position = 10, required = true)
+    private String orgParent;
 
     /** 组织等级 */
     @ApiModelProperty(value = "组织等级", position = 10, required = true)
