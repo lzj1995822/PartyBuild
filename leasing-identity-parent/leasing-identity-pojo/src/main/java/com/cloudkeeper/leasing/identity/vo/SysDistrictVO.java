@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
 import com.cloudkeeper.leasing.identity.domain.PositionInformation;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,9 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 组织 VO
@@ -62,9 +65,13 @@ public class SysDistrictVO extends BaseVO {
     @ApiModelProperty(value = "enable", position = 10, required = true)
     private Integer enable;
 
-    /** 上级组织名称 */
-    @ApiModelProperty(value = "上级组织名称", position = 26, required = true)
+    /** 审核组织名称 */
+    @ApiModelProperty(value = "审核组织名称", position = 26, required = true)
     private String parentName;
+
+    /** 上级组织 */
+    @ApiModelProperty(value = "上级组织名称", position = 26, required = true)
+    private String orgParentName;
 
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)
@@ -77,6 +84,11 @@ public class SysDistrictVO extends BaseVO {
     /** 阵地信息 */
     @ApiModelProperty(value = "阵地信息", position = 10, required = true)
     private List<PositionInformation> positionInformation;
+
+    /** 组织架构下属基本组织 */
+    @ApiModelProperty(value = "组织架构下属基本组织", position = 10, required = true)
+    private Set<SysDistrictVO> orgChildren;
+
 
 
 }

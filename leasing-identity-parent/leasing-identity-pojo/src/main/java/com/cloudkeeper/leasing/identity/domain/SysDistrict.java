@@ -101,13 +101,23 @@ public class SysDistrict extends BaseEntity {
     private List<PositionInformation> positionInformation;
 
     /**
-     * 子组织
+     * 审核下属子组织
      */
-    @ApiModelProperty(value = "类型", position = 10, required = true)
+    @ApiModelProperty(value = "审核下属子组织", position = 10, required = true)
     @OneToMany(mappedBy = "sysDistrict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<SysDistrict> children = new HashSet<>();
+
+    /**
+     * 组织架构子组织
+     */
+    @ApiModelProperty(value = "组织架构子组织", position = 10, required = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<SysDistrict> orgChildren;
+
 
     /** 审核组织 */
     @ApiModelProperty(value = "审核组织", position = 24)
@@ -141,6 +151,15 @@ public class SysDistrict extends BaseEntity {
         }
         if(!StringUtils.isEmpty(this.positionInformation)){
             sysDistrictVO.setPositionInformation(this.positionInformation);
+        }
+        if(!StringUtils.isEmpty(this.orgChildren) && this.orgChildren.size() > 0){
+            List<SysDistrictVO> convert1 = SysDistrict.convert(this.orgChildren, SysDistrictVO.class);
+            sysDistrictVO.setOrgChildren(new HashSet<>(convert1));
+        } else {
+            sysDistrictVO.setOrgChildren(null);
+        }
+        if (!StringUtils.isEmpty(this.parent)) {
+            sysDistrictVO.setOrgParentName(this.parent.getDistrictName());
         }
         return (T) sysDistrictVO;
     }

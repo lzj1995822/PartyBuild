@@ -43,7 +43,8 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
                 .withMatcher("districtType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
-                .withMatcher("location", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("location", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("orgParent", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 
@@ -119,12 +120,8 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     @Override
     public String findMaxId(String districtId) {
         String maxDistrictId = new String();
-        if(districtId.length()==2){
-            maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,2);
-        }
-        if(districtId.length()==4){
-            maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,3);
-        }
+        int length = districtId.length();
+        maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,length/2 + 1);
         maxDistrictId = StringUtils.isEmpty(maxDistrictId) ? districtId+"01":"0"+ (Integer.valueOf(maxDistrictId) + 1);
         return maxDistrictId;
     }

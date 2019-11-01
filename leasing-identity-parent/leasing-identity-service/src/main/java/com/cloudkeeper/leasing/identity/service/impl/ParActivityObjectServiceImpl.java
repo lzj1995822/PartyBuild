@@ -135,6 +135,9 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         CalNumberVO bySql = findBySql(CalNumberVO.class, sql);
         BigDecimal total = new BigDecimal(bySql.getTotal());
         BigDecimal finished = new BigDecimal(bySql.getFinished());
+        if (total.equals(BigDecimal.ZERO)) {
+            return BigDecimal.ZERO;
+        }
         return finished.divide(total, 3,BigDecimal.ROUND_DOWN);
     }
 

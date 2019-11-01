@@ -64,4 +64,8 @@ public class SysDistrictSearchable extends BaseSearchable {
     @ApiModelProperty(value = "经纬度", position = 10, required = true)
     private String location;
 
+    @ApiModelProperty(value = "上级组织id", position = 10, required = true)
+    private String orgParent;
+
+
 }
