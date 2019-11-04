@@ -26,24 +26,28 @@ import java.time.LocalDateTime;
 public class ParActivitySearchable extends BaseSearchable {
 
     /** 截止日期 */
-    @ApiModelProperty(value = "截止日期", position = 10, required = true)
+    @ApiModelProperty(value = "截止日期", position = 10)
     private LocalDate month;
 
     /** 背景 */
-    @ApiModelProperty(value = "背景", position = 10, required = true)
+    @ApiModelProperty(value = "背景", position = 10)
     private String context;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    @ApiModelProperty(value = "名称", position = 10)
     private String title;
 
     /** 状态 */
-    @ApiModelProperty(value = "状态", position = 10, required = true)
+    @ApiModelProperty(value = "状态", position = 10)
     private String status;
 
     /** 区ID */
-    @ApiModelProperty(value = "区ID", position = 10, required = true)
+    @ApiModelProperty(value = "区ID", position = 10)
     private String districtID;
+
+    /** 模板id */
+    @ApiModelProperty(value = "模板id", position = 19)
+    private String templateId;
 
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)

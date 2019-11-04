@@ -50,6 +50,10 @@ public class ParActivityVO extends BaseVO {
     @ApiModelProperty(value = "区ID", position = 10, required = true)
     private String districtID;
 
+    /** 模板id */
+    @ApiModelProperty(value = "模板id", position = 19)
+    private String templateId;
+
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 10, required = true)
     private String type;

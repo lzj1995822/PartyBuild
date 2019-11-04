@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,6 +49,10 @@ public class ParActivityDTO extends BaseEditDTO {
     /** 区ID */
     @ApiModelProperty(value = "区ID", position = 18)
     private String districtID;
+
+    /** 模板id */
+    @ApiModelProperty(value = "模板id", position = 19)
+    private String templateId;
 
     /** 类型 */
     @ApiModelProperty(value = "类型", position = 20)

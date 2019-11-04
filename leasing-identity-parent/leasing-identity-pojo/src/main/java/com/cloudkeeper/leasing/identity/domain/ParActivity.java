@@ -85,6 +85,11 @@ public class ParActivity extends BaseEntity {
     @Column(length = 60)
     private Integer score;
 
+    /** 模板id */
+    @ApiModelProperty(value = "模板id", position = 10, required = true)
+    @Column(length = 60)
+    private String templateId;
+
     /** 市完成进度 */
     @ApiModelProperty(value = "市完成进度", position = 10, required = true)
     private BigDecimal totalPercent = BigDecimal.ZERO;
