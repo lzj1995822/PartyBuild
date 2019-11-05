@@ -100,6 +100,8 @@ public class ParActivityObjectVO extends BaseVO {
     @ApiModelProperty(value = "任务对象类型", position = 10, required = true)
     private String objectType;
 
-
+    /** 反馈项名称拼接 */
+    @ApiModelProperty(value = "反馈项名称拼接", position = 10, required = true)
+    private String templateItem;
 
 }

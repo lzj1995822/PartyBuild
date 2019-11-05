@@ -37,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 活动 service
@@ -364,6 +365,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                     feedbackItemValue.setObjectId(parActivityObject.getId());
                     feedbackItemValueService.save(feedbackItemValue);
                 };
+                Optional<ParActivity> optionalById = findOptionalById(activityId);
+                ParActivity parActivity = optionalById.get();
+                parActivity.setTemplateItem(items.stream().map(FeedbackTemplateItem::getName).collect(Collectors.joining("、")));
+                super.save(parActivity);
             }
             return backList;
         }
