@@ -41,4 +41,12 @@ public class FeedbackItemValueSearchable extends BaseSearchable {
     @ApiModelProperty(value = "值", position = 10, required = true)
     private String value;
 
+    /** 配置项名称 */
+    @ApiModelProperty(value = "配置项名称", position = 10, required = true)
+    private String name;
+
+    /** code */
+    @ApiModelProperty(value = "code", position = 10, required = true)
+    private String code;
+
 }

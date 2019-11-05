@@ -30,7 +30,10 @@ public class FeedbackItemValueServiceImpl extends BaseServiceImpl<FeedbackItemVa
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("value", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("value", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("code", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("objectId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }
