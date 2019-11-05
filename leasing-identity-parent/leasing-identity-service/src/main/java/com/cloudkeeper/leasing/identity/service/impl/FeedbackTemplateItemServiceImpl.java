@@ -31,7 +31,8 @@ public class FeedbackTemplateItemServiceImpl extends BaseServiceImpl<FeedbackTem
         return super.defaultExampleMatcher()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("code", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("templateId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }
