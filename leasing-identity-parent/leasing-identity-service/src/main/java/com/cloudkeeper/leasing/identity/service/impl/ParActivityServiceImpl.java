@@ -5,6 +5,8 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearningActivityVideoSearchable;
+import com.cloudkeeper.leasing.identity.dto.feedbacktemplateitem.FeedbackTemplateItemDTO;
+import com.cloudkeeper.leasing.identity.dto.feedbacktemplateitem.FeedbackTemplateItemSearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivityDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivity.ParActivitySearchable;
 import com.cloudkeeper.leasing.identity.dto.paractivityreleasefile.ParActivityReleaseFileSearchable;
@@ -12,11 +14,9 @@ import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
-import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
-import com.cloudkeeper.leasing.identity.service.ParActivityService;
-import com.cloudkeeper.leasing.identity.service.SysUserService;
-import com.cloudkeeper.leasing.identity.service.TVSignInService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.*;
+import io.netty.util.internal.IntegerHolder;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -69,6 +69,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
     private final ParActivityObjectService parActivityObjectService;
 
+    private final FeedbackItemValueService feedbackItemValueService;
+
+    private final FeedbackTemplateItemService feedbackTemplateItemService;
+
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -106,7 +110,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
         if (StringUtils.isEmpty(parActivityDTO.getId())) {
-            par.setBackList(handleNewObject(parActivity.getId(), parActivityDTO.getNewObject()));
+            par.setBackList(handleNewObject(parActivity.getId(),parActivityDTO.getTemplateId(), parActivityDTO.getNewObject()));
         }
         //par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
         if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
@@ -294,13 +298,13 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     /**
-     * 处理新被指派的对象
+     * 处理新被指派的对象(根据机关或者农村)
      * @param activityId
      * @param newObject
      * @return
      */
 
-    private List<String> handleNewObject(String activityId, NewObject newObject) {
+    private List<String> handleNewObject(String activityId, String templateId, NewObject newObject) {
         if(!StringUtils.isEmpty(newObject)&&!StringUtils.isEmpty(activityId)){
             List<String> backList = new ArrayList<>();
             List<SysDistrict> sysDistrictsAL= new ArrayList<>();
@@ -315,8 +319,20 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
             if(!StringUtils.isEmpty(list)){
                 detachedCriteria.add(Restrictions.in("districtType", list));
             }
-            detachedCriteria.add(Restrictions.eq("districtLevel", 3));
+            List<Integer> levels = new ArrayList<>();
+            //第三层第四层指派任务
+            levels.add(3);
+            levels.add(4);
+            detachedCriteria.add(Restrictions.in("districtLevel", levels));
             sysDistrictsAL = sysDistrictServiceImpl.findAll(detachedCriteria);
+
+            //查询任务下所需材料配置项
+            List<FeedbackTemplateItem> items = new ArrayList<>();
+            if (!StringUtils.isEmpty(templateId)) {
+                FeedbackTemplateItemSearchable feedbackTemplateItemSearchable = new FeedbackTemplateItemSearchable();
+                feedbackTemplateItemSearchable.setTemplateId(templateId);
+                items = feedbackTemplateItemService.findAll(feedbackTemplateItemSearchable);
+            }
 
             for(int i=0;i<sysDistrictsAL.size();i++){
                 backList.add(sysDistrictsAL.get(i).getDistrictId());
@@ -338,7 +354,16 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                     parActivityObject.setObjectType("3");
                     parActivityRepository.updateObjectType("3",activityId);
                 }
-                parActivityObjectService.save(parActivityObject);
+                parActivityObject = parActivityObjectService.save(parActivityObject);
+                for (FeedbackTemplateItem item : items) {
+                    FeedbackItemValue feedbackItemValue = new FeedbackItemValue();
+                    feedbackItemValue.setItemId(item.getId());
+                    feedbackItemValue.setType(item.getType());
+                    feedbackItemValue.setCode(item.getCode());
+                    feedbackItemValue.setName(item.getName());
+                    feedbackItemValue.setObjectId(parActivityObject.getId());
+                    feedbackItemValueService.save(feedbackItemValue);
+                };
             }
             return backList;
         }

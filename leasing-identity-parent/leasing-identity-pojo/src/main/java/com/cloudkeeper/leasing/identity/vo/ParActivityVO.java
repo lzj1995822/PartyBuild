@@ -135,4 +135,7 @@ public class ParActivityVO extends BaseVO {
 
     @ApiModelProperty(value="任务对象类型",position = 10,required = true)
     private String objectType;
+
+    @ApiModelProperty(value="所需上传的材料的名字拼接",position = 10,required = true)
+    private String templateItem;
 }

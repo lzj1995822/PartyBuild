@@ -153,6 +153,10 @@ public class ParActivity extends BaseEntity {
     @Column(length = 60)
     private String objectType;
 
+    @ApiModelProperty(value="所需上传的材料的名字拼接",position = 10)
+    @Column(length = 255)
+    private String templateItem;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
