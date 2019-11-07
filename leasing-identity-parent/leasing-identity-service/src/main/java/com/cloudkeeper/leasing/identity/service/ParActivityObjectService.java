@@ -35,7 +35,11 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
     void initPerActivity();
 
     List<ParActivityObjectVO> execute(ParActivityObjectDTO parActivityObjectDTO,Sort sort);
+
     List<ParActivityObjectVO> executeOver(ParActivityObjectDTO parActivityObjectDTO,Sort sort);
+
+    //机关pc端执行任务
+    ParActivityObject officeExecute(String id);
 
     /**
      * 根据机顶盒编号拿所有当月要执行的任务

@@ -188,4 +188,10 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         List<ExamScoreDetailVO> list = parActivityObjectService.examScoreDetail(districtName,year);
         return Result.of(200,"查询成功",list);
     }
+
+    @Override
+    public Result<ParActivityObjectVO> officeExecute(@PathVariable String id) {
+        ParActivityObject parActivityObject = parActivityObjectService.officeExecute(id);
+        return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
+    }
 }

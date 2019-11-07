@@ -295,6 +295,39 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     }
 
     @Override
+    public ParActivityObject officeExecute(String id) {
+        //更新Object
+        Optional<ParActivityObject> byId = parActivityObjectRepository.findById(id);
+        ParActivityObject parActivityObject = new ParActivityObject();
+        if(byId.isPresent()){
+            parActivityObject = byId.get();
+            parActivityObject.setStatus("1");
+            //pc端执行source为3
+            parActivityObject.setSource(3);
+            super.save(parActivityObject);
+        }
+        //更新perform
+        SysDistrict sysDistrict = sysDistrictRepository.findSysDistrictByDistrictId(parActivityObject.getOrganizationId());
+        Optional<ParActivityPerform> perform = parActivityPerformRepository.findByActivityIDAndOrganizationId(parActivityObject.getActivityId(), sysDistrict.getId());
+        ParActivityPerform parPerform = new ParActivityPerform();
+        //判断是否perform有值，有：更新SOURCE
+        if(perform.isPresent()){
+            parPerform = perform.get();
+            parPerform.setStatus("1");
+            parPerform.setSource(2);
+            parPerform.setModifiedAt(LocalDateTime.now());
+            parActivityPerformRepository.save(parPerform);
+        }else {
+            parPerform.setOrganizationId(sysDistrict.getId());
+            parPerform.setStatus("1");
+            parPerform.setActivityID(parActivityObject.getActivityId());
+            parPerform.setSource(1);
+            parActivityPerformRepository.save(parPerform);
+        }
+        return parActivityObject;
+    }
+
+    @Override
     public List<ParActivityObjectVO> TVIndexDetailList(String number) {
         ParCamera byNumber = parCameraService.findByNumber(number);
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivityObject.class);

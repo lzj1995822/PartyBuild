@@ -129,4 +129,9 @@ public interface ParActivityObjectController {
     @ApiOperation(value="考核具体信息",notes= "查询" ,position = 0)
     @PostMapping("/examScoreDetail")
     Result<List<ExamScoreDetailVO>> examScoreDetail(@ApiParam(value="组织名字",required = true) String districtName,@ApiParam(value="年份",required=true) String year);
+
+
+    @ApiOperation(value = "机关PC端执行任务", notes = "activityId 活动id，organizationId 组织ID", position = 6)
+    @PostMapping("/officeExecute/{id}id")
+    Result<ParActivityObjectVO> officeExecute(@PathVariable String id);
 }
