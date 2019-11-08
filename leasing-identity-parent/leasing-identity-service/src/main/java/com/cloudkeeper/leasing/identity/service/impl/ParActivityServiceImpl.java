@@ -343,14 +343,17 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 parActivityObject.setActivityId(activityId);
                 parActivityObject.setStatus("0");
                 parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
+                // 农村
                 if(list[0]=="Party"&&list[1]!= "Office"){
                     parActivityObject.setObjectType("1");
                     parActivityRepository.updateObjectType("1",activityId);
                 }
+                // 机关
                 if(list[0]!="Party"&&list[1]== "Office"){
                     parActivityObject.setObjectType("2");
                     parActivityRepository.updateObjectType("2",activityId);
                 }
+                // 机关和农村
                 if(list[0]=="Party"&&list[1]== "Office"){
                     parActivityObject.setObjectType("3");
                     parActivityRepository.updateObjectType("3",activityId);
