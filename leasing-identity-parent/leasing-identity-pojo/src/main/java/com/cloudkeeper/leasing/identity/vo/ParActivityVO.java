@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ActivityOfficeProgress;
 import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
 import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
 import io.swagger.annotations.ApiModel;
@@ -10,13 +11,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
+import javax.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 活动 VO
@@ -138,4 +143,7 @@ public class ParActivityVO extends BaseVO {
 
     @ApiModelProperty(value="所需上传的材料的名字拼接",position = 10,required = true)
     private String templateItem;
+
+    @ApiModelProperty(value="二级审核党组织进度",position = 10)
+    private Map<String,BigDecimal> activityOfficeProgresses;
 }

@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -20,6 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 活动
@@ -157,6 +161,11 @@ public class ParActivity extends BaseEntity {
     @Column(length = 255)
     private String templateItem;
 
+    @ApiModelProperty(value="二级审核党组织进度",position = 10)
+    @OneToMany(mappedBy = "parActivity")
+    private List<ActivityOfficeProgress> activityOfficeProgresses;
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
@@ -168,6 +177,8 @@ public class ParActivity extends BaseEntity {
         if(!StringUtils.isEmpty(this.distLearningActivityVideo)){
             parActivityVO.setVideo(this.distLearningActivityVideo);
         }
+        Map<String, BigDecimal> collect = this.activityOfficeProgresses.stream().collect(Collectors.toMap(ActivityOfficeProgress::getDistrictId, ActivityOfficeProgress::getPercent));
+        parActivityVO.setActivityOfficeProgresses(collect);
         return (T) parActivityVO;
     }
 

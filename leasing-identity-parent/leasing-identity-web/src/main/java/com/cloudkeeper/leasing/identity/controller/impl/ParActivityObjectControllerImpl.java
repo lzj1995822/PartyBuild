@@ -169,7 +169,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         if ("ACTIVE".equals(parActivityObjectSearchable.getCurrentStatus())) {
             detachedCriteria.add(Restrictions.le("p.month", lastDay()));
         } else if ("PLAN".equals(parActivityObjectSearchable.getCurrentStatus())) {
-            detachedCriteria.add(Restrictions.ge("p.month", lastDay()));
+            detachedCriteria.add(Restrictions.gt("p.month", lastDay()));
         }
         return detachedCriteria;
     }

@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -46,6 +48,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> implements ParActivityService {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** 活动 repository */
     private final ParActivityRepository parActivityRepository;
@@ -73,6 +77,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     private final FeedbackItemValueService feedbackItemValueService;
 
     private final FeedbackTemplateItemService feedbackTemplateItemService;
+
+    private final ActivityOfficeProgressService activityOfficeProgressService;
 
     @Override
     public ExampleMatcher defaultExampleMatcher() {
@@ -438,45 +444,64 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         ParActivity parActivity = byId.get();
 
         List<PassPercentVO> finishRatio = this.getFinishRatio(activityId);
-        for (PassPercentVO item : finishRatio) {
-            BigDecimal value =  item.getFinishRatio();
-            switch (item.getTownCode()) {
-                case "0104":
-                    parActivity.setBaiTuPercent(value);
-                    break;
-                case "0103":
-                    parActivity.setGuoZhuangPercent(value);
-                    break;
-                case "0107":
-                    parActivity.setBaoHuaPercent(value);
-                    break;
-                case "0106":
-                    parActivity.setBianChengPercent(value);
-                    break;
-                case "0102":
-                    parActivity.setHouBaiPercent(value);
-                    break;
-                case "0111":
-                    parActivity.setKaiFaPercent(value);
-                    break;
-                case "0112":
-                    parActivity.setMaoShanFengJingPercent(value);
-                    break;
-                case "0105":
-                    parActivity.setMaoShanPercent(value);
-                    break;
-                case "0108":
-                    parActivity.setTianWangPercent(value);
-                    break;
-                case "0109":
-                    parActivity.setHuaYangPercent(value);
-                    break;
-                case  "0101":
-                    parActivity.setXiaShuPercent(value);
-                    break;
+        //机关任务
+        if (parActivity.getObjectType().equals("2")) {
+            List<ActivityOfficeProgress> activityOfficeProgresses = parActivity.getActivityOfficeProgresses();
+            Map<String, ActivityOfficeProgress> collect = activityOfficeProgresses.stream().collect(Collectors.toMap(ActivityOfficeProgress::getDistrictId, activityOfficeProgresse -> activityOfficeProgresse));
+            for (PassPercentVO item : finishRatio) {
+                ActivityOfficeProgress activityOfficeProgress = collect.get(item.getTownCode());
+                if (activityOfficeProgress != null) {
+                    activityOfficeProgress.setPercent(item.getFinishRatio());
+                } else {
+                    activityOfficeProgress = new ActivityOfficeProgress();
+                    activityOfficeProgress.setPercent(item.getFinishRatio());
+                    activityOfficeProgress.setActivityId(parActivity.getId());
+                    activityOfficeProgress.setDistrictId(item.getTownCode());
+                }
+                this.activityOfficeProgressService.save(activityOfficeProgress);
             }
+        } else if (parActivity.getObjectType().equals("1")) {
+            for (PassPercentVO item : finishRatio) {
+                BigDecimal value =  item.getFinishRatio();
+                switch (item.getTownCode()) {
+                    case "0104":
+                        parActivity.setBaiTuPercent(value);
+                        break;
+                    case "0103":
+                        parActivity.setGuoZhuangPercent(value);
+                        break;
+                    case "0107":
+                        parActivity.setBaoHuaPercent(value);
+                        break;
+                    case "0106":
+                        parActivity.setBianChengPercent(value);
+                        break;
+                    case "0102":
+                        parActivity.setHouBaiPercent(value);
+                        break;
+                    case "0111":
+                        parActivity.setKaiFaPercent(value);
+                        break;
+                    case "0112":
+                        parActivity.setMaoShanFengJingPercent(value);
+                        break;
+                    case "0105":
+                        parActivity.setMaoShanPercent(value);
+                        break;
+                    case "0108":
+                        parActivity.setTianWangPercent(value);
+                        break;
+                    case "0109":
+                        parActivity.setHuaYangPercent(value);
+                        break;
+                    case  "0101":
+                        parActivity.setXiaShuPercent(value);
+                        break;
+                }
+            }
+        } else {
+            logger.warn("活动任务对象异常");
         }
-
         BigDecimal totalPercent = this.getTotalPercent(activityId).getFinishRatio();
         parActivity.setTotalPercent(totalPercent);
         return this.save(parActivity);
@@ -547,7 +572,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
             detachedCriteria.add(Restrictions.le("month", lastDay()));
         } else if ("PLAN".equals(parActivitySearchable.getCurrentStatus())) {
-            detachedCriteria.add(Restrictions.ge("month", lastDay()));
+            detachedCriteria.add(Restrictions.gt("month", lastDay()));
         }
         return  detachedCriteria;
     }
