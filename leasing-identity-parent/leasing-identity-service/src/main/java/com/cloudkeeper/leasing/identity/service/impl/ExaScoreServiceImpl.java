@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.ExaScore;
 import com.cloudkeeper.leasing.identity.repository.ExaScoreRepository;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
+import com.cloudkeeper.leasing.identity.vo.ActivityExamVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
@@ -19,7 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 考核积分 service
@@ -254,7 +258,7 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
     }
 
     @Override
-    public List<ExamScoreAllVO> examScoreAll(Pageable pageable, String year,String search){
+    public List<ActivityExamVO> examScoreAll(Pageable pageable, String year,String search,String districtType){
         String sql = "SELECT " +
                 " TOP "+pageable.getPageSize()+" *  " +
                 "FROM " +
@@ -479,10 +483,11 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
                 "       EXA_Score es " +
                 "       LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
                 "      WHERE " +
-                "       sd.districtLevel = 3  " +
-                "       AND sd.isDelete = 0  " +
+                "       sd.isDelete = 0  " +
                 "       AND es.createTime BETWEEN '"+year+"-01-01 00:00:00'  " +
                 "       AND '"+year+"-12-31 23:59:59'  " +
+                "       AND sd.districtType = '" + districtType +
+                "'       AND sd.districtLevel = 3  or sd.districtLevel = 4" +
                 "      ) S1  " +
                 "     GROUP BY " +
                 "      districtName, " +
@@ -618,7 +623,35 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
                 "WHERE " +
                 " row_number > ( "+pageable.getPageNumber()+" ) * "+pageable.getPageSize()+"";
         List<ExamScoreAllVO> list = super.findAllBySql(ExamScoreAllVO.class, sql);
-        return  list;
+        List<ActivityExamVO> examList = new ArrayList<>();
+        list.forEach(item->{
+            boolean isExist = false;
+            for (ActivityExamVO activityExamVO: examList) {
+                if (activityExamVO.getTown().equals(item.getTown())) {
+                    isExist = true;
+                    ActivityExamVO cunVO = new ActivityExamVO();
+                    cunVO.setTown(item.getCun());
+                    cunVO.setTownExam(item.getExam());
+                    cunVO.setTownScore(item.getScore());
+                    activityExamVO.getChildren().add(cunVO);
+                }
+            }
+            if (!isExist) {
+                ActivityExamVO townVO = new ActivityExamVO();
+                townVO.setTown(item.getTown());
+                townVO.setTownExam(item.getTownExam());
+                townVO.setTownScore(item.getTownScore());
+                ActivityExamVO cunVO = new ActivityExamVO();
+                cunVO.setTown(item.getCun());
+                cunVO.setTownExam(item.getExam());
+                cunVO.setTownScore(item.getScore());
+                List<ActivityExamVO> temp = new ArrayList<>();
+                temp.add(cunVO);
+                townVO.setChildren(temp);
+                examList.add(townVO);
+            }
+        });
+        return  examList;
     }
 
 }

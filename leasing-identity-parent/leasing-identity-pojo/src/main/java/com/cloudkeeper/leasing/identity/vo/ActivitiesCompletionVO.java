@@ -29,7 +29,7 @@ public class ActivitiesCompletionVO  extends BaseVO {
     private String districtName;
 
     @ApiModelProperty(value = "组织类别", position = 10, required = true)
-    private String districtType;
+    private String objectType;
 
     @ApiModelProperty(value = "object表的id", position = 10, required = true)
     private String objectId;

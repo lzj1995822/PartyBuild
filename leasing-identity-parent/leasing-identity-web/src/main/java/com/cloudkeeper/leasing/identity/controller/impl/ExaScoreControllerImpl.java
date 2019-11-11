@@ -10,10 +10,7 @@ import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.impl.SysDistrictServiceImpl;
-import com.cloudkeeper.leasing.identity.vo.ExaScoreVO;
-import com.cloudkeeper.leasing.identity.vo.ExamScoreAllVO;
-import com.cloudkeeper.leasing.identity.vo.ExamScorePercentVO;
-import com.cloudkeeper.leasing.identity.vo.ExamScoreVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -107,44 +104,9 @@ public class ExaScoreControllerImpl implements ExaScoreController {
         return Result.of(list);
     }
     @Override
-    public Result<List<ExamScoreAllVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable,@ApiParam(value = "年份", required = true)String year,@ApiParam(value = "搜索", required = true)String search){
-        List<ExamScoreAllVO> list = exaScoreService.examScoreAll(pageable ,year,search);
-        List<SysDistrict> sysDistricts=new ArrayList<>();
-        if(StringUtils.isEmpty(search)){
-            sysDistricts= sysDistrictRepository.findAllByDistrictLevel(3);
-        }else {
-            String topId = sysDistrictRepository.findByDistrictName(search).getDistrictId();
-            int lev = sysDistrictRepository.findByDistrictName(search).getDistrictLevel();
-            if(!StringUtils.isEmpty(topId)){
-                if(lev == 2){
-                    sysDistricts.addAll(sysDistrictRepository.findAllByAttachTo(topId));
-                }else if(lev == 3){
-                    sysDistricts.addAll(sysDistrictRepository.findAllByDistrictId(topId));
-                }
-            }
-        }
-
-        for(int i=0;i<sysDistricts.size();i++){
-            if(sysDistricts.get(i).getDistrictName()!="句容市委"){
-            String sysName=sysDistricts.get(i).getDistrictName();
-                boolean isFlag = true;
-               for(int j=0;j<list.size()&&isFlag;j++){
-                if(list.get(j).getCun().equals(sysDistricts.get(i).getDistrictName())){
-                    isFlag = false;
-                }
-               }
-               if(isFlag){
-                   ExamScoreAllVO examScoreAllVO = new ExamScoreAllVO();
-                   examScoreAllVO.setCun(sysName);
-                   examScoreAllVO.setExam(0);
-                   examScoreAllVO.setScore(0.0);
-                   examScoreAllVO.setTown(sysDistrictRepository.findByDistrictId(sysDistricts.get(i).getAttachTo()).getDistrictName());
-                   examScoreAllVO.setTownExam(0);
-                   examScoreAllVO.setTownScore(0.0);
-                   list.add(examScoreAllVO);
-               }
-        }
-        }
+    public Result<List<ActivityExamVO>> examScoreAll(@ApiParam(value = "分页参数", required = true) Pageable pageable, @ApiParam(value = "年份", required = true)String year,
+                                                     @ApiParam(value = "搜索", required = true)String search, @ApiParam(value = "搜索", required = true)String districtType){
+        List<ActivityExamVO> list = exaScoreService.examScoreAll(pageable ,year,search,districtType);
         return Result.of(list);
     }
 
