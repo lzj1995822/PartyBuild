@@ -19,6 +19,6 @@ import java.util.List;
 public interface ExaScoreService extends BaseService<ExaScore> {
     List<ExamScorePercentVO> percentTown(String year);
     List<ExamScorePercentVO> percentCun(String year,String townName);
-    List<ExamScoreVO> scoreCun(Pageable pageable, String sort,String year);
+    List<ExamScoreVO> scoreCun(Pageable pageable, String sort,String year, String districtType);
     List<ActivityExamVO> examScoreAll(Pageable pageable, String year, String search, String districtType);
 }

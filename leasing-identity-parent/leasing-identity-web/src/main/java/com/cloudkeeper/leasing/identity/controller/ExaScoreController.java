@@ -89,7 +89,7 @@ public interface ExaScoreController {
      */
     @ApiOperation(value = "列表查询各村分数", notes = "", position = 5)
     @PostMapping("/scoreCunPercentAll")
-    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "分页参数", required = true) Pageable pageable, String sort,String year);
+    Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "分页参数", required = true) Pageable pageable,@RequestParam String sort, @RequestParam String year);
 
     /**
      * 列表查询各镇分数
