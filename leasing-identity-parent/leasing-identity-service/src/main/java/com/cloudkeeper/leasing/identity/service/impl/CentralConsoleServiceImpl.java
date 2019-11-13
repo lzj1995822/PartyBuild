@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,8 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
 
     private final ParMemberService parMemberService;
 
+    private final SumPerHourService sumPerHourService;
+
 
     @Override
     protected BaseRepository<BaseEntity> getBaseRepository() {
@@ -65,6 +68,8 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));
             centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId, year));
             centralConsoleVo.setVillageSecretaryNumber(cadrePositionService.countVillageSecretaryNumber(districtId,"SECRETARY"));
+            centralConsoleVo.setStreamTotal(sumPerHourService.countAll(districtId));
+            centralConsoleVo.setStreamRate((double) (centralConsoleVo.getStreamTotal()/centralConsoleVo.getPositionNumber()));
         }
         return centralConsoleVo;
     }

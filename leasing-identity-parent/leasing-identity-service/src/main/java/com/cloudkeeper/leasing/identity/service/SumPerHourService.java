@@ -21,7 +21,6 @@ public interface SumPerHourService extends BaseService<SumPerHour> {
 
     Map<String,List> RealLineChart(String districtId);
 
-
     // 统计单位内的各类阵地日人流量总计
     Map<String, List> calDayStreamUnit(String interval, String districtId);
 
@@ -29,4 +28,7 @@ public interface SumPerHourService extends BaseService<SumPerHour> {
     Map<String, List> calDayUsingTimes(String interval, String districtId);
 
     List<StreamDayVO> calDayUsingTimesRadar(String interval, String districtId);
+
+    //根据districtId统计当日人流量
+    Integer countAll(String districtId);
 }
