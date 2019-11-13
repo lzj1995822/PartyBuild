@@ -3,13 +3,12 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ExaScoreController;
 import com.cloudkeeper.leasing.identity.domain.ExaScore;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreDTO;
 import com.cloudkeeper.leasing.identity.dto.exascore.ExaScoreSearchable;
 import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
 import com.cloudkeeper.leasing.identity.service.ExaScoreService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
-import com.cloudkeeper.leasing.identity.service.impl.SysDistrictServiceImpl;
+import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.*;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +37,8 @@ public class ExaScoreControllerImpl implements ExaScoreController {
 
     /** 考核积分 service */
     private final ExaScoreService exaScoreService;
+
+    private final SysUserService sysUserService;
 
     @Autowired
     private final SysDistrictRepository sysDistrictRepository;
@@ -90,7 +91,13 @@ public class ExaScoreControllerImpl implements ExaScoreController {
     }
     @Override
     public Result<List<ExamScoreVO>> scoreCun(@ApiParam(value = "分页参数", required = true) Pageable pageable, String sort,String year){
-        List<ExamScoreVO> examScoreVOList = exaScoreService.scoreCun(pageable,sort,year);
+        String currentPrincipalId = exaScoreService.getCurrentPrincipalId();
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
+        String districtType = "Party";
+        if (optionalById.isPresent()) {
+            districtType = optionalById.get().getSysDistrict().getDistrictType();
+        }
+        List<ExamScoreVO> examScoreVOList = exaScoreService.scoreCun(pageable,sort,year, districtType);
         return Result.of(examScoreVOList);
     }
     @Override

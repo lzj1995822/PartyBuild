@@ -48,47 +48,7 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
     }
 
     @Override
-    public List<ExamScoreVO> scoreCun(Pageable pageable, String sort,String year) {
-//        String sql = "SELECT TOP " +
-//                " "+pageable.getPageSize()+" *  " +
-//                "FROM " +
-//                " ( " +
-//                "SELECT " +
-//                " exam, " +
-//                " row_number () OVER ( ORDER BY exam "+sort+" ) AS row_number, " +
-//                "COUNT(*)OVER() AS total, "+
-//                " cun " +
-//                "FROM " +
-//                " ( " +
-//                "SELECT SUM " +
-//                " ( score ) exam, " +
-//                " districtName cun, " +
-//                " attachTo  " +
-//                "FROM " +
-//                " ( " +
-//                "SELECT " +
-//                " es.organizationId, " +
-//                " es.activityId, " +
-//                " es.score, " +
-//                " es.createTime, " +
-//                " sd.districtName, " +
-//                " sd.attachTo " +
-//                "FROM " +
-//                " EXA_Score es " +
-//                " LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
-//                "WHERE " +
-//                " sd.districtLevel = 3  " +
-//                " AND sd.isDelete = 0  " +
-//                "AND es.createTime BETWEEN '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' "+
-//                " ) S1  " +
-//                "GROUP BY " +
-//                " districtName, " +
-//                " attachTo  " +
-//                " ) a  " +
-//                " ) t  " +
-//                "WHERE " +
-//                " row_number > ( "+pageable.getPageNumber()+" ) * "+pageable.getPageSize()+"";
-
+    public List<ExamScoreVO> scoreCun(Pageable pageable, String sort, String year, String districtType) {
         String sql = "SELECT TOP "+pageable.getPageSize()+" *  " +
                 "FROM " +
                 " ( " +
@@ -111,20 +71,16 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
                 " districtId  " +
                 "FROM " +
                 " ( " +
-                "SELECT " +
-                " es.activityId, " +
-                " es.score, " +
-                " es.createTime, " +
-                " sd.districtName, " +
-                " sd.attachTo, " +
-                " sd.id districtId " +
-                "FROM " +
-                " EXA_Score es " +
-                " LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
+                " SELECT " +
+                " sd.districtName, sd.attachTo, sd.id, districtId, es.activityId, es.score, es.createTime " +
+                " FROM SYS_District sd " +
+                " LEFT JOIN EXA_Score es ON es.organizationId = sd.id " +
                 "WHERE " +
-                " sd.districtLevel = 3  " +
-                " AND sd.isDelete = 0  " +
+                " sd.isDelete = 0  " +
                 " AND es.createTime BETWEEN '"+year+"-01-01 00:00:00' and '"+year+"-12-31 23:59:59' "+
+                " AND sd.districtType = '" + districtType +
+                "' AND sd.districtLevel = 3  " +
+                " OR sd.districtLevel = 4 " +
                 " ) S1  " +
                 "GROUP BY " +
                 " districtName, " +
