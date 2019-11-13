@@ -6,9 +6,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.SumPerHour;
 import com.cloudkeeper.leasing.identity.repository.SumPerHourRepository;
 import com.cloudkeeper.leasing.identity.service.SumPerHourService;
-import com.cloudkeeper.leasing.identity.vo.HeatMapVO;
-import com.cloudkeeper.leasing.identity.vo.LinkChartVo;
-import com.cloudkeeper.leasing.identity.vo.StreamDayVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +79,7 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
                             "sum(CASE WHEN temp.type = 'PARTY_CARE' THEN temp.total ELSE 0 END ) as partyCare, " +
                             "CONVERT(VARCHAR(100),temp.startTime,121) AS monthDay "+
                 "From (SELECT convert(varchar(14), s.startTime, 120)+ '00:00' as startTime ,s.total ,p.type  from Sum_Per_Hour as s LEFT JOIN Position_Information as p ON s.positionId = p.id " +
-                "where s.startTime>DATEADD(HOUR, -7, GETDATE()) and districtId like '" + districtId + "%') as temp  " +
+                "where s.startTime>DATEADD(HOUR, -9, GETDATE()) and districtId like '" + districtId + "%') as temp  " +
                 "GROUP BY startTime "+
                 "ORDER BY monthDay asc";
         List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
@@ -141,6 +139,17 @@ public class SumPerHourServiceImpl extends BaseNoHttpServiceImpl<SumPerHour> imp
         String sql = handleSql(interval,districtId);
         List<StreamDayVO> allBySql = super.findAllBySql(StreamDayVO.class, sql);
         return allBySql;
+    }
+
+    @Override
+    public Integer countAll(String districtId) {
+        String sql = "select sum(total) as total  " +
+                "from (SELECT h.total,h.startTime,h.positionId,p.districtId FROM Sum_Per_Hour as h " +
+                "LEFT JOIN Position_Information as p on p.id=h.positionId  " +
+                "where CONVERT(varchar(10),h.startTime,120) = CONVERT(varchar(10),GETDATE(),120)) as temp  " +
+                "where temp.districtId like "+"'"+districtId+"%"+"'";
+        CurrentTotalVO bySql = super.findBySql(CurrentTotalVO.class, sql);
+        return bySql.getTotal();
     }
 
     private Map<String, List> generateCommonMap(List<StreamDayVO> list) {
