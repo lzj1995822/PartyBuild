@@ -88,13 +88,13 @@ public class SysUser extends BaseEntity {
 
     /** 角色 */
     @ApiModelProperty(value = "角色", position = 28)
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleID", insertable = false, updatable = false)
     private Role role;
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 28)
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizationId", insertable = false, updatable = false)
     private SysDistrict sysDistrict;
 
