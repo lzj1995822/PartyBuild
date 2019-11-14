@@ -18,10 +18,7 @@ import javax.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 活动 VO
@@ -145,5 +142,5 @@ public class ParActivityVO extends BaseVO {
     private String templateItem;
 
     @ApiModelProperty(value="二级审核党组织进度",position = 10)
-    private Map<String,BigDecimal> activityOfficeProgresses;
+    private Map<String,BigDecimal> activityOfficeProgresses = new HashMap<>();
 }
