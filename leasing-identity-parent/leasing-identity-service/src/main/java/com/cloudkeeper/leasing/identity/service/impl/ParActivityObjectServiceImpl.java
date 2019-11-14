@@ -150,7 +150,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
     @Transactional
     public void initPerActivity() {
         List<ParActivity> parActivities = parActivityRepository.findAll();
-        List<SysDistrict> sysDistricts = sysDistrictService.findAllByDistrictLevel(3);
+        List<SysDistrict> sysDistricts = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
         for (ParActivity parActivity: parActivities) {
             for (SysDistrict sysDistrict: sysDistricts) {
                 ParActivityObject parActivityObject = new ParActivityObject();

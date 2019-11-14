@@ -38,7 +38,7 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     Set<SysDistrictTreeVO> getTree(String districtId);
 
 
-    List<SysDistrict> findAllByDistrictLevel(Integer level);
+    List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer level, String districtType);
 
     void save(Integer isDelete,String id);
 
