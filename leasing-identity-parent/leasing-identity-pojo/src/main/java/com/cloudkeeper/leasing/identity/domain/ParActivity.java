@@ -177,8 +177,10 @@ public class ParActivity extends BaseEntity {
         if(!StringUtils.isEmpty(this.distLearningActivityVideo)){
             parActivityVO.setVideo(this.distLearningActivityVideo);
         }
-        Map<String, BigDecimal> collect = this.activityOfficeProgresses.stream().collect(Collectors.toMap(ActivityOfficeProgress::getDistrictId, ActivityOfficeProgress::getPercent));
-        parActivityVO.setActivityOfficeProgresses(collect);
+        if(!StringUtils.isEmpty(activityOfficeProgresses)){
+            Map<String, BigDecimal> collect = this.activityOfficeProgresses.stream().collect(Collectors.toMap(ActivityOfficeProgress::getDistrictId, ActivityOfficeProgress::getPercent));
+            parActivityVO.setActivityOfficeProgresses(collect);
+        }
         return (T) parActivityVO;
     }
 
