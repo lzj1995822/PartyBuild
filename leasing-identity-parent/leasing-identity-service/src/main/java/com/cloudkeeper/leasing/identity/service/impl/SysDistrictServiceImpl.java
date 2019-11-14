@@ -104,8 +104,8 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     }
 
     @Override
-    public List<SysDistrict> findAllByDistrictLevel(Integer level) {
-        return sysDistrictRepository.findAllByDistrictLevel(level);
+    public List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer level, String districtType) {
+        return sysDistrictRepository.findAllByDistrictLevelAndDistrictType(level, districtType);
     }
 
     @Override

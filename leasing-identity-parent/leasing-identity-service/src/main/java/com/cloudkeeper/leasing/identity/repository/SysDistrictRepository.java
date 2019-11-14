@@ -19,7 +19,7 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     List<SysDistrict> findAllByDistrictLevelNot(Integer districtLevel);
 
-    List<SysDistrict> findAllByDistrictLevel(Integer districtLevel);
+    List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer districtLevel, String districtType);
 
     Set<SysDistrict> findAllByAttachTo(String districtId);
 
