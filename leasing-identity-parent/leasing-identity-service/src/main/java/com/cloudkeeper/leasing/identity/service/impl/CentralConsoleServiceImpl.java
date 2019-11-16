@@ -65,11 +65,21 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             centralConsoleVo.setOrganizationNumber(sysDistrictService.countAllByDistrictId(districtId));
             centralConsoleVo.setVillageCadresNumber(villageCadresService.countAllByDistrictId(districtId));
             centralConsoleVo.setActivityPerformNumber(parActivityPerformService.countAll(districtId, year));
-            centralConsoleVo.setPositionNumber(positionInformationService.countAllByDistrictId(districtId));
+            Integer positionNumber = positionInformationService.countAllByDistrictId(districtId);
+            if (positionNumber == null) {
+                positionNumber = 0;
+            }
+            centralConsoleVo.setPositionNumber(positionNumber);
             centralConsoleVo.setActivityCompleteRate(parActivityObjectService.handleActivityCompleteRate(districtId, year));
             centralConsoleVo.setVillageSecretaryNumber(cadrePositionService.countVillageSecretaryNumber(districtId,"SECRETARY"));
-            centralConsoleVo.setStreamTotal(sumPerHourService.countAll(districtId));
-            centralConsoleVo.setStreamRate((double) (centralConsoleVo.getStreamTotal()/centralConsoleVo.getPositionNumber()));
+            Integer streamTotal = sumPerHourService.countAll(districtId);
+            if (streamTotal == null) {
+                streamTotal = 0;
+            }
+            centralConsoleVo.setStreamTotal(streamTotal);
+            if (positionNumber != 0) {
+                centralConsoleVo.setStreamRate((double) (centralConsoleVo.getStreamTotal()/centralConsoleVo.getPositionNumber()));
+            }
         }
         return centralConsoleVo;
     }

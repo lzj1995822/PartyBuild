@@ -25,15 +25,15 @@ public class ScheduleTask {
         sumPerHourService.calPeopleStream();
     }
 
-    @Scheduled(fixedRate = 2000)
-    public void generatePeopleStream() {
-        PeopleStream peopleStream = new PeopleStream();
-        peopleStream.setAmount(1);
-        int randomHardwareId = 1 + (int)(Math.random() * 656);
-        String locationCode = String.valueOf(randomHardwareId);
-        peopleStream.setLocationCode(locationCode);
-        peopleStreamRepository.save(peopleStream);
-        logger.info("地址编码为" + locationCode + "有人通过");
-    }
+//    @Scheduled(fixedRate = 2000)
+//    public void generatePeopleStream() {
+//        PeopleStream peopleStream = new PeopleStream();
+//        peopleStream.setAmount(1);
+//        int randomHardwareId = 1 + (int)(Math.random() * 656);
+//        String locationCode = String.valueOf(randomHardwareId);
+//        peopleStream.setLocationCode(locationCode);
+//        peopleStreamRepository.save(peopleStream);
+//        logger.info("地址编码为" + locationCode + "有人通过");
+//    }
 
 }

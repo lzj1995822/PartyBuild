@@ -519,10 +519,14 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         DetachedCriteria detachedCriteria = getDetachedCriteria(parActivitySearchable);
          if (roleCode.equals("TOWN_REVIEWER")) {
             List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByDistrictCode(districtCode);
-            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+            if (activityIdsByDistrictCode.size() > 0) {
+                detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+            }
         } else if (roleCode.equals("COUNTRY_SIDE_ACTOR")) {
             List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByOrganizationId(districtCode);
-            detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+             if (activityIdsByDistrictCode.size() > 0) {
+                 detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
+             }
         }
          //不加其他查询条件默认为市级
         int resultCount = getTotalCount(detachedCriteria);
