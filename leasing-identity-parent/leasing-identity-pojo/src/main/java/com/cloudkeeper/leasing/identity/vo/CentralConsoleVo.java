@@ -44,10 +44,10 @@ public class CentralConsoleVo extends BaseVO {
     private Integer parMemberNumber;
 
     //当日阵地总人流量
-    private Integer streamTotal;
+    private Integer streamTotal = 0;
 
     //当日阵地平均人流量
-    private Double streamRate;
+    private Double streamRate = 0d;
 
 
 }
