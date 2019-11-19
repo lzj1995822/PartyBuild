@@ -121,4 +121,15 @@ public class VillageCadresDTO extends BaseEditDTO {
     @ApiModelProperty(value = "状态", position = 19)
     private String state;
 
+    @ApiModelProperty(value = "本年度基本报酬", position = 19)
+    private String currentBaseSalary;
+
+    @ApiModelProperty(value = "上年度基本报酬", position = 19)
+    private String lastBaseSalary;
+
+    @ApiModelProperty(value = "上年度考核报酬", position = 19)
+    private String lastCheckSalary;
+
+    @ApiModelProperty(value = "上年度增收奖励", position = 19)
+    private String lastIncreaseBonus;
 }
