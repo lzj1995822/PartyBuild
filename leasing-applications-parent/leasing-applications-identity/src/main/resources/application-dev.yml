@@ -9,9 +9,9 @@ spring:
     url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy3
     # 用户名
 #    username: lxw
-    username: asher
+    username: asherlv
     # 密码-
-    password: q243485908
+    password: q243485
     # 驱动类型
 #   driver-class-name: com.mysql.jdbc.Driver
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
