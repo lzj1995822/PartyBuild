@@ -85,4 +85,30 @@ public class VillageCadresSearchable extends BaseSearchable {
     @ApiModelProperty(value = "所属组织", position = 10, required = true)
     private String districtId;
 
+    @ApiModelProperty(value = "担任村书记时长", position = 19)
+    private String onDutyTime;
+
+    @ApiModelProperty(value = "素能评价", position = 19)
+    private String evalution;
+
+    @ApiModelProperty(value = "专业职称", position = 19)
+    private String professionalTitle;
+
+    @ApiModelProperty(value = "工作单位及职务", position = 19)
+    private String workPlaceAndDuty;
+
+    @ApiModelProperty(value = "拟评定职级", position = 19)
+    private String quasiAssessmentRank;
+
+    @ApiModelProperty(value = "工作简历", position = 19)
+    private String workExperience;
+
+    @ApiModelProperty(value = "曾受综合表彰情况", position = 19)
+    private String comprehensiveCommendation;
+
+    @ApiModelProperty(value = "年度考核情况", position = 19)
+    private String annualAssessment;
+
+    @ApiModelProperty(value = "状态", position = 19)
+    private String state;
 }
