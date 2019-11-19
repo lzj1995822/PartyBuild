@@ -142,4 +142,10 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "上年度增收奖励", position = 19)
     private String lastIncreaseBonus;
+
+    @ApiModelProperty(value = "头像", position = 19)
+    private String headSculpture;
+
+    @ApiModelProperty(value = "纸质文档", position = 19)
+    private String paperDocument;
 }
