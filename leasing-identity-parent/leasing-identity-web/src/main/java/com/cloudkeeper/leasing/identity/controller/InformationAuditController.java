@@ -1,13 +1,9 @@
 package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.base.model.Result;
-import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.InformationAuditSearchable;
-import com.cloudkeeper.leasing.identity.dto.distlearningactivityvideo.DistLearningActivityVideoDTO;
-import com.cloudkeeper.leasing.identity.dto.information.InformationDTO;
 import com.cloudkeeper.leasing.identity.dto.information.InformationSearchable;
-import com.cloudkeeper.leasing.identity.vo.DistLearningActivityVideoVO;
 import com.cloudkeeper.leasing.identity.vo.InformationAuditVO;
 import com.cloudkeeper.leasing.identity.vo.InformationVO;
 import io.swagger.annotations.Api;
@@ -26,16 +22,17 @@ import java.util.List;
  * @author zdw
  */
 @Api(value = "村干部审核", tags = "村干部审核")
+@RequestMapping("/informationAudit")
 public interface InformationAuditController {
 
     /**
      * 查询
-     * @param informationAuditId  消息通知id
+     * @param id  消息通知id
      * @return 消息通知 VO
      */
     @ApiOperation(value = "查询", notes = "查询", position = 1)
     @GetMapping("/{id}id")
-    Result<InformationAuditVO> findOne(@ApiParam(value = "消息通知id", required = true) @PathVariable   String informationAuditId);
+    Result<InformationAuditVO> findOne(@ApiParam(value = "消息通知id", required = true) @PathVariable String id);
 
 
 
@@ -47,7 +44,7 @@ public interface InformationAuditController {
     /**
      * 更新
      * @param id 消息通知id
-     * @param InformationAuditDTO 消息通知 DTO
+     * @param informationAuditDTO 消息通知 DTO
      * @return 消息通知 VO
      */
     @ApiOperation(value = "更新", notes = "更新", position = 3)
@@ -58,7 +55,7 @@ public interface InformationAuditController {
 
     /**
      * 列表查询
-     * @param InformationAuditSearchable 消息通知查询条件
+     * @param informationAuditSearchable 消息通知查询条件
      * @param sort 排序条件
      * @return 消息通知 VO 集合
      */
@@ -69,6 +66,15 @@ public interface InformationAuditController {
 
 
 
-
+    /**
+     * 分页查询
+     * @param informationAuditSearchable, 消息通知查询条件
+     * @param pageable 分页条件
+     * @return 消息通知 VO 分页
+     */
+    @ApiOperation(value = "分页查询", notes = "分页查询<br/>page：第几页，默认为0，是第一页<br/>size：分页大小, 默认为10<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 6)
+    @PostMapping("/page")
+    Result<Page<InformationAuditVO>> page(@ApiParam(value = "消息通知查询条件", required = true) @RequestBody InformationAuditSearchable informationAuditSearchable,
+                                     @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
 }

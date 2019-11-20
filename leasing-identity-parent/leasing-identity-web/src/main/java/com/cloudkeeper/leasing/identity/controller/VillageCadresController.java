@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -91,6 +92,17 @@ public interface VillageCadresController {
     @ApiOperation(value = "村干部数量", notes = "村干部数量", position = 6)
     @PostMapping("/countall")
     Result<Long> countALl(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
+
+
+    /**
+     * 村干部状态提交结果
+     * @param
+     * @return 提交结果
+     */
+    @ApiOperation(value = "村干部状态提交结果", notes = "村干部状态提交结果", position = 6)
+    @PutMapping("/submit/{id}")
+    Result<Boolean> submit(@ApiParam(value = "村干部状态提交结果", required = true) @PathVariable("id")String id);
+
 
     /**
      * 初始化岗位

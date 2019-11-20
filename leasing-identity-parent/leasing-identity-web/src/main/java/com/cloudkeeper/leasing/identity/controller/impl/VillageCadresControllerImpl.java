@@ -120,6 +120,16 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
+    public Result<Boolean> submit(String id) {
+        Optional<VillageCadres> optionalById = villageCadresService.findOptionalById(id);
+
+        if(optionalById.isPresent()){
+            return  Result.of(villageCadresService.submit(optionalById.get()));
+        }
+        return Result.ofNotFound();
+    }
+
+    @Override
     public Result<String> initPost() {
         try {
             villageCadresService.initPost();

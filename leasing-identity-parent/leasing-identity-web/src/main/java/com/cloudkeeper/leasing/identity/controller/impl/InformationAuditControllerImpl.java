@@ -38,35 +38,36 @@ import java.util.Optional;
 
 /**
  * 消息通知 controller
+ *
  * @author zdw
  */
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class InformationAuditControllerImpl implements InformationAuditController {
 
-    /** 消息通知 service */
+    /**
+     * 村干部审核记录 service
+     */
     private final InformationAuditService informationAuditService;
-    
 
     private final SysLogService sysLogService;
-    
+
     @Override
     public Result<InformationAuditVO> findOne(String informationAuditId) {
         Optional<InformationAudit> optionalById = informationAuditService.findOptionalById(informationAuditId);
-        if(optionalById.isPresent()){
+        if (optionalById.isPresent()) {
             InformationAudit information = optionalById.get();
+            sysLogService.pushLog(this.getClass().getName(), "村干部审核信息查询", informationAuditService.getTableName(), information.getId());
             return Result.of(information.convert(InformationAuditVO.class));
         }
         return Result.ofNotFound();
-
-
     }
 
     @Override
     public Result delete(String id) {
         InformationAudit byId = informationAuditService.findById(id);
-       informationAuditService.deleteById(id);
-        sysLogService.pushLog(this.getClass().getName(),"村干部审核信息",informationAuditService.getTableName(),byId.getId());
+        informationAuditService.deleteById(id);
+        sysLogService.pushLog(this.getClass().getName(), "村干部审核信息删除", informationAuditService.getTableName(), byId.getId());
         return Result.ofDeleteSuccess();
     }
 
@@ -74,27 +75,28 @@ public class InformationAuditControllerImpl implements InformationAuditControlle
     @Override
     public Result<InformationAuditVO> update(@ApiParam(value = "活动id", required = true) @PathVariable String id,
                                              @ApiParam(value = "活动 DTO", required = true) @RequestBody @Validated InformationAuditDTO informationAuditDTO) {
-            Optional<InformationAudit> informationAuditOptional = informationAuditService.findOptionalById(id);
-            if (!informationAuditOptional.isPresent()) {
-                return Result.ofLost();
-            }
-        InformationAudit informationAudit = informationAuditOptional.get();
+        Optional<InformationAudit> informationAuditOptional = informationAuditService.findOptionalById(id);
+        if (!informationAuditOptional.isPresent()) {
+            return Result.ofLost();
+        }
         InformationAudit save = informationAuditService.save(informationAuditDTO.convert(InformationAudit.class));
-
-
-        sysLogService.pushLog(this.getClass().getName(),"村干部审核更新",informationAuditService.getTableName(),informationAudit.getId());
+        sysLogService.pushLog(this.getClass().getName(), "村干部审核更新", informationAuditService.getTableName(), save.getId());
         return Result.ofUpdateSuccess(save.convert(InformationAuditVO.class));
     }
-
-
 
 
     @Override
     public Result<List<InformationAuditVO>> list(InformationAuditSearchable informationAuditSearchable, Sort sort) {
         List<InformationAudit> informationAudits = informationAuditService.findAll(informationAuditSearchable, sort);
-        List<InformationAuditVO>  informationAuditVOList = Information.convert(informationAudits, InformationAuditVO.class);
+        List<InformationAuditVO> informationAuditVOList = Information.convert(informationAudits, InformationAuditVO.class);
         return Result.of(informationAuditVOList);
     }
 
+    @Override
+    public Result<Page<InformationAuditVO>> page(InformationAuditSearchable informationAuditSearchable, Pageable pageable) {
+        Page<InformationAudit> informationAuditPage = informationAuditService.findAll(informationAuditSearchable, pageable);
+        Page<InformationAuditVO> informationVOPage = Information.convert(informationAuditPage, InformationAuditVO.class);
+        return Result.of(informationVOPage);
+    }
 
 }

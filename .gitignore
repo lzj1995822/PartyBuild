@@ -19,6 +19,10 @@
 *.js.map
 *.css
 *.css.map
+*.class
+*.xml
+*/classes/*
+
 
 ### NetBeans ###
 /nbproject/private/

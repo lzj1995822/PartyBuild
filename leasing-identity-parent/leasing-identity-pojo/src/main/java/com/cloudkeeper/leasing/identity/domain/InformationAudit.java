@@ -29,7 +29,7 @@ public class InformationAudit extends BaseEntity {
     private String passAdvice;
 
     /**是否通过**/
-    private Integer isPass;
+    private String status;
 
     /**村书记id**/
     private String villageId;

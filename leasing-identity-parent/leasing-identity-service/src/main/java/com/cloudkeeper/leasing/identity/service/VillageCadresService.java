@@ -19,4 +19,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
      */
     void initPost();
 
+    Boolean submit(VillageCadres villageCadres);
+
+    Boolean  virify(String villageId,String code);
 }
