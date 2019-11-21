@@ -148,4 +148,10 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "纸质文档", position = 19)
     private String paperDocument;
+
+    @ApiModelProperty(value = "职级等次", position = 19)
+    private String rank;
+
+    @ApiModelProperty(value = "入额时间", position = 19)
+    private LocalDate entryAmountTime;
 }
