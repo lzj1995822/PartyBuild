@@ -18,11 +18,6 @@ import javax.persistence.Table;
 @ApiModel(value = "村书记审核", description = "村书记审核")
 @Getter
 @Setter
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-
 public class InformationAuditDTO  extends BaseEditDTO  {
 
     /**通过意见**/
@@ -33,5 +28,11 @@ public class InformationAuditDTO  extends BaseEditDTO  {
 
     /**村书记id**/
     private String villageId;
+
+    /**审核人**/
+    private  String auditor;
+
+    /**审核意见**/
+    private  String auditAdvice;
 
 }

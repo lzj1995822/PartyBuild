@@ -33,4 +33,10 @@ public class InformationAudit extends BaseEntity {
 
     /**村书记id**/
     private String villageId;
+
+    /**审核人**/
+    private  String auditor;
+
+    /**审核意见**/
+    private  String auditAdvice;
 }

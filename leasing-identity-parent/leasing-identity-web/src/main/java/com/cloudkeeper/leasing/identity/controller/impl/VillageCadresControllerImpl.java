@@ -2,7 +2,9 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
+import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
@@ -46,6 +48,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     @Override
     public Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
+        villageCadresDTO.setState("0");
         VillageCadres villageCadres = villageCadresService.save(villageCadresDTO.convert(VillageCadres.class));
         String  msg= villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
@@ -70,7 +73,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result delete(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
         VillageCadres villageCadres = villageCadresService.findById(id);
-        villageCadresService.deleteById(id);
+        villageCadresService.delete(villageCadres);
         String  msg= villageCadresService.actionLog("删除","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofDeleteSuccess();
@@ -120,13 +123,18 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
-    public Result<Boolean> submit(String id) {
+    public Result<Boolean> submit( @PathVariable String id) {
         Optional<VillageCadres> optionalById = villageCadresService.findOptionalById(id);
 
         if(optionalById.isPresent()){
             return  Result.of(villageCadresService.submit(optionalById.get()));
         }
         return Result.ofNotFound();
+    }
+
+    @Override
+    public Result<Boolean> verify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody InformationAuditDTO informationAuditDTO2) {
+        return  Result.of(villageCadresService.virify(id,code,informationAuditDTO2));
     }
 
     @Override

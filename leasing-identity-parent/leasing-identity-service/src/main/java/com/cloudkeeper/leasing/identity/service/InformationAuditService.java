@@ -2,8 +2,6 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.domain.InformationAudit;
-import com.cloudkeeper.leasing.identity.domain.SysUser;
-import io.swagger.models.auth.In;
 
 public interface InformationAuditService extends BaseService<InformationAudit> {
 

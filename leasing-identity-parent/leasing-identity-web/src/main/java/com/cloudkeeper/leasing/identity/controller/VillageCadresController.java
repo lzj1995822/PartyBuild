@@ -1,5 +1,7 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.identity.domain.InformationAudit;
+import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
@@ -7,7 +9,6 @@ import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -102,6 +103,19 @@ public interface VillageCadresController {
     @ApiOperation(value = "村干部状态提交结果", notes = "村干部状态提交结果", position = 6)
     @PutMapping("/submit/{id}")
     Result<Boolean> submit(@ApiParam(value = "村干部状态提交结果", required = true) @PathVariable("id")String id);
+
+
+
+
+    /**
+     * 村干部状态审核
+     * @param
+     * @return 审核
+     */
+    @ApiOperation(value = "村干部审核", notes = "村干部审核", position = 6)
+    @PutMapping("/verify/{id}/{code}")
+    Result<Boolean> verify(@ApiParam(value = "村干部审核", required = true) @PathVariable("id") String id, @PathVariable("code") String code,
+                           @RequestBody InformationAuditDTO informationAuditDTO2);
 
 
     /**

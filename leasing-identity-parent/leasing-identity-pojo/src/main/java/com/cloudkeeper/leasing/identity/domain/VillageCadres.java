@@ -110,21 +110,21 @@ public class VillageCadres extends BaseEntity {
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
 
     /** 镇级组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "parentDistrictId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict parentSysDistrict;
 
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
-    @OneToOne(mappedBy = "villageCadres")
+    @OneToOne(mappedBy = "villageCadres", cascade={CascadeType.PERSIST,CascadeType.MERGE})
     @NotFound(action = NotFoundAction.IGNORE)
     private CadrePosition cadrePosition;
 
