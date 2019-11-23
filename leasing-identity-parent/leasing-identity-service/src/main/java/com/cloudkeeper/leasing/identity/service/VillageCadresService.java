@@ -1,11 +1,11 @@
 package com.cloudkeeper.leasing.identity.service;
 
-import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
-import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * 村干部管理 service
@@ -27,4 +27,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
      */
     VillageCadres save(VillageCadresDTO villageCadresDTO);
 
+    Boolean submit(VillageCadres villageCadres);
+
+    Boolean  virify(String id, String code, InformationAuditDTO informationAuditDTO2);
 }

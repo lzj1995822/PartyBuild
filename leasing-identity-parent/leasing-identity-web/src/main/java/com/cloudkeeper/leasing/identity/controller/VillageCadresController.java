@@ -1,5 +1,7 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.identity.domain.InformationAudit;
+import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
@@ -91,6 +93,30 @@ public interface VillageCadresController {
     @ApiOperation(value = "村干部数量", notes = "村干部数量", position = 6)
     @PostMapping("/countall")
     Result<Long> countALl(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
+
+
+    /**
+     * 村干部状态提交结果
+     * @param
+     * @return 提交结果
+     */
+    @ApiOperation(value = "村干部状态提交结果", notes = "村干部状态提交结果", position = 6)
+    @PutMapping("/submit/{id}")
+    Result<Boolean> submit(@ApiParam(value = "村干部状态提交结果", required = true) @PathVariable("id")String id);
+
+
+
+
+    /**
+     * 村干部状态审核
+     * @param
+     * @return 审核
+     */
+    @ApiOperation(value = "村干部审核", notes = "村干部审核", position = 6)
+    @PutMapping("/verify/{id}/{code}")
+    Result<Boolean> verify(@ApiParam(value = "村干部审核", required = true) @PathVariable("id") String id, @PathVariable("code") String code,
+                           @RequestBody InformationAuditDTO informationAuditDTO2);
+
 
     /**
      * 初始化岗位

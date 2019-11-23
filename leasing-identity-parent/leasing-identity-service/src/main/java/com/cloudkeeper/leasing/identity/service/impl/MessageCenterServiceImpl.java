@@ -2,14 +2,8 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.Information;
-import com.cloudkeeper.leasing.identity.domain.MessageCenter;
-import com.cloudkeeper.leasing.identity.domain.ParActivity;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
-import com.cloudkeeper.leasing.identity.repository.InformationRepository;
-import com.cloudkeeper.leasing.identity.repository.MessageCenterRepository;
-import com.cloudkeeper.leasing.identity.repository.ParActivityRepository;
-import com.cloudkeeper.leasing.identity.repository.SysDistrictRepository;
+import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +32,8 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
     //组织
     private final SysDistrictRepository sysDistrictRepository;
 
+    //村干部
+    private final VillageCadresRepository villageCadresRepository;
 
     private final InformationRepository informationRepository;
 
@@ -69,7 +65,7 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
             messageCenter.setDistrictId(sysDistrictByDistrictId.getAttachTo());
             messageCenter.setContent("[远教任务] "+messageCenter.getDistrictName()+'"'+messageCenter.getTitle()+'"'+"待审核");
         }
-        if(taskType=="party"){
+        else if(taskType=="party"){
             Optional<ParActivity> byId = parActivityRepository.findById(activityId);
             if(byId.isPresent()) {
                 SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
@@ -79,13 +75,23 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
                 messageCenter.setContent("[党建任务] " + messageCenter.getDistrictName() + '"' + messageCenter.getTitle() + '"' + "待审核");
             }
         }
-        if(taskType=="information"){
+        else if(taskType=="information"){
             Optional<Information> byId = informationRepository.findById(activityId);
             if(byId.isPresent()){
                 Information information = byId.get();
                 messageCenter.setDistrictId(districtId);
                 messageCenter.setTitle(information.getTitle());
                 messageCenter.setContent("[通知公告] " +'"'+messageCenter.getTitle()+'"'+"待查收");
+            }
+        }
+        else{
+            Optional<VillageCadres> byId = villageCadresRepository.findById(activityId);
+            if(byId.isPresent()){
+                VillageCadres villageCadres = byId.get();
+                messageCenter.setDistrictId(districtId);
+                messageCenter.setType("villageCadres");
+                messageCenter.setTitle(villageCadres.getName());
+                messageCenter.setContent(taskType);
             }
         }
         return super.save(messageCenter);

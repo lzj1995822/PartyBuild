@@ -2,7 +2,9 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
+import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
@@ -125,6 +127,21 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     public Result<Long> countALl(@RequestBody VillageCadresSearchable villageCadresSearchable) {
         Long aLong = villageCadresService.countAllByDistrictId(villageCadresSearchable.getDistrictId());
         return Result.of(aLong);
+    }
+
+    @Override
+    public Result<Boolean> submit( @PathVariable String id) {
+        Optional<VillageCadres> optionalById = villageCadresService.findOptionalById(id);
+
+        if(optionalById.isPresent()){
+            return  Result.of(villageCadresService.submit(optionalById.get()));
+        }
+        return Result.ofNotFound();
+    }
+
+    @Override
+    public Result<Boolean> verify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody InformationAuditDTO informationAuditDTO2) {
+        return  Result.of(villageCadresService.virify(id,code,informationAuditDTO2));
     }
 
     @Override
