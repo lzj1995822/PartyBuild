@@ -132,6 +132,11 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return integer;
     }
 
+    @Override
+    public SysDistrict findByDistrictId(String districtId) {
+        return sysDistrictRepository.findByDistrictId(districtId);
+    }
+
     private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
         HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
         for (SysDistrict sysDistrict: sysDistricts) {

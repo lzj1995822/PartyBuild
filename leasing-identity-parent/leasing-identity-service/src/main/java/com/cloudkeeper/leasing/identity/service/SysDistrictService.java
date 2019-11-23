@@ -48,4 +48,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
 
     Integer countAllByDistrictId(String districtId);
 
+    SysDistrict findByDistrictId(String districtId);
+
 }

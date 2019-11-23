@@ -119,7 +119,7 @@ public class VillageCadresDTO extends BaseEditDTO {
     private String annualAssessment;
 
     @ApiModelProperty(value = "状态", position = 19)
-    private String state;
+    private String state = "0";
 
     @ApiModelProperty(value = "本年度基本报酬", position = 19)
     private String currentBaseSalary;
@@ -144,4 +144,5 @@ public class VillageCadresDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "入额时间", position = 19)
     private LocalDate entryAmountTime;
+
 }

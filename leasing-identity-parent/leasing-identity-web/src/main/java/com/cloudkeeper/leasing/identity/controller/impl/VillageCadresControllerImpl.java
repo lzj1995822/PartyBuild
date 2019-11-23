@@ -8,6 +8,8 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchabl
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.*;
@@ -46,8 +48,14 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     @Override
     public Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
-        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO.convert(VillageCadres.class));
-        String  msg= villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
+        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO);
+        String msg;
+        if (villageCadres == null) {
+            msg = villageCadresService.actionLog("新增村干部失败，职位不存在","[村干部信息]", villageCadres.getName());
+            sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
+            return Result.ofNotFound();
+        }
+        msg = villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofAddSuccess(villageCadres.convert(VillageCadresVO.class));
     }
