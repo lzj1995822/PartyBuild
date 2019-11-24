@@ -108,7 +108,7 @@ public class VillageCadresVO extends BaseVO {
     private String onDutyTime;
 
     @ApiModelProperty(value = "素能评价", position = 19)
-    private String evalution;
+    private String evaluation;
 
     @ApiModelProperty(value = "专业职称", position = 19)
     private String professionalTitle;
@@ -154,4 +154,27 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "入额时间", position = 19)
     private LocalDate entryAmountTime;
+
+    @ApiModelProperty(value = "职位名称", position = 10)
+    private String postName;
+
+    private String auditor;
+
+    private String auditAdvice;
+
+    @ApiModelProperty(value = "日常工作情况", position = 19)
+    private String commonWork;
+
+    @ApiModelProperty(value = "实际考核", position = 19)
+    private String actualReview;
+
+    @ApiModelProperty(value = "素能评价", position = 19)
+    private String primeOpinion;
+
+    @ApiModelProperty(value = "民主评价", position = 19)
+    private String democraticOpinion;
+
+    @ApiModelProperty(value = "加减分情况", position = 19)
+    private String additionSubtractionOpinion;
+
 }

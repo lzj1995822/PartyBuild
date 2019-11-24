@@ -98,7 +98,7 @@ public class VillageCadresDTO extends BaseEditDTO {
     private String onDutyTime;
 
     @ApiModelProperty(value = "素能评价", position = 19)
-    private String evalution;
+    private String evaluation;
 
     @ApiModelProperty(value = "专业职称", position = 19)
     private String professionalTitle;
@@ -144,5 +144,20 @@ public class VillageCadresDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "入额时间", position = 19)
     private LocalDate entryAmountTime;
+
+    @ApiModelProperty(value = "日常工作情况", position = 19)
+    private String commonWork;
+
+    @ApiModelProperty(value = "实际考核", position = 19)
+    private String actualReview;
+
+    @ApiModelProperty(value = "素能评价", position = 19)
+    private String primeOpinion;
+
+    @ApiModelProperty(value = "民主评价", position = 19)
+    private String democraticOpinion;
+
+    @ApiModelProperty(value = "加减分情况", position = 19)
+    private String additionSubtractionOpinion;
 
 }

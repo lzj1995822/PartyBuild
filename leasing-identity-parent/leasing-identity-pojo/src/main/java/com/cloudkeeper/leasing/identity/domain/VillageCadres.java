@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 村干部管理
@@ -144,7 +147,7 @@ public class VillageCadres extends BaseEntity {
     private String onDutyTime;
 
     @ApiModelProperty(value = "素能评价", position = 19)
-    private String evalution;
+    private String evaluation;
 
     @ApiModelProperty(value = "专业职称", position = 19)
     private String professionalTitle;
@@ -191,19 +194,45 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "入额时间", position = 19)
     private LocalDate entryAmountTime;
 
+    @OneToMany(mappedBy = "villageCadres")
+    @OrderBy("createdAt desc")
+    private List<InformationAudit> informationAudits = new ArrayList<>();
+
+    @ApiModelProperty(value = "日常工作情况", position = 19)
+    private String commonWork;
+
+    @ApiModelProperty(value = "实际考核", position = 19)
+    private String actualReview;
+
+    @ApiModelProperty(value = "素能评价", position = 19)
+    private String primeOpinion;
+
+    @ApiModelProperty(value = "民主评价", position = 19)
+    private String democraticOpinion;
+
+    @ApiModelProperty(value = "加减分情况", position = 19)
+    private String additionSubtractionOpinion;
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
         if (!StringUtils.isEmpty(this.cadrePosition)){
-            villageCadresVO.setPost(this.cadrePosition.getName());
+            villageCadresVO.setPost(this.cadrePosition.getId());
+            villageCadresVO.setPostName(this.cadrePosition.getName());
         }
         if (!StringUtils.isEmpty(this.sysDistrict)){
             villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
         }
         if (!StringUtils.isEmpty(this.parentSysDistrict)) {
             villageCadresVO.setParentDistrictName(this.parentSysDistrict.getDistrictName());
+        }
+        if (informationAudits.size() > 0) {
+            InformationAudit first = informationAudits.get(0);
+            villageCadresVO.setAuditor(first.getAuditor());
+            villageCadresVO.setAuditAdvice(first.getAuditAdvice());
         }
         return (T) villageCadresVO;
     }

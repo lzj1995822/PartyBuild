@@ -3,9 +3,11 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadrePositionController;
 import com.cloudkeeper.leasing.identity.domain.CadrePosition;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.cadreposition.CadrePositionDTO;
 import com.cloudkeeper.leasing.identity.dto.cadreposition.CadrePositionSearchable;
 import com.cloudkeeper.leasing.identity.service.CadrePositionService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.CadrePositionVO;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +35,8 @@ public class CadrePositionControllerImpl implements CadrePositionController {
 
     /** 岗位管理 service */
     private final CadrePositionService cadrePositionService;
+
+    private final SysDistrictService sysDistrictService;
 
     private final SysLogService sysLogService;
 
@@ -88,6 +92,20 @@ public class CadrePositionControllerImpl implements CadrePositionController {
         Page<CadrePosition> cadrePositionPage = cadrePositionService.findAll(cadrePositionSearchable, pageable);
         Page<CadrePositionVO> cadrePositionVOPage = CadrePosition.convert(cadrePositionPage, CadrePositionVO.class);
         return Result.of(cadrePositionVOPage);
+    }
+
+    @Override
+    public Result<Boolean> init() {
+        List<SysDistrict> party = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
+        for (SysDistrict sysDistrict: party) {
+            CadrePosition cadrePosition = new CadrePosition();
+            cadrePosition.setDistrictId(sysDistrict.getDistrictId());
+            cadrePosition.setPost("SECRETARY");
+            cadrePosition.setParentDistrictId(sysDistrict.getOrgParent());
+            cadrePosition.setName(sysDistrict.getDistrictName() + "书记");
+            cadrePositionService.save(cadrePosition);
+        }
+        return Result.of(true);
     }
 
 }

@@ -83,4 +83,10 @@ public interface CadrePositionController {
     Result<Page<CadrePositionVO>> page(@ApiParam(value = "岗位管理查询条件", required = true) @RequestBody CadrePositionSearchable cadrePositionSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    /**
+     * 初始化村书记岗位
+     */
+    @ApiOperation(value = "初始化村书记岗位")
+    @GetMapping("/init")
+    Result<Boolean> init();
 }

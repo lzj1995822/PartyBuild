@@ -69,9 +69,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         if (!villageCadresOptional.isPresent()) {
             return Result.ofLost();
         }
-        VillageCadres villageCadres = villageCadresOptional.get();
-        BeanUtils.copyProperties(villageCadresDTO, villageCadres);
-        villageCadres = villageCadresService.save(villageCadres);
+        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO);
         String  msg= villageCadresService.actionLog("修改","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
