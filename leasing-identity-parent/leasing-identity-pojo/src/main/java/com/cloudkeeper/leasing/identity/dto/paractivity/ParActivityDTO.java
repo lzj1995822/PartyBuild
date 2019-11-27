@@ -2,7 +2,6 @@ package com.cloudkeeper.leasing.identity.dto.paractivity;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
 import com.cloudkeeper.leasing.identity.domain.DistLearningActivityVideo;
-import com.cloudkeeper.leasing.identity.domain.NewObject;
 import com.cloudkeeper.leasing.identity.domain.TaskObject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,10 +87,12 @@ public class ParActivityDTO extends BaseEditDTO {
     @ApiModelProperty(value = "任务对象", position = 36)
     private TaskObject taskObject;
 
-    /** 新的任务对象 */
-    @ApiModelProperty(value = "新的任务对象", position = 36)
-    private NewObject newObject;
-
+    /**
+     * 农村 objectType 1
+     * 市直机关工委以及所有党组织加各局党委以及所属所有党组织 objectType 2-1
+     * 市直机关工委以及所有所属党组织 objectType 2-2
+     * 市直机关工委以及所有所属党组织加上各局委所属机关党支部 objectType 2-3
+     */
     @ApiModelProperty(value="任务对象类型",position = 10,required = true)
     private String objectType;
 

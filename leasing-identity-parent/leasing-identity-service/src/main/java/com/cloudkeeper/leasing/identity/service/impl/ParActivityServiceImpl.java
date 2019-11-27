@@ -19,6 +19,7 @@ import com.cloudkeeper.leasing.identity.vo.*;
 import io.netty.util.internal.IntegerHolder;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -80,6 +81,21 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
     private final ActivityOfficeProgressService activityOfficeProgressService;
 
+    // 农村 objectType 1
+    private static final String COUNTRY_SIDE_OBJECT_TYPE = "1";
+
+    // 市直机关工委以及所有党组织加各局党委以及所属所有党组织 objectType 2-1
+    private static final String OFFICE_ALL_OBJECT_TYPE = "2-1";
+
+    // 市直机关工委以及所有所属党组织 objectType 2-2
+    private static final String OFFICE_ONLY_OBJECT_TYPE = "2-2";
+
+    // 市直机关工委以及所有所属党组织加上各局委所属机关党支部 objectType 2-3
+    private static final String OFFICE_ONLY_PART_OBJECT_TYPE = "2-3";
+
+
+
+
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
@@ -116,8 +132,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         // 处理发布的附件
         handleReleaseFiles(parActivity.getId(), parActivityDTO.getFileUrls());
         ParActivityVO par = parActivity.convert(ParActivityVO.class);
+        // 判断是否是新增任务
         if (StringUtils.isEmpty(parActivityDTO.getId())) {
-            par.setBackList(handleNewObject(parActivity.getId(),parActivityDTO.getTemplateId(), parActivityDTO.getNewObject()));
+            // 如果是新增任务指派相关任务对象
+            par.setBackList(handleNewObject(parActivity.getId(),parActivityDTO.getTemplateId(), parActivityDTO.getObjectType()));
         }
         //par.setBackList(handleObjIds(parActivity.getId(), parActivityDTO.getTaskObject()));
         if (TaskTypeEnum.DistLearning.toString().equals(parActivityDTO.getTaskType())) {
@@ -130,6 +148,12 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         return par;
     }
 
+    /**
+     * 处理任务关联的附件
+     * @param activityId 任务id
+     * @param fileUrls 文件地址集合
+     * @return 附件对象集合
+     */
     private List<ParActivityReleaseFile> handleReleaseFiles(String activityId, List<String> fileUrls) {
         ParActivityReleaseFileSearchable parActivityReleaseFileSearchable = new ParActivityReleaseFileSearchable();
         parActivityReleaseFileSearchable.setActivityID(activityId);
@@ -148,6 +172,13 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         return results;
     }
+
+    /**
+     * 远教任务关联对应视频
+     * @param activityId 活动id
+     * @param video 视频集合
+     * @return 关联的视频集合对象
+     */
     private List<DistLearningActivityVideo> handleVideoFiles(String activityId, List<DistLearningActivityVideo> video) {
         DistLearningActivityVideoSearchable distLearningActivityVideoSearchable = new DistLearningActivityVideoSearchable();
         distLearningActivityVideoSearchable.setActivityId(activityId);
@@ -307,84 +338,77 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     /**
      * 处理新被指派的对象(根据机关或者农村)
      * @param activityId
-     * @param newObject
+     * @param objectType 任务对象类型
      * @return
      */
-
-    private List<String> handleNewObject(String activityId, String templateId, NewObject newObject) {
-        if(!StringUtils.isEmpty(newObject)&&!StringUtils.isEmpty(activityId)){
-            List<String> backList = new ArrayList<>();
-            List<SysDistrict> sysDistrictsAL= new ArrayList<>();
-            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
-           String list[] = new String[2];
-            if(newObject.isCountryside()){
-                list[0] = "Party";
-            }
-            if(newObject.isOffice()){
-                list[1] = "Office";
-            }
-            if(!StringUtils.isEmpty(list)){
-                detachedCriteria.add(Restrictions.in("districtType", list));
-            }
-            List<Integer> levels = new ArrayList<>();
-            //第三层第四层指派任务
-            levels.add(3);
-            levels.add(4);
-            detachedCriteria.add(Restrictions.in("districtLevel", levels));
-            sysDistrictsAL = sysDistrictServiceImpl.findAll(detachedCriteria);
-
-            //查询任务下所需材料配置项
-            List<FeedbackTemplateItem> items = new ArrayList<>();
-            if (!StringUtils.isEmpty(templateId)) {
-                FeedbackTemplateItemSearchable feedbackTemplateItemSearchable = new FeedbackTemplateItemSearchable();
-                feedbackTemplateItemSearchable.setTemplateId(templateId);
-                items = feedbackTemplateItemService.findAll(feedbackTemplateItemSearchable);
-            }
-
-            for(int i=0;i<sysDistrictsAL.size();i++){
-                backList.add(sysDistrictsAL.get(i).getDistrictId());
-                ParActivityObject parActivityObject = new ParActivityObject();
-                parActivityObject.setOrganizationId(sysDistrictsAL.get(i).getDistrictId());
-                parActivityObject.setIsWorking("0");
-                parActivityObject.setActivityId(activityId);
-                parActivityObject.setStatus("0");
-                parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
-                // 农村
-                if(list[0]=="Party"&&list[1]!= "Office"){
-                    parActivityObject.setObjectType("1");
-                    parActivityRepository.updateObjectType("1",activityId);
-                }
-                // 机关
-                if(list[0]!="Party"&&list[1]== "Office"){
-                    parActivityObject.setObjectType("2");
-                    parActivityRepository.updateObjectType("2",activityId);
-                }
-                // 机关和农村
-                if(list[0]=="Party"&&list[1]== "Office"){
-                    parActivityObject.setObjectType("3");
-                    parActivityRepository.updateObjectType("3",activityId);
-                }
-                parActivityObject = parActivityObjectService.save(parActivityObject);
-                for (FeedbackTemplateItem item : items) {
-                    FeedbackItemValue feedbackItemValue = new FeedbackItemValue();
-                    feedbackItemValue.setItemId(item.getId());
-                    feedbackItemValue.setType(item.getType());
-                    feedbackItemValue.setCode(item.getCode());
-                    feedbackItemValue.setName(item.getName());
-                    feedbackItemValue.setObjectId(parActivityObject.getId());
-                    feedbackItemValueService.save(feedbackItemValue);
-                };
-                Optional<ParActivity> optionalById = findOptionalById(activityId);
-                ParActivity parActivity = optionalById.get();
-                parActivity.setTemplateItem(items.stream().map(FeedbackTemplateItem::getName).collect(Collectors.joining("、")));
-                super.save(parActivity);
-            }
-            return backList;
+    private List<String> handleNewObject(@Nonnull String activityId, String templateId, String objectType) {
+        List<SysDistrict> sysDistrictsAL;
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+        switch (objectType) {
+            case COUNTRY_SIDE_OBJECT_TYPE:
+                detachedCriteria.add(Restrictions.in("districtType", "Party"));
+                detachedCriteria.add(Restrictions.eq("districtLevel", 3));
+                break;
+            case OFFICE_ALL_OBJECT_TYPE:
+                // 发布给所有的机关党组织 市直机关工委过滤掉 (除市直机关工委所有机关类型党组织)
+                detachedCriteria.add(Restrictions.in("districtType", "Office"));
+                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
+                break;
+            case OFFICE_ONLY_OBJECT_TYPE:
+                // 发布给市直机关工委所属的党组织
+                detachedCriteria.add(Restrictions.in("districtType", "Office"));
+                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
+                detachedCriteria.add(Restrictions.like("districtId", "0118", MatchMode.START));
+                break;
+            case OFFICE_ONLY_PART_OBJECT_TYPE:
+                // 发布给市直机关工委所属的党组织及各局委所属机关党支部
+                detachedCriteria.add(Restrictions.in("districtType", "Office"));
+                detachedCriteria.add(Restrictions.eq("attachTo", "0118"));
+                break;
+            default:
+                return null;
         }
-       else {
-           return null;
+        sysDistrictsAL = sysDistrictServiceImpl.findAll(detachedCriteria);
+        return generateActicityObject(objectType, activityId, templateId, sysDistrictsAL);
+    }
+
+    // 生成指派信息
+    private List<String> generateActicityObject(String objectType, String activityId, String templateId, List<SysDistrict> sysDistrictsAL) {
+        //查询任务下所需材料配置项
+        List<FeedbackTemplateItem> items = new ArrayList<>();
+        if (!StringUtils.isEmpty(templateId)) {
+            FeedbackTemplateItemSearchable feedbackTemplateItemSearchable = new FeedbackTemplateItemSearchable();
+            feedbackTemplateItemSearchable.setTemplateId(templateId);
+            items = feedbackTemplateItemService.findAll(feedbackTemplateItemSearchable);
         }
 
+        // 指派任务
+        List<String> backList = new ArrayList<>();
+        for(int i=0;i<sysDistrictsAL.size();i++){
+            backList.add(sysDistrictsAL.get(i).getDistrictId());
+            ParActivityObject parActivityObject = new ParActivityObject();
+            parActivityObject.setOrganizationId(sysDistrictsAL.get(i).getDistrictId());
+            parActivityObject.setIsWorking("0");
+            parActivityObject.setActivityId(activityId);
+            parActivityObject.setStatus("0");
+            parActivityObject.setAttachTo(sysDistrictsAL.get(i).getAttachTo());
+            parActivityObject.setObjectType(objectType);
+            parActivityObject = parActivityObjectService.save(parActivityObject);
+            for (FeedbackTemplateItem item : items) {
+                FeedbackItemValue feedbackItemValue = new FeedbackItemValue();
+                feedbackItemValue.setItemId(item.getId());
+                feedbackItemValue.setType(item.getType());
+                feedbackItemValue.setCode(item.getCode());
+                feedbackItemValue.setName(item.getName());
+                feedbackItemValue.setObjectId(parActivityObject.getId());
+                feedbackItemValueService.save(feedbackItemValue);
+            };
+            Optional<ParActivity> optionalById = findOptionalById(activityId);
+            ParActivity parActivity = optionalById.get();
+            parActivity.setTemplateItem(items.stream().map(FeedbackTemplateItem::getName).collect(Collectors.joining("、")));
+            super.save(parActivity);
+        }
+        return backList;
     }
     //更新进度信息
     private  List<PassPercentVO> getFinishRatio(String activityId) {
@@ -572,6 +596,9 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         if (!StringUtils.isEmpty(parActivitySearchable.getType())) {
             detachedCriteria.add(Restrictions.eq("type", parActivitySearchable.getType()));
+        }
+        if (!StringUtils.isEmpty(parActivitySearchable.getObjectType())) {
+            detachedCriteria.add(Restrictions.like("objectType", parActivitySearchable.getObjectType(), MatchMode.START));
         }
         if ("ACTIVE".equals(parActivitySearchable.getCurrentStatus())) {
             detachedCriteria.add(Restrictions.le("month", lastDay()));
