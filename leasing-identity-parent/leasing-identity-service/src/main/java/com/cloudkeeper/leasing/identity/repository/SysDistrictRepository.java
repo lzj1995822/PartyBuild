@@ -51,4 +51,6 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     Integer countAllByDistrictIdStartingWith(String districtId);
 
+    List<SysDistrict> findAllByDistrictIdGreaterThanEqual(String districtId);
+
 }

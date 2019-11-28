@@ -96,11 +96,11 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     }
 
     @Override
-    public Set<SysDistrictTreeVO> getTree(String districtId) {
+    public List<SysDistrictTreeVO> getTree(String districtId) {
         SysDistrict sysDistrictByDistrictId = sysDistrictRepository.findSysDistrictByDistrictId(districtId);
-        HashSet<SysDistrict> sysDistricts = new HashSet<>();
+        List<SysDistrict> sysDistricts = new ArrayList<>();
         sysDistricts.add(sysDistrictByDistrictId);
-        return this.translateToVO(sysDistricts);
+        return this.translateToVO(sysDistricts, null);
     }
 
     @Override
@@ -137,19 +137,27 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return sysDistrictRepository.findByDistrictId(districtId);
     }
 
-    private Set<SysDistrictTreeVO> translateToVO(Set<SysDistrict> sysDistricts) {
-        HashSet<SysDistrictTreeVO> sysDistrictTreeVOS = new HashSet<>();
+    @Override
+    public List<SysDistrict> findAllByDistrictIdGreaterThanEqual(String districtId) {
+        return sysDistrictRepository.findAllByDistrictIdGreaterThanEqual(districtId);
+    }
+
+    private List<SysDistrictTreeVO> translateToVO(List<SysDistrict> sysDistricts, String parentId) {
+        List<SysDistrictTreeVO> sysDistrictTreeVOS = new ArrayList<>();
         for (SysDistrict sysDistrict: sysDistricts) {
+            if (!StringUtils.isEmpty(parentId) && parentId.equals(sysDistrict.getId())) {
+                continue;
+            }
             SysDistrictTreeVO sysDistrictTreeVO = new SysDistrictTreeVO();
             sysDistrictTreeVO.setId(sysDistrict.getDistrictId());
             sysDistrictTreeVO.setLabel(sysDistrict.getDistrictName());
             //查出下属组织
-            Set<SysDistrict> children = sysDistrict.getChildren();
-            if (sysDistrict.getDistrictLevel().equals(3)) {
+            List<SysDistrict> children = sysDistrict.getOrgChildren();
+            if (children.size() == 0) {
                 sysDistrictTreeVO.setLeaf(true);
             }
             if (children.size() > 0) {
-                sysDistrictTreeVO.setChildren(translateToVO(children));
+                sysDistrictTreeVO.setChildren(translateToVO(children, sysDistrict.getId()));
             }
             sysDistrictTreeVOS.add(sysDistrictTreeVO);
         }

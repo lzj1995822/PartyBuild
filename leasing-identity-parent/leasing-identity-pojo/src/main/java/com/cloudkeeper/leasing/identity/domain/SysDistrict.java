@@ -17,10 +17,12 @@ import javax.annotation.Nonnull;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 组织
@@ -105,18 +107,20 @@ public class SysDistrict extends BaseEntity {
      */
     @ApiModelProperty(value = "审核下属子组织", position = 10, required = true)
     @OneToMany(mappedBy = "sysDistrict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("districtId asc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<SysDistrict> children = new HashSet<>();
+    private List<SysDistrict> children;
 
     /**
      * 组织架构子组织
      */
     @ApiModelProperty(value = "组织架构子组织", position = 10, required = true)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("districtId asc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<SysDistrict> orgChildren;
+    private List<SysDistrict> orgChildren;
 
 
     /** 审核组织 */

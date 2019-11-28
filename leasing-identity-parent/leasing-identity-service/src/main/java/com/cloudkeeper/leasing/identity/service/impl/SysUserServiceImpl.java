@@ -174,4 +174,29 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysU
         }
 
     }
+
+    /**
+     * 初始化机关账号
+     */
+    public void initOfficeAccounts() {
+        List<SysDistrict> sysDistricts = sysDistrictService.findAllByDistrictIdGreaterThanEqual("0118");
+        for (SysDistrict sysDistrict: sysDistricts) {
+            SysUser sysUser = new SysUser();
+            sysUser.setName(sysDistrict.getDistrictName());
+            sysUser.setUserName(sysDistrict.getDistrictName());
+            sysUser.setPassword("e10adc3949ba59abbe56e057f20f883e");
+            sysUser.setDistrictId(sysDistrict.getDistrictId());
+            sysUser.setEnable(1);
+            sysUser.setOrganizationId(sysDistrict.getId());
+            if (sysDistrict.getDistrictLevel() == 2) {
+                sysUser.setRoleID("b661107e-9d2a-4646-91e9-8d705f86cd02");
+            } else {
+                sysUser.setRoleID("e47001b1-c990-4763-92bd-065fd8a87320");
+            }
+            super.save(sysUser);
+
+        }
+
+
+    }
 }

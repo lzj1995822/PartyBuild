@@ -35,7 +35,7 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     /**
      * 生成层级数组
     */
-    Set<SysDistrictTreeVO> getTree(String districtId);
+    List<SysDistrictTreeVO> getTree(String districtId);
 
 
     List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer level, String districtType);
@@ -49,5 +49,7 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     Integer countAllByDistrictId(String districtId);
 
     SysDistrict findByDistrictId(String districtId);
+
+    List<SysDistrict> findAllByDistrictIdGreaterThanEqual(String districtId);
 
 }

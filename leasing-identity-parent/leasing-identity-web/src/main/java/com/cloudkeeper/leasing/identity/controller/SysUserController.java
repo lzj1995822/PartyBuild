@@ -104,4 +104,8 @@ public interface SysUserController {
     @GetMapping("/auth")
     String auth(String auth_token);
 
+    @ApiOperation(value = "初始化机关账号", notes = "初始化机关账号", position = 6)
+    @GetMapping("/initOfficeAccounts")
+    void initOfficeAccounts();
+
 }

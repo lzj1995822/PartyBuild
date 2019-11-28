@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -643,30 +644,40 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
     }
 
     private Map<String,List> activitiesCompletion(String year,String districtId,String objectType,String districtType){
-        String sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
+        String sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.districtLevel, d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
                 "FROM PAR_Activity AS a " +
                 "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType in ("+objectType+",3) And d.districtType ="+"'"+districtType+"' "+
+                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
                 "ORDER BY districtId ASC,month Asc , releaseTime Asc";
+        if (objectType.contains("2")) {
+            sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.districtLevel, d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
+                    "FROM PAR_Activity AS a " +
+                    "INNER JOIN  SYS_District AS d ON d.districtType = 'Office' AND d.districtId != '0118'" +
+                    "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
+                    "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
+                    "ORDER BY districtId ASC,month Asc , releaseTime Asc";
+        }
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
         Map<String,List> map  = new LinkedHashMap<>();
         allBySql.forEach(item -> {
-           String key = item.getDistrictName();
-           if (map.containsKey(key)){
-               map.get(key).add(item);
-           }else{
-               List list = new ArrayList();
-               list.add(item);
-               map.put(key,list);
-           }
+            String dId = item.getDistrictId();
+            //补O 排序
+            String key = dId + String.format("%1$0"+(10-dId.length())+"d",0) + "," + item.getDistrictName() + "," + item.getDistrictLevel();
+                if (map.containsKey(key)){
+                    map.get(key).add(item);
+                }else{
+                    List list = new ArrayList();
+                    list.add(item);
+                    map.put(key,list);
+                }
        });
         return map;
     }
 
     private List currentActivities(String year,String objectType){
         List list  = new ArrayList();
-        String sql = "SELECT * FROM PAR_Activity WHERE year(month)="+year+ "And objectType in ("+objectType+",3)"+
+        String sql = "SELECT * FROM PAR_Activity WHERE year(month) = "+year+ " And objectType like '" + objectType + "%'" +
                 " ORDER BY month Asc , releaseTime Asc";
         List<ActivityVO> allBySql = super.findAllBySql(ActivityVO.class, sql);
         for(int i=0;i<allBySql.size();i++){

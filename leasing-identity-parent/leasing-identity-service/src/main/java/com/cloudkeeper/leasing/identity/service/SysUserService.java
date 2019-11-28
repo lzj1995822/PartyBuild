@@ -23,4 +23,6 @@ public interface SysUserService extends BaseService<SysUser> {
 
     void save(Integer isDelete,String id);
 
+    void initOfficeAccounts();
+
 }

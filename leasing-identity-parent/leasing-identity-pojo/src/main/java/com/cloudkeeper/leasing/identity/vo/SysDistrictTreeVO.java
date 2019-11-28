@@ -29,5 +29,5 @@ public class SysDistrictTreeVO implements Serializable {
 
     private Boolean leaf = false;
 
-    private Set<SysDistrictTreeVO> children = new HashSet<>();
+    private List<SysDistrictTreeVO> children = new ArrayList<>();
 }

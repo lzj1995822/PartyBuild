@@ -110,6 +110,6 @@ public interface SysDistrictController {
 
     @ApiOperation(value = "组织层级数组", notes = "组织层级数组", position = 8)
     @GetMapping("/{sysDistrictId}alltree")
-    Result<Set<SysDistrictTreeVO>> getTree(@PathVariable String sysDistrictId);
+    Result<List<SysDistrictTreeVO>> getTree(@PathVariable String sysDistrictId);
 
 }

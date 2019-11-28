@@ -125,4 +125,9 @@ public class SysUserControllerImpl implements SysUserController {
         return "OK";
     }
 
+    @Override
+    public void initOfficeAccounts() {
+        sysUserService.initOfficeAccounts();
+    }
+
 }
