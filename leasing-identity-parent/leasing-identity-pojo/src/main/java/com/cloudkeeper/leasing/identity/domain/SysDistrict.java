@@ -21,9 +21,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 /**
  * 组织
  * @author lxw
@@ -144,6 +141,9 @@ public class SysDistrict extends BaseEntity {
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ParCamera> parCamera;
+
+    @ApiModelProperty(value = "是否属于机关党支部", position = 10, required = true)
+    private String isOfficeBranch;
 
     @Nonnull
     @Override

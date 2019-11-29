@@ -69,4 +69,7 @@ public class SysDistrictDTO extends BaseEditDTO {
     @ApiModelProperty(value = "经纬度", position = 10, required = true)
     private String location;
 
+    @ApiModelProperty(value = "是否属于机关党支部", position = 10, required = true)
+    private String isOfficeBranch;
+
 }

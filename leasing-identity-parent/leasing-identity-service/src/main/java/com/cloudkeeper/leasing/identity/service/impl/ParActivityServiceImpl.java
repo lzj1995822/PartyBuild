@@ -364,7 +364,8 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
             case OFFICE_ONLY_PART_OBJECT_TYPE:
                 // 发布给市直机关工委所属的党组织及各局委所属机关党支部
                 detachedCriteria.add(Restrictions.in("districtType", "Office"));
-                detachedCriteria.add(Restrictions.eq("attachTo", "0118"));
+                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
+                detachedCriteria.add(Restrictions.or(Restrictions.like("districtId", "0118", MatchMode.START), Restrictions.eq("isOfficeBranch", "1")));
                 break;
             default:
                 return null;

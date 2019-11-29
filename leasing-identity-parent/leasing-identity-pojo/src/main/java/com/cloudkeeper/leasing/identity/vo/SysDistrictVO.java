@@ -89,6 +89,7 @@ public class SysDistrictVO extends BaseVO {
     @ApiModelProperty(value = "组织架构下属基本组织", position = 10, required = true)
     private Set<SysDistrictVO> orgChildren;
 
-
+    @ApiModelProperty(value = "是否属于机关党支部", position = 10, required = true)
+    private String isOfficeBranch;
 
 }
