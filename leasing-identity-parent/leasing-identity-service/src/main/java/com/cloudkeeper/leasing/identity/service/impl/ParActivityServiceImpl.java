@@ -686,8 +686,15 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         }
         return list;
     }
-    public  List<ParActivityAllVO> listAll(){
+    public List<ParActivityAllVO> listAll(){
         String sql = "SELECT * FROM PAR_Activity where isDelete=0 ORDER BY month desc";
+        Optional<SysUser> user = sysUserService.findOptionalById(super.getCurrentPrincipalId());
+        if (user.isPresent()) {
+            SysUser sysUser = user.get();
+            if (sysUser.getDistrictId().equals("0118")) {
+                sql = "SELECT * FROM PAR_Activity where isDelete=0 and objectType like '2%' ORDER BY month desc";
+            }
+        }
         List<ParActivityAllVO> allBySql = super.findAllBySql(ParActivityAllVO.class, sql);
         return allBySql;
     }
