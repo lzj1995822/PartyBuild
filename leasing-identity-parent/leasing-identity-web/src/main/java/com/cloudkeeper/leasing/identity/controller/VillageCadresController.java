@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
@@ -124,4 +125,14 @@ public interface VillageCadresController {
      */
     @GetMapping("/initPost")
     Result<String> initPost();
+
+    /**
+     * 村书记各等级数量
+     * @param
+     * @return 村书记各等级数量
+     */
+    @ApiOperation(value = "村书记各等级数量", notes = "村书记各等级数量", position = 6)
+    @PostMapping("/secretaryNumber")
+    Result<SecretaryNumberVO> countNumber();
+
 }

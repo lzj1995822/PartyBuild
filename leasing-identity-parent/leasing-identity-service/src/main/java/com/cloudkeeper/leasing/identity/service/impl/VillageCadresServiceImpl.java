@@ -15,6 +15,7 @@ import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.InformationAuditService;
 import com.cloudkeeper.leasing.identity.service.MessageCenterService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
+import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -167,5 +168,16 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         messageCenterService.save(villageCadres.getId(),districtId,"[村书记信息]"+villageCadres.getName()+checkMsg+informationAuditDTO2.getAuditAdvice());
         return true;
+    }
+
+    @Override
+    public SecretaryNumberVO countNumber() {
+        SecretaryNumberVO secretaryNumberVO = new SecretaryNumberVO();
+        secretaryNumberVO.setLevelOne(villageCadresRepository.countAllByQuasiAssessmentRank("FIRST_CLASS"));
+        secretaryNumberVO.setLevelTwo(villageCadresRepository.countAllByQuasiAssessmentRank("SECOND_CLASS"));
+        secretaryNumberVO.setLevelThree(villageCadresRepository.countAllByQuasiAssessmentRank("THIRD_CLASS"));
+        secretaryNumberVO.setLevelFour(villageCadresRepository.countAllByQuasiAssessmentRank("FOUR_CLASS"));
+        secretaryNumberVO.setLevelFive(villageCadresRepository.countAllByQuasiAssessmentRank("FIRTH_CLASS"));
+        return secretaryNumberVO;
     }
 }

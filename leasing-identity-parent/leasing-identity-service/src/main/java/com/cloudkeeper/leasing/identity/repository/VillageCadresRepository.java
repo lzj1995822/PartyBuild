@@ -15,4 +15,6 @@ public interface VillageCadresRepository extends BaseRepository<VillageCadres> {
 
     Long countAllByDistrictIdStartingWith(String districtId);
 
+    Integer countAllByQuasiAssessmentRank(String QuasiAssessmentRank);
+
 }

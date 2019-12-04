@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
+import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,4 +31,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
     Boolean submit(VillageCadres villageCadres);
 
     Boolean  virify(String id, String code, InformationAuditDTO informationAuditDTO2);
+
+    //根据等级统计村书记的数量
+    SecretaryNumberVO countNumber();
 }
