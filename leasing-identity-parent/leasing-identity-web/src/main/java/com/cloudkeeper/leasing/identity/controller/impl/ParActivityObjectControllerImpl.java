@@ -163,13 +163,17 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         if (!StringUtils.isEmpty(parActivityObjectSearchable.getOrganizationId())) {
             detachedCriteria.add(Restrictions.eq("organizationId", parActivityObjectSearchable.getOrganizationId()));
         }
-        if (!StringUtils.isEmpty(parActivityObjectSearchable.getStatus())) {
-            detachedCriteria.add(Restrictions.eq("status", parActivityObjectSearchable.getStatus()));
-        }
         if ("ACTIVE".equals(parActivityObjectSearchable.getCurrentStatus())) {
             detachedCriteria.add(Restrictions.le("p.month", lastDay()));
         } else if ("PLAN".equals(parActivityObjectSearchable.getCurrentStatus())) {
             detachedCriteria.add(Restrictions.gt("p.month", lastDay()));
+        }
+        if (!StringUtils.isEmpty(parActivityObjectSearchable.getStatus())) {
+            if (parActivityObjectSearchable.getStatus().equals("0")) {
+                detachedCriteria.add(Restrictions.or(Restrictions.eq("status", parActivityObjectSearchable.getStatus()),Restrictions.eq("status", "3")));
+            } else {
+                detachedCriteria.add(Restrictions.eq("status", parActivityObjectSearchable.getStatus()));
+            }
         }
         return detachedCriteria;
     }
