@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
+import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.sun.org.apache.regexp.internal.RE;
@@ -108,6 +109,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             //通过组织模糊查询
             detachedCriteria.add(Restrictions.ilike("districtId", villageCadresSearchable.getDistrictId(), MatchMode.START));
         }
+        if(!StringUtils.isEmpty(villageCadresSearchable.getQuasiAssessmentRank())){
+            //通过员额村书记等级
+            detachedCriteria.add(Restrictions.ilike("quasiAssessmentRank", villageCadresSearchable.getQuasiAssessmentRank(), MatchMode.ANYWHERE));
+        }
         Integer total = villageCadresService.getTotalCount(detachedCriteria);
         pageable.getSort().forEach(item -> {
             if (item.isAscending()) {
@@ -152,6 +157,12 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
 
         return Result.of("true");
+    }
+
+    @Override
+    public Result<SecretaryNumberVO> countNumber() {
+        SecretaryNumberVO secretaryNumberVO = villageCadresService.countNumber();
+        return Result.of(secretaryNumberVO);
     }
 
 
