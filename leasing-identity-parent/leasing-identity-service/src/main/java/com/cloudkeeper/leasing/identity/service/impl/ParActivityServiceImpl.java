@@ -108,7 +108,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("releaseTime", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("alarmTime", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
