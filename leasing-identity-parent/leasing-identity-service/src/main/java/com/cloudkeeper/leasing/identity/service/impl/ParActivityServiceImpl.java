@@ -471,7 +471,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
 
         List<PassPercentVO> finishRatio = this.getFinishRatio(activityId);
         //机关任务
-        if (parActivity.getObjectType().equals("2")) {
+        if (parActivity.getObjectType().contains("2")) {
             List<ActivityOfficeProgress> activityOfficeProgresses = parActivity.getActivityOfficeProgresses();
             Map<String, ActivityOfficeProgress> collect = activityOfficeProgresses.stream().collect(Collectors.toMap(ActivityOfficeProgress::getDistrictId, activityOfficeProgresse -> activityOfficeProgresse));
             for (PassPercentVO item : finishRatio) {
