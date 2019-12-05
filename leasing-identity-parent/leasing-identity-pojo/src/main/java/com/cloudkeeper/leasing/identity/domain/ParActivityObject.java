@@ -92,6 +92,7 @@ public class ParActivityObject extends BaseEntity {
             parActivityObjectVO.setContext(this.parActivity.getContext());
             parActivityObjectVO.setScore(this.parActivity.getScore());
             parActivityObjectVO.setTemplateItem(this.parActivity.getTemplateItem());
+            parActivityObjectVO.setUrls(this.parActivity.getParActivityReleaseFile());
         }
         if(!StringUtils.isEmpty(this.sysDistrict)){
             parActivityObjectVO.setDistrictId(this.sysDistrict.getId());

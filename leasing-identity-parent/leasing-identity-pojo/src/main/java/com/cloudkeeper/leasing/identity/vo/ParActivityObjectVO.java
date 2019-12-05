@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.ParActivityReleaseFile;
 import com.cloudkeeper.leasing.identity.domain.ParCamera;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,6 +15,7 @@ import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -103,5 +105,9 @@ public class ParActivityObjectVO extends BaseVO {
     /** 反馈项名称拼接 */
     @ApiModelProperty(value = "反馈项名称拼接", position = 10, required = true)
     private String templateItem;
+
+    /** 附件 */
+    @ApiModelProperty(value = "附件", position = 10, required = true)
+    private List<ParActivityReleaseFile> urls = new LinkedList();
 
 }
