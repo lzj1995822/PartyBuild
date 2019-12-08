@@ -47,21 +47,21 @@ public class SocketOneThread extends Thread {
     @Override
     public void run() {
         DatagramPacket receive = null;
-        log.info("[Port 1020]服务已启动，进入长连接状态等待请求中");
-        while (true) {
-            byte[] receiveData = new byte[1024];
-            receive = new DatagramPacket(receiveData, receiveData.length);
-            log.info("[Port 1020]建立连接");
-            try {
-                ds.receive(receive);
-                TaskHandler taskHandler = new TaskHandler();
-                taskHandler.setDatagramPacket(receive);
-                taskHandler.setPeopleStreamRepository(this.peopleStreamRepository);
-                threadPool.execute(taskHandler);
-            } catch (IOException e) {
-                log.error("[Port 1020]服务端异常",e);
-            }
-        }
+//        log.info("[Port 1020]服务已启动，进入长连接状态等待请求中");
+//        while (true) {
+//            byte[] receiveData = new byte[1024];
+//            receive = new DatagramPacket(receiveData, receiveData.length);
+//            log.info("[Port 1020]建立连接");
+//            try {
+//                ds.receive(receive);
+//                TaskHandler taskHandler = new TaskHandler();
+//                taskHandler.setDatagramPacket(receive);
+//                taskHandler.setPeopleStreamRepository(this.peopleStreamRepository);
+//                threadPool.execute(taskHandler);
+//            } catch (IOException e) {
+//                log.error("[Port 1020]服务端异常",e);
+//            }
+//        }
     }
 
     public void destroySocket() {

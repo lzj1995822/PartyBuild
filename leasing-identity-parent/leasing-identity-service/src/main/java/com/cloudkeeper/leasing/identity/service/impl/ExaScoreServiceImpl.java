@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 考核积分 service
@@ -215,399 +216,91 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
 
     @Override
     public List<ActivityExamVO> examScoreAll(Pageable pageable, String year,String search,String districtType){
-        String sql = "SELECT " +
-                " TOP "+pageable.getPageSize()+" *  " +
-                "FROM " +
-                " ( " +
-                "SELECT " +
-                " S0012.*, " +
-                " row_number ( ) OVER ( ORDER BY townExam DESC,townName DESC,exam DESC ) AS row_number, " +
-                " COUNT( * ) OVER ( ) AS total " +
-                "  " +
-                "FROM " +
-                " ( " +
-                "SELECT " +
-                "S0010.*, " +
-                "S0011.townScore  " +
-                "FROM " +
-                "( " +
-                "SELECT " +
-                "*  " +
-                "FROM " +
-                "( " +
-                "SELECT " +
-                "S007.*, " +
-                "S005.score  " +
-                "FROM " +
-                "( " +
-                "SELECT " +
-                "S3.exam, " +
-                "S3.cun, " +
-                "S3.districtName town  " +
-                "FROM " +
-                "( " +
-                "SELECT " +
-                "a.exam, " +
-                "a.cun, " +
-                "a.attachTo, " +
-                "a.districtId, " +
-                "a.exscore, " +
-                "district.districtName  " +
-                "FROM " +
-                "( " +
-                "SELECT " +
-                "S0.cun, " +
-                "S0.attachTo, " +
-                "S0.districtId, " +
-                "examine.score exscore, " +
-                "S0.exam + isnull( examine.score, 0 ) exam  " +
-                "FROM " +
-                " ( " +
-                " SELECT " +
-                "  SUM( score ) exam, " +
-                "  districtName cun, " +
-                "  attachTo, " +
-                "  districtId  " +
-                " FROM " +
-                "  ( " +
-                "  SELECT " +
-                "   es.activityId, " +
-                "   es.score, " +
-                "   es.createTime, " +
-                "   sd.districtName, " +
-                "   sd.attachTo, " +
-                "   sd.id districtId  " +
-                "  FROM " +
-                "   EXA_Score es " +
-                "   LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
-                "  WHERE " +
-                "   sd.districtLevel = 3  " +
-                "   AND sd.isDelete = 0  " +
-                "   AND es.createTime BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "   AND '"+year+"-12-31 23:59:59'  " +
-                "  ) S1  " +
-                " GROUP BY " +
-                "  districtName, " +
-                "  districtId, " +
-                "  attachTo  " +
-                " ) S0 " +
-                " LEFT JOIN ( SELECT sum( score ) score, organizationId FROM EXA_Examine WHERE createTime BETWEEN '"+year+"-01-01 00:00:00' AND '"+year+"-12-31 23:59:59' GROUP BY organizationId ) examine ON S0.districtId = examine.organizationId  " +
-                " ) a, " +
-                " SYS_District district  " +
-                "WHERE " +
-                " a.attachTo = district.districtId  " +
-                " ) S3  " +
-                " ) S007, " +
-                " ( " +
-                " SELECT " +
-                "  S003.districtName cun, " +
-                "  S003.score, " +
-                "  sysDis.districtName town  " +
-                " FROM " +
-                "  ( " +
-                "  SELECT " +
-                "   S001.districtName, " +
-                "   ROUND( CAST( S001.number AS FLOAT ) / S002.numbers, 3 ) score, " +
-                "   S001.attachTo  " +
-                "  FROM " +
-                "   ( " +
-                "   SELECT " +
-                "    S0.districtName, " +
-                "    count( districtName ) number, " +
-                "    S0.attachTo  " +
-                "   FROM " +
-                "    ( " +
-                "    SELECT " +
-                "     S1.*, " +
-                "     pac.MONTH  " +
-                "    FROM " +
-                "     ( " +
-                "     SELECT " +
-                "      pa.id, " +
-                "      pa.STATUS, " +
-                "      sd.districtName, " +
-                "      sd.attachTo, " +
-                "      pa.activityId  " +
-                "     FROM " +
-                "      PAR_ActivityObject pa, " +
-                "      SYS_District sd  " +
-                "     WHERE " +
-                "      pa.organizationId = sd.districtId  " +
-                "      AND sd.isDelete = 0  " +
-                "      AND sd.districtLevel = 3  " +
-                "      AND pa.STATUS = 2  " +
-                "     ) S1, " +
-                "     PAR_Activity pac  " +
-                "    WHERE " +
-                "     pac.id = S1.activityId  " +
-                "     AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "     AND '"+year+"-12-31 23:59:59'  " +
-                "    ) S0  " +
-                "   GROUP BY " +
-                "    districtName, " +
-                "    attachTo  " +
-                "   ) S001, " +
-                "   ( " +
-                "   SELECT " +
-                "    S0.districtName, " +
-                "    count( districtName ) numbers, " +
-                "    S0.attachTo  " +
-                "   FROM " +
-                "    ( " +
-                "    SELECT " +
-                "     S1.*, " +
-                "     pac.MONTH  " +
-                "    FROM " +
-                "     ( " +
-                "     SELECT " +
-                "      pa.id, " +
-                "      pa.STATUS, " +
-                "      sd.districtName, " +
-                "      sd.attachTo, " +
-                "      pa.activityId  " +
-                "     FROM " +
-                "      PAR_ActivityObject pa, " +
-                "      SYS_District sd  " +
-                "     WHERE " +
-                "      pa.organizationId = sd.districtId  " +
-                "      AND sd.isDelete = 0  " +
-                "      AND sd.districtLevel = 3  " +
-                "     ) S1, " +
-                "     PAR_Activity pac  " +
-                "    WHERE " +
-                "     pac.id = S1.activityId  " +
-                "     AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "     AND '"+year+"-12-31 23:59:59'  " +
-                "    ) S0  " +
-                "   GROUP BY " +
-                "    districtName, " +
-                "    attachTo  " +
-                "   ) S002  " +
-                "  WHERE " +
-                "   S001.districtName = S002.districtName  " +
-                "  ) S003, " +
-                "  SYS_District sysDis  " +
-                " WHERE " +
-                "  sysDis.districtId = S003.attachTo  " +
-                " ) S005  " +
-                "WHERE " +
-                " S007.cun = S005.cun  " +
-                " ) S008, " +
-                " ( " +
-                " SELECT " +
-                "  SUM( exam ) / count( districtName ) townExam, " +
-                "  districtName townName  " +
-                " FROM " +
-                "  ( " +
-                "  SELECT " +
-                "   S000.cun, " +
-                "   S000.exam, " +
-                "   sysd.districtName  " +
-                "  FROM " +
-                "   ( " +
-                "   SELECT " +
-                "    exam, " +
-                "    cun, " +
-                "    attachTo, " +
-                "    districtId, " +
-                "    exscore  " +
-                "   FROM " +
-                "    ( " +
-                "    SELECT " +
-                "     S0.cun, " +
-                "     S0.attachTo, " +
-                "     S0.districtId, " +
-                "     examine.score exscore, " +
-                "     S0.exam + isnull( examine.score, 0 ) exam  " +
-                "    FROM " +
-                "     ( " +
-                "     SELECT " +
-                "      SUM( score ) exam, " +
-                "      districtName cun, " +
-                "      attachTo, " +
-                "      districtId  " +
-                "     FROM " +
-                "      ( " +
-                "      SELECT " +
-                "       es.activityId, " +
-                "       es.score, " +
-                "       es.createTime, " +
-                "       sd.districtName, " +
-                "       sd.attachTo, " +
-                "       sd.id districtId  " +
-                "      FROM " +
-                "       EXA_Score es " +
-                "       LEFT JOIN SYS_District sd ON es.organizationId = sd.id  " +
-                "      WHERE " +
-                "       sd.isDelete = 0  " +
-                "       AND es.createTime BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "       AND '"+year+"-12-31 23:59:59'  " +
-                "       AND sd.districtType = '" + districtType +
-                "'       AND sd.districtLevel = 3  or sd.districtLevel = 4" +
-                "      ) S1  " +
-                "     GROUP BY " +
-                "      districtName, " +
-                "      districtId, " +
-                "      attachTo  " +
-                "     ) S0 " +
-                "     LEFT JOIN ( SELECT sum( score ) score, organizationId FROM EXA_Examine WHERE createTime BETWEEN '"+year+"-01-01 00:00:00' AND '"+year+"-12-31 23:59:59' GROUP BY organizationId ) examine ON S0.districtId = examine.organizationId  " +
-                "    ) a  " +
-                "   ) S000, " +
-                "   SYS_District sysd  " +
-                "  WHERE " +
-                "   S000.attachTo = sysd.districtId  " +
-                "  ) S001  " +
-                " GROUP BY " +
-                "  districtName  " +
-                " ) S009  " +
-                "WHERE " +
-                " S008.town = S009.townName  " +
-                " ) S0010, " +
-                " ( " +
-                " SELECT " +
-                "  S006.score townScore, " +
-                "  sysDis.districtName town  " +
-                " FROM " +
-                "  ( " +
-                "  SELECT " +
-                "   S001.attachTo, " +
-                "   ROUND( CAST ( S001.number AS FLOAT ) / S002.numbers, 3 ) score  " +
-                "  FROM " +
-                "   ( " +
-                "   SELECT " +
-                "    SUM( number ) number, " +
-                "    attachTo  " +
-                "   FROM " +
-                "    ( " +
-                "    SELECT " +
-                "     S0.districtName, " +
-                "     COUNT( districtName ) number, " +
-                "     S0.attachTo  " +
-                "    FROM " +
-                "     ( " +
-                "     SELECT " +
-                "      S1.*, " +
-                "      pac.MONTH  " +
-                "     FROM " +
-                "      ( " +
-                "      SELECT " +
-                "       pa.id, " +
-                "       pa.STATUS, " +
-                "       sd.districtName, " +
-                "       sd.attachTo, " +
-                "       pa.activityId  " +
-                "      FROM " +
-                "       PAR_ActivityObject pa, " +
-                "       SYS_District sd  " +
-                "      WHERE " +
-                "       pa.organizationId = sd.districtId  " +
-                "       AND sd.isDelete = 0  " +
-                "       AND sd.districtLevel = 3  " +
-                "       AND pa.STATUS = 2  " +
-                "      ) S1, " +
-                "      PAR_Activity pac  " +
-                "     WHERE " +
-                "      pac.id = S1.activityId  " +
-                "      AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "      AND '"+year+"-12-31 23:59:59'  " +
-                "     ) S0  " +
-                "    GROUP BY " +
-                "     districtName, " +
-                "     attachTo  " +
-                "    ) S004  " +
-                "   GROUP BY " +
-                "    attachTo  " +
-                "   ) S001, " +
-                "   ( " +
-                "   SELECT " +
-                "    SUM( numbers ) numbers, " +
-                "    attachTo  " +
-                "   FROM " +
-                "    ( " +
-                "    SELECT " +
-                "     S0.districtName, " +
-                "     COUNT( districtName ) numbers, " +
-                "     S0.attachTo  " +
-                "    FROM " +
-                "     ( " +
-                "     SELECT " +
-                "      S1.*, " +
-                "      pac.MONTH  " +
-                "     FROM " +
-                "      ( " +
-                "      SELECT " +
-                "       pa.id, " +
-                "       pa.STATUS, " +
-                "       sd.districtName, " +
-                "       sd.attachTo, " +
-                "       pa.activityId  " +
-                "      FROM " +
-                "       PAR_ActivityObject pa, " +
-                "       SYS_District sd  " +
-                "      WHERE " +
-                "       pa.organizationId = sd.districtId  " +
-                "       AND sd.isDelete = 0  " +
-                "       AND sd.districtLevel = 3  " +
-                "      ) S1, " +
-                "      PAR_Activity pac  " +
-                "     WHERE " +
-                "      pac.id = S1.activityId  " +
-                "      AND pac.MONTH BETWEEN '"+year+"-01-01 00:00:00'  " +
-                "      AND '"+year+"-12-31 23:59:59'  " +
-                "     ) S0  " +
-                "    GROUP BY " +
-                "     districtName, " +
-                "     attachTo  " +
-                "    ) S005  " +
-                "   GROUP BY " +
-                "    attachTo  " +
-                "   ) S002  " +
-                "  WHERE " +
-                "   S001.attachTo = S002.attachTo  " +
-                "  ) S006, " +
-                "  SYS_District sysDis  " +
-                " WHERE " +
-                "  S006.attachTo = sysDis.districtId  " +
-                " ) S0011  " +
-                "WHERE " +
-                " S0010.town = S0011.town  " +
-                " ) S0012  " +
-                "WHERE " +
-                " S0012.town LIKE '%"+search+"%'  " +
-                " OR S0012.cun LIKE '%"+search+"%'  " +
-                " ) S0013 " +
-                "WHERE " +
-                " row_number > ( "+pageable.getPageNumber()+" ) * "+pageable.getPageSize()+"";
+        String querySql = "WHere districtId like '01%'";
+        if ("01".equals(search)) {
+            // 句容市委进入
+            if ("Office".equals(districtType)) {
+                // 机关
+                querySql = "WHere districtId >= '0118'";
+            } else if ("Party".equals(districtType)) {
+                // 农村
+                querySql = "WHere LEFT(districtId, 4) BETWEEN '0101' and '0117'";
+            }
+        } else if ("0118".equals(search)) {
+            querySql = "WHere districtId >= '0118'";
+        } else {
+            querySql = "WHere districtId like '" + search + "%'";
+        }
+        String sql = "SELECT districtId, districtName, SUM(finishRatio) AS finishRatio, SUM(score) AS score, len(districtId)/2 AS districtLevel FROM (\n" +
+                "SELECT  sdi.districtId, sdi.districtName, 0 as finishRatio, score_temp3.score  FROM (\n" +
+                "SELECT avg (score) AS score, LEFT(score_temp2.districtId, 4) as districtId FROM (\n" +
+                "\n" +
+                "SELECT SUM(sc) AS score, sd.districtName,sd.districtId, organizationId FROM (\n" +
+                "SELECT SUM(score) as sc, organizationId FROM EXA_Score WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
+                "UNION ALL\n" +
+                "SELECT SUM(score) as sc, organizationId FROM EXA_Examine WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
+                ") as score_temp\n" +
+                "LEFT JOIN SYS_District sd ON sd.id = score_temp.organizationId where sd.isDelete = 0 GROUP BY organizationId,sd.districtName,sd.districtId\n" +
+                "\n" +
+                ")as score_temp2 GROUP BY LEFT(score_temp2.districtId, 4) \n" +
+                ")as score_temp3 LEFT JOIN SYS_District sdi on score_temp3.districtId = sdi.districtId\n" +
+                "\nwhere sdi.isDelete = 0" +
+                "UNION ALL\n" +
+                "\n" +
+                "SELECT sd.districtId, sd.districtName, 0 as finishRatio, SUM(sc) AS score FROM (\n" +
+                "SELECT SUM(score) as sc, organizationId FROM EXA_Score WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
+                "UNION ALL\n" +
+                "SELECT SUM(score) as sc, organizationId FROM EXA_Examine WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
+                ") as score_temp\n" +
+                "LEFT JOIN SYS_District sd ON sd.id = score_temp.organizationId where sd.isDelete = 0 GROUP BY organizationId,sd.districtName,sd.districtId\n" +
+                "\n" +
+                "UNION ALL\n" +
+                "\n" +
+                "SELECT  organizationId as districtId, districtName , ROUND(CAST(tmp.passed AS FLOAT)/total, 3) finishRatio,  0 as score FROM (\n" +
+                "\n" +
+                "SELECT  COUNT(CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END) passed, count(1) total, organizationId, sd.districtName\n" +
+                "FROM PAR_ActivityObject PO LEFT JOIN PAR_Activity PA ON PA.id = PO.activityId \n" +
+                "LEFT JOIN SYS_District sd on sd.districtId = organizationId\n" +
+                "WHERE sd.isDelete = 0 and sd.districtName is not null and PA.id is not null and PA.month BETWEEN '" + year + "-01-01' AND '" + year + "-12-31' GROUP BY organizationId, sd.districtName\n" +
+                "\n" +
+                ") as tmp\n" +
+                "\n" +
+                "union all\n" +
+                "\n" +
+                "SELECT organizationId, sd.districtName , finishRatio, 0 as score from (\n" +
+                "SELECT  ROUND(CAST(tmp.passed AS FLOAT)/total, 3) finishRatio, organizationId  FROM (\n" +
+                "\n" +
+                "SELECT  COUNT(CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END) passed, count(1) total, LEFT(organizationId, 4) organizationId\n" +
+                "FROM PAR_ActivityObject PO LEFT JOIN PAR_Activity PA ON PA.id = PO.activityId \n" +
+                "WHERE PA.id is not null and PA.month BETWEEN '" + year + "-01-01' AND '" + year + "-12-31' GROUP BY LEFT(organizationId, 4)\n" +
+                "\n" +
+                ") as tmp\n" +
+                ") as tmp1 left JOIN SYS_District sd on sd.districtId = tmp1.organizationId\n" +
+                " where sd.isDelete = 0" +
+                ") AS BIG_TEMP " + querySql + " GROUP BY districtId, districtName";
         List<ExamScoreAllVO> list = super.findAllBySql(ExamScoreAllVO.class, sql);
-        List<ActivityExamVO> examList = new ArrayList<>();
-        list.forEach(item->{
-            boolean isExist = false;
-            for (ActivityExamVO activityExamVO: examList) {
-                if (activityExamVO.getTown().equals(item.getTown())) {
-                    isExist = true;
-                    ActivityExamVO cunVO = new ActivityExamVO();
-                    cunVO.setTown(item.getCun());
-                    cunVO.setTownExam(item.getExam());
-                    cunVO.setTownScore(item.getScore());
-                    activityExamVO.getChildren().add(cunVO);
-                }
+        Map<String, ActivityExamVO> secondRes = new HashMap<>();
+        for (ExamScoreAllVO item : list) {
+            if (item.getDistrictLevel() == 2) {
+                ActivityExamVO activityExamVO = new ActivityExamVO();
+                activityExamVO.setTown(item.getDistrictName());
+                activityExamVO.setTownScore(item.getFinishRatio());
+                activityExamVO.setTownExam(item.getScore());
+                activityExamVO.setChildren(new ArrayList<>());
+                secondRes.put(item.getDistrictId(), activityExamVO);
             }
-            if (!isExist) {
-                ActivityExamVO townVO = new ActivityExamVO();
-                townVO.setTown(item.getTown());
-                townVO.setTownExam(item.getTownExam());
-                townVO.setTownScore(item.getTownScore());
-                ActivityExamVO cunVO = new ActivityExamVO();
-                cunVO.setTown(item.getCun());
-                cunVO.setTownExam(item.getExam());
-                cunVO.setTownScore(item.getScore());
-                List<ActivityExamVO> temp = new ArrayList<>();
-                temp.add(cunVO);
-                townVO.setChildren(temp);
-                examList.add(townVO);
-            }
+        }
+        list.forEach(item -> {
+           if(item.getDistrictLevel() > 2) {
+               ActivityExamVO activityExamVO = secondRes.get(item.getDistrictId().substring(0, 4));
+               ActivityExamVO activityExam = new ActivityExamVO();
+               activityExam.setTown(item.getDistrictName());
+               activityExam.setTownScore(item.getFinishRatio());
+               activityExam.setTownExam(item.getScore());
+               activityExamVO.getChildren().add(activityExam);
+           }
         });
-        return  examList;
+        return new ArrayList<>(secondRes.values());
     }
 
 }

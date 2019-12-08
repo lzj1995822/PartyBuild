@@ -13,29 +13,25 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExamScoreAllVO {
-    /** 村分数 */
-    @ApiModelProperty(value = "村分数", position = 10, required = true)
-    private Integer exam;
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 10, required = true)
+    private String districtId;
 
-    /** 村名 */
-    @ApiModelProperty(value = "村名", position = 10, required = true)
-    private String cun;
+    /** 组织名 */
+    @ApiModelProperty(value = "组织名", position = 10, required = true)
+    private String districtName;
 
-    /** 镇 */
-    @ApiModelProperty(value = "镇", position = 10, required = true)
-    private String town;
+    /** 完成比例 */
+    @ApiModelProperty(value = "完成比例", position = 10, required = true)
+    private Double finishRatio;
 
-    /** 村比例 */
-    @ApiModelProperty(value = "村比例", position = 10, required = true)
-    private Double score;
+    /** 分数 */
+    @ApiModelProperty(value = "分数", position = 10, required = true)
+    private Integer score;
 
-    /** 镇分数 */
-    @ApiModelProperty(value = "镇分数", position = 10, required = true)
-    private Integer townExam;
-
-    /** 镇比例 */
-    @ApiModelProperty(value = "镇比例", position = 10, required = true)
-    private Double townScore;
+    /** 层级 */
+    @ApiModelProperty(value = "层级", position = 10, required = true)
+    private Integer districtLevel;
 }
 
 
