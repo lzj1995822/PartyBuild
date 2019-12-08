@@ -9,8 +9,8 @@ spring:
 eureka:
   client:
     service-url:
-    #defaultZone: http://172.16.0.199:8761/eureka/
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://172.16.0.199:8761/eureka/
+      # defaultZone: http://localhost:8761/eureka/
   instance: #eureka server 页面列表字段 status 显示ip
       prefer-ip-address: true
       instance-id: ${spring.cloud.client.ip-address}:${server.port}
