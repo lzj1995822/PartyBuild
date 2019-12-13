@@ -86,6 +86,13 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         @ApiParam(value = "排序条件", required = true) Sort sort) {
         parActivityObjectService.updateIsWorking();
         List<ParActivityObject> parActivityObjectList = parActivityObjectService.findAll(parActivityObjectSearchable, sort);
+        // 机关党委需要添加自己需要执行的任务 （待改）
+        if (!StringUtils.isEmpty(parActivityObjectSearchable.getAttachTo()) && Integer.valueOf(parActivityObjectSearchable.getAttachTo()) > Integer.valueOf("0118")) {
+            ParActivityObject p = parActivityObjectService.findByOrganizationIdAndActivityId(parActivityObjectSearchable.getAttachTo(), parActivityObjectSearchable.getActivityId());
+            if (p != null) {
+                parActivityObjectList.add(p);
+            }
+        }
         List<ParActivityObjectVO> parActivityObjectVOList = ParActivityObject.convert(parActivityObjectList, ParActivityObjectVO.class);
         return Result.of(parActivityObjectVOList);
     }
