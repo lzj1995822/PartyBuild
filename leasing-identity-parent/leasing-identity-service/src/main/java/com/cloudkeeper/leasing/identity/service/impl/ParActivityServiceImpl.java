@@ -352,20 +352,20 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 break;
             case OFFICE_ALL_OBJECT_TYPE:
                 // 发布给所有的机关党组织 市直机关工委过滤掉 (除市直机关工委所有机关类型党组织)
-                detachedCriteria.add(Restrictions.in("districtType", "Office"));
+                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
                 detachedCriteria.add(Restrictions.ne("districtId", "0118"));
                 break;
             case OFFICE_ONLY_OBJECT_TYPE:
-                // 发布给市直机关工委所属的党组织
-                detachedCriteria.add(Restrictions.in("districtType", "Office"));
-                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
-                detachedCriteria.add(Restrictions.like("districtId", "0118", MatchMode.START));
+                // 发布给党委
+                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
+                detachedCriteria.add(Restrictions.gt("districtId", "0118"));
+                detachedCriteria.add(Restrictions.eq("districtLevel", 2));
                 break;
             case OFFICE_ONLY_PART_OBJECT_TYPE:
-                // 发布给市直机关工委所属的党组织及各局委所属机关党支部
-                detachedCriteria.add(Restrictions.in("districtType", "Office"));
-                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
-                detachedCriteria.add(Restrictions.or(Restrictions.like("districtId", "0118", MatchMode.START), Restrictions.eq("isOfficeBranch", "1")));
+                // 发布党支部、党总支
+                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
+                detachedCriteria.add(Restrictions.gt("districtId", "0118"));
+                detachedCriteria.add(Restrictions.gt("districtLevel", 2));
                 break;
             default:
                 return null;

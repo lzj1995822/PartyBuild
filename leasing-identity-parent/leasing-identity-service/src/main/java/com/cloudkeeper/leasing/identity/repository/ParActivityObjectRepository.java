@@ -32,7 +32,7 @@ public interface ParActivityObjectRepository extends BaseRepository<ParActivityO
     List<String> findActivityIdsByOrganizationId(String organizationId);
 
     Integer countAllByOrganizationIdStartingWithAndStatusAndCreatedAtBetween(String organizationId, String status, LocalDateTime start, LocalDateTime end);
-    Integer countAllByOrganizationIdStartingWithAndStatus(String organizationId, String status);
+    Integer countAllByAttachToAndStatus(String organizationId, String status);
 
     Integer countAllByOrganizationIdStartingWithAndCreatedAtBetween(String organizationId, LocalDateTime start, LocalDateTime end);
 

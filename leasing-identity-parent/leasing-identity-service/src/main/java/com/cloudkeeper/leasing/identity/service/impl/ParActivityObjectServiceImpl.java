@@ -339,7 +339,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
 
     @Override
     public Integer waitCheckNumber(String organizationId) {
-        Integer integer = parActivityObjectRepository.countAllByOrganizationIdStartingWithAndStatus(organizationId, "1");
+        Integer integer = parActivityObjectRepository.countAllByAttachToAndStatus(organizationId, "1");
         return integer;
     }
 
@@ -394,7 +394,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
                 "AND organizationId = '"+districtId+"'  " +
                 "WHERE " +
                 "p2.MONTH BETWEEN '"+year+"-1-1'  " +
-                "AND '"+year+"-12-30'  " +
+                "AND '"+year+"-12-31'  " +
                 ") S1," +
                 "SYS_District S2  " +
                 "WHERE " +
