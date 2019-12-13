@@ -23,7 +23,7 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
     //根据父组织查对应活动
     List<String> findActivityIdsByDistrictCode(String districtCode);
 
-    //根据村组织查对应活动
+    //根据镇级、村组织查对应活动
     List<String> findActivityIdsByOrganizationId(String organizationId);
 
     ParActivityObject findByOrganizationIdAndActivityId(String organizationId, String activityId);

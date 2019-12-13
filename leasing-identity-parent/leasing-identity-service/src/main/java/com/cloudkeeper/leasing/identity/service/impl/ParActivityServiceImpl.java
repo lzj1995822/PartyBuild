@@ -545,6 +545,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         DetachedCriteria detachedCriteria = getDetachedCriteria(parActivitySearchable);
          if (roleCode.equals("TOWN_REVIEWER")) {
             List<String> activityIdsByDistrictCode = parActivityObjectService.findActivityIdsByDistrictCode(districtCode);
+            activityIdsByDistrictCode.addAll(parActivityObjectService.findActivityIdsByOrganizationId(districtCode));
             if (activityIdsByDistrictCode.size() > 0) {
                 detachedCriteria.add(Restrictions.in("id", activityIdsByDistrictCode));
             }
