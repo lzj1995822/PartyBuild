@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.Instant;
@@ -342,33 +343,23 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
      * @param objectType 任务对象类型
      * @return
      */
-    private List<String> handleNewObject(@Nonnull String activityId, String templateId, String objectType) {
+    private List<String> handleNewObject(@Nonnull String activityId, String templateId,@Nonnull String objectType) {
+        // 农村任务前台传来的结构 1
+        // 机关任务前台传来的结构 2-3-4-5...
+        String[] split = objectType.split("-");
+        int len = split.length;
         List<SysDistrict> sysDistrictsAL;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
-        switch (objectType) {
-            case COUNTRY_SIDE_OBJECT_TYPE:
-                detachedCriteria.add(Restrictions.in("districtType", "Party"));
-                detachedCriteria.add(Restrictions.eq("districtLevel", 3));
-                break;
-            case OFFICE_ALL_OBJECT_TYPE:
-                // 发布给所有的机关党组织 市直机关工委过滤掉 (除市直机关工委所有机关类型党组织)
-                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
-                detachedCriteria.add(Restrictions.ne("districtId", "0118"));
-                break;
-            case OFFICE_ONLY_OBJECT_TYPE:
-                // 发布给党委
-                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
-                detachedCriteria.add(Restrictions.gt("districtId", "0118"));
-                detachedCriteria.add(Restrictions.eq("districtLevel", 2));
-                break;
-            case OFFICE_ONLY_PART_OBJECT_TYPE:
-                // 发布党支部、党总支
-                detachedCriteria.add(Restrictions.eq("districtType", "Office"));
-                detachedCriteria.add(Restrictions.gt("districtId", "0118"));
-                detachedCriteria.add(Restrictions.gt("districtLevel", 2));
-                break;
-            default:
-                return null;
+        if (len == 1 && "1".equals(split[0])) {
+            detachedCriteria.add(Restrictions.eq("districtType", "Party"));
+            detachedCriteria.add(Restrictions.eq("districtLevel", 3));
+        } else if (len > 1) {
+            List<String> arrayList = Arrays.asList(split);
+            ArrayList objects = new ArrayList(arrayList);
+            objects.remove(0);
+            detachedCriteria.add(Restrictions.in("objectTypeCode", objects.toArray()));
+        } else {
+            return null;
         }
         sysDistrictsAL = sysDistrictServiceImpl.findAll(detachedCriteria);
         return generateActicityObject(objectType, activityId, templateId, sysDistrictsAL);
