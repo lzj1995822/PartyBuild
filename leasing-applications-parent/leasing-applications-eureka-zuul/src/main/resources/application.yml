@@ -15,6 +15,15 @@ eureka:
       prefer-ip-address: true
       instance-id: ${spring.cloud.client.ip-address}:${server.port}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
 zuul:
   sensitive-headers: Access-Control-Allow-Origin
   ignored-headers: Access-Control-Allow-Origin,H-APP-Id,Token,APPToken

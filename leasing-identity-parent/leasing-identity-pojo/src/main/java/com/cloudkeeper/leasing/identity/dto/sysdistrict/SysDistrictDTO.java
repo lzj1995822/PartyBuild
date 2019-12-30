@@ -75,4 +75,7 @@ public class SysDistrictDTO extends BaseEditDTO {
     @ApiModelProperty(value = "是否属于离退休党支部", position = 10, required = true)
     private String isRetiredBranch;
 
+    @ApiModelProperty(value = "任务对象编码", position = 10, required = true)
+    private String objectTypeCode;
+
 }
