@@ -3,10 +3,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParActivityObjectController;
+import com.cloudkeeper.leasing.identity.domain.ParActivity;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
+import com.cloudkeeper.leasing.identity.service.MessageCenterService;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
+import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
@@ -48,6 +51,10 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     private final ParActivityObjectService parActivityObjectService;
 
     private final SysLogService sysLogService;
+
+    private final ParActivityService parActivityService;
+
+    private final MessageCenterService messageCenterService;
 
     @Override
     public Result<ParActivityObjectVO> findOne(@ApiParam(value = "任务对象id", required = true) @PathVariable String id) {
@@ -203,6 +210,8 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     @Override
     public Result<ParActivityObjectVO> officeExecute(@PathVariable String id) {
         ParActivityObject parActivityObject = parActivityObjectService.officeExecute(id);
+        //消息中心
+        messageCenterService.save(parActivityObject.getActivityId(),parActivityObject.getOrganizationId(),"party");
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
     }
 }

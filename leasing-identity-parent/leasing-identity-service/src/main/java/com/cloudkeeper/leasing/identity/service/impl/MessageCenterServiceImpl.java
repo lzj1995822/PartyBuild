@@ -84,6 +84,20 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
                 messageCenter.setContent("[通知公告] " +'"'+messageCenter.getTitle()+'"'+"待查收");
             }
         }
+        else if(taskType =="checkParty"){
+            Optional<ParActivity> activity = parActivityRepository.findById(activityId);
+            if(activity.isPresent()){
+                String[] strs=districtId.split("-");
+                messageCenter.setDistrictId(strs[0]);
+                String name = sysDistrictRepository.findSysDistrictByDistrictId(strs[0]).getDistrictName();
+                messageCenter.setTitle(activity.get().getTitle());
+                if(strs[1].equals("2")){
+                    messageCenter.setContent("[党建任务-机关] "+name+"执行的"+'"'+messageCenter.getTitle()+'"'+"活动已审核通过，得分："+strs[2]+"分");
+                }else{
+                    messageCenter.setContent("[党建任务-机关] "+name+"执行的"+'"'+messageCenter.getTitle()+'"'+"活动审核未通过");
+                }
+            }
+        }
         else{
             Optional<VillageCadres> byId = villageCadresRepository.findById(activityId);
             if(byId.isPresent()){
