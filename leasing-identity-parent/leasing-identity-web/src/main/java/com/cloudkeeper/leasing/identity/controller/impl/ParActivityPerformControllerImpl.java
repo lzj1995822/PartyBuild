@@ -7,10 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.ParActivityPerform;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerformDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityperform.ParActivityPerformSearchable;
-import com.cloudkeeper.leasing.identity.service.ParActivityPerformService;
-import com.cloudkeeper.leasing.identity.service.ParActivityService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
-import com.cloudkeeper.leasing.identity.service.SysLogService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.ParActivityPerformVO;
 import com.cloudkeeper.leasing.identity.vo.PassPercentVO;
 import com.cloudkeeper.leasing.identity.vo.TownDetailVO;
@@ -50,6 +47,8 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
     private final ParActivityService parActivityService;
 
     private final SysDistrictService sysDistrictService;
+
+    private final MessageCenterService messageCenterService;
 
     @Override
     public Result<ParActivityPerformVO> findOne(@ApiParam(value = "任务执行记录id", required = true) @PathVariable String id) {
@@ -129,8 +128,15 @@ public class ParActivityPerformControllerImpl implements ParActivityPerformContr
         }else{
             action = "审核驳回了";
         }
+        //操作日志
         String  msg = parActivityPerformService.actionLog(action + sysDistrict.getDistrictName()+"执行的",parActivity.getTaskType(), parActivity.getTitle());
         sysLogService.pushLog(this.getClass().getName(),msg,parActivityPerformService.getTableName(),parActivityPerformVO.getId());
+        //判断是否是机关任务
+        if(parActivity.getObjectType()!="1"){
+            //消息中心
+            messageCenterService.save(parActivity.getId(),sysDistrict.getDistrictId()+"-"+parActivityPerformVO.getStatus()+"-"+parActivityPerformDTO.getScore(),"checkParty");
+        }
+
         return Result.ofUpdateSuccess(parActivityPerformVO);
     }
 
