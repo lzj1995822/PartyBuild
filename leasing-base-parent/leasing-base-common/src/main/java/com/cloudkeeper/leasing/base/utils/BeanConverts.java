@@ -112,9 +112,7 @@ public class BeanConverts {
                 } else {
                     value = ((Timestamp) value).toLocalDateTime();
                 }
-            } else if (property.getPropertyType().equals(BigDecimal.class)) {
-                value = BigDecimal.valueOf((double)value);
-            }else if(value instanceof Date){
+            } else if(value instanceof Date){
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(((Date) value));
                 value  = LocalDate.of(cal.get(Calendar.YEAR),

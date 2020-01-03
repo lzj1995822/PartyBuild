@@ -14,24 +14,25 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ExamScoreAllVO {
     /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 10, required = true)
+    @ApiModelProperty(value = "组织id")
     private String districtId;
 
     /** 组织名 */
-    @ApiModelProperty(value = "组织名", position = 10, required = true)
+    @ApiModelProperty(value = "组织名")
     private String districtName;
 
     /** 完成比例 */
-    @ApiModelProperty(value = "完成比例", position = 10, required = true)
-    private Double finishRatio;
+    @ApiModelProperty(value = "完成比例")
+    private BigDecimal finishRatio;
 
     /** 分数 */
-    @ApiModelProperty(value = "分数", position = 10, required = true)
-    private Integer score;
+    @ApiModelProperty(value = "分数")
+    private BigDecimal score;
 
-    /** 层级 */
-    @ApiModelProperty(value = "层级", position = 10, required = true)
-    private Integer districtLevel;
+    /** 总分（党委） */
+    @ApiModelProperty(value = "总分（党委）")
+    private Integer total = 0;
+
 }
 
 

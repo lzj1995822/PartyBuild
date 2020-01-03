@@ -23,8 +23,12 @@ public class ActivityExamVO {
     private String town;
 
     /** 镇分数 */
-    @ApiModelProperty(value = "镇分数", position = 10, required = true)
-    private Integer townExam;
+    @ApiModelProperty(value = "镇平均分数", position = 10, required = true)
+    private Double townExam;
+
+    /** 镇分数 */
+    @ApiModelProperty(value = "镇总分数", position = 10, required = true)
+    private Integer townTotal;
 
     /** 镇比例 */
     @ApiModelProperty(value = "镇比例", position = 10, required = true)
@@ -33,19 +37,4 @@ public class ActivityExamVO {
     @ApiModelProperty(value = "cun", position = 10, required = true)
     private List<ActivityExamVO> children;
 
-    public void setTown(String town) {
-        this.town = town;
-    }
-
-    public void setTownExam(Integer townExam) {
-        this.townExam = townExam;
-    }
-
-    public void setTownScore(Double townScore) {
-        this.townScore = townScore;
-    }
-
-    public void setChildren(List<ActivityExamVO> children) {
-        this.children = children;
-    }
 }

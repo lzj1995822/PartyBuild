@@ -216,89 +216,54 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
 
     @Override
     public List<ActivityExamVO> examScoreAll(Pageable pageable, String year,String search,String districtType){
-        String querySql = "WHere districtId like '01%'";
+        String querySql = " sd.districtId like '01%' ";
         if ("01".equals(search)) {
             // 句容市委进入
             if ("Office".equals(districtType)) {
                 // 机关
-                querySql = "WHere districtId >= '0118'";
+                querySql = " sd.districtId >= '0118' ";
             } else if ("Party".equals(districtType)) {
                 // 农村
-                querySql = "WHere LEFT(districtId, 4) BETWEEN '0101' and '0117'";
+                querySql = " LEFT(sd.districtId, 4) BETWEEN '0101' and '0117' ";
             }
         } else if ("0118".equals(search)) {
-            querySql = "WHere districtId >= '0118'";
+            querySql = " sd.districtId >= '0118' ";
         } else {
-            querySql = "WHere districtId like '" + search + "%'";
+            querySql = " sd.districtId like '" + search + "%' ";
         }
-        String sql = "SELECT districtId, districtName, SUM(finishRatio) AS finishRatio, SUM(score) AS score, len(districtId)/2 AS districtLevel FROM (\n" +
-                "SELECT  sdi.districtId, sdi.districtName, 0 as finishRatio, score_temp3.score  FROM (\n" +
-                "SELECT avg (score) AS score, LEFT(score_temp2.districtId, 4) as districtId FROM (\n" +
-                "\n" +
-                "SELECT SUM(sc) AS score, sd.districtName,sd.districtId, organizationId FROM (\n" +
-                "SELECT SUM(score) as sc, organizationId FROM EXA_Score WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
-                "UNION ALL\n" +
-                "SELECT SUM(score) as sc, organizationId FROM EXA_Examine WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
-                ") as score_temp\n" +
-                "LEFT JOIN SYS_District sd ON sd.id = score_temp.organizationId where sd.isDelete = 0 GROUP BY organizationId,sd.districtName,sd.districtId\n" +
-                "\n" +
-                ")as score_temp2 GROUP BY LEFT(score_temp2.districtId, 4) \n" +
-                ")as score_temp3 LEFT JOIN SYS_District sdi on score_temp3.districtId = sdi.districtId\n" +
-                "\nwhere sdi.isDelete = 0" +
-                "UNION ALL\n" +
-                "\n" +
-                "SELECT sd.districtId, sd.districtName, 0 as finishRatio, SUM(sc) AS score FROM (\n" +
-                "SELECT SUM(score) as sc, organizationId FROM EXA_Score WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
-                "UNION ALL\n" +
-                "SELECT SUM(score) as sc, organizationId FROM EXA_Examine WHERE createTime BETWEEN '" + year + "-01-01 00:00:00' AND '" + year + "-12-31 23:59:59' GROUP BY organizationId\n" +
-                ") as score_temp\n" +
-                "LEFT JOIN SYS_District sd ON sd.id = score_temp.organizationId where sd.isDelete = 0 GROUP BY organizationId,sd.districtName,sd.districtId\n" +
-                "\n" +
-                "UNION ALL\n" +
-                "\n" +
-                "SELECT  organizationId as districtId, districtName , ROUND(CAST(tmp.passed AS FLOAT)/total, 3) finishRatio,  0 as score FROM (\n" +
-                "\n" +
-                "SELECT  COUNT(CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END) passed, count(1) total, organizationId, sd.districtName\n" +
-                "FROM PAR_ActivityObject PO LEFT JOIN PAR_Activity PA ON PA.id = PO.activityId \n" +
-                "LEFT JOIN SYS_District sd on sd.districtId = organizationId\n" +
-                "WHERE sd.isDelete = 0 and sd.districtName is not null and PA.id is not null and PA.month BETWEEN '" + year + "-01-01' AND '" + year + "-12-31' GROUP BY organizationId, sd.districtName\n" +
-                "\n" +
-                ") as tmp\n" +
-                "\n" +
-                "union all\n" +
-                "\n" +
-                "SELECT organizationId, sd.districtName , finishRatio, 0 as score from (\n" +
-                "SELECT  ROUND(CAST(tmp.passed AS FLOAT)/total, 3) finishRatio, organizationId  FROM (\n" +
-                "\n" +
-                "SELECT  COUNT(CASE WHEN PO.STATUS = 2 THEN 1 ELSE NULL END) passed, count(1) total, LEFT(organizationId, 4) organizationId\n" +
-                "FROM PAR_ActivityObject PO LEFT JOIN PAR_Activity PA ON PA.id = PO.activityId \n" +
-                "WHERE PA.id is not null and PA.month BETWEEN '" + year + "-01-01' AND '" + year + "-12-31' GROUP BY LEFT(organizationId, 4)\n" +
-                "\n" +
-                ") as tmp\n" +
-                ") as tmp1 left JOIN SYS_District sd on sd.districtId = tmp1.organizationId\n" +
-                " where sd.isDelete = 0" +
-                ") AS BIG_TEMP " + querySql + " GROUP BY districtId, districtName";
-        List<ExamScoreAllVO> list = super.findAllBySql(ExamScoreAllVO.class, sql);
+        String sql = "Select temp2.*, sd.districtName from (\n" +
+                "SELECT  LEFT(temp.districtId, 4) as districtId, sum(temp.score) as total, CONVERT(DECIMAL(18,2),AVG(cast(temp.score as FLOAT))) as score, CONVERT(DECIMAL(18,2),sum(temp.finish)/cast(sum(temp.total) as FLOAT)) as finishRatio FROM (\n" +
+                "SELECT sd.districtId, sum(ISNULL(es.score, 0)) as score, COUNT(CASE WHEN pao.status = 2 THEN 1 ELSE NULL END) as finish, COUNT(1) as total FROM PAR_ActivityObject pao LEFT JOIN PAR_Activity pa on pao.activityId = pa.id \n" +
+                "left JOIN SYS_District sd on pao.organizationId = sd.districtId\n" +
+                "LEFT JOIN EXA_Score es on pao.activityId = es.activityId and es.organizationId = sd.id\n" +
+                "WHERE LEFT(pa.[month], 4) = '" + year + "' and sd.districtId is not null and " + querySql +
+                "and sd.isDelete = 0 GROUP BY sd.districtId ) temp GROUP BY LEFT(temp.districtId, 4) \n" +
+                ") temp2 LEFT JOIN SYS_District sd on sd.districtId = temp2.districtId ORDER BY sd.districtId asc";
+        List<ExamScoreAllVO> parent = super.findAllBySql(ExamScoreAllVO.class, sql);
+
+        String csql = "SELECT sd.districtId, sd.districtName, CONVERT(DECIMAL(18,2),sum(ISNULL(es.score, 0))) as score,  CONVERT(DECIMAL(18,2),COUNT(CASE WHEN pao.status = 2 THEN 1 ELSE NULL END)/cast(count(1) as FLOAT)) as finishRatio FROM PAR_ActivityObject pao LEFT JOIN PAR_Activity pa on pao.activityId = pa.id \n" +
+                "left JOIN SYS_District sd on pao.organizationId = sd.districtId\n" +
+                "LEFT JOIN EXA_Score es on pao.activityId = es.activityId and es.organizationId = sd.id\n" +
+                "WHERE LEFT(pa.[month], 4) = '" + year + "' and sd.districtId is not null  and " + querySql +
+                "and sd.isDelete = 0 GROUP BY sd.districtId,sd.districtName ORDER BY sd.districtId asc\n";
+        List<ExamScoreAllVO> children = super.findAllBySql(ExamScoreAllVO.class, csql);
         Map<String, ActivityExamVO> secondRes = new HashMap<>();
-        for (ExamScoreAllVO item : list) {
-            if (item.getDistrictLevel() == 2) {
-                ActivityExamVO activityExamVO = new ActivityExamVO();
-                activityExamVO.setTown(item.getDistrictName());
-                activityExamVO.setTownScore(item.getFinishRatio());
-                activityExamVO.setTownExam(item.getScore());
-                activityExamVO.setChildren(new ArrayList<>());
-                secondRes.put(item.getDistrictId(), activityExamVO);
-            }
+        for (ExamScoreAllVO item : parent) {
+            ActivityExamVO activityExamVO = new ActivityExamVO();
+            activityExamVO.setTown(item.getDistrictName());
+            activityExamVO.setTownScore(item.getFinishRatio().doubleValue());
+            activityExamVO.setTownExam(item.getScore().doubleValue());
+            activityExamVO.setTownTotal(item.getTotal());
+            activityExamVO.setChildren(new ArrayList<>());
+            secondRes.put(item.getDistrictId(), activityExamVO);
         }
-        list.forEach(item -> {
-           if(item.getDistrictLevel() > 2) {
-               ActivityExamVO activityExamVO = secondRes.get(item.getDistrictId().substring(0, 4));
-               ActivityExamVO activityExam = new ActivityExamVO();
-               activityExam.setTown(item.getDistrictName());
-               activityExam.setTownScore(item.getFinishRatio());
-               activityExam.setTownExam(item.getScore());
-               activityExamVO.getChildren().add(activityExam);
-           }
+        children.forEach(item -> {
+           ActivityExamVO activityExamVO = secondRes.get(item.getDistrictId().substring(0, 4));
+           ActivityExamVO activityExam = new ActivityExamVO();
+           activityExam.setTown(item.getDistrictName());
+           activityExam.setTownScore(item.getFinishRatio().doubleValue());
+           activityExam.setTownExam(item.getScore().doubleValue());
+           activityExamVO.getChildren().add(activityExam);
         });
         return new ArrayList<>(secondRes.values());
     }
