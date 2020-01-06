@@ -411,7 +411,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 " waitCheck, " +
                 " passed, " +
                 " fail, " +
-                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                "  CONVERT(DECIMAL(18,3), cast( passed AS FLOAT ) / ( passed + fail + waitCheck )) AS finishRatio  " +
                 "FROM " +
                 " ( " +
                 "SELECT " +
@@ -436,7 +436,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 " waitCheck, " +
                 " passed, " +
                 " fail, " +
-                " ROUND( cast( passed AS FLOAT ) / ( passed + fail + waitCheck ), 3 ) AS finishRatio  " +
+                " CONVERT(DECIMAL(18,3), cast( passed AS FLOAT ) / ( passed + fail + waitCheck )) AS finishRatio  " +
                 "FROM " +
                 " ( " +
                 "SELECT " +
