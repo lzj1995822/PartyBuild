@@ -1,7 +1,9 @@
 package com.cloudkeeper.leasing.identity.controller;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberDTO;
 import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberSearchable;
+import com.cloudkeeper.leasing.identity.vo.ParMemberChartsVo;
 import com.cloudkeeper.leasing.identity.vo.ParMemberVO;
 import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
@@ -82,5 +84,36 @@ public interface ParMemberController {
     @PostMapping("/page")
     Result<Page<ParMemberVO>> page(@ApiParam(value = "党员管理查询条件", required = true) @RequestBody ParMemberSearchable parMemberSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+
+    /**
+     * 按性别统计
+     * @param  districtId 党员组织
+     * @return 查询结果
+     */
+    @ApiOperation(value = "按性别统计", notes = "按性别统计", position = 4)
+    @PostMapping("/statisticsSex/{districtId}")
+    @Authorization(required = false)
+    Result<List<ParMemberChartsVo>> statisticsSex( @PathVariable String districtId);
+
+    /**
+     * 按年龄统计
+     * @param  districtId 党员组织
+     * @return 查询结果
+     */
+    @ApiOperation(value = "按年龄统计", notes = "按年龄统计", position = 4)
+    @PostMapping("/statisticsAge/{districtId}")
+    @Authorization(required = false)
+    Result<List<ParMemberChartsVo>> statisticsAge(@ApiParam(value = "党员管理id", required = true) @PathVariable String districtId);
+
+    /**
+     * 按支部统计
+     * @param  districtId 党员组织
+     * @return 查询结果
+     */
+    @ApiOperation(value = "按支部统计", notes = "按支部统计", position = 4)
+    @PostMapping("/statisticsBranch/{districtId}")
+    @Authorization(required = false)
+    Result<List<ParMemberChartsVo>> statisticsBranch(@ApiParam(value = "党员管理id", required = true) @PathVariable String districtId);
 
 }

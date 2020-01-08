@@ -3,10 +3,7 @@ package com.cloudkeeper.leasing.identity.service;
 import com.cloudkeeper.leasing.identity.domain.ParActivityObject;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
-import com.cloudkeeper.leasing.identity.vo.CloudActivityCunFinishedVO;
-import com.cloudkeeper.leasing.identity.vo.CloudActivityRateVO;
-import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
-import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -68,5 +65,8 @@ public interface ParActivityObjectService extends BaseService<ParActivityObject>
 
     //云图：今日正在执行的活动
     Integer countActivityIsWorkingNumber();
+
+    //镇当月活动下属村执行情况
+    List<CurrentMonthActivityVO> currentMonthActivity(String districtId);
 
 }

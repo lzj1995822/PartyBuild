@@ -3,6 +3,7 @@ package com.cloudkeeper.leasing.identity.controller;
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
+import com.cloudkeeper.leasing.identity.vo.CurrentMonthActivityVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import com.cloudkeeper.leasing.base.model.Result;
@@ -134,4 +135,11 @@ public interface ParActivityObjectController {
     @ApiOperation(value = "机关PC端执行任务", notes = "activityId 活动id，organizationId 组织ID", position = 6)
     @PostMapping("/officeExecute/{id}id")
     Result<ParActivityObjectVO> officeExecute(@PathVariable String id);
+
+    @ApiOperation(value = "当月活动执行情况", notes = "当月活动执行情况", position = 6)
+    @PostMapping("/currentMonthActivity/{districtId}")
+    @Authorization(required = false)
+    Result<List<CurrentMonthActivityVO>> currentMonthActivity(@PathVariable String districtId);
+
+
 }
