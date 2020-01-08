@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 任务对象 service
@@ -492,6 +493,42 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         Integer  a  = Integer.parseInt(bySql.get(0));*/
         Integer integer = parActivityObjectRepository.countAllByIsWorking("1");
         return integer;
+    }
+
+    @Override
+    public List<CurrentMonthActivityVO> currentMonthActivity(String districtId) {
+        //当月活动
+        String currentActivity = "select temp1.id as activityId, temp1.title, temp1.context, temp1.score,temp1.type,temp1.xiaShuPercent,temp1.baoHuaPercent,temp1.maoShanPercent,\n" +
+                "temp1.maoShanFengJingPercent, temp1.houBaiPercent, temp1.baiTuPercent , temp1.guoZhuangPercent, temp1.huaYangPercent, temp1.kaiFaPercent, \n" +
+                "temp1.tianWangPercent,temp1.bianChengPercent from\n" +
+                "(SELECT DISTINCT activityId from PAR_ActivityObject as o\n" +
+                "LEFT JOIN PAR_Activity as a on o.activityId = a.id\n" +
+                "where YEAR(a.month) = YEAR(GETDATE()) AND MONTH(a.month) = MONTH(GETDATE()) AND o.organizationId like '"+districtId+"%'\n" +
+                ") as temp \n" +
+                "left join PAR_Activity as temp1 on temp1.id = temp.activityId";
+        List<CurrentMonthActivityVO> currentActivityList = super.findAllBySql(CurrentMonthActivityVO.class, currentActivity);
+        Map<String, CurrentMonthActivityVO> collect = currentActivityList.stream().collect(Collectors.toMap(CurrentMonthActivityVO::getActivityId, currentMonthActivityVO -> currentMonthActivityVO));
+
+        //当月活动各个村执行情况
+        String cunSql="select o.activityId ,o.status,s.districtName from PAR_ActivityObject as o\n" +
+                "LEFT JOIN SYS_District as s on s.districtId = o.organizationId\n" +
+                "LEFT JOIN PAR_Activity as a on a.id = o.activityId\n" +
+                "where YEAR(a.month) = " +
+                "YEAR(GETDATE()) AND MONTH(a.month) = MONTH(GETDATE()) AND o.organizationId like '"+districtId+"%'";
+        List<CurrentObjectVo> cunObjectList = super.findAllBySql(CurrentObjectVo.class, cunSql);
+
+        for (CurrentObjectVo item: cunObjectList) {
+            CurrentMonthActivityVO currentMonthActivityVO = collect.get(item.getActivityId());
+            if (currentMonthActivityVO == null) {
+                continue;
+            }
+            List<CurrentObjectVo> list = currentMonthActivityVO.getCunList();
+            if(list == null){
+                currentMonthActivityVO.setCunList(new ArrayList<>());
+            }
+            currentMonthActivityVO.getCunList().add(item);
+        }
+        return new ArrayList<>(collect.values());
     }
 
 }

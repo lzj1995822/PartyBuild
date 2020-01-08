@@ -11,6 +11,7 @@ import com.cloudkeeper.leasing.identity.service.MessageCenterService;
 import com.cloudkeeper.leasing.identity.service.ParActivityObjectService;
 import com.cloudkeeper.leasing.identity.service.ParActivityService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
+import com.cloudkeeper.leasing.identity.vo.CurrentMonthActivityVO;
 import com.cloudkeeper.leasing.identity.vo.ExamScoreDetailVO;
 import com.cloudkeeper.leasing.identity.vo.ParActivityObjectVO;
 import io.swagger.annotations.ApiParam;
@@ -213,5 +214,12 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         //消息中心
         messageCenterService.save(parActivityObject.getActivityId(),parActivityObject.getOrganizationId(),"party");
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
+    }
+
+    @Authorization(required = false)
+    @Override
+    public Result<List<CurrentMonthActivityVO>> currentMonthActivity(@PathVariable String districtId) {
+        List<CurrentMonthActivityVO> currentMonthActivityVOS = parActivityObjectService.currentMonthActivity(districtId);
+        return Result.of(currentMonthActivityVOS);
     }
 }

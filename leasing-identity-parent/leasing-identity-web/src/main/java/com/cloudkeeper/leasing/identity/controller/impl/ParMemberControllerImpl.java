@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.ParMemberController;
 import com.cloudkeeper.leasing.identity.domain.ParMember;
@@ -7,6 +8,7 @@ import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberDTO;
 import com.cloudkeeper.leasing.identity.dto.parmember.ParMemberSearchable;
 import com.cloudkeeper.leasing.identity.service.ParMemberService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
+import com.cloudkeeper.leasing.identity.vo.ParMemberChartsVo;
 import com.cloudkeeper.leasing.identity.vo.ParMemberVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +90,27 @@ public class ParMemberControllerImpl implements ParMemberController {
         Page<ParMember> parMemberPage = parMemberService.findAll(parMemberSearchable, pageable);
         Page<ParMemberVO> parMemberVOPage = ParMember.convert(parMemberPage, ParMemberVO.class);
         return Result.of(parMemberVOPage);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public Result<List<ParMemberChartsVo>> statisticsSex(@PathVariable String districtId) {
+        List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsSex(districtId);
+        return Result.of(parMemberChartsVos);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public Result<List<ParMemberChartsVo>> statisticsAge(@PathVariable String districtId) {
+        List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsAge(districtId);
+        return Result.of(parMemberChartsVos);
+    }
+
+    @Authorization(required = false)
+    @Override
+    public Result<List<ParMemberChartsVo>> statisticsBranch(@PathVariable String districtId) {
+        List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsBranch(districtId);
+        return Result.of(parMemberChartsVos);
     }
 
 }
