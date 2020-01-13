@@ -72,7 +72,7 @@ public class ParActivityPerformServiceImpl extends BaseServiceImpl<ParActivityPe
             return null;
         }
         String sql =  "SELECT s6.*, " +
-                "ROUND( cast( s6.passed AS FLOAT ) / ( s6.waitCheck + s6.passed + s6.fail ), 3 ) AS finishRatio  " +
+                " CONVERT(DECIMAL(18,3), cast( s6.passed AS FLOAT ) / ( s6.waitCheck + s6.passed + s6.fail )) AS finishRatio  " +
                 "FROM " +
                 " ( " +
                 "SELECT " +
