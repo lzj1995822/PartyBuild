@@ -29,16 +29,20 @@ public class AuthorizationTokenVO extends BaseVO {
     @ApiModelProperty(value = "名称", position = 10, required = true)
     private String name;
 
-    /** 名称 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    /** code */
+    @ApiModelProperty(value = "code", position = 10, required = true)
     private String code;
 
-    /** 名称 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    /** 描述 */
+    @ApiModelProperty(value = "描述", position = 10, required = true)
     private String des;
 
-    /** 名称 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    /** 值 */
+    @ApiModelProperty(value = "值", position = 10, required = true)
     private String tokenVal;
+
+    /** 是否使用 0不 1使用 */
+    @ApiModelProperty(value = "是否使用", position = 10, required = true)
+    private String isUse;
 
 }

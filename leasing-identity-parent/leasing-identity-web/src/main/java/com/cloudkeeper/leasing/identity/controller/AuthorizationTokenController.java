@@ -59,7 +59,7 @@ public interface AuthorizationTokenController {
      */
     @ApiOperation(value = "删除", notes = "删除", position = 4)
     @DeleteMapping("/{id}id")
-    Result delete(@ApiParam(value = "访问权限id", required = true) @PathVariable String id);
+    Result<Boolean> delete(@ApiParam(value = "访问权限id", required = true) @PathVariable String id);
 
     /**
      * 列表查询
@@ -82,5 +82,10 @@ public interface AuthorizationTokenController {
     @PostMapping("/page")
     Result<Page<AuthorizationTokenVO>> page(@ApiParam(value = "访问权限查询条件", required = true) @RequestBody AuthorizationTokenSearchable authorizationTokenSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
+
+
+    @ApiOperation(value = "token存入redis", notes = "token存入redis", position = 1)
+    @PostMapping("/updateRedis/{id}id/{isUse}")
+    Result<Boolean> updateRedis(@ApiParam(value = "token存入redis", required = true) @PathVariable String id,@PathVariable String isUse);
 
 }

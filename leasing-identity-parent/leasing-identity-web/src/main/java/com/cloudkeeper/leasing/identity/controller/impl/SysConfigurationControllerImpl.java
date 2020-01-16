@@ -95,7 +95,7 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
     }
 
     @Override
-    public void updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
+    public Result<Boolean> updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
                           @ApiParam(value = "系统属性配置 DTO", required = true) @RequestBody @Validated SysConfigurationDTO sysConfigurationDTO) {
         SysConfiguration convert = sysConfigurationDTO.convert(SysConfiguration.class);
         String codeValue = convert.getCodeValue();
@@ -105,6 +105,7 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
         sysDistrictService.save(integer,"2c80b704-65e8-46a3-8222-3c0cb8fddfdc");
         sysDistrictService.save(integer,"b526c2e7-ec30-439b-b298-7bed0d853db7");
         sysConfigurationService.save(convert);
+        return Result.of(Result.ResultCode.OK.getCode(), "设置成功");
     }
 
 }
