@@ -96,13 +96,13 @@ public class SysUserControllerImpl implements SysUserController {
     }
 
     @Override
-    @Authorization(required = false)
+    @Authorization(required = true)
     public Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO) {
         return sysUserService.login(sysUserDTO);
     }
 
     @Override
-    @Authorization(required = false)
+    @Authorization(required = true)
     public String auth(String auth_token) {
         //从header中得到token
         String token = auth_token;

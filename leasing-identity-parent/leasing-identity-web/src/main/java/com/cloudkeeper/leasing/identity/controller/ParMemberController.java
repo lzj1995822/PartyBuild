@@ -93,7 +93,7 @@ public interface ParMemberController {
      */
     @ApiOperation(value = "按性别统计", notes = "按性别统计", position = 4)
     @PostMapping("/statisticsSex/{districtId}")
-    @Authorization(required = false)
+    @Authorization(required = true)
     Result<List<ParMemberChartsVo>> statisticsSex( @PathVariable String districtId);
 
     /**
@@ -103,7 +103,7 @@ public interface ParMemberController {
      */
     @ApiOperation(value = "按年龄统计", notes = "按年龄统计", position = 4)
     @PostMapping("/statisticsAge/{districtId}")
-    @Authorization(required = false)
+    @Authorization(required = true)
     Result<List<ParMemberChartsVo>> statisticsAge(@ApiParam(value = "党员管理id", required = true) @PathVariable String districtId);
 
     /**
@@ -113,7 +113,7 @@ public interface ParMemberController {
      */
     @ApiOperation(value = "按支部统计", notes = "按支部统计", position = 4)
     @PostMapping("/statisticsBranch/{districtId}")
-    @Authorization(required = false)
+    @Authorization(required = true)
     Result<List<ParMemberChartsVo>> statisticsBranch(@ApiParam(value = "党员管理id", required = true) @PathVariable String districtId);
 
 }

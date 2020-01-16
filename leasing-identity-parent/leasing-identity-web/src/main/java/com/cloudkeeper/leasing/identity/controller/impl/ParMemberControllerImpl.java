@@ -92,21 +92,21 @@ public class ParMemberControllerImpl implements ParMemberController {
         return Result.of(parMemberVOPage);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<ParMemberChartsVo>> statisticsSex(@PathVariable String districtId) {
         List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsSex(districtId);
         return Result.of(parMemberChartsVos);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<ParMemberChartsVo>> statisticsAge(@PathVariable String districtId) {
         List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsAge(districtId);
         return Result.of(parMemberChartsVos);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<ParMemberChartsVo>> statisticsBranch(@PathVariable String districtId) {
         List<ParMemberChartsVo> parMemberChartsVos = parMemberService.statisticsBranch(districtId);
