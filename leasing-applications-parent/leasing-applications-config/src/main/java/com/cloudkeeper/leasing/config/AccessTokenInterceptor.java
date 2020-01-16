@@ -65,6 +65,10 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             return false;
         }
         String principalId = claims.getId();
+        // 外部系统调用授权KEY必须包含的字符串
+        if (principalId.contains("AUTH")) {
+            return true;
+        }
         String appToken = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_APP_TOKEN_KEY + principalId);
         String pcToken = redisTemplate.opsForValue().get(AuthorizationConstants.REDIS_WEB_TOKEN_KEY + principalId);
         if (!token.equals(appToken) && !token.equals(pcToken)) {
