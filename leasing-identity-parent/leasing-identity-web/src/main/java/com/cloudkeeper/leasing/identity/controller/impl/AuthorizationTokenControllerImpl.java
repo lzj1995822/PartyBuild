@@ -41,7 +41,10 @@ public class AuthorizationTokenControllerImpl implements AuthorizationTokenContr
 
     @Override
     public Result<AuthorizationTokenVO> add(@ApiParam(value = "访问权限 DTO", required = true) @RequestBody @Validated AuthorizationTokenDTO authorizationTokenDTO) {
-        AuthorizationToken authorizationToken = authorizationTokenService.save(authorizationTokenDTO.convert(AuthorizationToken.class));
+        AuthorizationToken authorizationToken = authorizationTokenService.save(authorizationTokenDTO);
+        if (authorizationToken == null) {
+            return Result.of(Result.ResultCode.FAIL.getCode(),"未输入code");
+        }
         return Result.ofAddSuccess(authorizationToken.convert(AuthorizationTokenVO.class));
     }
 
@@ -52,16 +55,20 @@ public class AuthorizationTokenControllerImpl implements AuthorizationTokenContr
         if (!authorizationTokenOptional.isPresent()) {
             return Result.ofLost();
         }
-        AuthorizationToken authorizationToken = authorizationTokenOptional.get();
-        BeanUtils.copyProperties(authorizationTokenDTO, authorizationToken);
-        authorizationToken = authorizationTokenService.save(authorizationToken);
+        AuthorizationToken authorizationToken = authorizationTokenService.save(authorizationTokenDTO);
+        if (authorizationToken == null) {
+            return Result.of(Result.ResultCode.FAIL.getCode(),"未输入code");
+        }
         return Result.ofUpdateSuccess(authorizationToken.convert(AuthorizationTokenVO.class));
     }
 
     @Override
     public Result delete(@ApiParam(value = "访问权限id", required = true) @PathVariable String id) {
-        authorizationTokenService.deleteById(id);
-        return Result.ofDeleteSuccess();
+        Boolean delete = authorizationTokenService.delete(id);
+        if( delete ){
+            return Result.of(Result.ResultCode.OK.getCode(),"删除成功",delete);
+        }
+        return Result.of(Result.ResultCode.OK.getCode(),"删除失败",delete);
     }
 
     @Override
@@ -78,6 +85,19 @@ public class AuthorizationTokenControllerImpl implements AuthorizationTokenContr
         Page<AuthorizationToken> authorizationTokenPage = authorizationTokenService.findAll(authorizationTokenSearchable, pageable);
         Page<AuthorizationTokenVO> authorizationTokenVOPage = AuthorizationToken.convert(authorizationTokenPage, AuthorizationTokenVO.class);
         return Result.of(authorizationTokenVOPage);
+    }
+
+    @Override
+    public Result<Boolean> updateRedis(@PathVariable String id, @PathVariable String isUse) {
+        Boolean aBoolean = authorizationTokenService.updateRedis(id, isUse);
+        if (aBoolean) {
+            if (isUse.equals("1")){
+                return Result.of(Result.ResultCode.OK.getCode(), "启用成功", aBoolean);
+            }else {
+                return Result.of(Result.ResultCode.OK.getCode(), "禁用成功", aBoolean);
+            }
+        }
+        return Result.of(Result.ResultCode.FAIL.getCode(), "设置失败",aBoolean);
     }
 
 }
