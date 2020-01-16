@@ -76,7 +76,7 @@ public class PositionInformationControllerImpl implements PositionInformationCon
         return Result.ofDeleteSuccess();
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<PositionInformationVO>> list(@ApiParam(value = "阵地信息查询条件", required = true) @RequestBody PositionInformationSearchable positionInformationSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

@@ -90,7 +90,7 @@ public interface ParActivityObjectController {
 
 
     @ApiOperation(value = "根据组织id和活动id查", position = 6)
-    @Authorization(required = false)
+    @Authorization(required = true)
     @PostMapping("/findByOrganizationIdAndActivityId")
     Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO);
 
@@ -104,7 +104,7 @@ public interface ParActivityObjectController {
      * @return 任务对象 VO 分页
      */
     @ApiOperation(value = "执行", notes = "activityId 活动id，organizationId 组织ID", position = 6)
-    @Authorization(required = false)
+    @Authorization(required = true)
     @PostMapping("/execute")
     Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                               @ApiParam(value = "排序条件", required = true) Sort sort);
@@ -116,7 +116,7 @@ public interface ParActivityObjectController {
      * @return 任务对象 VO 分页
      */
     @ApiOperation(value = "结束执行", notes = "activityId 活动id，organizationId 组织ID", position = 6)
-    @Authorization(required = false)
+    @Authorization(required = true)
     @PostMapping("/executeOver")
     Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                               @ApiParam(value = "排序条件", required = true) Sort sort);
@@ -138,7 +138,7 @@ public interface ParActivityObjectController {
 
     @ApiOperation(value = "当月活动执行情况", notes = "当月活动执行情况", position = 6)
     @PostMapping("/currentMonthActivity/{districtId}")
-    @Authorization(required = false)
+    @Authorization(required = true)
     Result<List<CurrentMonthActivityVO>> currentMonthActivity(@PathVariable String districtId);
 
 

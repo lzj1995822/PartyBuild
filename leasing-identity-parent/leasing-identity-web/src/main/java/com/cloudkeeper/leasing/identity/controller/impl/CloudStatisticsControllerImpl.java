@@ -49,49 +49,49 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
 
     private final SysLogService sysLogService;
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countOrganizationNumber() {
         Integer integer = sysDistrictService.countAllByDistrictId("01");
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countPartyMemberNumber() {
         Integer integer = parMemberService.countAll("01");
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Long> countVillageCadresNumber() {
         Long aLong = villageCadresService.countAllByDistrictId("01");
         return CloudResult.of(aLong);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countVillageSecretaryNumber() {
         Integer integer = cadrePositionService.countVillageSecretaryNumber("01", "SECRETARY");
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countActivityPerformNumber() {
         Integer integer = parActivityPerformService.countAllByStatus("");
         return  CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countActivityFinishedNumber() {
         Integer integer = parActivityPerformService.countAllByStatus("2");
         return  CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<ActivityDashboardFormatVo> countActivityCompleteRate() {
         Integer integer = parActivityPerformService.countAllByStatus("");
@@ -103,7 +103,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(dashboardFormatVo);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Map<String, Object>> listCurrent() {
         CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("活动标题","left","title","",true,"50","","");
@@ -125,7 +125,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(map);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Map<String, Object>> cunRanking() {
         CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("村名","left","cun","",true,"50","","");
@@ -147,7 +147,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(map);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Map<String, Object>> townRanking() {
         List<String> categories = new ArrayList<>();
@@ -166,7 +166,7 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(map);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> runDays(){
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -183,42 +183,42 @@ public class CloudStatisticsControllerImpl implements CloudStatisticsController 
         return CloudResult.of(days);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<CloudActivityRateVO>> townMonthRate() {
         List<CloudActivityRateVO> cloudActivityRateVOS = parActivityObjectService.townMonthRate();
         return Result.of(cloudActivityRateVOS) ;
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<CloudActivityCunFinishedVO>> cunMonthObject(String attachTo) {
         List<CloudActivityCunFinishedVO> cloudActivityCunFinishedVOS = parActivityObjectService.cunMonthObject(attachTo);
         return Result.of(cloudActivityCunFinishedVOS);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countActivityExecuteNumber() {
         Integer integer = parActivityPerformService.countActivityExecuteNumber();
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countActivityPassNumber() {
         Integer integer = parActivityObjectService.countActivityPassNumber();
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Integer> countActivityIsWorkingNumber() {
         Integer integer = parActivityObjectService.countActivityIsWorkingNumber();
         return CloudResult.of(integer);
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public CloudResult<Map<String, Object>> getCloudLog() {
         CurrentActivityFormatVO formatOne = new CurrentActivityFormatVO("内容","left","msg","",true,"214","","");

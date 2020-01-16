@@ -75,7 +75,7 @@ public class InformationControllerImpl implements InformationController {
         return Result.ofDeleteSuccess();
     }
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<List<InformationVO>> list(@ApiParam(value = "消息通知查询条件", required = true) @RequestBody InformationSearchable informationSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

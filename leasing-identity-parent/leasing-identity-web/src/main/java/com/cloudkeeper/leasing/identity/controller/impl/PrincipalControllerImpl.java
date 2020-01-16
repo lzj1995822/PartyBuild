@@ -95,7 +95,7 @@ public class PrincipalControllerImpl implements PrincipalController {
     }
 
     @Override
-    @Authorization(required = false)
+    @Authorization(required = true)
     public Result<String> login(@ApiParam(value = "用户dto", required = true) @RequestBody @Validated PrincipalLoginDTO principalLoginDTO) {
         return principalService.login(principalLoginDTO);
     }

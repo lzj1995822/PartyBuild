@@ -18,7 +18,7 @@ public class EasyNVRControllerImpl implements EasyNVRController {
     private final EasyNVRService easyNVRService;
 
     @Override
-    @Authorization(required = false)
+    @Authorization(required = true)
     public Result<String> findOne(String number,String activityId, String organizationId) {
         String pathUri = easyNVRService.catchPic(number,activityId,organizationId);
         if (!StringUtils.isEmpty(pathUri)) {
@@ -30,7 +30,7 @@ public class EasyNVRControllerImpl implements EasyNVRController {
 
 
     @Override
-    @Authorization(required = false)
+    @Authorization(required = true)
     public Result<String> isOnline(String number,String activityId, String organizationId) {
         Boolean isOnline = easyNVRService.isOnlineByUrl(number,activityId,organizationId);
         if (isOnline) {
