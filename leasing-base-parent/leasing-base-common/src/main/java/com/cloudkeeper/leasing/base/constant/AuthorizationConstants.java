@@ -22,4 +22,9 @@ public class AuthorizationConstants {
 
     /** 认证字段*/
     public static final String AUTHORIZATION = "authorization";
+
+    public static final String SUGAR_TOKEN = "Sugar-Token";
+
+    // SUgar穿上来的TOken的值。MD5 16位的值
+    public static final String SUGAR_TOKEN_VALUE = "be6107ffc1381b1e";
 }

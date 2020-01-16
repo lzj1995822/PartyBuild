@@ -46,6 +46,11 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             //过滤不拦截的方法
             return true;
         }
+        String sugarToken = request.getHeader(AuthorizationConstants.SUGAR_TOKEN);
+        if (!StringUtils.isEmpty(sugarToken) && AuthorizationConstants.SUGAR_TOKEN_VALUE.equals(sugarToken)) {
+            return true;
+
+        }
         //从header中得到token
         String token = request.getHeader(AuthorizationConstants.AUTHORIZATION);
         if (!StringUtils.hasText(token)) {
