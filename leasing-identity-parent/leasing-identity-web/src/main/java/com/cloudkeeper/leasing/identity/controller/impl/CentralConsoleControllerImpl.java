@@ -22,7 +22,7 @@ public class CentralConsoleControllerImpl implements CentralConsoleController {
 
     private final CentralConsoleService centralConsoleService;
 
-    @Authorization(required = false)
+    @Authorization(required = true)
     @Override
     public Result<CentralConsoleVo> dataStatistics(@PathVariable String year) {
         CentralConsoleVo centralConsoleVo = centralConsoleService.dataStatistics(year);

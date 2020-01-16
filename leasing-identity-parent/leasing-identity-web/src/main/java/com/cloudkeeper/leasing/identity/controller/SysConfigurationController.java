@@ -89,7 +89,7 @@ public interface SysConfigurationController {
      */
     @ApiOperation(value = "编辑逻辑删除", notes = "编辑逻辑删除", position = 3)
     @PutMapping("/{id}isDelete")
-    void updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
+    Result<Boolean> updateUse(@ApiParam(value = "系统属性配置id", required = true) @PathVariable String id,
                                        @ApiParam(value = "系统属性配置 DTO", required = true) @RequestBody @Validated SysConfigurationDTO sysConfigurationDTO);
 
 

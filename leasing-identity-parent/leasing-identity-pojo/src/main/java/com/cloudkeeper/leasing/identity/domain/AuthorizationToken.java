@@ -33,18 +33,23 @@ public class AuthorizationToken extends BaseEntity {
     private String name;
 
     /** code */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    @ApiModelProperty(value = "code", position = 10, required = true)
     @Column(length = 60)
     private String code;
 
     /** 描述 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    @ApiModelProperty(value = "描述", position = 10, required = true)
     @Column(length = 60)
     private String des;
 
     /** 值 */
-    @ApiModelProperty(value = "名称", position = 10, required = true)
+    @ApiModelProperty(value = "值", position = 10, required = true)
     @Column(length = 60)
     private String tokenVal;
+
+    /** 是否使用 0不 1使用 */
+    @ApiModelProperty(value = "是否使用", position = 10, required = true)
+    @Column(length = 60)
+    private String isUse;
 
 }

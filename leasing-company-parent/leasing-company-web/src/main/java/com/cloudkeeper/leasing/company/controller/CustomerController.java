@@ -25,7 +25,7 @@ public interface CustomerController {
 
     @ApiOperation(value = "查询客户", notes = "查询客户", position = 1)
     @GetMapping("/{id}id")
-//    @Authorization(required = false)
+//    @Authorization(required = true)
     Result<CustomerVO> findOne(@ApiParam(value = "客户id", required = true) @PathVariable String id);
 
     @ApiOperation(value = "新增", notes = "新增", position = 2)

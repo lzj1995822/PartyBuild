@@ -69,7 +69,7 @@ public interface PrincipalController {
 
     @ApiOperation(value = "登录", notes = "登录", position = 7)
     @PostMapping("/login")
-    @Authorization(required = false)
+    @Authorization(required = true)
     Result<String> login(@ApiParam(value = "用户dto", required = true) @RequestBody @Validated PrincipalLoginDTO principalLoginDTO);
 
     @ApiOperation(value = "分页查询 组织code", notes = "分页查询", position = 8)
