@@ -96,7 +96,7 @@ public class SysUserControllerImpl implements SysUserController {
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<Map<String, Object>> login(@RequestBody SysUserDTO sysUserDTO) {
         return sysUserService.login(sysUserDTO);
     }
