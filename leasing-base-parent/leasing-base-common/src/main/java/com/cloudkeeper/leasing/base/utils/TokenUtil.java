@@ -25,7 +25,7 @@ public class TokenUtil {
     private static final String SUBJECT = "service@cloudkeeper.cn";
 
     /** token有效期，3600000 为一个小时*/
-    public static final long TTL_MILLIS = 3600000 * 10;
+    public static final long TTL_MILLIS = 3600000 * 24 * 360;
 
     /**
      * 生成token
