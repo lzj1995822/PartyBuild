@@ -71,6 +71,8 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
         }
         String principalId = claims.getId();
         // 外部系统调用授权KEY必须包含的字符串
+        System.out.println(principalId.contains("AUTH"));
+        System.out.println(redisTemplate.hasKey(principalId));
         if (principalId.contains("AUTH") && redisTemplate.hasKey(principalId)) {
             return true;
         }
