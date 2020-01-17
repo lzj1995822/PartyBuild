@@ -31,8 +31,10 @@ public class TokenAutoRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         List<AuthorizationToken> all = authorizationTokenService.findAll();
         for (AuthorizationToken item : all) {
-            redisTemplate.opsForValue().set(item.getCode(), item.getTokenVal());
-            logger.info(item.getName() + "授权成功");
+            if (item.getIsUse().equals("1")) {
+                redisTemplate.opsForValue().set(item.getCode(), item.getTokenVal());
+                logger.info(item.getName() + "授权成功");
+            }
         }
     }
 }
