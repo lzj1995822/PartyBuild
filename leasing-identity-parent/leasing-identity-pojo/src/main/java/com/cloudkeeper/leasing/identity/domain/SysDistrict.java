@@ -174,5 +174,19 @@ public class SysDistrict extends BaseEntity {
         return (T) sysDistrictVO;
     }
 
+    @Nonnull
+    @Override
+    public <T> T pageConvert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        SysDistrictVO sysDistrictVO = (SysDistrictVO) convert;
+        if(!StringUtils.isEmpty(this.sysDistrict)){
+            sysDistrictVO.setParentName(this.sysDistrict.getDistrictName());
+        }
+        if (!StringUtils.isEmpty(this.parent)) {
+            sysDistrictVO.setOrgParentName(this.parent.getDistrictName());
+        }
+        return (T) sysDistrictVO;
+    }
+
 
 }

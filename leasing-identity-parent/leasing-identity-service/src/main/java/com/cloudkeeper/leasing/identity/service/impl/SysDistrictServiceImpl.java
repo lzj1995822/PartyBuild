@@ -122,7 +122,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         String maxDistrictId = new String();
         int length = districtId.length();
         maxDistrictId = sysDistrictRepository.findMaxByDistrictIdAndDistrictLevel(districtId,length/2 + 1);
-        maxDistrictId = StringUtils.isEmpty(maxDistrictId) ? districtId+"01":"0"+ (Integer.valueOf(maxDistrictId) + 1);
+        maxDistrictId = StringUtils.isEmpty(maxDistrictId) ? districtId+"01":"0"+ (Long.valueOf(maxDistrictId) + 1);
         return maxDistrictId;
     }
 

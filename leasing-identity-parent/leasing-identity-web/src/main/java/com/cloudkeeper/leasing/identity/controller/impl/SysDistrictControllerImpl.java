@@ -99,7 +99,7 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     public Result<Page<SysDistrictVO>> page(@ApiParam(value = "组织查询条件", required = true) @RequestBody SysDistrictSearchable sysDistrictSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
         Page<SysDistrict> sysDistrictPage = sysDistrictService.findAll(sysDistrictSearchable, pageable);
-        Page<SysDistrictVO> sysDistrictVOPage = SysDistrict.convert(sysDistrictPage, SysDistrictVO.class);
+        Page<SysDistrictVO> sysDistrictVOPage = SysDistrict.pageConvert(sysDistrictPage, SysDistrictVO.class);
         return Result.of(sysDistrictVOPage);
     }
 

@@ -100,6 +100,24 @@ public abstract class BaseEntity implements Serializable {
 
     /**
      * 实体类转换
+     * @param clazz 目标对象class
+     * @param <T> 泛型
+     * @return 目标对象
+     */
+    @Nonnull
+    public <T> T pageConvert(@Nonnull Class<T> clazz){
+        T t = null;
+        try {
+            t = clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("对象转换出错, 目标类:" + clazz.getName());
+        }
+        BeanUtils.copyProperties(this, t);
+        return t;
+    }
+
+    /**
+     * 实体类转换
      * @param collection 实体集合
      * @param clazz 目标对象
      * @param <T> 泛型
@@ -109,6 +127,19 @@ public abstract class BaseEntity implements Serializable {
     public static <T> List<T> convert(@Nonnull Collection<? extends BaseEntity> collection, @Nonnull Class<T> clazz) {
         return collection.stream().map(entity -> entity.convert(clazz)).collect(Collectors.toList());
     }
+
+    /**
+     * 实体类转换
+     * @param collection 实体集合
+     * @param clazz 目标对象
+     * @param <T> 泛型
+     * @return 目标集合
+     */
+    @Nonnull
+    public static <T> List<T> pageConvert(@Nonnull Collection<? extends BaseEntity> collection, @Nonnull Class<T> clazz) {
+        return collection.stream().map(entity -> entity.pageConvert(clazz)).collect(Collectors.toList());
+    }
+
 
     /**
      * 实体分页转换
@@ -122,5 +153,19 @@ public abstract class BaseEntity implements Serializable {
         List<T> eList = BaseEntity.convert(page.getContent(), clazz);
         return new PageImpl<>(eList, page.getPageable(), page.getTotalElements());
     }
+
+    /**
+     * 实体分页转换
+     * @param page 实体分页
+     * @param clazz 目标对象
+     * @param <T> 泛型
+     * @return 目标分页
+     */
+    @Nonnull
+    public static <T> Page<T> pageConvert(@Nonnull Page<? extends BaseEntity> page, @Nonnull Class<T> clazz) {
+        List<T> eList = BaseEntity.pageConvert(page.getContent(), clazz);
+        return new PageImpl<>(eList, page.getPageable(), page.getTotalElements());
+    }
+
 
 }
