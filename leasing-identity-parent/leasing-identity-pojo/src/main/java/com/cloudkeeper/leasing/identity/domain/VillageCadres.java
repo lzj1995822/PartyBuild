@@ -1,6 +1,8 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.HonourInfoVO;
+import com.cloudkeeper.leasing.identity.vo.RewardInfoVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
@@ -11,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.springframework.util.StringUtils;
@@ -113,14 +116,14 @@ public class VillageCadres extends BaseEntity {
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
 
     /** 镇级组织 */
     @ApiModelProperty(value = "组织", position = 24)
-    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentDistrictId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict parentSysDistrict;
@@ -146,7 +149,7 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "担任村书记时长", position = 19)
     private String onDutyTime;
 
-    @ApiModelProperty(value = "素能评价", position = 19)
+    @ApiModelProperty(value = "能力研判（原素能评价字段）", position = 19)
     private String evaluation;
 
     @ApiModelProperty(value = "专业职称", position = 19)
@@ -213,10 +216,48 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "加减分情况", position = 19)
     private String additionSubtractionOpinion;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cadresId")
+    private List<HonourInfo> honourInfos;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cadresId")
+    private List<RewardInfo> rewardInfos;
 
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
+        if (!StringUtils.isEmpty(this.cadrePosition)){
+            villageCadresVO.setPost(this.cadrePosition.getId());
+            villageCadresVO.setPostName(this.cadrePosition.getName());
+        }
+        if (!StringUtils.isEmpty(this.sysDistrict)){
+            villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
+        }
+        if (!StringUtils.isEmpty(this.parentSysDistrict)) {
+            villageCadresVO.setParentDistrictName(this.parentSysDistrict.getDistrictName());
+        }
+        if (informationAudits.size() > 0) {
+            InformationAudit first = informationAudits.get(0);
+            villageCadresVO.setAuditor(first.getAuditor());
+            villageCadresVO.setAuditAdvice(first.getAuditAdvice());
+        }
+        if (!StringUtils.isEmpty(this.honourInfos)) {
+            villageCadresVO.setHonours(HonourInfo.convert(this.honourInfos, HonourInfoVO.class));
+        }
+
+        if (!StringUtils.isEmpty(this.rewardInfos)) {
+            villageCadresVO.setRewards(RewardInfo.convert(this.rewardInfos, RewardInfoVO.class));
+        }
+
+        return (T) villageCadresVO;
+    }
+
+    @Nonnull
+    @Override
+    public <T> T pageConvert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
         if (!StringUtils.isEmpty(this.cadrePosition)){

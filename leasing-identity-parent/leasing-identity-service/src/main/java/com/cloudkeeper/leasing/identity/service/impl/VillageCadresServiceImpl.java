@@ -2,19 +2,14 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.CadrePosition;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
-import com.cloudkeeper.leasing.identity.domain.InformationAudit;
-import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
-import com.cloudkeeper.leasing.identity.service.CadrePositionService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
-import com.cloudkeeper.leasing.identity.service.InformationAuditService;
-import com.cloudkeeper.leasing.identity.service.MessageCenterService;
-import com.cloudkeeper.leasing.identity.service.VillageCadresService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 村干部管理 service
@@ -47,6 +43,12 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     private final CadrePositionService cadrePositionService;
 
     private final SysDistrictService sysDistrictService;
+
+    private final HonourInfoService honourInfoService;
+
+    private final RewardInfoService rewardInfoService;
+
+    private final RatingStandardService ratingStandardService;
 
     @Override
     protected BaseRepository<VillageCadres> getBaseRepository() {
@@ -105,10 +107,29 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         SysDistrict byDistrictId = sysDistrictService.findByDistrictId(villageCadresDTO.getDistrictId());
         convert.setParentDistrictId(byDistrictId.getOrgParent());
+
+        // 无论更新还是新增，只要调用新增或者更新接口，之前的审核流程需要重新走，所以初始化成0（未提交）
+        convert.setState("0");
         convert = super.save(convert);
         CadrePosition cadrePosition = optionalById.get();
         cadrePosition.setCadreId(convert.getId());
         cadrePositionService.save(cadrePosition);
+
+        String cadresId = convert.getId();
+        List<HonourInfoDTO> honours = villageCadresDTO.getHonours();
+        honourInfoService.deleteAllByCadresId(cadresId);
+        for (HonourInfoDTO item:honours) {
+            item.setCadresId(cadresId);
+            honourInfoService.save(item.convert(HonourInfo.class));
+        }
+
+        List<RewardInfoDTO> rewards = villageCadresDTO.getRewards();
+        rewardInfoService.deleteAllByCadresId(cadresId);
+        for (RewardInfoDTO item:rewards) {
+            item.setCadresId(cadresId);
+            rewardInfoService.save(item.convert(RewardInfo.class));
+        }
+
         return convert;
     }
 
@@ -150,7 +171,26 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         if (code.equals("SUCCESS")) {
             integer++;
             checkMsg = "审核通过意见:";
-
+            if (integer == 3) {
+                // 如果市委审核通过后，把表彰和报酬不可更改
+                this.updateIsEdit(id);
+                RatingStandard actual = this.generatePostLevel(villageCadres);
+                RatingStandard checkRes = ratingStandardService.checkEnter(actual);
+                if (checkMsg != null) {
+                    actual.setName(checkRes.getName());
+                    villageCadres.setQuasiAssessmentRank(checkRes.getName());
+                    messageCenterService.save(villageCadres.getId(), villageCadres.getDistrictId(),
+                            "[村书记信息]经过系统审核，" + villageCadres.getCadrePosition().getName() +
+                                    villageCadres.getName() + "定级为" + checkRes.getName() + "！");
+                } else {
+                    actual.setName(null);
+                    villageCadres.setQuasiAssessmentRank(null);
+                    messageCenterService.save(villageCadres.getId(), villageCadres.getDistrictId(),
+                            "[村书记信息]经过系统审核，" + villageCadres.getCadrePosition().getName() +
+                                    villageCadres.getName() + "不符合任意一级专职村书记！");
+                }
+                ratingStandardService.save(actual);
+            }
         } else {
             integer--;
             checkMsg = "审核驳回意见:";
@@ -166,7 +206,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         informationAuditService.save(informationAudit);
 
-        messageCenterService.save(villageCadres.getId(),districtId,"[村书记信息]"+villageCadres.getName()+checkMsg+informationAuditDTO2.getAuditAdvice());
+        messageCenterService.save(villageCadres.getId(),districtId,
+                "[村书记信息]" + villageCadres.getName() + checkMsg + informationAuditDTO2.getAuditAdvice());
         return true;
     }
 
@@ -180,4 +221,41 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         secretaryNumberVO.setLevelFive(villageCadresRepository.countAllByQuasiAssessmentRank("FIRTH_CLASS"));
         return secretaryNumberVO;
     }
+
+    @Override
+    @Transactional
+    public void updateIsEdit(String cadresId) {
+        List<HonourInfo> honours = honourInfoService.findAllByCadresId(cadresId);
+        for (HonourInfo item : honours) {
+            item.setIsEdit("1");
+            honourInfoService.save(item);
+        }
+
+        List<RewardInfo> rewards = rewardInfoService.findAllByCadresId(cadresId);
+        for (RewardInfo item : rewards) {
+            item.setIsEdit("1");
+            rewardInfoService.save(item);
+        }
+    }
+
+    @Override
+    public RatingStandard generatePostLevel(VillageCadres villageCadres) {
+        RatingStandard ratingStandard = new RatingStandard();
+        // 村书记时长
+        ratingStandard.setWorkDuration(villageCadres.getOnDutyTime());
+        // 能力研判
+        ratingStandard.setAbilityJudgement(villageCadres.getEvaluation());
+        // 上年度专职村书记考核等次
+        // 年度考核获得称职及以上等次累计次数
+        // 年度考核获得称职及以上等次连续年数
+        // 年度考核获得优秀等次累计次数
+        // 年度考核获得优秀等次连续年数
+        // 年度考核全市排名前10的连续年数
+        // 年度考核全市排名前5的连续年数
+        // 年度考核全市排名前3的连续年数
+        // 表彰等级(所有表彰类型数组拼接字符串)
+        ratingStandard.setHonoursType(String.join("," ,villageCadres.getHonourInfos().stream().map(HonourInfo::getHonourType).collect(Collectors.toList())));
+        return ratingStandard;
+    }
+
 }

@@ -122,7 +122,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             }
         });
         Page<VillageCadres> villageCadresPage = villageCadresService.findAll(detachedCriteria, pageable, total);
-        Page<VillageCadresVO> villageCadresVOPage = VillageCadres.convert(villageCadresPage, VillageCadresVO.class);
+        Page<VillageCadresVO> villageCadresVOPage = VillageCadres.pageConvert(villageCadresPage, VillageCadresVO.class);
         return Result.of(villageCadresVOPage);
     }
 

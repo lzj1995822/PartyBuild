@@ -1,6 +1,9 @@
 package com.cloudkeeper.leasing.identity.dto.villagecadres;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
+import com.cloudkeeper.leasing.identity.domain.HonourInfo;
+import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +15,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 村干部管理 DTO
@@ -159,5 +163,11 @@ public class VillageCadresDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "加减分情况", position = 19)
     private String additionSubtractionOpinion;
+
+    @ApiModelProperty(value = "表彰情况", position = 19)
+    private List<HonourInfoDTO> honours;
+
+    @ApiModelProperty(value = "报酬情况", position = 19)
+    private List<RewardInfoDTO> rewards;
 
 }

@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.base.service.BaseService;
+import com.cloudkeeper.leasing.identity.domain.RatingStandard;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
@@ -34,4 +35,8 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
 
     //根据等级统计村书记的数量
     SecretaryNumberVO countNumber();
+
+    void updateIsEdit(String cadresId);
+
+    RatingStandard generatePostLevel(VillageCadres villageCadres);
 }

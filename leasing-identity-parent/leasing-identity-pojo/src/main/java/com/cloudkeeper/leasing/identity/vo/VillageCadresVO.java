@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 村干部管理 VO
@@ -176,5 +177,9 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "加减分情况", position = 19)
     private String additionSubtractionOpinion;
+
+    private List<HonourInfoVO> honours;
+
+    private List<RewardInfoVO> rewards;
 
 }
