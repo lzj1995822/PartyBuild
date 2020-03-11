@@ -98,7 +98,7 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
                 }
             }
         }
-        else{
+        else {
             Optional<VillageCadres> byId = villageCadresRepository.findById(activityId);
             if(byId.isPresent()){
                 VillageCadres villageCadres = byId.get();
@@ -109,6 +109,17 @@ public class MessageCenterServiceImpl extends BaseServiceImpl<MessageCenter> imp
             }
         }
         return super.save(messageCenter);
+    }
+
+    @Nonnull
+    public MessageCenter villageCadresSave(@Nonnull String taskId, String districtId, String taskType, String content) {
+        MessageCenter messageCenter = new MessageCenter();
+        messageCenter.setDistrictId(districtId);
+        messageCenter.setTitle("村书记消息");
+        messageCenter.setBusinessId(taskId);
+        messageCenter.setType(taskType);
+        messageCenter.setContent(content);
+        return messageCenter;
     }
 
 }
