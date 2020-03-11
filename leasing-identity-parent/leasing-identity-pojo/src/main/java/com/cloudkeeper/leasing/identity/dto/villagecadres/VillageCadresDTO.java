@@ -1,9 +1,15 @@
 package com.cloudkeeper.leasing.identity.dto.villagecadres;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
+import com.cloudkeeper.leasing.identity.domain.FamilyInfo;
+import com.cloudkeeper.leasing.identity.domain.FamilyWorkInfo;
 import com.cloudkeeper.leasing.identity.domain.HonourInfo;
+import com.cloudkeeper.leasing.identity.domain.TrainingInfo;
+import com.cloudkeeper.leasing.identity.dto.familyinfo.FamilyInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.familyworkinfo.FamilyWorkInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.traininginfo.TrainingInfoDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -169,5 +175,38 @@ public class VillageCadresDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "报酬情况", position = 19)
     private List<RewardInfoDTO> rewards;
+
+    /** 2020-03-11新增字段-----------------------开始--------------------------------**/
+    @ApiModelProperty(value = "人员类型", position = 19)
+    private String personnelType;
+
+    @ApiModelProperty(value = "身份证号", position = 19)
+    private String IDcardNumber;
+
+    @ApiModelProperty(value = "驾驶证号", position = 19)
+    private String drivingLicenseNumber;
+
+    @ApiModelProperty(value = "信用状况", position = 19)
+    private String creditStatus;
+
+    @ApiModelProperty(value = "任现职级时间", position = 19)
+    private String termOfOffice;
+
+    @ApiModelProperty(value = "上年度新型农村合作医疗购买人数", position = 19)
+    private String medicalInsuranceNumber;
+    @ApiModelProperty(value = "村委会月用电量", position = 19)
+    private String monthlyElectricity;
+    @ApiModelProperty(value = "农村产权交易平台交易数量", position = 19)
+    private String propertyRightsTransactionsNumber;
+    @ApiModelProperty(value = "12345热线月投诉量", position = 19)
+    private String complaintVolume;
+    @ApiModelProperty(value = "培训情况", position = 19)
+    private List<TrainingInfoDTO> trainingInfoDTOS;
+
+    @ApiModelProperty(value = "家庭情况", position = 19)
+    private List<FamilyInfoDTO> familyInfoDTOS;
+    @ApiModelProperty(value = "家庭成员工作情况", position = 19)
+    private List<FamilyWorkInfoDTO> familyWorkInfoDTOS;
+    /** 2020-03-11新增字段-----------------------结束--------------------------------**/
 
 }

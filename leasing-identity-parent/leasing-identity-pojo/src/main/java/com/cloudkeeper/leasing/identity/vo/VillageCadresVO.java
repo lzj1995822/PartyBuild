@@ -1,6 +1,9 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.FamilyInfo;
+import com.cloudkeeper.leasing.identity.domain.FamilyWorkInfo;
+import com.cloudkeeper.leasing.identity.domain.TrainingInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -181,5 +184,39 @@ public class VillageCadresVO extends BaseVO {
     private List<HonourInfoVO> honours;
 
     private List<RewardInfoVO> rewards;
+
+    /** 2020-03-11新增字段-----------------------开始--------------------------------**/
+    @ApiModelProperty(value = "人员类型", position = 19)
+    private String personnelType;
+
+    @ApiModelProperty(value = "身份证号", position = 19)
+    private String IDcardNumber;
+
+    @ApiModelProperty(value = "驾驶证号", position = 19)
+    private String drivingLicenseNumber;
+
+    @ApiModelProperty(value = "信用状况", position = 19)
+    private String creditStatus;
+
+    @ApiModelProperty(value = "任现职级时间", position = 19)
+    private String termOfOffice;
+
+    @ApiModelProperty(value = "上年度新型农村合作医疗购买人数", position = 19)
+    private String medicalInsuranceNumber;
+    @ApiModelProperty(value = "村委会月用电量", position = 19)
+    private String monthlyElectricity;
+    @ApiModelProperty(value = "农村产权交易平台交易数量", position = 19)
+    private String propertyRightsTransactionsNumber;
+    @ApiModelProperty(value = "12345热线月投诉量", position = 19)
+    private String complaintVolume;
+    @ApiModelProperty(value = "培训情况", position = 19)
+    private List<TrainingInfoVO> trainingInfoVOS;
+
+    @ApiModelProperty(value = "家庭情况", position = 19)
+    private List<FamilyInfoVO> familyInfoVOS;
+
+    @ApiModelProperty(value = "家庭成员工作情况", position = 19)
+    private List<FamilyWorkInfoVO> familyWorkInfoVOS;
+    /** 2020-03-11新增字段-----------------------结束--------------------------------**/
 
 }

@@ -3,6 +3,8 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.dto.familyinfo.FamilyInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.familyworkinfo.FamilyWorkInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
@@ -49,6 +51,10 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     private final RewardInfoService rewardInfoService;
 
     private final RatingStandardService ratingStandardService;
+
+    private final FamilyInfoService familyInfoService;
+
+    private final FamilyWorkInfoService familyWorkInfoService;
 
     @Override
     protected BaseRepository<VillageCadres> getBaseRepository() {
@@ -130,6 +136,20 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             rewardInfoService.save(item.convert(RewardInfo.class));
         }
 
+
+        List<FamilyInfoDTO> familyInfos = villageCadresDTO.getFamilyInfoDTOS();
+        familyInfoService.deleteAllByCadresId(cadresId);
+        for (FamilyInfoDTO f : familyInfos){
+            f.setCadresId(cadresId);
+            familyInfoService.save(f.convert(FamilyInfo.class));
+        }
+
+        List<FamilyWorkInfoDTO> familyWorkInfos = villageCadresDTO.getFamilyWorkInfoDTOS();
+        familyWorkInfoService.deleteAllByCadresId(cadresId);
+        for (FamilyWorkInfoDTO f : familyWorkInfos){
+            f.setCadresId(cadresId);
+            familyWorkInfoService.save(f.convert(FamilyWorkInfo.class));
+        }
         return convert;
     }
 
