@@ -6,7 +6,7 @@ spring:
 #    url: jdbc:sqlserver://asher.wicp.vip:10858;DatabaseName=JRParty
 #    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=PartyBuild
 #    url: jdbc:sqlserver://172.16.0.221:1433;DatabaseName=PartyBuild
-    url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy3
+    url: jdbc:sqlserver://3wn9jt6v8i.52http.tech:49846;DatabaseName=Copy3
     # 用户名
 #    username: lxw
     username: asherlv
@@ -69,7 +69,7 @@ spring:
 #    database: mysql
     database: sql_server
     # 是否显示 sql语句
-    show-sql: true
+    show-sql: false
     # hibernate 配置
     hibernate:
       naming:
@@ -100,7 +100,7 @@ spring:
 #    host: localhost
     host: localhost
     port: 6379
-    password: abc123
+    password:
     database: 1
     timeout: 1s
     lettuce:
