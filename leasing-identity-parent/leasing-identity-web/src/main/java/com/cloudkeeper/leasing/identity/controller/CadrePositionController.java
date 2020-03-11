@@ -26,7 +26,7 @@ public interface CadrePositionController {
     /**
      * 查询
      * @param id 岗位管理id
-     * @return 岗位管理 VO
+     * @return 岗位管理  VO
      */
     @ApiOperation(value = "查询", notes = "查询", position = 1)
     @GetMapping("/{id}id")
