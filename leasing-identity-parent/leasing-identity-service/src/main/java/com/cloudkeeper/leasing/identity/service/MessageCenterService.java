@@ -13,4 +13,7 @@ public interface MessageCenterService extends BaseService<MessageCenter> {
 
     @Nonnull
     MessageCenter save(@Nonnull String activityId, String districtId, String taskType);
+
+    @Nonnull
+    MessageCenter villageCadresSave(@Nonnull String taskId, String districtId, String taskType, String content);
 }

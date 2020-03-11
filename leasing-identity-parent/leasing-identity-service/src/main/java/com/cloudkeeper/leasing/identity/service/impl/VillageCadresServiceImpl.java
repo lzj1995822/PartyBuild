@@ -52,6 +52,10 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     private final RatingStandardService ratingStandardService;
 
+    private final CadreTaskService cadreTaskService;
+
+    private final CadreTaskObjectService cadreTaskObjectService;
+
     private final FamilyInfoService familyInfoService;
 
     private final FamilyWorkInfoService familyWorkInfoService;
@@ -104,6 +108,11 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     @Override
     @Transactional
     public VillageCadres save(VillageCadresDTO villageCadresDTO) {
+        // 检查是否有当前任务
+        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+        if (currentBaseInfoTask == null) {
+            return null;
+        }
         String cadrePositionId = villageCadresDTO.getPost();
         Optional<CadrePosition> optionalById = cadrePositionService.findOptionalById(cadrePositionId);
         if (!optionalById.isPresent()) {
@@ -116,11 +125,22 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         // 无论更新还是新增，只要调用新增或者更新接口，之前的审核流程需要重新走，所以初始化成0（未提交）
         convert.setState("0");
+        // 主表更新
         convert = super.save(convert);
+        // 状态记录表中，新增初始状态记录，未提交状态
+        InformationAudit informationAudit = new InformationAudit();
+        informationAudit.setVillageId(convert.getId());
+        informationAudit.setStatus(convert.getState());
+        informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAuditService.save(informationAudit);
+
+        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(convert.getState(), currentBaseInfoTask.getId(), convert.getDistrictId());
+
         CadrePosition cadrePosition = optionalById.get();
         cadrePosition.setCadreId(convert.getId());
         cadrePositionService.save(cadrePosition);
 
+        // 删除奖惩
         String cadresId = convert.getId();
         List<HonourInfoDTO> honours = villageCadresDTO.getHonours();
         honourInfoService.deleteAllByCadresId(cadresId);
@@ -129,6 +149,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             honourInfoService.save(item.convert(HonourInfo.class));
         }
 
+        // 删除报酬
         List<RewardInfoDTO> rewards = villageCadresDTO.getRewards();
         rewardInfoService.deleteAllByCadresId(cadresId);
         for (RewardInfoDTO item:rewards) {
@@ -155,20 +176,33 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     @Override
     public Boolean submit(VillageCadres villageCadres) {
+        // 检查是否有当前任务
+        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+        if (currentBaseInfoTask == null) {
+            return false;
+        }
+
         villageCadres.setState("1");
         villageCadres = villageCadresRepository.save(villageCadres);
 
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setVillageId(villageCadres.getId());
-
-        /*模拟审核通过状态*/
-        informationAudit.setStatus(villageCadres.getContact());
+        informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setStatus(villageCadres.getState());
         informationAuditService.save(informationAudit);
+
+        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());
         return true;
     }
 
     @Override
     public Boolean virify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody  InformationAuditDTO informationAuditDTO2 ) {
+        // 检查是否有当前任务
+        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+        if (currentBaseInfoTask == null) {
+            return false;
+        }
+
         Optional<VillageCadres> byId = villageCadresRepository.findById(id);
         if(!byId.isPresent()){
             return false;
@@ -225,10 +259,12 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setStatus(villageCadres.getState());
         informationAudit.setVillageId(id);
+        informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setAuditAdvice(informationAuditDTO2.getAuditAdvice());
         informationAudit.setAuditor(informationAuditDTO2.getAuditor());
-
         informationAuditService.save(informationAudit);
+
+        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());
 
         messageCenterService.save(villageCadres.getId(),districtId,
                 "[村书记信息]" + villageCadres.getName() + checkMsg + informationAuditDTO2.getAuditAdvice());
