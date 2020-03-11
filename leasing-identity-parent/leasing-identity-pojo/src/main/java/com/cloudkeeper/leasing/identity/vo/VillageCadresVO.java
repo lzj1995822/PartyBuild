@@ -217,6 +217,8 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "家庭成员工作情况", position = 19)
     private List<FamilyWorkInfoVO> familyWorkInfoVOS;
+    @ApiModelProperty(value = "区分是否专职书记", position = 19)
+    private String cadresType;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
 
 }
