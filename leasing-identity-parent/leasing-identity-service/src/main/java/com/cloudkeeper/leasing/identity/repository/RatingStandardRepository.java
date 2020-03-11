@@ -15,4 +15,6 @@ public interface RatingStandardRepository extends BaseRepository<RatingStandard>
 
     //  查询所有标准
     List<RatingStandard> findAllByIsStandard(String isStandard);
+
+    void deleteAllByCadresId(String cadresId);
 }

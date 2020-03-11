@@ -101,4 +101,8 @@ public class RatingStandardVO extends BaseVO {
     @ApiModelProperty(value = "文化程度", position = 10, required = true)
     private String education;
 
+    /** 村id */
+    @ApiModelProperty(value = "村id", position = 10, required = true)
+    private String districtId;
+
 }

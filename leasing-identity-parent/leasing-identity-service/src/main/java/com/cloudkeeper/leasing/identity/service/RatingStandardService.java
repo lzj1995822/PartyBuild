@@ -26,4 +26,6 @@ public interface RatingStandardService extends BaseService<RatingStandard> {
 
     // 五级检查
     Integer checkFifthLevel(RatingStandard standard, RatingStandard source);
+
+    void deleteAllByCadresId(String cadresId);
 }

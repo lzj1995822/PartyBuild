@@ -66,7 +66,8 @@ public class RatingStandardServiceImpl extends BaseServiceImpl<RatingStandard> i
                 .withMatcher("topTenGradeLastTimes", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("topFiveGradeLastTimes", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("topThreeGradeLastTimes", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("honoursType", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("honoursType", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
     @Override
@@ -174,5 +175,10 @@ public class RatingStandardServiceImpl extends BaseServiceImpl<RatingStandard> i
 
         boolean c = standard.getHonoursType().contains(source.getHonoursType());
         return (b && b1 && b2 || a || c) ? 5 : 0;
+    }
+
+    @Override
+    public void deleteAllByCadresId(String cadresId) {
+        ratingStandardRepository.deleteAllByCadresId(cadresId);
     }
 }

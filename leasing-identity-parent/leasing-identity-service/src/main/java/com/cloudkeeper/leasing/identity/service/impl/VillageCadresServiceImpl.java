@@ -176,7 +176,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 this.updateIsEdit(id);
                 RatingStandard actual = this.generatePostLevel(villageCadres);
                 RatingStandard checkRes = ratingStandardService.checkEnter(actual);
-                if (checkMsg != null) {
+                if (checkRes != null) {
                     actual.setName(checkRes.getName());
                     villageCadres.setQuasiAssessmentRank(checkRes.getName());
                     messageCenterService.save(villageCadres.getId(), villageCadres.getDistrictId(),
@@ -189,6 +189,10 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                             "[村书记信息]经过系统审核，" + villageCadres.getCadrePosition().getName() +
                                     villageCadres.getName() + "不符合任意一级专职村书记！");
                 }
+                actual.setCadresId(id);
+                actual.setIsStandard("0");
+                actual.setDistrictId(villageCadres.getDistrictId());
+                ratingStandardService.deleteAllByCadresId(id);
                 ratingStandardService.save(actual);
             }
         } else {
@@ -254,7 +258,10 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         // 年度考核全市排名前5的连续年数
         // 年度考核全市排名前3的连续年数
         // 表彰等级(所有表彰类型数组拼接字符串)
-        ratingStandard.setHonoursType(String.join("," ,villageCadres.getHonourInfos().stream().map(HonourInfo::getHonourType).collect(Collectors.toList())));
+        List<HonourInfo> honourInfos = villageCadres.getHonourInfos();
+        if (honourInfos != null && honourInfos.size() != 0) {
+            ratingStandard.setHonoursType(String.join("," ,villageCadres.getHonourInfos().stream().map(HonourInfo::getHonourType).collect(Collectors.toList())));
+        }
         return ratingStandard;
     }
 

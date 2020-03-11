@@ -83,4 +83,8 @@ public class RatingStandardDTO extends BaseEditDTO {
     @ApiModelProperty(value = "是否为标准", position = 10, required = true)
     private String isStandard;
 
+    /** 村id */
+    @ApiModelProperty(value = "村id", position = 10, required = true)
+    private String districtId;
+
 }

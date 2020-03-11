@@ -102,6 +102,10 @@ public class RatingStandard extends BaseEntity {
     @Column(length = 60)
     private String cadresId;
 
+    /** 村id */
+    @ApiModelProperty(value = "村id", position = 10, required = true)
+    private String districtId;
+
     /** 是否为标准 */
     @ApiModelProperty(value = "是否为标准", position = 10, required = true)
     @Column(length = 60)
