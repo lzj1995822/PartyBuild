@@ -1,9 +1,7 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
-import com.cloudkeeper.leasing.identity.vo.HonourInfoVO;
-import com.cloudkeeper.leasing.identity.vo.RewardInfoVO;
-import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -292,7 +290,12 @@ public class VillageCadres extends BaseEntity {
         if (!StringUtils.isEmpty(this.rewardInfos)) {
             villageCadresVO.setRewards(RewardInfo.convert(this.rewardInfos, RewardInfoVO.class));
         }
-
+        if (!StringUtils.isEmpty(this.familyInfos)) {
+            villageCadresVO.setFamilyInfoVOS(RewardInfo.convert(this.familyInfos, FamilyInfoVO.class));
+        }
+        if (!StringUtils.isEmpty(this.familyWorkInfos)) {
+            villageCadresVO.setFamilyWorkInfoVOS(RewardInfo.convert(this.familyWorkInfos, FamilyWorkInfoVO.class));
+        }
         return (T) villageCadresVO;
     }
 

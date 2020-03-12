@@ -56,4 +56,13 @@ public class HonourInfo extends BaseEntity {
     @ApiModelProperty(value = "表彰类型", position = 25)
     private String honourType;
 
+    /** 2020-03-12新增字段 **/
+    /** 奖或惩 */
+    @ApiModelProperty(value = "奖或惩", position = 25)
+    private String rewardsType;
+
+    /** 表彰种类 */
+    @ApiModelProperty(value = "表彰种类", position = 25)
+    private String honourDescription;
+
 }
