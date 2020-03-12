@@ -31,7 +31,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         return super.defaultExampleMatcher()
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("note", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("note", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("townName", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override
@@ -40,7 +41,13 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         if (cadreTaskObject == null) {
             return null;
         }
-        cadreTaskObject.setStatus(status);
+        Integer statusNum = Integer.valueOf(status);
+        cadreTaskObject.setStatus(String.valueOf(++statusNum));
         return save(cadreTaskObject);
+    }
+
+    @Override
+    public void deleteByTaskId(String taskId) {
+        cadreTaskObjectRepository.deleteAllByTaskId(taskId);
     }
 }

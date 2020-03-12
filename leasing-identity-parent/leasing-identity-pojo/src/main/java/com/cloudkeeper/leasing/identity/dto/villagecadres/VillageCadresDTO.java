@@ -21,6 +21,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -171,10 +172,10 @@ public class VillageCadresDTO extends BaseEditDTO {
     private String additionSubtractionOpinion;
 
     @ApiModelProperty(value = "表彰情况", position = 19)
-    private List<HonourInfoDTO> honours;
+    private List<HonourInfoDTO> honours = new ArrayList<>();
 
     @ApiModelProperty(value = "报酬情况", position = 19)
-    private List<RewardInfoDTO> rewards;
+    private List<RewardInfoDTO> rewards = new ArrayList<>();
 
     /** 2020-03-11新增字段-----------------------开始--------------------------------**/
     @ApiModelProperty(value = "人员类型", position = 19)
@@ -201,12 +202,13 @@ public class VillageCadresDTO extends BaseEditDTO {
     @ApiModelProperty(value = "12345热线月投诉量", position = 19)
     private String complaintVolume;
     @ApiModelProperty(value = "培训情况", position = 19)
-    private List<TrainingInfoDTO> trainingInfoDTOS;
+    private List<TrainingInfoDTO> trainingInfoDTOS = new ArrayList<>();
 
     @ApiModelProperty(value = "家庭情况", position = 19)
-    private List<FamilyInfoDTO> familyInfoDTOS;
+    private List<FamilyInfoDTO> familyInfoDTOS = new ArrayList<>();
+
     @ApiModelProperty(value = "家庭成员工作情况", position = 19)
-    private List<FamilyWorkInfoDTO> familyWorkInfoDTOS;
+    private List<FamilyWorkInfoDTO> familyWorkInfoDTOS = new ArrayList<>();
     @ApiModelProperty(value = "区分是否专职书记", position = 19)
     private String cadresType;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/

@@ -178,7 +178,7 @@ public class RatingStandardServiceImpl extends BaseServiceImpl<RatingStandard> i
     }
 
     @Override
-    public void deleteAllByCadresId(String cadresId) {
-        ratingStandardRepository.deleteAllByCadresId(cadresId);
+    public void deleteByCadresId(String cadresId) {
+        ratingStandardRepository.deleteByCadresId(cadresId);
     }
 }

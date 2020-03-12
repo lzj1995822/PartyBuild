@@ -21,7 +21,11 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +88,9 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             cadreTaskObject.setObjectId(item.getDistrictId());
             cadreTaskObject.setObjectType(item.getDistrictType());
             cadreTaskObject.setStatus("0");
+            cadreTaskObject.setObjectName(item.getDistrictName());
+            cadreTaskObject.setTaskName(cadreTask.getName());
+            cadreTaskObject.setTownName(item.getParent().getDistrictName());
             cadreTaskObjectService.save(cadreTaskObject);
             messageCenterService.villageCadresSave(cadreTask.getId(), item.getDistrictId(), type, "[村书记任务]您有一条村书记任务待执行！");
         }
@@ -106,17 +113,14 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     }
 
     private CadreTask getCurrentTaskByType(String type) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
-        detachedCriteria.add(Restrictions.eq("type", type));
-        detachedCriteria.add(Restrictions.gt("endTime", LocalDate.now()));
-        detachedCriteria.addOrder(Order.desc("endTime"));
-        List<CadreTask> all = findAll(detachedCriteria);
-        if (all.size() == 0) {
-            return null;
-        }
-        return all.get(0);
+        return cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
     }
 
-
+    @Override
+    @Transactional
+    public void deleteById(@Nonnull String id) {
+        super.deleteById(id);
+        cadreTaskObjectService.deleteByTaskId(id);
+    }
 
 }

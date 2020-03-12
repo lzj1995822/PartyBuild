@@ -13,4 +13,5 @@ public interface CadrePositionRepository extends BaseRepository<CadrePosition> {
 
     Integer countAllByDistrictIdStartingWithAndPostAndCadreIdNotNull(String districtId,String post);
 
+    CadrePosition findByDistrictIdAndPost(String districtId, String post);
 }

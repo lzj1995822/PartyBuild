@@ -41,7 +41,7 @@ public class CadreTaskControllerImpl implements CadreTaskController {
 
     @Override
     public Result<CadreTaskVO> add(@ApiParam(value = "村书记模块任务 DTO", required = true) @RequestBody @Validated CadreTaskDTO cadreTaskDTO) {
-        CadreTask cadreTask = cadreTaskService.save(cadreTaskDTO.convert(CadreTask.class));
+        CadreTask cadreTask = cadreTaskService.save(cadreTaskDTO);
         return Result.ofAddSuccess(cadreTask.convert(CadreTaskVO.class));
     }
 

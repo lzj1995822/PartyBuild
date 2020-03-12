@@ -113,9 +113,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         if (currentBaseInfoTask == null) {
             return null;
         }
-        String cadrePositionId = villageCadresDTO.getPost();
-        Optional<CadrePosition> optionalById = cadrePositionService.findOptionalById(cadrePositionId);
-        if (!optionalById.isPresent()) {
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), "SECRETARY");
+        if (cadrePosition == null) {
             return null;
         }
         VillageCadres convert = villageCadresDTO.convert(VillageCadres.class);
@@ -136,7 +135,6 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         cadreTaskObjectService.updateStatusByTaskIdAndObjectId(convert.getState(), currentBaseInfoTask.getId(), convert.getDistrictId());
 
-        CadrePosition cadrePosition = optionalById.get();
         cadrePosition.setCadreId(convert.getId());
         cadrePositionService.save(cadrePosition);
 
@@ -246,7 +244,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 actual.setCadresId(id);
                 actual.setIsStandard("0");
                 actual.setDistrictId(villageCadres.getDistrictId());
-                ratingStandardService.deleteAllByCadresId(id);
+                ratingStandardService.deleteByCadresId(id);
                 ratingStandardService.save(actual);
             }
         } else {

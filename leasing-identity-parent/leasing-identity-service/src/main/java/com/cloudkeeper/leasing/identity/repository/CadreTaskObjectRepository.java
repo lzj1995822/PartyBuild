@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface CadreTaskObjectRepository extends BaseRepository<CadreTaskObject> {
 
     CadreTaskObject findByTaskIdAndAndObjectId(String taskId, String objectId);
+
+    void deleteAllByTaskId(String taskId);
 }
