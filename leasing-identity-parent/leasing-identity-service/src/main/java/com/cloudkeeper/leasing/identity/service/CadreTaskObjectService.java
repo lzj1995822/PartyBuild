@@ -12,4 +12,6 @@ public interface CadreTaskObjectService extends BaseService<CadreTaskObject> {
 
     CadreTaskObject updateStatusByTaskIdAndObjectId(String status, String taskId, String objectId);
 
+    void deleteByTaskId(String taskId);
+
 }

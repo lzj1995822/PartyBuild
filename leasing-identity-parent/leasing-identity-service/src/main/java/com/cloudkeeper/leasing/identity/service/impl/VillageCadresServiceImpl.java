@@ -246,7 +246,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 actual.setCadresId(id);
                 actual.setIsStandard("0");
                 actual.setDistrictId(villageCadres.getDistrictId());
-                ratingStandardService.deleteAllByCadresId(id);
+                ratingStandardService.deleteByCadresId(id);
                 ratingStandardService.save(actual);
             }
         } else {
