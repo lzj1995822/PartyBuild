@@ -10,4 +10,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
 public interface CadrePositionService extends BaseService<CadrePosition> {
 
     Integer countVillageSecretaryNumber(String districtId,String post);
+
+    CadrePosition findByDistrictIdAndPost(String districtId, String post);
 }

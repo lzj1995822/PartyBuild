@@ -41,4 +41,9 @@ public class CadrePositionServiceImpl extends BaseServiceImpl<CadrePosition> imp
         Integer integer = cadrePositionRepository.countAllByDistrictIdStartingWithAndPostAndCadreIdNotNull(districtId, post);
         return integer;
     }
+
+    @Override
+    public CadrePosition findByDistrictIdAndPost(String districtId, String post) {
+        return cadrePositionRepository.findByDistrictIdAndPost(districtId, post);
+    }
 }
