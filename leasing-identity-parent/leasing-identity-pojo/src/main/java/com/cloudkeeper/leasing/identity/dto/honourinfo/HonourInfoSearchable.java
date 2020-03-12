@@ -49,4 +49,14 @@ public class HonourInfoSearchable extends BaseSearchable {
     @ApiModelProperty(value = "是否可以编辑", position = 25)
     private String isEdit;
 
+    /** 2020-03-12新增字段 **/
+    /** 奖或惩 */
+    @ApiModelProperty(value = "奖或惩", position = 25)
+    private String rewardsType;
+
+    /** 表彰种类 */
+    @ApiModelProperty(value = "表彰种类", position = 25)
+    private String honourDescription;
+
+
 }
