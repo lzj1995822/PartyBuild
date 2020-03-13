@@ -35,4 +35,10 @@ public class InformationAuditDTO  extends BaseEditDTO  {
     /**审核意见**/
     private  String auditAdvice;
 
+    /**流程类型（村书记基本信息，考核，职级评定）**/
+    private String processType;
+
+    /**村书记任务Id**/
+    private String taskId;
+
 }

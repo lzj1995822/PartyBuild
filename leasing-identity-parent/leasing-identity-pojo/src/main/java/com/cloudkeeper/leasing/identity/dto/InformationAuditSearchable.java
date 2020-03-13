@@ -48,4 +48,14 @@ public class InformationAuditSearchable extends BaseSearchable {
      */
     @ApiModelProperty(value = "发布对象", position = 10, required = true)
     private String districtID;
+
+
+    /**村书记id**/
+    private String villageId;
+
+    /**流程类型（村书记基本信息，考核，职级评定）**/
+    private String processType;
+
+    /**村书记任务Id**/
+    private String taskId;
 }

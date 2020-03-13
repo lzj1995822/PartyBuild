@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.familyinfo.FamilyInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.familyworkinfo.FamilyWorkInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.traininginfo.TrainingInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
@@ -59,6 +60,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     private final FamilyInfoService familyInfoService;
 
     private final FamilyWorkInfoService familyWorkInfoService;
+
+    private final TrainingInfoService trainingInfoService;
 
     @Override
     protected BaseRepository<VillageCadres> getBaseRepository() {
@@ -131,6 +134,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setVillageId(convert.getId());
         informationAudit.setStatus(convert.getState());
         informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAuditService.save(informationAudit);
 
         cadreTaskObjectService.updateStatusByTaskIdAndObjectId(convert.getState(), currentBaseInfoTask.getId(), convert.getDistrictId());
@@ -169,6 +173,13 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             f.setCadresId(cadresId);
             familyWorkInfoService.save(f.convert(FamilyWorkInfo.class));
         }
+
+        List<TrainingInfoDTO> trainingInfoDTOS = villageCadresDTO.getTrainingInfoDTOS();
+        trainingInfoService.deleteAllByCadresId(cadresId);
+        for (TrainingInfoDTO f : trainingInfoDTOS){
+            f.setCadresId(cadresId);
+            trainingInfoService.save(f.convert(TrainingInfo.class));
+        }
         return convert;
     }
 
@@ -186,6 +197,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setVillageId(villageCadres.getId());
         informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAudit.setStatus(villageCadres.getState());
         informationAuditService.save(informationAudit);
 
@@ -258,6 +270,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setStatus(villageCadres.getState());
         informationAudit.setVillageId(id);
         informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAudit.setAuditAdvice(informationAuditDTO2.getAuditAdvice());
         informationAudit.setAuditor(informationAuditDTO2.getAuditor());
         informationAuditService.save(informationAudit);

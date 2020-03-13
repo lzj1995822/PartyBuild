@@ -9,4 +9,5 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface TrainingInfoService extends BaseService<TrainingInfo> {
 
+    void deleteAllByCadresId(String cadresId);
 }
