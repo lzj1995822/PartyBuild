@@ -296,6 +296,9 @@ public class VillageCadres extends BaseEntity {
         if (!StringUtils.isEmpty(this.familyWorkInfos)) {
             villageCadresVO.setFamilyWorkInfoVOS(RewardInfo.convert(this.familyWorkInfos, FamilyWorkInfoVO.class));
         }
+        if (!StringUtils.isEmpty(this.trainingInfos)) {
+            villageCadresVO.setTrainingInfoVOS(TrainingInfo.convert(this.trainingInfos, TrainingInfoVO.class));
+        }
         return (T) villageCadresVO;
     }
 

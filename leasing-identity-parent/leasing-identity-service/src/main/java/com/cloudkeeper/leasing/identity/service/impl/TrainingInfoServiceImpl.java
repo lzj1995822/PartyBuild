@@ -37,4 +37,8 @@ public class TrainingInfoServiceImpl extends BaseServiceImpl<TrainingInfo> imple
                 .withMatcher("trainingYear", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public void deleteAllByCadresId(String cadresId) {
+        trainingInfoRepository.deleteAllByCadresId(cadresId);
+    }
 }

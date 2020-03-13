@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrainingInfoRepository extends BaseRepository<TrainingInfo> {
 
+    void deleteAllByCadresId(String cadresId);
 }

@@ -86,14 +86,14 @@ public class InformationAuditControllerImpl implements InformationAuditControlle
 
 
     @Override
-    public Result<List<InformationAuditVO>> list(InformationAuditSearchable informationAuditSearchable, Sort sort) {
+    public Result<List<InformationAuditVO>> list(@RequestBody InformationAuditSearchable informationAuditSearchable, Sort sort) {
         List<InformationAudit> informationAudits = informationAuditService.findAll(informationAuditSearchable, sort);
         List<InformationAuditVO> informationAuditVOList = Information.convert(informationAudits, InformationAuditVO.class);
         return Result.of(informationAuditVOList);
     }
 
     @Override
-    public Result<Page<InformationAuditVO>> page(InformationAuditSearchable informationAuditSearchable, Pageable pageable) {
+    public Result<Page<InformationAuditVO>> page(@RequestBody InformationAuditSearchable informationAuditSearchable, Pageable pageable) {
         Page<InformationAudit> informationAuditPage = informationAuditService.findAll(informationAuditSearchable, pageable);
         Page<InformationAuditVO> informationVOPage = Information.convert(informationAuditPage, InformationAuditVO.class);
         return Result.of(informationVOPage);

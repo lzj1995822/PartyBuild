@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.*;
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -34,10 +35,12 @@ public class HonourInfo extends BaseEntity {
     @ApiModelProperty(value = "干部id", position = 5)
     private String cadresId;
 
+    /** 干部id */
     @ApiModelProperty(value = "干部id", position = 5)
     @OneToOne
-    @JoinColumn(name="cadresId",insertable = false,updatable = false)
+    @JoinColumn(name = "cadresId", insertable = false, updatable = false)
     private VillageCadres villageCadres;
+
     /** 获取时间 */
     @ApiModelProperty(value = "获取时间", position = 1)
     private LocalDate achieveTime;
