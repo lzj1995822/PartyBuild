@@ -42,4 +42,7 @@ public class InformationAuditVO extends BaseVO {
     /**村书记任务Id**/
     private String taskId;
 
+    /**状态**/
+    private String status;
+
 }

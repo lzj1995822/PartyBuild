@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,15 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         Page<CadreTask> cadreTaskPage = cadreTaskService.findAll(cadreTaskSearchable, pageable);
         Page<CadreTaskVO> cadreTaskVOPage = CadreTask.convert(cadreTaskPage, CadreTaskVO.class);
         return Result.of(cadreTaskVOPage);
+    }
+
+    @Override
+    public Result<CadreTaskVO> getCurrentTask(@PathVariable @Nonnull String type) {
+        CadreTask cadreTask = cadreTaskService.getCurrentTaskByType(type);
+        if (cadreTask == null) {
+            return Result.of(null);
+        }
+        return Result.of(cadreTask.convert(CadreTaskVO.class));
     }
 
 }

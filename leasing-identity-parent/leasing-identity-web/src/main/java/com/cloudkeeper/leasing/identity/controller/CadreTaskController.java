@@ -83,4 +83,9 @@ public interface CadreTaskController {
     Result<Page<CadreTaskVO>> page(@ApiParam(value = "村书记模块任务查询条件", required = true) @RequestBody CadreTaskSearchable cadreTaskSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+
+    @ApiOperation(value = "获取当前的任务", notes = "获取当前的任务", position = 6)
+    @PostMapping("/getCurrentTask/{type}")
+    Result<CadreTaskVO> getCurrentTask(@PathVariable String type);
+
 }

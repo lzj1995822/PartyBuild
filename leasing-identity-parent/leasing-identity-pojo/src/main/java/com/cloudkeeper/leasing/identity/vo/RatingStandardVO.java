@@ -105,4 +105,17 @@ public class RatingStandardVO extends BaseVO {
     @ApiModelProperty(value = "村id", position = 10, required = true)
     private String districtId;
 
+    private String currentLevel;
+
+    private String currentLevelJudgeTime;
+
+    /** 目的村书记等级 */
+    @ApiModelProperty(value = "目的村书记等级", position = 10, required = true)
+    private String purpose;
+
+    /** 当前评级状态 */
+    @ApiModelProperty(value = "当前评级状态", position = 10, required = true)
+    private String status;
+
+
 }

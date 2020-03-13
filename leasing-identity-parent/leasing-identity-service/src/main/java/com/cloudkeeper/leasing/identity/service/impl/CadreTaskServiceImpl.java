@@ -112,7 +112,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         return getCurrentTaskByType(Level_JUDGE_TASK);
     }
 
-    private CadreTask getCurrentTaskByType(String type) {
+    @Override
+    public CadreTask getCurrentTaskByType(String type) {
         return cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
     }
 

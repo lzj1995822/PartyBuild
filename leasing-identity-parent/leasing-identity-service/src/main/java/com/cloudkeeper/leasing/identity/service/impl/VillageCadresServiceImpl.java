@@ -63,6 +63,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     private final TrainingInfoService trainingInfoService;
 
+    private final SysUserService sysUserService;
+
     @Override
     protected BaseRepository<VillageCadres> getBaseRepository() {
         return villageCadresRepository;
@@ -135,6 +137,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setStatus(convert.getState());
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
+        informationAudit.setAuditor(byDistrictId.getDistrictName());
+        informationAudit.setAuditAdvice("更新了该村书记信息！");
         informationAuditService.save(informationAudit);
 
         cadreTaskObjectService.updateStatusByTaskIdAndObjectId(convert.getState(), currentBaseInfoTask.getId(), convert.getDistrictId());
@@ -199,6 +203,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAudit.setStatus(villageCadres.getState());
+        informationAudit.setAuditor(villageCadres.getSysDistrict().getDistrictName());
+        informationAudit.setAuditAdvice("提交了该村书记信息！");
         informationAuditService.save(informationAudit);
 
         cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());
@@ -230,6 +236,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         }else if(villageCadres.getState().equals("3")){
             districtId=villageCadres.getDistrictId().substring(0,4);
         }
+
         String checkMsg = new String();
         /*判断前端传来的提交 villageId ,code是否通过*/
         if (code.equals("SUCCESS")) {
@@ -266,13 +273,18 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         villageCadres.setState(integer.toString());
         villageCadres = villageCadresRepository.save(villageCadres);
 
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(getCurrentPrincipalId());
+        if (!optionalById.isPresent()) {
+            return null;
+        }
+        String districtName = optionalById.get().getName();
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setStatus(villageCadres.getState());
         informationAudit.setVillageId(id);
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
-        informationAudit.setAuditAdvice(informationAuditDTO2.getAuditAdvice());
-        informationAudit.setAuditor(informationAuditDTO2.getAuditor());
+        informationAudit.setAuditAdvice("审核意见：" + informationAuditDTO2.getAuditAdvice());
+        informationAudit.setAuditor(districtName + "-" + informationAuditDTO2.getAuditor());
         informationAuditService.save(informationAudit);
 
         cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());

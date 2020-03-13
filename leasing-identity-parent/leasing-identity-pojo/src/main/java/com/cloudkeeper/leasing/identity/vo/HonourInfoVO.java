@@ -49,6 +49,10 @@ public class HonourInfoVO extends BaseVO {
     @ApiModelProperty(value = "是否可以编辑", position = 25)
     private String isEdit;
 
+    /** 是否可以编辑 */
+    @ApiModelProperty(value = "是否可以编辑", position = 25)
+    private String honourType;
+
     /** 2020-03-12新增字段 **/
     /** 奖或惩 */
     @ApiModelProperty(value = "奖或惩", position = 25)

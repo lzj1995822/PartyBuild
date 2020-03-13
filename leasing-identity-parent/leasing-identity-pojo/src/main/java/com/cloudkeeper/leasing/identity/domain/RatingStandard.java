@@ -111,6 +111,14 @@ public class RatingStandard extends BaseEntity {
     @Column(length = 60)
     private String isStandard;
 
+    /** 目的村书记等级 */
+    @ApiModelProperty(value = "目的村书记等级", position = 10, required = true)
+    private String purpose;
+
+    /** 当前评级状态 */
+    @ApiModelProperty(value = "当前评级状态", position = 10, required = true)
+    private String status;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
@@ -126,6 +134,8 @@ public class RatingStandard extends BaseEntity {
             ratingStandardVO.setEducation(villageCadres.getEducation());
             ratingStandardVO.setVillageName(villageCadres.getSysDistrict().getDistrictName());
             ratingStandardVO.setTownName(villageCadres.getParentSysDistrict().getDistrictName());
+            ratingStandardVO.setCurrentLevel(villageCadres.getQuasiAssessmentRank());
+            ratingStandardVO.setCurrentLevelJudgeTime(villageCadres.getTermOfOffice());
         }
         return (T)ratingStandardVO;
     }

@@ -18,6 +18,8 @@ public interface CadreTaskService extends BaseService<CadreTask> {
 
     CadreTask getCurrentLevelJudgeTask();
 
+    CadreTask getCurrentTaskByType(String type);
+
     void deleteById(String id);
 
 }
