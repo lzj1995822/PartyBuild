@@ -334,9 +334,4 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         return ratingStandard;
     }
 
-    @Override
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response, VillageCadresSearchable villageCadresSearchable) {
-
-    }
-
 }
