@@ -28,7 +28,8 @@ public class HonourInfoVO extends BaseVO {
     /** 干部id */
     @ApiModelProperty(value = "干部id", position = 5)
     private String cadresId;
-
+    @ApiModelProperty(value = "干部名称", position = 5)
+    private String cadresName;
     /** 获取时间 */
     @ApiModelProperty(value = "获取时间", position = 1)
     private LocalDate achieveTime;
@@ -61,6 +62,8 @@ public class HonourInfoVO extends BaseVO {
     /** 表彰种类 */
     @ApiModelProperty(value = "表彰种类", position = 25)
     private String honourDescription;
-
+    /** 组织ID */
+    @ApiModelProperty(value = "组织ID", position = 25)
+    private String districtId;
 
 }

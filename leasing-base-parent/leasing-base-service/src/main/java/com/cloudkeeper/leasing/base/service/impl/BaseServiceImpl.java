@@ -269,7 +269,13 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
         List<Map<String, Object>> list = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
         return BeanConverts.mapToObj(clazz, list);
     }
-
+//    @Override
+//    public <D> List<D> findPageBySql(@Nonnull Class<D> clazz, @Nonnull String sql,@Nonnull Integer page,@Nonnull Integer pageSize) {
+//        page = (page-1)*pageSize;
+//        sql += " limit "+page +","+pageSize;
+//        List<Map<String, Object>> list = entityManager.createNativeQuery(sql).unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+//        return BeanConverts.mapToObj(clazz, list);
+//    }
     @Override
     public String actionLog(String action, String taskType, String title) {
         String type;

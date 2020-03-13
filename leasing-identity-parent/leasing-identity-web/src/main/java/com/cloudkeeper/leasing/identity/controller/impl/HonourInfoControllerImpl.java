@@ -76,7 +76,7 @@ public class HonourInfoControllerImpl implements HonourInfoController {
     public Result<Page<HonourInfoVO>> page(@ApiParam(value = "表彰情况查询条件", required = true) @RequestBody HonourInfoSearchable honourInfoSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
         Page<HonourInfo> honourInfoPage = honourInfoService.findAll(honourInfoSearchable, pageable);
-        Page<HonourInfoVO> honourInfoVOPage = HonourInfo.convert(honourInfoPage, HonourInfoVO.class);
+        Page<HonourInfoVO> honourInfoVOPage = HonourInfo.pageConvert(honourInfoPage, HonourInfoVO.class);
         return Result.of(honourInfoVOPage);
     }
 

@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -152,6 +154,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         honourInfoService.deleteAllByCadresId(cadresId);
         for (HonourInfoDTO item:honours) {
             item.setCadresId(cadresId);
+            item.setDistrictId(villageCadresDTO.getDistrictId());
             honourInfoService.save(item.convert(HonourInfo.class));
         }
 
