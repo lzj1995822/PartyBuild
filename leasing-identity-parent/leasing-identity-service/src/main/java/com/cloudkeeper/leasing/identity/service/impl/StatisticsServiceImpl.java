@@ -35,17 +35,17 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     @Override
     public List<StatisticsVO> getAgeStatistics(String districtId) {
 
-        String sql = "select  cast(isNULL(MAX(FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25)),0) as int) as val,'最高年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
+        String sql = "select  cast(isNULL(MAX(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最高年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
+                "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  isNULL(cast(round(avg(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
+                "select  isNULL(cast(round(avg(DATEDIFF(DY, birth, GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType = 'SECRETARY' and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType = 'SECRETARY' and FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25) <= 35 and districtId like '"+districtId+"%'\n" +
+                "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType = 'SECRETARY' and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  count(1) as val,'35-50周岁' as name from village_cadres where cadresType = 'SECRETARY' and FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25) > 35 and FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25) <= 50 and districtId like '"+districtId+"%'\n" +
+                "select  count(1) as val,'35-50周岁' as name from village_cadres where cadresType = 'SECRETARY' and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType = 'SECRETARY' and FLOOR(DATEDIFF(DY, substring(IDcardNumber,7,4), GETDATE()) / 365.25) > 50 and districtId like '"+districtId+"%'\n" +
+                "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType = 'SECRETARY' and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
                 "\n";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;
@@ -112,7 +112,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public List<StatisticsClassifyVO> getSalaryStatistics(String districtId) {
-        String sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY'and cadres.districtId like '\"+districtId+\"%' GROUP BY DateName(year,reward.achieveTime)";
+        String sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY'and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
         List<StatisticsNotIntegerVO> basics = (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均基本报酬
         sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
         List<StatisticsNotIntegerVO> reviews = (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均考核报酬
@@ -131,7 +131,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         statisticsClassifyVO3.setStatistics(others);
         StatisticsClassifyVO statisticsClassifyVO4 = new StatisticsClassifyVO();
         statisticsClassifyVO4.setName("年平均报酬");
-        statisticsClassifyVO4.setStatistics(others);
+        statisticsClassifyVO4.setStatistics(totals);
         List<StatisticsClassifyVO> list = new ArrayList<>();
         list.add(statisticsClassifyVO1);
         list.add(statisticsClassifyVO2);

@@ -150,6 +150,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         honourInfoService.deleteAllByCadresId(cadresId);
         for (HonourInfoDTO item:honours) {
             item.setCadresId(cadresId);
+            item.setDistrictId(villageCadresDTO.getDistrictId());
             honourInfoService.save(item.convert(HonourInfo.class));
         }
 

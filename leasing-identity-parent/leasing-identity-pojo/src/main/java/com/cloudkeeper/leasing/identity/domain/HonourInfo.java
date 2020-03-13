@@ -73,7 +73,9 @@ public class HonourInfo extends BaseEntity {
     /** 表彰种类 */
     @ApiModelProperty(value = "表彰种类", position = 25)
     private String honourDescription;
-
+    /** 组织ID */
+    @ApiModelProperty(value = "组织ID", position = 25)
+    private String districtId;
     @Nonnull
     @Override
     public <T> T pageConvert(@Nonnull Class<T> clazz) {
