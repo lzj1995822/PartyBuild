@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import com.cloudkeeper.leasing.identity.vo.SumPerHourVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     private final StatisticsService statisticsService;
     @Override
-    public Result<List<StatisticsVO>> getSxStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getSxStatistics(@PathVariable("districtId") String districtId) {
         List<StatisticsVO> list = statisticsService.getSxStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -27,7 +28,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getAgeStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getAgeStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsVO> list = statisticsService.getAgeStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -35,7 +36,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getEduStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getEduStatistics( @PathVariable("districtId") String districtId) {
         List<StatisticsVO> list = statisticsService.getEduStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -43,7 +44,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getcadresTypeStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getcadresTypeStatistics(@PathVariable("districtId") String districtId) {
         List<StatisticsVO> list = statisticsService.getcadresTypeStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -51,7 +52,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getServingYearStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getServingYearStatistics( @PathVariable("districtId")String districtId) {
         List<StatisticsVO> list = statisticsService.getServingYearStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -59,7 +60,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getRankStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getRankStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsVO> list = statisticsService.getRankStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -67,7 +68,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsClassifyVO>> getSalaryStatistics(String districtId) {
+    public Result<List<StatisticsClassifyVO>> getSalaryStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsClassifyVO> list = statisticsService.getSalaryStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -75,7 +76,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsVO>> getPartyStandingStatistics(String districtId) {
+    public Result<List<StatisticsVO>> getPartyStandingStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsVO> list = statisticsService.getPartyStandingStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
@@ -83,7 +84,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsListVO>> getRewardsStatistics(String districtId) {
+    public Result<List<StatisticsListVO>> getRewardsStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsListVO> list = statisticsService.getRewardsStatistics(districtId);
         Result r = new Result();
         r.setContent(list);

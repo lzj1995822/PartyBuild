@@ -234,7 +234,7 @@ public interface BaseService<T> {
      * @return
      */
     <D> List<D> findAllBySql(@Nonnull Class<D> clazz, @Nonnull String sql);
-
+//    <D> List<D> findPageBySql(@Nonnull Class<D> clazz, @Nonnull String sql,@Nonnull Integer page,@Nonnull Integer pageSize);
     String actionLog(String action,String taskType,String title);
 
 

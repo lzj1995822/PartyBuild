@@ -26,7 +26,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "男女比例统计", notes = "男女比例统计", position = 1)
     @GetMapping("/getSexStatistics/{districtId}")
-    Result<List<StatisticsVO>> getSxStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getSxStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 年龄结构分析
@@ -35,7 +35,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "年龄结构分析", notes = "年龄结构分析", position = 1)
     @GetMapping("/getAgeStatistics/{districtId}")
-    Result<List<StatisticsVO>> getAgeStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getAgeStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 学历结构分析
@@ -44,7 +44,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "学历结构分析", notes = "学历结构分析", position = 1)
     @GetMapping("/getEduStatistics/{districtId}")
-    Result<List<StatisticsVO>> getEduStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getEduStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 人员类型分析
@@ -53,7 +53,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "人员类型分析", notes = "人员类型分析", position = 1)
     @GetMapping("/getcadresTypeStatistics/{districtId}")
-    Result<List<StatisticsVO>> getcadresTypeStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getcadresTypeStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 任职年限分析
@@ -62,7 +62,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "任职年限分析", notes = "任职年限分析", position = 1)
     @GetMapping("/getServingYearStatistics/{districtId}")
-    Result<List<StatisticsVO>> getServingYearStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getServingYearStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 职级情况分析
@@ -71,7 +71,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "职级情况分析", notes = "职级情况分析", position = 1)
     @GetMapping("/getRankStatistics/{districtId}")
-    Result<List<StatisticsVO>> getRankStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getRankStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 报酬结构分析
@@ -80,7 +80,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "报酬结构分析", notes = "报酬结构分析", position = 1)
     @GetMapping("/getSalaryStatistics/{districtId}")
-    Result<List<StatisticsClassifyVO>> getSalaryStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsClassifyVO>> getSalaryStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
 
 
@@ -91,7 +91,7 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "党龄情况分析", notes = "党龄情况分析", position = 1)
     @GetMapping("/getPartyStandingStatistics/{districtId}")
-    Result<List<StatisticsVO>> getPartyStandingStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsVO>> getPartyStandingStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
     /**
      * 奖惩情况分析
@@ -100,6 +100,6 @@ public interface StatisticsController {
      */
     @ApiOperation(value = "奖惩情况分析", notes = "奖惩情况分析", position = 1)
     @GetMapping("/getRewardsStatistics/{districtId}")
-    Result<List<StatisticsListVO>> getRewardsStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable String districtId);
+    Result<List<StatisticsListVO>> getRewardsStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
 }

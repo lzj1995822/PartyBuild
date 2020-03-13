@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -317,6 +319,11 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             ratingStandard.setHonoursType(String.join("," ,villageCadres.getHonourInfos().stream().map(HonourInfo::getHonourType).collect(Collectors.toList())));
         }
         return ratingStandard;
+    }
+
+    @Override
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response, VillageCadresSearchable villageCadresSearchable) {
+
     }
 
 }

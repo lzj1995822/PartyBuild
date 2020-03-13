@@ -1,6 +1,8 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.HonourInfoVO;
+import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,10 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.annotation.Nonnull;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -32,6 +34,10 @@ public class HonourInfo extends BaseEntity {
     @ApiModelProperty(value = "干部id", position = 5)
     private String cadresId;
 
+    @ApiModelProperty(value = "干部id", position = 5)
+    @OneToOne
+    @JoinColumn(name="cadresId",insertable = false,updatable = false)
+    private VillageCadres villageCadres;
     /** 获取时间 */
     @ApiModelProperty(value = "获取时间", position = 1)
     private LocalDate achieveTime;
@@ -64,5 +70,16 @@ public class HonourInfo extends BaseEntity {
     /** 表彰种类 */
     @ApiModelProperty(value = "表彰种类", position = 25)
     private String honourDescription;
+
+    @Nonnull
+    @Override
+    public <T> T pageConvert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        HonourInfoVO honourInfoVO = (HonourInfoVO) convert;
+        if (!StringUtils.isEmpty(this.villageCadres)){
+            honourInfoVO.setCadresName(this.villageCadres.getName());
+        }
+        return (T) honourInfoVO;
+    }
 
 }

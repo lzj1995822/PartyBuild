@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 村干部管理 查询DTO
@@ -160,5 +161,12 @@ public class VillageCadresSearchable extends BaseSearchable {
     private String propertyRightsTransactionsNumber;
     @ApiModelProperty(value = "12345热线月投诉量", position = 19)
     private String complaintVolume;
+
+    private String cadresType;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
+    private String age;
+
+    private String enterPartyTime;
+
+    private List<String> export;
 }
