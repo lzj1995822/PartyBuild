@@ -54,7 +54,8 @@ public class DistLearningActivityVideoServiceImpl extends BaseServiceImpl<DistLe
         ObjectMapper param = new ObjectMapper();
         String fullUrl = null;
         try {
-            fullUrl = "http://122.97.218.162:18306/JRPartyService/ThirdParty.svc/SHCSListCPVideo?cpCode=JTEDU";
+
+            fullUrl = "http://172.22.116.152:8080/cms/interfaceservice/listCPVideo?cpCode=JTEDU&terminalType=stb&pageSize=1000&pageNum=1";
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -64,9 +65,8 @@ public class DistLearningActivityVideoServiceImpl extends BaseServiceImpl<DistLe
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(responseEntity.getBody().toString());
-            JsonNode OneListNode = rootNode.path("data");
-            JsonNode TwoListNode = OneListNode.path("video");
-            String logJson = mapper.writeValueAsString(TwoListNode);
+            JsonNode OneListNode = rootNode.path("video");
+            String logJson = mapper.writeValueAsString(OneListNode);
             JavaType logType = mapper.getTypeFactory().constructParametricType(List.class, VideoListVO.class);
             List<VideoListVO> logList = mapper.readValue(logJson, logType);
             return logList;
@@ -75,6 +75,5 @@ public class DistLearningActivityVideoServiceImpl extends BaseServiceImpl<DistLe
             return null;
         }
     }
-
 
 }

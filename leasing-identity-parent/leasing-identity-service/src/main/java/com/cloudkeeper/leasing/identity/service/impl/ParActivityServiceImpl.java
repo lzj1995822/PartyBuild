@@ -196,10 +196,10 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                     distLearningActivityVideo.setActivityId(activityId);
                     distLearningActivityVideo.setName(item.getName());
                     distLearningActivityVideo.setLengthOfTime(item.getLengthOfTime());
-                    distLearningActivityVideo.setVideoCover("http://172.16.0.152:8082/cms/res/appPoster/stb/" + item.getVideoCover());
+                    distLearningActivityVideo.setVideoCover("http://172.22.116.152:8082/cms/res/appPoster/stb/" + item.getVideoCover());
                     if (item.getVideoUrl().split("\\=").length > 1) {
                         String mp4 = item.getVideoUrl().split("\\=")[1];
-                        distLearningActivityVideo.setVideoUrl("http://172.16.1.140:9391/vod/" + mp4 + ".mp4");
+                        distLearningActivityVideo.setVideoUrl("http://172.22.118.140:9391/vod/" + mp4 + ".mp4");
                     }
                 results.add(distLearningActivityVideoService.save(distLearningActivityVideo));
             });
