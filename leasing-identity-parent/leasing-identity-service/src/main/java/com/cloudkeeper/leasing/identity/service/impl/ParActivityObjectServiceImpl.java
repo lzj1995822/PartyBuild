@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.paractivityobject.ParActivityObjectSearchable;
 import com.cloudkeeper.leasing.identity.dto.parpictureinfro.ParPictureInfroSearchable;
+import com.cloudkeeper.leasing.identity.enumeration.TaskTypeEnum;
 import com.cloudkeeper.leasing.identity.repository.*;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.*;
@@ -224,7 +225,7 @@ public class ParActivityObjectServiceImpl extends BaseServiceImpl<ParActivityObj
         }
 
         //更新前先删除截图
-        if(parActivityObjectDTO.getPhoneOrTv().equals("phone")) {
+        if(parActivityObjectDTO.getPhoneOrTv().equals("phone") || TaskTypeEnum.DistLearning.toString().equals(parActivityObject.getParActivity().getTaskType())) {
 //            List<SysUser> list = sysUserRepository.findAllByOrganizationId(districtId.getId());
 //            List<String> feedBackIds = new ArrayList<>();
 //            for(int i=0;i<list.size();i++){
