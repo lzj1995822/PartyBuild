@@ -5,6 +5,8 @@ import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 村书记模块发布任务对象记录 repository
  * @author asher
@@ -15,4 +17,6 @@ public interface CadreTaskObjectRepository extends BaseRepository<CadreTaskObjec
     CadreTaskObject findByTaskIdAndAndObjectId(String taskId, String objectId);
 
     void deleteAllByTaskId(String taskId);
+
+    List<CadreTaskObject> findAllByTaskId(String taskId);
 }

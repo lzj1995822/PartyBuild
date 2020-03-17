@@ -165,6 +165,12 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         return null;
     }
 
+    @Override
+    public Result<Boolean> init() {
+        villageCadresService.initCadres();
+        return Result.of(true);
+    }
+
     /**
      * 获取某年第一天日期
      * @param year 年份

@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 村书记模块发布任务对象记录 VO
@@ -57,4 +59,11 @@ public class CadreTaskObjectVO extends BaseVO {
     @ApiModelProperty(value = "镇名", position = 10, required = true)
     private String townName;
 
+    /** 村書記更新任務詳情 */
+    @ApiModelProperty(value = "村書記更新任務詳情", position = 10, required = true)
+    private List<VillageCadresInfoVO> villageCadres;
+
+    /** 当前对象进度 */
+    @ApiModelProperty(value = "当前对象进度")
+    private String currentPercent;
 }

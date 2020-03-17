@@ -52,4 +52,8 @@ public class CadreTask extends BaseEntity {
     @ApiModelProperty(value = "附件")
     private String attach;
 
+    /** 市总进度 */
+    @ApiModelProperty(value = "市总进度")
+    private String currentPercent;
+
 }

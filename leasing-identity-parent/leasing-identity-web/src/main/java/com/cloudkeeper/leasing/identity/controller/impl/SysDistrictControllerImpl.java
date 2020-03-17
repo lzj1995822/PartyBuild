@@ -53,7 +53,7 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         String maxId = sysDistrictService.findMaxId(convert.getOrgParent());
         convert.setDistrictId(maxId);
         convert.setDistrictLevel(maxId.length()/2);
-        SysDistrict sysDistrict = sysDistrictService.save(convert);
+        SysDistrict sysDistrict = sysDistrictService.save(sysDistrictService.handleRelation(convert));
         String  msg= sysDistrictService.actionLog("新增","[组织信息]", sysDistrict.getDistrictName());
         sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());
         return Result.ofAddSuccess(sysDistrict.convert(SysDistrictVO.class));
@@ -68,7 +68,7 @@ public class SysDistrictControllerImpl implements SysDistrictController {
         }
         SysDistrict sysDistrict = sysDistrictOptional.get();
         BeanUtils.copyProperties(sysDistrictDTO, sysDistrict);
-        sysDistrict = sysDistrictService.save(sysDistrict);
+        sysDistrict = sysDistrictService.save(sysDistrictService.handleRelation(sysDistrict));
         String  msg= sysDistrictService.actionLog("修改","[组织信息]", sysDistrict.getDistrictName());
         sysLogService.pushLog(this.getClass().getName(),msg,sysDistrictService.getTableName(),sysDistrict.getId());
         return Result.ofUpdateSuccess(sysDistrict.convert(SysDistrictVO.class));

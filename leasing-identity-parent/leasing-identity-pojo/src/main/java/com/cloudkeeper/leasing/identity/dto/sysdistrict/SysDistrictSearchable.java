@@ -73,4 +73,7 @@ public class SysDistrictSearchable extends BaseSearchable {
     @ApiModelProperty(value = "是否属于离退休党支部", position = 10, required = true)
     private String isRetiredBranch;
 
+    private String parentName;
+
+    private String orgParentName;
 }

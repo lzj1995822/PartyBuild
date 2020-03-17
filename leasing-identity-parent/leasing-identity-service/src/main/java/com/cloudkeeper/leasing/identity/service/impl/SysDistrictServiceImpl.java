@@ -142,6 +142,19 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return sysDistrictRepository.findAllByDistrictIdGreaterThanEqual(districtId);
     }
 
+    @Override
+    public SysDistrict handleRelation(SysDistrict sysDistrict) {
+        SysDistrict byDistrictId = findByDistrictId(sysDistrict.getAttachTo());
+        if (byDistrictId != null) {
+            sysDistrict.setParentName(byDistrictId.getDistrictName());
+        }
+        SysDistrict byDistrictId1 = findByDistrictId(sysDistrict.getOrgParent());
+        if (byDistrictId1 != null) {
+            sysDistrict.setOrgParentName(byDistrictId1.getDistrictName());
+        }
+        return sysDistrict;
+    }
+
     private List<SysDistrictTreeVO> translateToVO(List<SysDistrict> sysDistricts, String parentId) {
         List<SysDistrictTreeVO> sysDistrictTreeVOS = new ArrayList<>();
         for (SysDistrict sysDistrict: sysDistricts) {

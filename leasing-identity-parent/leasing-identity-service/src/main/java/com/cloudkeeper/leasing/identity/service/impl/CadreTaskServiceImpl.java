@@ -5,13 +5,16 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
-import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
-import com.cloudkeeper.leasing.identity.service.CadreTaskService;
-import com.cloudkeeper.leasing.identity.service.MessageCenterService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
+import com.cloudkeeper.leasing.identity.service.*;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
+import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
+import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -25,8 +28,10 @@ import javax.annotation.Nonnull;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 村书记模块任务 service
@@ -50,6 +55,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     private final CadreTaskObjectService cadreTaskObjectService;
 
     private final MessageCenterService messageCenterService;
+
+    private final VillageCadresRepository villageCadresRepository;
 
     @Override
     protected BaseRepository<CadreTask> getBaseRepository() {
@@ -75,7 +82,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
         if (BASE_INFO_TASK.equals(type) || Level_JUDGE_TASK.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
-            sysDistrictSearchable.setDistrictLevel(3);
+            sysDistrictSearchable.setDistrictLevel(2);
         } else if (REVIEW_TASK.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
         } else {
@@ -122,6 +129,25 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     public void deleteById(@Nonnull String id) {
         super.deleteById(id);
         cadreTaskObjectService.deleteByTaskId(id);
+    }
+
+    @Override
+    public List<CadreTaskObjectVO> getDetailByTaskId(String taskId) {
+        Optional<CadreTask> optionalById = findOptionalById(taskId);
+        if (!optionalById.isPresent()) {
+            return null;
+        }
+        List<CadreTaskObject> allByTaskId = cadreTaskObjectService.findAllByTaskId(taskId);
+        List<CadreTaskObjectVO> convert = CadreTaskObject.convert(allByTaskId, CadreTaskObjectVO.class);
+        for (CadreTaskObjectVO item : convert) {
+            List<VillageCadres> villageCadreses = villageCadresRepository.findAllByParentDistrictId(item.getObjectId());
+            ArrayList<VillageCadresInfoVO> villageCadresInfoVOArrayList = new ArrayList<VillageCadresInfoVO>();
+            for (VillageCadres subitem : villageCadreses) {
+                villageCadresInfoVOArrayList.add(subitem.convert(subitem));
+            }
+            item.setVillageCadres(villageCadresInfoVOArrayList);
+        }
+        return convert;
     }
 
 }

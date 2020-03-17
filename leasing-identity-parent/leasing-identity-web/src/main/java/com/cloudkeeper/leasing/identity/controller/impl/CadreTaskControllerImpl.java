@@ -3,10 +3,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
+import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskSearchable;
 import com.cloudkeeper.leasing.identity.service.CadreTaskService;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -15,9 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -90,4 +91,18 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         return Result.of(cadreTask.convert(CadreTaskVO.class));
     }
 
+    /**
+     * 更新
+     * @param  taskId
+     * @return 村书记模块任务 VO
+     */
+    @ApiOperation(value = "更新", notes = "更新", position = 3)
+    @GetMapping("/{taskId}taskId")
+    public Result<List<CadreTaskObjectVO>> getDetailByTaskId(@PathVariable @Nonnull String taskId) {
+        List<CadreTaskObjectVO> detailByTaskId = cadreTaskService.getDetailByTaskId(taskId);
+        if (detailByTaskId == null) {
+            return Result.of(null);
+        }
+        return Result.of(detailByTaskId);
+    }
 }

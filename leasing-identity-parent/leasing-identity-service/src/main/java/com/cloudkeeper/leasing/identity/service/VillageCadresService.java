@@ -9,6 +9,8 @@ import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 /**
  * 村干部管理 service
  * @author cqh
@@ -39,4 +41,8 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
     void updateIsEdit(String cadresId);
 
     RatingStandard generatePostLevel(VillageCadres villageCadres);
+
+    List<VillageCadres> findAllByParentDistrictId(String objectId);
+
+    void initCadres();
 }

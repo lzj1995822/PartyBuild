@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -114,17 +115,23 @@ public class VillageCadres extends BaseEntity {
 
     /** 组织 */
     @ApiModelProperty(value = "组织", position = 24)
+    @JsonIgnore
     @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "districtId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
 
+    private String districtName;
+
     /** 镇级组织 */
     @ApiModelProperty(value = "组织", position = 24)
+    @JsonIgnore
     @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentDistrictId",referencedColumnName = "districtId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict parentSysDistrict;
+
+    private String parentDistrictName;
 
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
@@ -272,12 +279,6 @@ public class VillageCadres extends BaseEntity {
             villageCadresVO.setPost(this.cadrePosition.getId());
             villageCadresVO.setPostName(this.cadrePosition.getName());
         }
-        if (!StringUtils.isEmpty(this.sysDistrict)){
-            villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
-        }
-        if (!StringUtils.isEmpty(this.parentSysDistrict)) {
-            villageCadresVO.setParentDistrictName(this.parentSysDistrict.getDistrictName());
-        }
         if (informationAudits.size() > 0) {
             InformationAudit first = informationAudits.get(0);
             villageCadresVO.setAuditor(first.getAuditor());
@@ -311,17 +312,21 @@ public class VillageCadres extends BaseEntity {
             villageCadresVO.setPost(this.cadrePosition.getId());
             villageCadresVO.setPostName(this.cadrePosition.getName());
         }
-        if (!StringUtils.isEmpty(this.sysDistrict)){
-            villageCadresVO.setDistrictName(this.sysDistrict.getDistrictName());
-        }
-        if (!StringUtils.isEmpty(this.parentSysDistrict)) {
-            villageCadresVO.setParentDistrictName(this.parentSysDistrict.getDistrictName());
-        }
         if (informationAudits.size() > 0) {
             InformationAudit first = informationAudits.get(0);
             villageCadresVO.setAuditor(first.getAuditor());
             villageCadresVO.setAuditAdvice(first.getAuditAdvice());
         }
         return (T) villageCadresVO;
+    }
+
+    public VillageCadresInfoVO convert(VillageCadres villageCadres) {
+        VillageCadresInfoVO villageCadresInfoVO = new VillageCadresInfoVO();
+        BeanUtils.copyProperties(villageCadres, villageCadresInfoVO);
+        SysDistrict sysDistrict = villageCadres.getSysDistrict();
+        if (!StringUtils.isEmpty(sysDistrict)) {
+            villageCadresInfoVO.setDistrictName(sysDistrict.getDistrictName());
+        }
+        return villageCadresInfoVO;
     }
 }

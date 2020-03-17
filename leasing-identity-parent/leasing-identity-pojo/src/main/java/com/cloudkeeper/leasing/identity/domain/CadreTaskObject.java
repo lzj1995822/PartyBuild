@@ -44,8 +44,8 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "任务对象Id", position = 10, required = true)
     private String objectId;
 
-    /** 镇名 */
-    @ApiModelProperty(value = "镇名", position = 10, required = true)
+    /** 父級名 */
+    @ApiModelProperty(value = "父級名", position = 10, required = true)
     private String townName;
 
     /** 任务对象名称 */
@@ -64,6 +64,8 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "备注", position = 10, required = true)
     private String note;
 
-
+    /** 当前对象进度 */
+    @ApiModelProperty(value = "当前对象进度")
+    private String currentPercent;
 
 }

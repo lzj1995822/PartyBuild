@@ -49,4 +49,8 @@ public class CadreTaskVO extends BaseVO {
     @ApiModelProperty(value = "附件", position = 0)
     private String attach;
 
+    /** 当前对象进度 */
+    @ApiModelProperty(value = "当前对象进度")
+    private String currentPercent;
+
 }

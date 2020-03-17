@@ -141,4 +141,9 @@ public interface VillageCadresController {
 @ApiOperation(value = "导出excel", notes = "导出excel", position = 6)
 @PostMapping("/exportExl")
     Result<SecretaryNumberVO> countNumber(HttpServletRequest request, HttpServletResponse response, @ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
-        }
+
+    @ApiOperation(value = "init", notes = "init", position = 6)
+    @PostMapping("/init")
+    Result<Boolean> init();
+
+}

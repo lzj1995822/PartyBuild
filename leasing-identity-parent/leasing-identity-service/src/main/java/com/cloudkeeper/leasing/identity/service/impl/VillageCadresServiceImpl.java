@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.familyinfo.FamilyInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.familyworkinfo.FamilyWorkInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.rewardinfo.RewardInfoDTO;
+import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.dto.traininginfo.TrainingInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
@@ -143,8 +144,6 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setAuditAdvice("更新了该村书记信息！");
         informationAuditService.save(informationAudit);
 
-        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(convert.getState(), currentBaseInfoTask.getId(), convert.getDistrictId());
-
         cadrePosition.setCadreId(convert.getId());
         cadrePositionService.save(cadrePosition);
 
@@ -210,7 +209,6 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setAuditAdvice("提交了该村书记信息！");
         informationAuditService.save(informationAudit);
 
-        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());
         return true;
     }
 
@@ -290,7 +288,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setAuditor(districtName + "-" + informationAuditDTO2.getAuditor());
         informationAuditService.save(informationAudit);
 
-        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(villageCadres.getState(), currentBaseInfoTask.getId(), villageCadres.getDistrictId());
+        cadreTaskObjectService.updateStatusByTaskIdAndObjectId(currentBaseInfoTask.getId(), villageCadres.getParentDistrictId());
 
         messageCenterService.save(villageCadres.getId(),districtId,
                 "[村书记信息]" + villageCadres.getName() + checkMsg + informationAuditDTO2.getAuditAdvice());
@@ -347,4 +345,24 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         return ratingStandard;
     }
 
+    @Override
+    public List<VillageCadres> findAllByParentDistrictId(String objectId) {
+        return villageCadresRepository.findAllByParentDistrictId(objectId);
+    }
+
+    @Override
+    public void initCadres() {
+        SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
+        sysDistrictSearchable.setDistrictLevel(3);
+        sysDistrictSearchable.setDistrictType("Party");
+        List<SysDistrict> all = sysDistrictService.findAll(sysDistrictSearchable);
+        for (SysDistrict item : all) {
+            VillageCadres villageCadres = new VillageCadres();
+            villageCadres.setName(item.getDistrictName() +"村书记");
+            villageCadres.setDistrictId(item.getDistrictId());
+            villageCadres.setParentDistrictId(item.getOrgParent());
+            villageCadres.setCadresType("SECRETARY");
+            villageCadresRepository.save(villageCadres);
+        }
+    }
 }

@@ -17,4 +17,5 @@ public interface VillageCadresRepository extends BaseRepository<VillageCadres> {
 
     Integer countAllByQuasiAssessmentRank(String QuasiAssessmentRank);
 
+    List<VillageCadres> findAllByParentDistrictId(String objectId);
 }

@@ -151,14 +151,15 @@ public class SysDistrict extends BaseEntity {
     @ApiModelProperty(value = "任务对象编码", position = 10, required = true)
     private String objectTypeCode;
 
+    private String parentName;
+
+    private String orgParentName;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         SysDistrictVO sysDistrictVO = (SysDistrictVO) convert;
-        if(!StringUtils.isEmpty(this.sysDistrict)){
-            sysDistrictVO.setParentName(this.sysDistrict.getDistrictName());
-        }
         if(!StringUtils.isEmpty(this.positionInformation)){
             sysDistrictVO.setPositionInformation(this.positionInformation);
         }
@@ -168,9 +169,6 @@ public class SysDistrict extends BaseEntity {
         } else {
             sysDistrictVO.setOrgChildren(null);
         }
-        if (!StringUtils.isEmpty(this.parent)) {
-            sysDistrictVO.setOrgParentName(this.parent.getDistrictName());
-        }
         return (T) sysDistrictVO;
     }
 
@@ -179,12 +177,6 @@ public class SysDistrict extends BaseEntity {
     public <T> T pageConvert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         SysDistrictVO sysDistrictVO = (SysDistrictVO) convert;
-        if(!StringUtils.isEmpty(this.sysDistrict)){
-            sysDistrictVO.setParentName(this.sysDistrict.getDistrictName());
-        }
-        if (!StringUtils.isEmpty(this.parent)) {
-            sysDistrictVO.setOrgParentName(this.parent.getDistrictName());
-        }
         return (T) sysDistrictVO;
     }
 
