@@ -161,7 +161,8 @@ public class VillageCadresSearchable extends BaseSearchable {
     private String propertyRightsTransactionsNumber;
     @ApiModelProperty(value = "12345热线月投诉量", position = 19)
     private String complaintVolume;
-
+    @ApiModelProperty(value = "是否离退休", position = 19)
+    private String hasRetire;
     private String cadresType;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
     private String age;

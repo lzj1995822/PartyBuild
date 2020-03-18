@@ -268,6 +268,8 @@ public class VillageCadres extends BaseEntity {
     private List<FamilyWorkInfo> familyWorkInfos;
     @ApiModelProperty(value = "区分是否专职书记", position = 19)
     private String cadresType;
+    @ApiModelProperty(value = "是否离退休", position = 19)
+    private String hasRetire;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
 
     @Nonnull
