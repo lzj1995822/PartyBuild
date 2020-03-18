@@ -1,12 +1,11 @@
 package com.cloudkeeper.leasing.identity.controller;
 
-import com.cloudkeeper.leasing.identity.domain.InformationAudit;
+import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
-import com.cloudkeeper.leasing.base.model.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,6 +35,16 @@ public interface VillageCadresController {
 @ApiOperation(value = "查询", notes = "查询", position = 1)
 @GetMapping("/{id}id")
     Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id);
+
+
+    /**
+     * 查询
+     * @param id 村干部管理id
+     * @return 村干部管理 VO
+     */
+    @ApiOperation(value = "离任", notes = "离任", position = 1)
+    @GetMapping("/departure/{id}")
+    Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id);
 
 /**
  * 新增
@@ -138,8 +147,8 @@ public interface VillageCadresController {
     Result<SecretaryNumberVO> countNumber();
 
 
-@ApiOperation(value = "导出excel", notes = "导出excel", position = 6)
-@PostMapping("/exportExl")
+    @ApiOperation(value = "导出excel", notes = "导出excel", position = 6)
+    @PostMapping("/exportExl")
     Result<SecretaryNumberVO> countNumber(HttpServletRequest request, HttpServletResponse response, @ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable);
 
     @ApiOperation(value = "init", notes = "init", position = 6)

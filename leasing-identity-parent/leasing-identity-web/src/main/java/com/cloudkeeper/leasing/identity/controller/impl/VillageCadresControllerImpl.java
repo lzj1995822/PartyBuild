@@ -2,21 +2,22 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
-import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
+import com.cloudkeeper.leasing.identity.service.VillageCadresTermService;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.*;
-import org.springframework.beans.BeanUtils;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,13 +47,32 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     /** 村干部管理 service */
     private final VillageCadresService villageCadresService;
-
+    /** 村干部管理 service */
+    private final VillageCadresTermService villageCadresTermService;
     private final SysLogService sysLogService;
 
     @Override
     public Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
         Optional<VillageCadres> villageCadresOptional = villageCadresService.findOptionalById(id);
         return villageCadresOptional.map(villageCadres -> Result.of(villageCadres.convert(VillageCadresVO.class))).orElseGet(Result::ofNotFound);
+    }
+
+    @Override
+    public Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true)@PathVariable String id) {
+        VillageCadres villageCadres = villageCadresService.findById(id);
+        String msg;
+        if (villageCadres == null){
+            return Result.ofNotFound();
+        }
+        villageCadres.setHasRetire("0");
+        villageCadresService.save(villageCadres);
+        msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
+        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(id);
+        villageCadresTerm.setDepartureTime(LocalDate.now());
+        villageCadresTermService.deleteAllByCadresId(id);
+        villageCadresTermService.save(villageCadresTerm);
+        return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
     @Override
@@ -66,6 +84,16 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
             return Result.ofNotFound();
         }
+
+        //添加村干部任期信息----开始
+        VillageCadresTerm villageCadresTerm = new VillageCadresTerm();
+        villageCadresTerm.setCadresId(villageCadres.getId());
+        villageCadresTerm.setCadresName(villageCadres.getName());
+        villageCadresTerm.setAppointmentTime(LocalDate.now());
+        villageCadresTerm.setDistrictId(villageCadres.getDistrictId());
+        villageCadresTermService.save(villageCadresTerm);
+        //添加村干部任期信息----结束
+
         msg = villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofAddSuccess(villageCadres.convert(VillageCadresVO.class));

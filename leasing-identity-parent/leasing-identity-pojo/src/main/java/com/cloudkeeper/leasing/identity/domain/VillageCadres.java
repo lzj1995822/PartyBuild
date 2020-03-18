@@ -5,13 +5,11 @@ import com.cloudkeeper.leasing.identity.vo.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +18,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -304,6 +301,8 @@ public class VillageCadres extends BaseEntity {
         }
         return (T) villageCadresVO;
     }
+
+
 
     @Nonnull
     @Override

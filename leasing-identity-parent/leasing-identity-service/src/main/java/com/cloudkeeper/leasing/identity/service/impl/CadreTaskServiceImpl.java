@@ -1,6 +1,5 @@
 package com.cloudkeeper.leasing.identity.service.impl;
 
-import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
@@ -11,20 +10,20 @@ import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
-import com.cloudkeeper.leasing.identity.service.*;
-import com.cloudkeeper.leasing.identity.vo.*;
+import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
+import com.cloudkeeper.leasing.identity.service.MessageCenterService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
+import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
