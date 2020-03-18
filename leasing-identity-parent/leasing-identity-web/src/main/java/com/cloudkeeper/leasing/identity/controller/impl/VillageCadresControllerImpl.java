@@ -237,7 +237,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             detachedCriteria.add(Restrictions.eq("personnelType",villageCadresSearchable.getPersonnelType()));
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getHasRetire())){
-            //通过人员类型
+            //通过是否离退休
             detachedCriteria.add(Restrictions.eq("hasRetire",villageCadresSearchable.getHasRetire()));
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getAge())){
