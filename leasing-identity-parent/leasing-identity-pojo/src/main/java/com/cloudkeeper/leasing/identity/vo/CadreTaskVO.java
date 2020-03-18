@@ -7,11 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 村书记模块任务 VO
