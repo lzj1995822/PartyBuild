@@ -1,6 +1,8 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
+import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -9,7 +11,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.persistence.*;
 
 /**
@@ -68,4 +72,15 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "当前对象进度")
     private String currentPercent;
 
+    @Nonnull
+    @Override
+    public <T> T convert(@Nonnull Class<T> clazz) {
+        T convert = super.convert(clazz);
+        CadreTaskObjectVO cadreTaskObjectVO = (CadreTaskObjectVO) convert;
+        if (!StringUtils.isEmpty(cadreTask)) {
+            cadreTaskObjectVO.setTaskType(cadreTask.getType());
+            cadreTaskObjectVO.setEndTime(cadreTask.getEndTime());
+        }
+        return (T) cadreTaskObjectVO;
+    }
 }
