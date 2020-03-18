@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.service.impl;
 
+import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
@@ -11,10 +12,7 @@ import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
 import com.cloudkeeper.leasing.identity.service.*;
-import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
-import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
-import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
-import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -28,10 +26,7 @@ import javax.annotation.Nonnull;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 村书记模块任务 service
@@ -148,6 +143,34 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             item.setVillageCadres(villageCadresInfoVOArrayList);
         }
         return convert;
+    }
+
+    @Override
+    public Map<String, List> activitiesCompletion(String year, String objectType,String taskType) {
+        String sql = "SELECT b.id,b.taskId as taskId,b.taskName as taskName,b.status as status,b.objectId as objectId,b.objectName as objectName FROM cadre_task a JOIN cadres_task_object b ON a.id = b.taskId and year(a.createdAt) = '"+year+"' and a.type = '"+taskType+"' and b.objectType = '"+objectType+"'ORDER BY b.objectId, a.createdAt";
+        System.out.println(sql);
+        String nameSql = "SELECT name FROM cadre_task   where year(createdAt) = '"+year+"' and type = '"+taskType+"' ORDER BY createdAt";
+        List<CadreTaskObjectVO> allBySql = super.findAllBySql(CadreTaskObjectVO.class, sql);
+        List<CadreTaskVO> cadreTaskVOS = super.findAllBySql(CadreTaskVO.class, nameSql);
+        Map<String,List> map  = new LinkedHashMap<>();
+        allBySql.forEach(item -> {
+            String dId = item.getObjectId();
+            //补O 排序
+            String key = dId + String.format("%1$0"+(10-dId.length())+"d",0) + "," + item.getObjectName() + "," + "2";
+            if (map.containsKey(key)){
+                map.get(key).add(item);
+            }else{
+                List list = new ArrayList();
+                list.add(item);
+                map.put(key,list);
+            }
+        });
+        List<String> strs = new ArrayList<>();
+        for (CadreTaskVO c : cadreTaskVOS){
+            strs.add(c.getName());
+        }
+        map.put("title",strs);
+        return map;
     }
 
 }

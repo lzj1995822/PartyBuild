@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 村书记模块任务 controller
@@ -87,5 +88,9 @@ public interface CadreTaskController {
     @ApiOperation(value = "获取当前的任务", notes = "获取当前的任务", position = 6)
     @PostMapping("/getCurrentTask/{type}")
     Result<CadreTaskVO> getCurrentTask(@PathVariable String type);
+
+    @ApiOperation(value = "各个镇基本信息修改完成情况（统计汇总）", notes = "统计汇总", position = 6)
+    @PostMapping("/list/completion")
+    Result<Map<String,List>> activitiesCompletion(String year,String objectType,String taskType);
 
 }

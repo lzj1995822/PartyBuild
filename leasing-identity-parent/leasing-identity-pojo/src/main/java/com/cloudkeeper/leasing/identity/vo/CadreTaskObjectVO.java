@@ -22,7 +22,6 @@ import java.util.List;
 @ApiModel(value = "村书记模块发布任务对象记录 VO", description = "村书记模块发布任务对象记录 VO")
 @Getter
 @Setter
-@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CadreTaskObjectVO extends BaseVO {

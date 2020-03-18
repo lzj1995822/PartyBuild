@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @ApiModel(value = "村书记模块任务 VO", description = "村书记模块任务 VO")
 @Getter
 @Setter
-@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CadreTaskVO extends BaseVO {

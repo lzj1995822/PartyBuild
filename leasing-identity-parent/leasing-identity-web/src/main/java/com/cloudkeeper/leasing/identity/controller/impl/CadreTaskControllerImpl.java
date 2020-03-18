@@ -3,7 +3,6 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
-import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskSearchable;
 import com.cloudkeeper.leasing.identity.service.CadreTaskService;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -89,6 +89,11 @@ public class CadreTaskControllerImpl implements CadreTaskController {
             return Result.of(null);
         }
         return Result.of(cadreTask.convert(CadreTaskVO.class));
+    }
+
+    @Override
+    public Result<Map<String, List>> activitiesCompletion(String year, String objectType,String taskType) {
+        return Result.of(cadreTaskService.activitiesCompletion(year,objectType,taskType));
     }
 
     /**
