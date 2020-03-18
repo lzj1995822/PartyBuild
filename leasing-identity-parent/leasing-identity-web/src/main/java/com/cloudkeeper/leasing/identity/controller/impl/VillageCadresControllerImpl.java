@@ -96,8 +96,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result<List<VillageCadresVO>> list(@ApiParam(value = "村干部管理查询条件", required = true) @RequestBody VillageCadresSearchable villageCadresSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
+        System.out.println(new Date().getTime());
         List<VillageCadres> villageCadresList = villageCadresService.findAll(villageCadresSearchable, sort);
         List<VillageCadresVO> villageCadresVOList = VillageCadres.convert(villageCadresList, VillageCadresVO.class);
+        System.out.println(new Date().getTime());
         return Result.of(villageCadresVOList);
     }
 

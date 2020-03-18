@@ -66,4 +66,8 @@ public class CadreTaskObjectVO extends BaseVO {
     /** 当前对象进度 */
     @ApiModelProperty(value = "当前对象进度")
     private String currentPercent;
+
+    private String taskType;
+
+    private LocalDate endTime;
 }
