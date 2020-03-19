@@ -69,15 +69,16 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         if (villageCadres == null){
             return Result.ofNotFound();
         }
-        villageCadres.setHasRetire("0");
+        villageCadres.setHasRetire("1");
         villageCadresService.save(villageCadres);
         msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(id);
-        villageCadresTerm.setDepartureTime(LocalDate.now());
-        villageCadresTermService.deleteAllByCadresId(id);
-        villageCadresTermService.save(villageCadresTerm);
-
+        if (villageCadresTerm != null){
+            villageCadresTerm.setDepartureTime(LocalDate.now());
+            villageCadresTermService.deleteAllByCadresId(id);
+            villageCadresTermService.save(villageCadresTerm);
+        }
         CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");
         cadrePosition.setCadreId("");
         cadrePositionService.save(cadrePosition);
@@ -106,6 +107,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         villageCadresTerm.setCadresName(villageCadres.getName());
         villageCadresTerm.setAppointmentTime(LocalDate.now());
         villageCadresTerm.setDistrictId(villageCadres.getDistrictId());
+        villageCadresTerm.setDistrictName(villageCadres.getDistrictName());
+        villageCadresTerm.setCadresType(villageCadres.getCadresType());
         villageCadresTermService.save(villageCadresTerm);
         //添加村干部任期信息----结束
 

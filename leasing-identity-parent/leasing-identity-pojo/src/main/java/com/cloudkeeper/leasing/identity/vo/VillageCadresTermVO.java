@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 村主任任期信息 VO
@@ -44,5 +42,11 @@ public class VillageCadresTermVO extends BaseVO {
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     private String districtId;
+    @ApiModelProperty(value = "组织名称", position = 10, required = true)
+    private String districtName;
+
+    @ApiModelProperty(value = "人员类型", position = 10, required = true)
+    private String cadresType;
+
 
 }

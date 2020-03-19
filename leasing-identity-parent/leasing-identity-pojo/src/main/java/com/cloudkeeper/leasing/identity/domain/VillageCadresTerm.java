@@ -44,4 +44,11 @@ public class VillageCadresTerm extends BaseEntity {
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     @Column(length = 60)
     private String districtId;
+    @ApiModelProperty(value = "组织名称", position = 10, required = true)
+    @Column(length = 60)
+    private String districtName;
+
+    @ApiModelProperty(value = "人员类型", position = 10, required = true)
+    @Column(length = 60)
+    private String cadresType;
 }

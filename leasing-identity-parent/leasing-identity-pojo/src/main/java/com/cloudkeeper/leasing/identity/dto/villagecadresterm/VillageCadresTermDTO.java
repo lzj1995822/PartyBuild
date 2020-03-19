@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,5 +45,11 @@ public class VillageCadresTermDTO extends BaseEditDTO {
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     private String districtId;
+
+    @ApiModelProperty(value = "组织名称", position = 10, required = true)
+    private String districtName;
+
+    @ApiModelProperty(value = "人员类型", position = 10, required = true)
+    private String cadresType;
 
 }

@@ -9,11 +9,15 @@ import com.cloudkeeper.leasing.identity.service.VillageCadresTermService;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresTermVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,7 +79,19 @@ public class VillageCadresTermControllerImpl implements VillageCadresTermControl
     @Override
     public Result<Page<VillageCadresTermVO>> page(@ApiParam(value = "村主任任期信息查询条件", required = true) @RequestBody VillageCadresTermSearchable villageCadresTermSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable) {
-        Page<VillageCadresTerm> villageCadresTermPage = villageCadresTermService.findAll(villageCadresTermSearchable, pageable);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(VillageCadresTerm.class);
+        if (!StringUtils.isEmpty(villageCadresTermSearchable.getHasRetire()) && "-1".equals(villageCadresTermSearchable.getHasRetire())){
+            detachedCriteria.add(Restrictions.isNotNull("departureTime"));
+        }
+        Integer total = villageCadresTermService.getTotalCount(detachedCriteria);
+        pageable.getSort().forEach(item -> {
+            if (item.isAscending()) {
+                detachedCriteria.addOrder(Order.asc(item.getProperty()));
+            } else {
+                detachedCriteria.addOrder(Order.desc(item.getProperty()));
+            }
+        });
+        Page<VillageCadresTerm> villageCadresTermPage = villageCadresTermService.findAll(detachedCriteria, pageable,total);
         Page<VillageCadresTermVO> villageCadresTermVOPage = VillageCadresTerm.convert(villageCadresTermPage, VillageCadresTermVO.class);
         return Result.of(villageCadresTermVOPage);
     }
