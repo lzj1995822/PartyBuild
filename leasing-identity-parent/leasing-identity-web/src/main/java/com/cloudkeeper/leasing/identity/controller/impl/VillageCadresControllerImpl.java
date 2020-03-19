@@ -2,14 +2,17 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
+import com.cloudkeeper.leasing.identity.domain.CadrePosition;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.service.CadrePositionService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresTermService;
+import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
@@ -51,6 +54,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     private final VillageCadresTermService villageCadresTermService;
     private final SysLogService sysLogService;
 
+    private final CadrePositionService cadrePositionService;
+
     @Override
     public Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
         Optional<VillageCadres> villageCadresOptional = villageCadresService.findOptionalById(id);
@@ -72,7 +77,17 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         villageCadresTerm.setDepartureTime(LocalDate.now());
         villageCadresTermService.deleteAllByCadresId(id);
         villageCadresTermService.save(villageCadresTerm);
+
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");
+        cadrePosition.setCadreId("");
+        cadrePositionService.save(cadrePosition);
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
+    }
+
+    @Override
+    public Result<List<CadresExamineVO>> getExamines() {
+
+        return Result.of(villageCadresService.getExamines());
     }
 
     @Override

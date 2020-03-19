@@ -5,9 +5,8 @@ import com.cloudkeeper.leasing.identity.domain.RatingStandard;
 import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
+import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -37,7 +36,8 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
 
     //根据等级统计村书记的数量
     SecretaryNumberVO countNumber();
-
+    //获取带审核数据
+    List<CadresExamineVO> getExamines();
     void updateIsEdit(String cadresId);
 
     RatingStandard generatePostLevel(VillageCadres villageCadres);
