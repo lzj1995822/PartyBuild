@@ -102,6 +102,8 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     @Override
     public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
-        return null;
+        Result r = new Result();
+        r.setContent(statisticsService.getCustomStatistics(villageCadresStatisticsSearchables));
+        return r;
     }
 }
