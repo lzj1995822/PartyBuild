@@ -302,8 +302,6 @@ public class VillageCadres extends BaseEntity {
         return (T) villageCadresVO;
     }
 
-
-
     @Nonnull
     @Override
     public <T> T pageConvert(@Nonnull Class<T> clazz) {
