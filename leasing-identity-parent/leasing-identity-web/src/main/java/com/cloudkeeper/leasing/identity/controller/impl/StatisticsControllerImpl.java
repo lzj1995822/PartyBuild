@@ -6,7 +6,6 @@ import com.cloudkeeper.leasing.identity.service.StatisticsService;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
-import com.cloudkeeper.leasing.identity.vo.SumPerHourVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +85,14 @@ public class StatisticsControllerImpl implements StatisticsController {
     @Override
     public Result<List<StatisticsListVO>> getRewardsStatistics(@PathVariable("districtId")String districtId) {
         List<StatisticsListVO> list = statisticsService.getRewardsStatistics(districtId);
+        Result r = new Result();
+        r.setContent(list);
+        return r;
+    }
+
+    @Override
+    public Result<List<StatisticsVO>> getAllStatistics() {
+        List<StatisticsVO> list = statisticsService.getAllStatistics();
         Result r = new Result();
         r.setContent(list);
         return r;

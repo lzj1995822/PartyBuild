@@ -4,7 +4,6 @@ import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
-import com.cloudkeeper.leasing.identity.vo.SumPerHourVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -101,5 +100,14 @@ public interface StatisticsController {
     @ApiOperation(value = "奖惩情况分析", notes = "奖惩情况分析", position = 1)
     @GetMapping("/getRewardsStatistics/{districtId}")
     Result<List<StatisticsListVO>> getRewardsStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
+
+    /**
+     * 获取所有统计信息
+     * @param
+     * @return 专职村主任统计 VO
+     */
+    @ApiOperation(value = "获取所有统计信息", notes = "获取所有统计信息", position = 1)
+    @GetMapping("/getAllStatistics")
+    Result<List<StatisticsVO>> getAllStatistics();
 
 }

@@ -24,4 +24,6 @@ public interface StatisticsService {
     List<StatisticsVO> getPartyStandingStatistics(String districtId);
 
     List<StatisticsListVO> getRewardsStatistics(String districtId);
+
+    List<StatisticsVO> getAllStatistics();
 }
