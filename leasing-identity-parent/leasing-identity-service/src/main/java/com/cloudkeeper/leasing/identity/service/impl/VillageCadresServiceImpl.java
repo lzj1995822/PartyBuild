@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
+import com.cloudkeeper.leasing.identity.vo.CadresStatisticsVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -305,24 +306,24 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     @Override
     public List<CadresExamineVO> getExamines() {
         //由于id的get set方法返回的是一个新对象，涉及权限修改又不能修改，所以这里放到sex字段中
-        String sql = "SELECT cadres.id as sex,cadres.name,cadres.parentDistrictName FROM Information_Audit info JOIN SYS_District sys ON info.status = '1' and sys.districtType = 'Party' and info.auditor = sys.districtName join village_cadres cadres on info.villageId = cadres.id";
+        String sql = "SELECT cadres.id as id,cadres.name as name,cadres.parentDistrictName as parentDistrictName FROM Information_Audit info JOIN SYS_District sys ON info.status = '1' and sys.districtType = 'Party' and info.auditor = sys.districtName join village_cadres cadres on info.villageId = cadres.id";
         String sqlCount = "SELECT count(1) as number ,cadres.parentDistrictName as districtName FROM Information_Audit info JOIN SYS_District sys ON info.status = '1' and sys.districtType = 'Party' and info.auditor = sys.districtName join village_cadres cadres on info.villageId = cadres.id group by cadres.parentDistrictName";
-        List<VillageCadres> villageCadres = findAllBySql(VillageCadres.class,sql);
+        List<CadresStatisticsVO> villageCadres = findAllBySql(CadresStatisticsVO.class,sql);
         List<CadresExamineVO> list = findAllBySql(CadresExamineVO.class,sqlCount);
         for (CadresExamineVO c : list){
-            for (VillageCadres v : villageCadres){
+            for (CadresStatisticsVO v : villageCadres){
                 if (c.getDistrictName().equals(v.getParentDistrictName())){
                     if (c.getIds() == null){
                         List<Map<String,String>> str = new ArrayList<>();
                         Map<String,String> map = new HashMap<>();
-                        map.put("id",v.getSex());
+                        map.put("id",v.getId());
                         map.put("name",v.getName());
                         str.add(map);
                         c.setIds(str);
                     }else {
                         List<Map<String,String>> str = c.getIds();
                         Map<String,String> map = new HashMap<>();
-                        map.put("id",v.getSex());
+                        map.put("id",v.getId());
                         map.put("name",v.getName());
                         str.add(map);
                         c.setIds(str);
