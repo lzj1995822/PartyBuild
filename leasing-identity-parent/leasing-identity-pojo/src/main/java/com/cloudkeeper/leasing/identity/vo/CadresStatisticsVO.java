@@ -9,5 +9,5 @@ public class CadresStatisticsVO {
 
     private String id;
     private String name;
-    private Setter parentDistrictName;
+    private String parentDistrictName;
 }

@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.service;
 
+import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
@@ -26,4 +27,6 @@ public interface StatisticsService {
     List<StatisticsListVO> getRewardsStatistics(String districtId);
 
     List<StatisticsVO> getAllStatistics();
+
+    Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
 }
