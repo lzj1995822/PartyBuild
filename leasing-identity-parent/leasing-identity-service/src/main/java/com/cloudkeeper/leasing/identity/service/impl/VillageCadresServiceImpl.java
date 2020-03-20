@@ -136,7 +136,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setStatus(convert.getState());
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
-        informationAudit.setAuditor(byDistrictId.getDistrictName());
+        informationAudit.setAuditor(convert.getParentDistrictName());
         informationAudit.setAuditAdvice("更新了该村书记信息！");
         informationAuditService.save(informationAudit);
 
@@ -193,7 +193,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             return false;
         }
 
-        villageCadres.setState("1");
+        villageCadres.setState("2");
         villageCadres = villageCadresRepository.save(villageCadres);
 
         InformationAudit informationAudit = new InformationAudit();
@@ -201,7 +201,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAudit.setStatus(villageCadres.getState());
-        informationAudit.setAuditor(villageCadres.getSysDistrict().getDistrictName());
+        informationAudit.setAuditor(villageCadres.getParentDistrictName());
         informationAudit.setAuditAdvice("提交了该村书记信息！");
         informationAuditService.save(informationAudit);
 
