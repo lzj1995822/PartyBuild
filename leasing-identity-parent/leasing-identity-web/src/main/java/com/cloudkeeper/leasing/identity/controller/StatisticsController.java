@@ -8,10 +8,7 @@ import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -113,7 +110,7 @@ public interface StatisticsController {
     Result<List<StatisticsVO>> getAllStatistics();
 
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
-    @GetMapping("/getCustomStatistics")
+    @PostMapping("/getCustomStatistics")
     Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
 
 }
