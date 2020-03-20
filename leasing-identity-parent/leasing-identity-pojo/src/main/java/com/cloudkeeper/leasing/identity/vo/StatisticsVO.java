@@ -11,5 +11,5 @@ public class StatisticsVO {
 
     private String name;
     private Integer val;
-
+    private String value;
 }
