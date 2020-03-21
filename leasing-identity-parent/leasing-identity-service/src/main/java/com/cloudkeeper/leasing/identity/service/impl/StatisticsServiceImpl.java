@@ -269,40 +269,40 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         StringBuilder s = new StringBuilder();
         for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
             StringBuilder filedName = new StringBuilder();
-            if (v.getFiledType().equals("data")){
+            if (v.getFiledType().equals("date")){
                 filedName.append("DATEDIFF(YEAR,").append(v.getFiledName()).append(",GETDATE())");
             }else {
                 filedName.append(v.getFiledName());
             }
             switch(v.getComparison()){
                 case "大于" :
-                    s.append(" and ").append(filedName).append(" > ").append(v.getValueMin());
+                    s.append(" and ").append(filedName).append(" > ").append("'").append(v.getValueMin()).append("'");
                     break;
                 case "小于" :
-                    s.append(" and ").append(filedName).append(" < ").append(v.getValueMin());
+                    s.append(" and ").append(filedName).append(" < ").append("'").append(v.getValueMin()).append("'");
                     break;
                 case "大于等于" :
-                    s.append(" and ").append(filedName).append(" >= ").append(v.getValueMin());
+                    s.append(" and ").append(filedName).append(" >= ").append("'").append(v.getValueMin()).append("'");
                     break;
                 case "小于等于" :
-                    s.append(" and ").append(filedName).append(" <= ").append(v.getValueMin());
+                    s.append(" and ").append(filedName).append(" <= ").append("'").append(v.getValueMin()).append("'");
                     break;
                 case "等于" :
-                    s.append(" and ").append(filedName).append(" = ").append(v.getValueMin());
+                    s.append(" and ").append(filedName).append(" = ").append("'").append(v.getValueMin()).append("'");
                     break;
                 case "模糊匹配" :
-                    s.append(" and ").append(filedName).append(" like ").append(" %").append(v.getValueMin()).append("% ");
+                    s.append(" and ").append(filedName).append(" like ").append("'%").append(v.getValueMin()).append("%'");
                     break;
                 case "在范围内" :
                     if (!StringUtils.isEmpty(v.getValueMin())){
                         if (!StringUtils.isEmpty(v.getValueMax())){
-                            s.append(" and( ").append(filedName).append(" between ").append(v.getValueMin()).append(" and ").append(v.getValueMax()).append(")");
+                            s.append(" and( ").append(filedName).append(" between ").append("'").append(v.getValueMin()).append("'").append(" and ").append("'").append(v.getValueMin()).append("'");
                         }else {
-                            s.append(" and ").append(filedName).append(" > ").append(v.getValueMin());
+                            s.append(" and ").append(filedName).append(" > ").append("'").append(v.getValueMin()).append("'");
                         }
                     }else {
                         if (!StringUtils.isEmpty(v.getValueMax())){
-                            s.append(" and ").append(filedName).append(" < ").append(v.getValueMax());
+                            s.append(" and ").append(filedName).append(" < ").append("'").append(v.getValueMin()).append("'");
                         }
                     }
                     break;
