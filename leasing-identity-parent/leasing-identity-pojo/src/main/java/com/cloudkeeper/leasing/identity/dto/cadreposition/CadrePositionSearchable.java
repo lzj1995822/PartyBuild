@@ -49,4 +49,6 @@ public class CadrePositionSearchable extends BaseSearchable {
     @ApiModelProperty(value = "在职人员", position = 10, required = true)
     private String cadreId;
 
+    private String isExist;
+
 }

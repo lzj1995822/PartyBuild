@@ -89,4 +89,15 @@ public interface CadrePositionController {
     @ApiOperation(value = "初始化村书记岗位")
     @GetMapping("/init")
     Result<Boolean> init();
+
+    /**
+     * 分页查询
+     * @param cadrePositionSearchable 岗位管理查询条件
+     * @param pageable 分页条件
+     * @return 岗位管理 VO 分页
+     */
+    @ApiOperation(value = "岗位存不存在分页查询", notes = "分页查询<br/>page：第几页，默认为0，是第一页<br/>size：分页大小, 默认为10<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 6)
+    @PostMapping("/isExist/page")
+    Result<Page<CadrePositionVO>> isExist(@ApiParam(value = "岗位管理查询条件", required = true) @RequestBody CadrePositionSearchable cadrePositionSearchable,
+                                       @ApiParam(value = "分页参数", required = true) Pageable pageable);
 }
