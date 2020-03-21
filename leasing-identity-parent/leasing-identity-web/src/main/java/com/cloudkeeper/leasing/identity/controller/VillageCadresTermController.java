@@ -83,4 +83,5 @@ public interface VillageCadresTermController {
     Result<Page<VillageCadresTermVO>> page(@ApiParam(value = "村主任任期信息查询条件", required = true) @RequestBody VillageCadresTermSearchable villageCadresTermSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+
 }

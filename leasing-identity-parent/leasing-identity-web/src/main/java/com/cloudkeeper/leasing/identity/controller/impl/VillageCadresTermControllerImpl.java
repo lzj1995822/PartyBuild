@@ -10,6 +10,7 @@ import com.cloudkeeper.leasing.identity.vo.VillageCadresTermVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
@@ -82,6 +83,9 @@ public class VillageCadresTermControllerImpl implements VillageCadresTermControl
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(VillageCadresTerm.class);
         if (!StringUtils.isEmpty(villageCadresTermSearchable.getHasRetire()) && "-1".equals(villageCadresTermSearchable.getHasRetire())){
             detachedCriteria.add(Restrictions.isNotNull("departureTime"));
+        }
+        if (!StringUtils.isEmpty(villageCadresTermSearchable.getDistrictId())){
+            detachedCriteria.add(Restrictions.ilike("districtId",villageCadresTermSearchable.getDistrictId(), MatchMode.START));
         }
         Integer total = villageCadresTermService.getTotalCount(detachedCriteria);
         pageable.getSort().forEach(item -> {

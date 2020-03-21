@@ -307,8 +307,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     @Override
     public List<CadresExamineVO> getExamines() {
-        String sql = "SELECT cadres.id as id,cadres.name as name,cadres.parentDistrictName as parentDistrictName FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'";
-        String sqlCount = "SELECT count(1) as number ,cadres.parentDistrictName as districtName FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2' group by cadres.parentDistrictName";
+        String sql = "SELECT cadres.id,cadres.name, cadres.parentDistrictName, info.modifiedAt FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt";
+        String sqlCount = "SELECT cadres.parentDistrictName as districtName, count(1) as number FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt  group by cadres.parentDistrictName";
         List<CadresStatisticsVO> villageCadres = findAllBySql(CadresStatisticsVO.class,sql);
         List<CadresExamineVO> list = findAllBySql(CadresExamineVO.class,sqlCount);
         for (CadresExamineVO c : list){

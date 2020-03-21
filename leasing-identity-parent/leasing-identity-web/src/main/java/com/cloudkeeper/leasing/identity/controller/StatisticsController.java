@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
@@ -113,4 +114,7 @@ public interface StatisticsController {
     @PostMapping("/getCustomStatistics")
     Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
 
+    @ApiOperation(value = "导出", notes = "导出", position = 1)
+    @PostMapping("/export")
+    Result<String> export(@RequestBody ExportDTO exportDTO);
 }

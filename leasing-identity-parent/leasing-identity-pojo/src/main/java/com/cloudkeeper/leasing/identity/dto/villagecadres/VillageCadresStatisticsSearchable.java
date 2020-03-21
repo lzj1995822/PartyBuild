@@ -19,6 +19,8 @@ public class VillageCadresStatisticsSearchable extends BaseSearchable {
     private String filedType;
     @ApiModelProperty(value = "字段名", position = 10, required = true)
     private String filedName;
+    @ApiModelProperty(value = "字段中文名", position = 10, required = true)
+    private String filedDesc;
     @ApiModelProperty(value = "比较符", position = 10, required = true)
     private String comparison;
     @ApiModelProperty(value = "值1", position = 10, required = true)
