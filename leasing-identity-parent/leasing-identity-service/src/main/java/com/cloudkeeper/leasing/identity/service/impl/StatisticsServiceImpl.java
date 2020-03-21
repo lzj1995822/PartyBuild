@@ -3,14 +3,21 @@ package com.cloudkeeper.leasing.identity.service.impl;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.MessageCenter;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
+import com.cloudkeeper.leasing.identity.service.FdfsService;
 import com.cloudkeeper.leasing.identity.service.StatisticsService;
 import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +31,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         return null;
     }
 
+    public final FdfsService fdfsService;
     @Override
     public List<StatisticsVO> getSxStatistics(String districtId) {
         String sql = "select count(1) as val,'男' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0' and hasRetire = '0' and districtId like '"+districtId+"%' and sex = '男'";
@@ -267,50 +275,11 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
-        for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
-            StringBuilder filedName = new StringBuilder();
-            if (v.getFiledType().equals("data")){
-                filedName.append("DATEDIFF(YEAR,").append(v.getFiledName()).append(",GETDATE())");
-            }else {
-                filedName.append(v.getFiledName());
-            }
-            switch(v.getComparison()){
-                case "大于" :
-                    s.append(" and ").append(filedName).append(" > ").append(v.getValueMin());
-                    break;
-                case "小于" :
-                    s.append(" and ").append(filedName).append(" < ").append(v.getValueMin());
-                    break;
-                case "大于等于" :
-                    s.append(" and ").append(filedName).append(" >= ").append(v.getValueMin());
-                    break;
-                case "小于等于" :
-                    s.append(" and ").append(filedName).append(" <= ").append(v.getValueMin());
-                    break;
-                case "等于" :
-                    s.append(" and ").append(filedName).append(" = ").append(v.getValueMin());
-                    break;
-                case "模糊匹配" :
-                    s.append(" and ").append(filedName).append(" like ").append(" %").append(v.getValueMin()).append("% ");
-                    break;
-                case "在范围内" :
-                    if (!StringUtils.isEmpty(v.getValueMin())){
-                        if (!StringUtils.isEmpty(v.getValueMax())){
-                            s.append(" and( ").append(filedName).append(" between ").append(v.getValueMin()).append(" and ").append(v.getValueMax()).append(")");
-                        }else {
-                            s.append(" and ").append(filedName).append(" > ").append(v.getValueMin());
-                        }
-                    }else {
-                        if (!StringUtils.isEmpty(v.getValueMax())){
-                            s.append(" and ").append(filedName).append(" < ").append(v.getValueMax());
-                        }
-                    }
-                    break;
-            }
-        }
+        s.append(createSql(villageCadresStatisticsSearchables));
         StringBuilder resSql = new StringBuilder();
         resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         resSql.append(s);
+        System.out.println(resSql.toString());
         List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
 
         //2.查询按镇统计
@@ -319,9 +288,116 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         statisticsSql.append(s);
         statisticsSql.append(" group by parentDistrictName");
         List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,statisticsSql.toString());
+
+        //没有统计数据的镇补0
+        String sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party'";
+        List<StatisticsVO> districts = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
+        for (StatisticsVO district : districts){
+            for (StatisticsVO statisticsVO : statistics){
+                if (district.getName().equals(statisticsVO.getName())){
+                    district.setVal(statisticsVO.getVal());
+                }
+            }
+        }
         Map<String,Object> map = new HashMap<>();
         map.put("list",villageCadresStatisticsVOS);
-        map.put("statistics",statistics);
+        map.put("statistics",districts);
         return map;
+    }
+
+    @Override
+    public String export(ExportDTO exportDTO) {
+        //1.查询列表数据
+        StringBuilder s = new StringBuilder();
+        s.append(createSql(exportDTO.getSearchFields()));
+        StringBuilder resSql = new StringBuilder();
+        resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        resSql.append(s);
+        System.out.println(resSql.toString());
+        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
+        String url = null;
+        //设置excel列头信息
+        String[] rowsName = new String[exportDTO.getExportFields().size()+1];
+        List<VillageCadresStatisticsSearchable> exports = exportDTO.getExportFields();
+        rowsName[0] = "序号";
+        //设置每列对应的值
+        List<Object[]> dataList = new ArrayList<>();
+        Object[] objs ;
+        int index = 1;
+        for (VillageCadresStatisticsVO v : villageCadresStatisticsVOS){
+            objs = new Object[rowsName.length];
+            objs[0] = index++;
+            for (int i = 0;i < exports.size();i++){
+                rowsName[i+1] = exports.get(i).getFiledName();
+                try {
+                    Field field = v.getClass().getDeclaredField(exports.get(i).getFiledName());
+                    field.setAccessible(true);
+                    Object obj = field.get(v);
+                    objs[i+1] = obj;
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                }catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            dataList.add(objs);
+        }
+        HSSFWorkbook workbook = export("村书记信息",rowsName,dataList);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            workbook.write(os); //wb是HSSFWorkbook对象
+            ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+            url = fdfsService.uploadFile(is,Long.valueOf(is.available()),"村书记信息导出.xls");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+
+    //拼接字符串
+    private StringBuilder createSql(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables){
+        StringBuilder s = new StringBuilder();
+        for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
+            StringBuilder filedName = new StringBuilder();
+            if (v.getFiledType().equals("date")){
+                filedName.append("DATEDIFF(YEAR,").append(v.getFiledName()).append(",GETDATE())");
+            }else {
+                filedName.append(v.getFiledName());
+            }
+            StringBuilder strToNumberMin = new StringBuilder("(CASE WHEN IsNumeric('").append(v.getValueMin()).append("') = 1 THEN cast('").append(v.getValueMin()).append("'  as int) ELSE -1 END)");
+            StringBuilder strToNumberMax = new StringBuilder("(CASE WHEN IsNumeric('").append(v.getValueMax()).append("') = 1 THEN cast('").append(v.getValueMax()).append("'  as int) ELSE -1 END)");
+            switch(v.getComparison()){
+                case "大于" :
+                    s.append(" and ").append(filedName).append(" > ").append(strToNumberMin);
+                    break;
+                case "小于" :
+                    s.append(" and ").append(filedName).append(" < ").append(strToNumberMin);
+                    break;
+                case "大于等于" :
+                    s.append(" and ").append(filedName).append(" >= ").append(strToNumberMin);
+                    break;
+                case "小于等于" :
+                    s.append(" and ").append(filedName).append(" <= ").append(strToNumberMin);
+                    break;
+                case "等于" :
+                    s.append(" and ").append(filedName).append(" = '").append(v.getValueMin()).append("'");
+                    break;
+                case "模糊匹配" :
+                    s.append(" and ").append(filedName).append(" like ").append(" '%").append(v.getValueMin()).append("%' ");
+                    break;
+                case "在范围内" :
+                    if (!StringUtils.isEmpty(v.getValueMin())){
+                        s.append(" and ").append(filedName).append(" >= ").append(strToNumberMin);
+                    }
+                    if (!StringUtils.isEmpty(v.getValueMax())){
+                        s.append(" and ").append(filedName).append(" <= ").append(strToNumberMax);
+                    }
+                    break;
+            }
+        }
+
+        return s;
     }
 }

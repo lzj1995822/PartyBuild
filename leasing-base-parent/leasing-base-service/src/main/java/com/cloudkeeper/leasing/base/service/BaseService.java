@@ -17,6 +17,7 @@ import java.util.Optional;
  */
 public interface BaseService<T> {
 
+
     HttpSession getHttpSession();
 
     String getCurrentPrincipalId();

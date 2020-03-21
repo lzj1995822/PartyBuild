@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.StatisticsController;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.service.StatisticsService;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
@@ -102,8 +103,11 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     @Override
     public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
-        Result r = new Result();
-        r.setContent(statisticsService.getCustomStatistics(villageCadresStatisticsSearchables));
-        return r;
+        return Result.of(statisticsService.getCustomStatistics(villageCadresStatisticsSearchables));
+    }
+
+    @Override
+    public Result<String> export(@RequestBody ExportDTO exportDTO) {
+        return Result.of(statisticsService.export(exportDTO));
     }
 }
