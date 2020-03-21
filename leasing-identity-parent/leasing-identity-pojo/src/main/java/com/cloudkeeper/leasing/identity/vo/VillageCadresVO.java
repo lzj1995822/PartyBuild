@@ -1,9 +1,6 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
-import com.cloudkeeper.leasing.identity.domain.FamilyInfo;
-import com.cloudkeeper.leasing.identity.domain.FamilyWorkInfo;
-import com.cloudkeeper.leasing.identity.domain.TrainingInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -223,5 +220,28 @@ public class VillageCadresVO extends BaseVO {
     @ApiModelProperty(value = "是否离退休", position = 19)
     private String hasRetire;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
+
+    @ApiModelProperty(value = "驾驶证号证材料", position = 10, required = true)
+    private String drivingLicenseNumberAnnex;
+    @ApiModelProperty(value = "曾受综合表彰情况证材料", position = 10, required = true)
+    private String comprehensiveCommendationAnnex;
+    @ApiModelProperty(value = "专业职称证材料", position = 10, required = true)
+    private String professionalTitleAnnex;
+    @ApiModelProperty(value = "职称证材料", position = 10, required = true)
+    private String trainingTitleAnnex;
+    @ApiModelProperty(value = "任职经历证材料", position = 10, required = true)
+    private String postExperienceAnnex;
+    @ApiModelProperty(value = "身份证材料", position = 10, required = true)
+    private String identityCardAnnex;
+    @ApiModelProperty(value = "学历证明材料", position = 10, required = true)
+    private String educationAnnex;
+    @ApiModelProperty(value = "工作时间证明材料", position = 10, required = true)
+    private String workTimeAnnex;
+    @ApiModelProperty(value = "入党时间证明材料", position = 10, required = true)
+    private String partyTimeAnnex;
+    @ApiModelProperty(value = "任现职级时间证材料", position = 10, required = true)
+    private String termOfOfficeAnnex;
+    @ApiModelProperty(value = "任命文件材料", position = 10, required = true)
+    private String appointmentAnnex;
 
 }

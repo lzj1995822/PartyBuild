@@ -76,7 +76,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(id);
         if (villageCadresTerm != null){
             villageCadresTerm.setDepartureTime(LocalDate.now());
-            villageCadresTermService.deleteAllByCadresId(id);
+            villageCadresTermService.deleteById(villageCadresTerm.getId());
             villageCadresTermService.save(villageCadresTerm);
         }
         CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");

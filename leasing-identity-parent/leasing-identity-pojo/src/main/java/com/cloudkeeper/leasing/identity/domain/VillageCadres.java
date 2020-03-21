@@ -69,6 +69,7 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "工作时间", position = 10, required = true)
     @Column(length = 60)
     private LocalDate workTime;
+    /** 入党时间 */
 
     /** 籍贯 */
     @ApiModelProperty(value = "籍贯", position = 10, required = true)
@@ -236,6 +237,7 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "驾驶证号", position = 19)
     private String drivingLicenseNumber;
 
+
     @ApiModelProperty(value = "信用状况", position = 19)
     private String creditStatus;
 
@@ -268,7 +270,39 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "是否离退休", position = 19)
     private String hasRetire;
     /** 2020-03-11新增字段-----------------------结束--------------------------------**/
-
+    @ApiModelProperty(value = "驾驶证号证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String drivingLicenseNumberAnnex;
+    @ApiModelProperty(value = "曾受综合表彰情况证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String comprehensiveCommendationAnnex;
+    @ApiModelProperty(value = "专业职称证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String professionalTitleAnnex;
+    @ApiModelProperty(value = "职称证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String trainingTitleAnnex;
+    @ApiModelProperty(value = "任职经历证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String postExperienceAnnex;
+    @ApiModelProperty(value = "身份证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String identityCardAnnex;
+    @ApiModelProperty(value = "学历证明材料", position = 10, required = true)
+    @Column(length = 60)
+    private String educationAnnex;
+    @ApiModelProperty(value = "工作时间证明材料", position = 10, required = true)
+    @Column(length = 60)
+    private String workTimeAnnex;
+    @ApiModelProperty(value = "入党时间证明材料", position = 10, required = true)
+    @Column(length = 60)
+    private String partyTimeAnnex;
+    @ApiModelProperty(value = "任现职级时间证材料", position = 10, required = true)
+    @Column(length = 60)
+    private String termOfOfficeAnnex;
+    @ApiModelProperty(value = "任命文件材料", position = 10, required = true)
+    @Column(length = 60)
+    private String appointmentAnnex;
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
