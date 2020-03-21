@@ -361,7 +361,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         StringBuilder s = new StringBuilder();
         for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
             StringBuilder filedName = new StringBuilder();
-            if (v.getFiledType().equals("date")){
+            if (v.getFiledType().equals("data")){
                 filedName.append("DATEDIFF(YEAR,").append(v.getFiledName()).append(",GETDATE())");
             }else {
                 filedName.append(v.getFiledName());
