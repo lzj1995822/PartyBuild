@@ -280,7 +280,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         resSql.append(s);
         System.out.println(resSql.toString());
-        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
+        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = (List<VillageCadresStatisticsVO>)findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
 
         //2.查询按镇统计
         StringBuilder statisticsSql = new StringBuilder();
@@ -361,7 +361,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         StringBuilder s = new StringBuilder();
         for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
             StringBuilder filedName = new StringBuilder();
-            if (v.getFiledType().equals("data")){
+            if (v.getFiledType().equals("date")){
                 filedName.append("DATEDIFF(YEAR,").append(v.getFiledName()).append(",GETDATE())");
             }else {
                 filedName.append(v.getFiledName());
