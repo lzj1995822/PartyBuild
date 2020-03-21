@@ -126,6 +126,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
         SysDistrict byDistrictId = sysDistrictService.findByDistrictId(villageCadresDTO.getDistrictId());
         convert.setParentDistrictId(byDistrictId.getOrgParent());
+        convert.setParentDistrictName(byDistrictId.getParentName());
+        convert.setDistrictName(byDistrictId.getDistrictName());
 
         // 无论更新还是新增，只要调用新增或者更新接口，之前的审核流程需要重新走，所以初始化成0（未提交）
         convert.setState("0");

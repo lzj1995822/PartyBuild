@@ -12,11 +12,14 @@ import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.CadrePositionVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -106,6 +109,21 @@ public class CadrePositionControllerImpl implements CadrePositionController {
             cadrePositionService.save(cadrePosition);
         }
         return Result.of(true);
+    }
+
+    @Override
+    public Result<Page<CadrePositionVO>> isExist( @RequestBody CadrePositionSearchable cadrePositionSearchable, Pageable pageable) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadrePosition.class);
+        if (!StringUtils.isEmpty(cadrePositionSearchable.getIsExist())) {
+            if (cadrePositionSearchable.getIsExist().equals("1")) {
+                detachedCriteria.add(Restrictions.or(Restrictions.isNotNull("cadreId"), Restrictions.isNotEmpty("cadreId")));
+            } else {
+                detachedCriteria.add(Restrictions.or(Restrictions.isEmpty("cadreId"), Restrictions.isNull("cadreId")));
+            }
+        }
+        Page<CadrePosition> cadrePositionPage = cadrePositionService.findAll(detachedCriteria, pageable);
+        Page<CadrePositionVO> cadrePositionVOPage = CadrePosition.convert(cadrePositionPage, CadrePositionVO.class);
+        return Result.of(cadrePositionVOPage);
     }
 
 }
