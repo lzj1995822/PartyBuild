@@ -267,7 +267,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 ratingStandardService.save(actual);
             }
         } else {
-            integer--;
+            integer = integer - 2;
             checkMsg = "审核驳回意见:";
         }
         villageCadres.setState(integer.toString());
