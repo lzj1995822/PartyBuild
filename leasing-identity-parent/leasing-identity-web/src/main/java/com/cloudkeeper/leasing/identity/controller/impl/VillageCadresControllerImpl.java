@@ -80,7 +80,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             villageCadresTermService.save(villageCadresTerm);
         }
         CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");
-        cadrePosition.setCadreId("");
+        cadrePosition.setCadreId(null);
         cadrePositionService.save(cadrePosition);
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
     }
