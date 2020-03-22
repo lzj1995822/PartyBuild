@@ -8,6 +8,7 @@ import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.dto.villagecadresterm.VillageCadresTermDTO;
 import com.cloudkeeper.leasing.identity.service.CadrePositionService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
@@ -63,8 +64,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
-    public Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true)@PathVariable String id) {
-        VillageCadres villageCadres = villageCadresService.findById(id);
+    public Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true)@RequestBody VillageCadresTermDTO villageCadresTermDTO) {
+        VillageCadres villageCadres = villageCadresService.findById(villageCadresTermDTO.getCadresId());
         String msg;
         if (villageCadres == null){
             return Result.ofNotFound();
@@ -73,10 +74,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         villageCadresService.save(villageCadres);
         msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
-        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(id);
+        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(villageCadresTermDTO.getCadresId());
         if (villageCadresTerm != null){
             villageCadresTerm.setDepartureTime(LocalDate.now());
-            villageCadresTermService.deleteById(villageCadresTerm.getId());
+            villageCadresTerm.setTermFile(villageCadresTermDTO.getTermFile());
             villageCadresTermService.save(villageCadresTerm);
         }
         CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");

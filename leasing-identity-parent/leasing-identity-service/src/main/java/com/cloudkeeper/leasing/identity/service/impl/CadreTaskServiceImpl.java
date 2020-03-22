@@ -2,24 +2,21 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.CadreTask;
-import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
-import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.dto.InformationAuditSearchable;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
-import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
-import com.cloudkeeper.leasing.identity.service.CadreTaskService;
-import com.cloudkeeper.leasing.identity.service.MessageCenterService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +48,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     private final MessageCenterService messageCenterService;
 
     private final VillageCadresRepository villageCadresRepository;
+
+    private final InformationAuditService informationAuditService;
 
     @Override
     protected BaseRepository<CadreTask> getBaseRepository() {
@@ -137,6 +136,16 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             List<VillageCadres> villageCadreses = villageCadresRepository.findAllByParentDistrictId(item.getObjectId());
             ArrayList<VillageCadresInfoVO> villageCadresInfoVOArrayList = new ArrayList<VillageCadresInfoVO>();
             for (VillageCadres subitem : villageCadreses) {
+                InformationAuditSearchable informationAuditSearchable = new InformationAuditSearchable();
+                informationAuditSearchable.setTaskId(taskId);
+                informationAuditSearchable.setVillageId(subitem.getId());
+                Sort sort = new Sort(Sort.Direction.ASC, "createdAt");
+                List<InformationAudit> informationAudits = informationAuditService.findAll(informationAuditSearchable,sort);
+                if (CollectionUtils.isEmpty(informationAudits)){
+                    subitem.setState("0");
+                }else {
+                    subitem.setState(informationAudits.get(0).getStatus());
+                }
                 villageCadresInfoVOArrayList.add(subitem.convert(subitem));
             }
             item.setVillageCadres(villageCadresInfoVOArrayList);
@@ -155,7 +164,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         allBySql.forEach(item -> {
             String dId = item.getObjectId();
             //补O 排序
-            String key = dId + String.format("%1$0"+(10-dId.length())+"d",0) + "," + item.getObjectName() + "," + "2";
+            String key = dId + String.format("%1$0"+(12-dId.length())+"d",0) + "," + item.getObjectName() + "," + "2";
             if (map.containsKey(key)){
                 map.get(key).add(item);
             }else{

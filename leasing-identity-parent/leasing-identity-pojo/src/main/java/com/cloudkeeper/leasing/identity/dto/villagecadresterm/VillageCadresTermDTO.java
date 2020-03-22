@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 村主任任期信息 DTO
@@ -51,5 +48,6 @@ public class VillageCadresTermDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "人员类型", position = 10, required = true)
     private String cadresType;
-
+    @ApiModelProperty(value = "离退休材料", position = 10, required = true)
+    private String termFile;
 }

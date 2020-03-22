@@ -1,7 +1,7 @@
 package com.cloudkeeper.leasing.identity.repository;
 
-import com.cloudkeeper.leasing.identity.domain.Information;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
+import com.cloudkeeper.leasing.identity.domain.Information;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,5 +10,4 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface InformationRepository extends BaseRepository<Information> {
-
 }

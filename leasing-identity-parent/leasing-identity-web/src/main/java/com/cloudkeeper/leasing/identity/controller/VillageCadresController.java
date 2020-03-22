@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.dto.villagecadresterm.VillageCadresTermDTO;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
@@ -44,8 +45,8 @@ public interface VillageCadresController {
      * @return 村干部管理 VO
      */
     @ApiOperation(value = "离任", notes = "离任", position = 1)
-    @GetMapping("/departure/{id}")
-    Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id);
+    @PostMapping("/departure")
+    Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true) @RequestBody VillageCadresTermDTO villageCadresTermDTO);
 
     @ApiOperation(value = "获取带审核数据", notes = "离任", position = 1)
     @GetMapping("/getExamines")

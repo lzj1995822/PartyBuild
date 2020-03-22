@@ -47,6 +47,7 @@ public class VillageCadresTermSearchable extends BaseSearchable {
 
     @ApiModelProperty(value = "人员类型", position = 10, required = true)
     private String cadresType;
-
+    @ApiModelProperty(value = "离退休材料", position = 10, required = true)
+    private String termFile;
     private String hasRetire;
 }
