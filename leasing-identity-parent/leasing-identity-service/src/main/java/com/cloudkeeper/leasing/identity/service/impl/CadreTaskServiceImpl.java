@@ -139,7 +139,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
                 InformationAuditSearchable informationAuditSearchable = new InformationAuditSearchable();
                 informationAuditSearchable.setTaskId(taskId);
                 informationAuditSearchable.setVillageId(subitem.getId());
-                Sort sort = new Sort(Sort.Direction.ASC, "createdAt");
+                Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
                 List<InformationAudit> informationAudits = informationAuditService.findAll(informationAuditSearchable,sort);
                 if (CollectionUtils.isEmpty(informationAudits)){
                     subitem.setState("0");
