@@ -155,7 +155,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     @Override
     public Map<String, List> activitiesCompletion(String year, String objectType,String taskType) {
-        String sql = "SELECT b.id,b.taskId as taskId,b.taskName as taskName,b.status as status,b.objectId as objectId,b.objectName as objectName FROM cadre_task a JOIN cadres_task_object b ON a.id = b.taskId and year(a.createdAt) = '"+year+"' and a.type = '"+taskType+"' and b.objectType = '"+objectType+"'ORDER BY b.objectId, a.createdAt";
+        String sql = "SELECT b.id,b.taskId as taskId,b.taskName as taskName,b.status as status,b.objectId as objectId,b.objectName as objectName,b.currentPercent as currentPercent FROM cadre_task a JOIN cadres_task_object b ON a.id = b.taskId and year(a.createdAt) = '"+year+"' and a.type = '"+taskType+"' and b.objectType = '"+objectType+"'ORDER BY b.objectId, a.createdAt";
         System.out.println(sql);
         String nameSql = "SELECT name FROM cadre_task   where year(createdAt) = '"+year+"' and type = '"+taskType+"' ORDER BY createdAt";
         List<CadreTaskObjectVO> allBySql = super.findAllBySql(CadreTaskObjectVO.class, sql);
