@@ -11,9 +11,11 @@ import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -273,16 +275,10 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     @Override
     public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
 
-        //1.查询列表数据
-        StringBuilder s = new StringBuilder();
-        s.append(createSql(villageCadresStatisticsSearchables));
-        StringBuilder resSql = new StringBuilder();
-        resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
-        resSql.append(s);
-        System.out.println(resSql.toString());
-        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = (List<VillageCadresStatisticsVO>)findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
 
         //2.查询按镇统计
+        StringBuilder s = new StringBuilder();
+        s.append(createSql(villageCadresStatisticsSearchables));
         StringBuilder statisticsSql = new StringBuilder();
         statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         statisticsSql.append(s);
@@ -300,9 +296,29 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
             }
         }
         Map<String,Object> map = new HashMap<>();
-        map.put("list",villageCadresStatisticsVOS);
         map.put("statistics",districts);
         return map;
+    }
+
+    @Override
+    public Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, Integer page, Integer size, Pageable pageable) {
+        //1.查询列表数据
+        StringBuilder s = new StringBuilder();
+        s.append(createSql(villageCadresStatisticsSearchables));
+        StringBuilder resSql = new StringBuilder();
+        resSql.append("SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        resSql.append(s);
+        resSql.append(") a WHERE  a.rownumber BETWEEN ");
+        resSql.append(page*size+1);
+        resSql.append(" and ");
+        resSql.append(page*size+size);
+
+        StringBuilder count = new StringBuilder("select count(1) as val,'全部' as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        count.append(s);
+        List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,count.toString());
+
+        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = (List<VillageCadresStatisticsVO>)findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
+        return new PageImpl<>(villageCadresStatisticsVOS,pageable,Long.valueOf(statistics.get(0).getVal()));
     }
 
     @Override

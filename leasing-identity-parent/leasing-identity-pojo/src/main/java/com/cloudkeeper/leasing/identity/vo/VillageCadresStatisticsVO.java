@@ -1,14 +1,13 @@
 package com.cloudkeeper.leasing.identity.vo;
 
-import com.cloudkeeper.leasing.base.vo.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,8 +20,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VillageCadresStatisticsVO extends BaseVO {
-
+public class VillageCadresStatisticsVO implements Serializable {
+    @ApiModelProperty(value = "主键id", position = 1)
+    private String id;
     /** 姓名 */
     @ApiModelProperty(value = "姓名", position = 10, required = true)
     private String name;

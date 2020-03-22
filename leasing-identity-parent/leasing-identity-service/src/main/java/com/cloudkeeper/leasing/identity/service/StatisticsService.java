@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface StatisticsService {
@@ -30,6 +31,6 @@ public interface StatisticsService {
     List<StatisticsVO> getAllStatistics();
 
     Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
-
+    Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, Integer page, Integer size, Pageable pageable);
     String export(ExportDTO exportDTO);
 }

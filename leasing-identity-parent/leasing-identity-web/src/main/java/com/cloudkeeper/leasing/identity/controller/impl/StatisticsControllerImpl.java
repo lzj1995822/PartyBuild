@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -104,6 +106,11 @@ public class StatisticsControllerImpl implements StatisticsController {
     @Override
     public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
         return Result.of(statisticsService.getCustomStatistics(villageCadresStatisticsSearchables));
+    }
+
+    @Override
+    public Result<Object> page(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, @RequestParam Integer page, @RequestParam Integer size, Pageable pageable) {
+        return Result.of(statisticsService.page(villageCadresStatisticsSearchables,page,size,pageable));
     }
 
     @Override

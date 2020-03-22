@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -113,6 +114,11 @@ public interface StatisticsController {
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
     @PostMapping("/getCustomStatistics")
     Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
+
+    @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
+    @PostMapping("/page")
+    Result<Object> page(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables
+    , @ApiParam(value = "分页参数", required = true) @RequestParam Integer page, @RequestParam Integer size, Pageable pageable);
 
     @ApiOperation(value = "导出", notes = "导出", position = 1)
     @PostMapping("/export")
