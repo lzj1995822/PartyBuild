@@ -344,12 +344,16 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
             objs = new Object[rowsName.length];
             objs[0] = index++;
             for (int i = 0;i < exports.size();i++){
-                rowsName[i+1] = exports.get(i).getFiledName();
+                rowsName[i+1] = exports.get(i).getFiledDesc();
                 try {
                     Field field = v.getClass().getDeclaredField(exports.get(i).getFiledName());
                     field.setAccessible(true);
                     Object obj = field.get(v);
-                    objs[i+1] = obj;
+                    if (StringUtils.isEmpty(obj)){
+                        objs[i+1] = "-";
+                    }else {
+                        objs[i+1] = obj;
+                    }
                 } catch (NoSuchFieldException e) {
                     e.printStackTrace();
                 }catch (IllegalAccessException e) {
