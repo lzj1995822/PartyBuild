@@ -122,5 +122,5 @@ public interface StatisticsController {
 
     @ApiOperation(value = "导出", notes = "导出", position = 1)
     @PostMapping("/export")
-    Result<String> export(@RequestBody ExportDTO exportDTO);
+    Result<Object> export(@RequestBody ExportDTO exportDTO);
 }
