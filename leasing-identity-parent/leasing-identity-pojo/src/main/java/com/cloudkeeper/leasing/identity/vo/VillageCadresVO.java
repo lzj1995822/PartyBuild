@@ -243,5 +243,8 @@ public class VillageCadresVO extends BaseVO {
     private String termOfOfficeAnnex;
     @ApiModelProperty(value = "任命文件材料", position = 10, required = true)
     private String appointmentAnnex;
-
+    @ApiModelProperty(value = "医保类型", position = 10, required = true)
+    private String medicalInsurance;
+    @ApiModelProperty(value = "社保类型", position = 10, required = true)
+    private String socialSecurityDatabases;
 }

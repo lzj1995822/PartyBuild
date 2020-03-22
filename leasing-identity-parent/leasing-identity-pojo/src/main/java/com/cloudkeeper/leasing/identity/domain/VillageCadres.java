@@ -303,6 +303,17 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "任命文件材料", position = 10, required = true)
     @Column(length = 60)
     private String appointmentAnnex;
+
+    @ApiModelProperty(value = "医保类型", position = 10, required = true)
+    @Column(length = 60)
+    private String medicalInsurance;
+    @ApiModelProperty(value = "社保类型", position = 10, required = true)
+    @Column(length = 60)
+    private String socialSecurityDatabases;
+
+
+
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
