@@ -641,14 +641,14 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 "FROM PAR_Activity AS a " +
                 "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
+                "WHERE d.districtLevel != '5' and year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
                 "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         if (objectType.contains("2")) {
             sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.districtLevel, d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
                     "FROM PAR_Activity AS a " +
                     "INNER JOIN  SYS_District AS d ON d.districtType = 'Office' AND d.districtId != '0118'" +
                     "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                    "WHERE year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
+                    "WHERE d.districtLevel != '5' and year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
                     "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         }
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);
@@ -656,7 +656,7 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
         allBySql.forEach(item -> {
             String dId = item.getDistrictId();
             //补O 排序
-            String key = dId + String.format("%1$0"+(10-dId.length())+"d",0) + "," + item.getDistrictName() + "," + item.getDistrictLevel();
+            String key = dId + String.format("%1$0"+(12-dId.length())+"d",0) + "," + item.getDistrictName() + "," + item.getDistrictLevel();
                 if (map.containsKey(key)){
                     map.get(key).add(item);
                 }else{
