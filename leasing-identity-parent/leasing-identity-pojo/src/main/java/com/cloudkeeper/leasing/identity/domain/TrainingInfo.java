@@ -63,4 +63,16 @@ public class TrainingInfo extends BaseEntity {
     @ApiModelProperty(value = "年度", position = 10, required = true)
     @Column(length = 60)
     private String trainingYear;
+
+    @ApiModelProperty(value = "培训年月", position = 10, required = true)
+    @Column(length = 60)
+    private String trainingDuration;
+
+    @ApiModelProperty(value = "培训天数", position = 10, required = true)
+    @Column(length = 60)
+    private String trainingDays;
+
+    @ApiModelProperty(value = "等级", position = 10, required = true)
+    @Column(length = 60)
+    private String trainingGrade;
 }

@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 专职村书记培训情况 VO
@@ -38,7 +36,7 @@ public class TrainingInfoVO extends BaseVO {
     private String trainingName;
 
     /** 培训类型 */
-    @ApiModelProperty(value = "培训类型", position = 10, required = true)
+    @ApiModelProperty(value = "培训等级", position = 10, required = true)
     private String trainingType;
 
     /** 培训内容 */
@@ -60,5 +58,14 @@ public class TrainingInfoVO extends BaseVO {
     /** 年度 */
     @ApiModelProperty(value = "年度", position = 10, required = true)
     private String trainingYear;
+
+    @ApiModelProperty(value = "培训年月", position = 10, required = true)
+    private String trainingDuration;
+
+    @ApiModelProperty(value = "培训天数", position = 10, required = true)
+    private String trainingDays;
+
+    @ApiModelProperty(value = "培训类型", position = 10, required = true)
+    private String trainingGrade;
 
 }
