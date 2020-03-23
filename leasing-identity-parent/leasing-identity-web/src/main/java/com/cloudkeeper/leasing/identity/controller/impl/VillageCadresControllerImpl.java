@@ -121,6 +121,21 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result<VillageCadresVO> addBaseInfo(@RequestBody @Validated VillageCadresDTO villageCadresDTO) {
         VillageCadres villageCadres = villageCadresService.saveBaseInfo(villageCadresDTO);
+
+        //添加村干部任期信息----开始
+        VillageCadresTerm villageCadresTerm = new VillageCadresTerm();
+        villageCadresTerm.setCadresId(villageCadres.getId());
+        villageCadresTerm.setCadresName(villageCadres.getName());
+        villageCadresTerm.setAppointmentTime(LocalDate.now());
+        villageCadresTerm.setDistrictId(villageCadres.getDistrictId());
+        villageCadresTerm.setCadresType(villageCadres.getCadresType());
+        villageCadresTerm.setDistrictName(villageCadres.getDistrictName());
+        villageCadresTermService.save(villageCadresTerm);
+        //添加村干部任期信息----结束
+
+        String msg = villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
+
         return Result.ofAddSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
