@@ -94,7 +94,7 @@ public class SysDistrict extends BaseEntity {
     private String location;
 
     @ApiModelProperty(value = "阵地信息", position = 10, required = true)
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "districtId", referencedColumnName = "districtId", insertable = false, updatable = false)
     private List<PositionInformation> positionInformation;
@@ -137,7 +137,7 @@ public class SysDistrict extends BaseEntity {
     private SysDistrict parent;
 
     @ApiModelProperty(value = "摄像头信息", position = 10, required = true)
-    @OneToMany(mappedBy = "sysDistrict")
+    @OneToMany(mappedBy = "sysDistrict", fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ParCamera> parCamera;

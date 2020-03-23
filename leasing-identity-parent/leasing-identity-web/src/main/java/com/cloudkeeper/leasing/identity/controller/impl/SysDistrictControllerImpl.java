@@ -118,4 +118,9 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     public Result<List<SysDistrictTreeVO>> getTree(@PathVariable  String sysDistrictId) {
         return Result.of(sysDistrictService.getTree(sysDistrictId));
     }
+
+    @Override
+    public Result<List<SysDistrictTreeVO>> officeTree() {
+        return Result.of(sysDistrictService.findOfficeDistrictTree());
+    }
 }

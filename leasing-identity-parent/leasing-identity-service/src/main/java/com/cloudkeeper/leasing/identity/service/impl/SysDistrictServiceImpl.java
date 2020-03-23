@@ -186,4 +186,25 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         return attach;
     }
 
+    @Override
+    public List<SysDistrictTreeVO> findOfficeDistrictTree() {
+        List<SysDistrict> office = sysDistrictRepository.findAllByDistrictLevelAndDistrictType(2, "Office");
+        List<SysDistrictTreeVO> sysDistrictTreeVOS = translateToVO(office, null);
+
+        ArrayList<SysDistrictTreeVO> resList = new ArrayList<>();
+        ArrayList<SysDistrictTreeVO> partyList  = new ArrayList<>();
+        for (SysDistrictTreeVO item : sysDistrictTreeVOS) {
+            if (!item.getId().equals("0118")) {
+                partyList.add(item);
+            } else {
+                resList.add(item);
+            }
+        }
+        SysDistrictTreeVO sysDistrictTreeVO = new SysDistrictTreeVO();
+        sysDistrictTreeVO.setId("10");
+        sysDistrictTreeVO.setLabel("党委");
+        sysDistrictTreeVO.setChildren(partyList);
+        resList.add(sysDistrictTreeVO);
+        return resList;
+    }
 }

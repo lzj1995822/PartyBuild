@@ -53,4 +53,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     List<SysDistrict> findAllByDistrictIdGreaterThanEqual(String districtId);
 
     SysDistrict handleRelation(SysDistrict sysDistrict);
+
+    List<SysDistrictTreeVO> findOfficeDistrictTree();
 }

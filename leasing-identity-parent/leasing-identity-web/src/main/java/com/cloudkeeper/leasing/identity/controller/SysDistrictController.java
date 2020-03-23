@@ -112,4 +112,7 @@ public interface SysDistrictController {
     @GetMapping("/{sysDistrictId}alltree")
     Result<List<SysDistrictTreeVO>> getTree(@PathVariable String sysDistrictId);
 
+    @ApiOperation(value = "机关工委树形组织架构", notes = "机关工委树形组织架构", position = 8)
+    @GetMapping("/officeTree")
+    Result<List<SysDistrictTreeVO>> officeTree();
 }
