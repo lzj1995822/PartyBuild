@@ -29,7 +29,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
      * @return
      */
     VillageCadres save(VillageCadresDTO villageCadresDTO);
-
+    VillageCadres saveBaseInfo(VillageCadresDTO villageCadresDTO);
     Boolean submit(VillageCadres villageCadres);
 
     Boolean  virify(String id, String code, InformationAuditDTO informationAuditDTO2);

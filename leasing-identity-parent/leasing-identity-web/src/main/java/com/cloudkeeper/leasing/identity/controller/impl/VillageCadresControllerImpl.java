@@ -119,6 +119,12 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
+    public Result<VillageCadresVO> addBaseInfo(@RequestBody @Validated VillageCadresDTO villageCadresDTO) {
+        VillageCadres villageCadres = villageCadresService.saveBaseInfo(villageCadresDTO);
+        return Result.ofAddSuccess(villageCadres.convert(VillageCadresVO.class));
+    }
+
+    @Override
     public Result<VillageCadresVO> update(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id,
         @ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
         Optional<VillageCadres> villageCadresOptional = villageCadresService.findOptionalById(id);

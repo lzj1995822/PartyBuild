@@ -60,6 +60,10 @@ public interface VillageCadresController {
 @PostMapping("/")
     Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO);
 
+    @ApiOperation(value = "新增基本信息", notes = "新增基本信息", position = 2)
+    @PostMapping("/addBaseInfo")
+    Result<VillageCadresVO> addBaseInfo(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO);
+
 /**
  * 更新
  * @param id 村干部管理id

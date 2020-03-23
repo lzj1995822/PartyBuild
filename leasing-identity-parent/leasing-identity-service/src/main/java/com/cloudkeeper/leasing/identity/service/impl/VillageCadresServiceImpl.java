@@ -189,6 +189,17 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     }
 
     @Override
+    public VillageCadres saveBaseInfo(VillageCadresDTO villageCadresDTO) {
+        VillageCadres convert = villageCadresDTO.convert(VillageCadres.class);
+        SysDistrict byDistrictId = sysDistrictService.findByDistrictId(villageCadresDTO.getDistrictId());
+        convert.setParentDistrictId(byDistrictId.getOrgParent());
+        convert.setParentDistrictName(byDistrictId.getParentName());
+        convert.setDistrictName(byDistrictId.getDistrictName());
+        super.save(convert);
+        return convert;
+    }
+
+    @Override
     public Boolean submit(VillageCadres villageCadres) {
         // 检查是否有当前任务
         CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
