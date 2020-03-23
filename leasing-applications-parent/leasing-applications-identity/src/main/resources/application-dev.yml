@@ -11,7 +11,7 @@ spring:
 #    username: lxw
     username: asher
     # 密码-
-    password: q243485
+    password: q243485908
     # 驱动类型
 #   driver-class-name: com.mysql.jdbc.Driver
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
