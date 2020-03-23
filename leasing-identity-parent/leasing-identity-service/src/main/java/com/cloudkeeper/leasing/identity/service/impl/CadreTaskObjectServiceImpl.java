@@ -49,7 +49,9 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         // 更新镇进度
         String sql = "select count(case WHEN vc.state = '3' THEN 1 ELSE NULL END) as finish, count(case WHEN vc.state != '3' THEN 1 ELSE NULL END) as unfinish, count(*) as total FROM village_cadres vc WHERE vc.parentDistrictId = '" + objectId + "'";
         FinishRatioVO finishRatioVO = findBySql(FinishRatioVO.class, sql);
-        BigDecimal divide = new BigDecimal(finishRatioVO.getFinish()).divide(new BigDecimal(finishRatioVO.getTotal()), 2, BigDecimal.ROUND_FLOOR);
+        String finishSql = "SELECT count(1) as finish from Information_Audit audit JOIN village_cadres cadres on audit.villageId = cadres.id and audit.status = '3' and cadres.parentDistrictId = '" + objectId + "' and audit.taskId = '" + taskId + "'";
+        FinishRatioVO finishVO = findBySql(FinishRatioVO.class, finishSql);
+        BigDecimal divide = new BigDecimal(finishVO.getFinish()).divide(new BigDecimal(finishRatioVO.getTotal()), 2, BigDecimal.ROUND_FLOOR);
         if (divide.equals(BigDecimal.ONE)) {
             cadreTaskObject.setStatus("0");
         }
@@ -57,8 +59,10 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
 
         // 更新总进度
         String totalSql = "select count(case WHEN vc.state = '3' THEN 1 ELSE NULL END) as finish, count(case WHEN vc.state != '3' THEN 1 ELSE NULL END) as unfinish, count(*) as total FROM village_cadres vc WHERE vc.parentDistrictId like '01%'";
+        String totalFinishSql = "SELECT count(1) as finish from Information_Audit audit JOIN village_cadres cadres on audit.villageId = cadres.id and audit.status = '3' and cadres.parentDistrictId  like '01%'  and audit.taskId = '" + taskId + "'";
         FinishRatioVO finishRatioVO1 = findBySql(FinishRatioVO.class, totalSql);
-        BigDecimal divide1 = new BigDecimal(finishRatioVO1.getFinish()).divide(new BigDecimal(finishRatioVO1.getTotal()), 2, BigDecimal.ROUND_FLOOR);
+        FinishRatioVO totalFinishVO = findBySql(FinishRatioVO.class, totalFinishSql);
+        BigDecimal divide1 = new BigDecimal(totalFinishVO.getFinish()).divide(new BigDecimal(finishRatioVO1.getTotal()), 2, BigDecimal.ROUND_FLOOR);
         CadreTask cadreTask = cadreTaskObject.getCadreTask();
         if (cadreTask == null) {
             return null;
