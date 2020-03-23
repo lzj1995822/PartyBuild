@@ -9,7 +9,7 @@ spring:
     #    url: jdbc:sqlserver://localhost:1433;DatabaseName=Copy3
     # 用户名
 #    username: lxw
-    username: asherlv
+    username: asher
     # 密码-
     password: q243485
     # 驱动类型
