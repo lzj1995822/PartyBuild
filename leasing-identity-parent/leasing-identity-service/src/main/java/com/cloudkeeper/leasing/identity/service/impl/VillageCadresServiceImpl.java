@@ -195,7 +195,13 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         convert.setParentDistrictId(byDistrictId.getOrgParent());
         convert.setParentDistrictName(byDistrictId.getParentName());
         convert.setDistrictName(byDistrictId.getDistrictName());
-        super.save(convert);
+        convert = super.save(convert);
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), "SECRETARY");
+        if (cadrePosition == null) {
+            return null;
+        }
+        cadrePosition.setCadreId(convert.getId());
+        cadrePositionService.save(cadrePosition);
         return convert;
     }
 
