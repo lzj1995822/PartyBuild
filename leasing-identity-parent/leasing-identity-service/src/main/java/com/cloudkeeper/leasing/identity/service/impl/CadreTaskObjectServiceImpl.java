@@ -59,7 +59,7 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
 
         // 更新总进度
         String totalSql = "select count(case WHEN vc.state = '3' THEN 1 ELSE NULL END) as finish, count(case WHEN vc.state != '3' THEN 1 ELSE NULL END) as unfinish, count(*) as total FROM village_cadres vc WHERE vc.hasRetire = '0' and  vc.parentDistrictId like '01%'";
-        String totalFinishSql = "SELECT count(1) as finish from Information_Audit audit JOIN village_cadres cadres on audit.villageId = cadres.id and audit.status = '3' and cadres.parentDistrictId  like '01%' and cadres.hasRetire = '0' and   and audit.taskId = '" + taskId + "'";
+        String totalFinishSql = "SELECT count(1) as finish from Information_Audit audit JOIN village_cadres cadres on audit.villageId = cadres.id and audit.status = '3' and cadres.parentDistrictId  like '01%' and cadres.hasRetire = '0' and audit.taskId = '" + taskId + "'";
         FinishRatioVO finishRatioVO1 = findBySql(FinishRatioVO.class, totalSql);
         FinishRatioVO totalFinishVO = findBySql(FinishRatioVO.class, totalFinishSql);
         BigDecimal divide1 = new BigDecimal(totalFinishVO.getFinish()).divide(new BigDecimal(finishRatioVO1.getTotal()), 2, BigDecimal.ROUND_FLOOR);
