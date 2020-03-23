@@ -133,7 +133,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         List<CadreTaskObject> allByTaskId = cadreTaskObjectService.findAllByTaskId(taskId);
         List<CadreTaskObjectVO> convert = CadreTaskObject.convert(allByTaskId, CadreTaskObjectVO.class);
         for (CadreTaskObjectVO item : convert) {
-            List<VillageCadres> villageCadreses = villageCadresRepository.findAllByParentDistrictId(item.getObjectId());
+            List<VillageCadres> villageCadreses = villageCadresRepository.findAllByParentDistrictIdAndHasRetire(item.getObjectId(), "0");
             ArrayList<VillageCadresInfoVO> villageCadresInfoVOArrayList = new ArrayList<VillageCadresInfoVO>();
             for (VillageCadres subitem : villageCadreses) {
                 InformationAuditSearchable informationAuditSearchable = new InformationAuditSearchable();
