@@ -133,22 +133,10 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         List<CadreTaskObject> allByTaskId = cadreTaskObjectService.findAllByTaskId(taskId);
         List<CadreTaskObjectVO> convert = CadreTaskObject.convert(allByTaskId, CadreTaskObjectVO.class);
         for (CadreTaskObjectVO item : convert) {
-            List<VillageCadres> villageCadreses = villageCadresRepository.findAllByParentDistrictIdAndHasRetire(item.getObjectId(), "0");
-            ArrayList<VillageCadresInfoVO> villageCadresInfoVOArrayList = new ArrayList<VillageCadresInfoVO>();
-            for (VillageCadres subitem : villageCadreses) {
-                InformationAuditSearchable informationAuditSearchable = new InformationAuditSearchable();
-                informationAuditSearchable.setTaskId(taskId);
-                informationAuditSearchable.setVillageId(subitem.getId());
-                Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
-                List<InformationAudit> informationAudits = informationAuditService.findAll(informationAuditSearchable,sort);
-                if (CollectionUtils.isEmpty(informationAudits)){
-                    subitem.setState("0");
-                }else {
-                    subitem.setState(informationAudits.get(0).getStatus());
-                }
-                villageCadresInfoVOArrayList.add(subitem.convert(subitem));
-            }
-            item.setVillageCadres(villageCadresInfoVOArrayList);
+            String sql = "select TOP 1 a.villageId, vc.name, vc.parentDistrictId, vc.districtName, vc.districtId, a.status as state ,a.modifiedAt from ( SELECT * from Information_Audit ia  " +
+                    "WHERE ia.taskId = '" + taskId + "' ) a left join village_cadres vc on vc.id = a.villageId WHERE vc.parentDistrictId = '" + item.getObjectId() +"' GROUP BY a.villageId, vc.name, vc.parentDistrictId, vc.districtName, vc.districtId, a.status , a.modifiedAt ORDER BY a.modifiedAt DESC";
+            List<VillageCadresInfoVO> villageCadresInfoVOS = findAllBySql(VillageCadresInfoVO.class, sql);
+            item.setVillageCadres(villageCadresInfoVOS);
         }
         return convert;
     }
