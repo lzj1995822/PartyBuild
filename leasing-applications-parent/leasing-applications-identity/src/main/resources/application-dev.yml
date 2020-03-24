@@ -98,9 +98,9 @@ spring:
   # redis 配置
   redis:
 #    host: localhost
-    host: 172.16.0.199
+    host: 172.22.116.3
     port: 6379
-    password:
+    password: abc123
     database: 1
     timeout: 1s
     lettuce:
