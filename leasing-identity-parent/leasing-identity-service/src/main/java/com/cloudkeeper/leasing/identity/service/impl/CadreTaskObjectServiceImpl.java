@@ -4,8 +4,10 @@ import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
+import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskObjectRepository;
 import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
+import com.cloudkeeper.leasing.identity.service.InformationAuditService;
 import com.cloudkeeper.leasing.identity.vo.FinishRatioVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 村书记模块发布任务对象记录 service
@@ -25,6 +28,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
 
     /** 村书记模块发布任务对象记录 repository */
     private final CadreTaskObjectRepository cadreTaskObjectRepository;
+
+    private final InformationAuditService informationAuditService;
 
     @Override
     protected BaseRepository<CadreTaskObject> getBaseRepository() {
@@ -80,5 +85,28 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     @Override
     public List<CadreTaskObject> findAllByTaskId(String taskId) {
         return cadreTaskObjectRepository.findAllByTaskId(taskId);
+    }
+
+    @Override
+    public CadreTaskObject submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice) {
+        Optional<CadreTaskObject> byId = findOptionalById(taskObjectId);
+        if (!byId.isPresent()) {
+            return null;
+        }
+        CadreTaskObject cadreTaskObject = byId.get();
+        Integer status = Integer.valueOf(cadreTaskObject.getStatus());
+        if ("SUCCESS".equals(isSuccess)) {
+            cadreTaskObject.setStatus(String.valueOf(++status));
+        } else {
+            cadreTaskObject.setStatus(String.valueOf(--status));
+        }
+        InformationAudit informationAudit = new InformationAudit();
+        informationAudit.setVillageId(cadreTaskObject.getObjectId());
+        informationAudit.setAuditor(auditor);
+        informationAudit.setAuditAdvice(auditorAdvice);
+        informationAudit.setTaskId(cadreTaskObject.getTaskId());
+        informationAudit.setProcessType(cadreTaskObject.getCadreTask().getType());
+        informationAuditService.save(informationAudit);
+        return save(cadreTaskObject);
     }
 }

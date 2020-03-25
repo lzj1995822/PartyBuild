@@ -83,4 +83,12 @@ public interface CadreTaskObjectController {
     Result<Page<CadreTaskObjectVO>> page(@ApiParam(value = "村书记模块发布任务对象记录查询条件", required = true) @RequestBody CadreTaskObjectSearchable cadreTaskObjectSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+    /**
+     * 走任务流程
+     * @return 村书记模块发布任务对象记录 VO 分页
+     */
+    @ApiOperation(value = "分页查询", notes = "走任务流程", position = 6)
+    @PostMapping("/progressNext")
+    Result<CadreTaskObjectVO> progressNext(@ApiParam(value = "走任务流程", required = true) String taskObjectId, String isSuccess, String auditor, String auditAdvice);
+
 }

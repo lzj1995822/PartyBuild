@@ -80,4 +80,10 @@ public class CadreTaskObjectControllerImpl implements CadreTaskObjectController 
         return Result.of(cadreTaskObjectVOPage);
     }
 
+    @Override
+    public Result<CadreTaskObjectVO> progressNext(@ApiParam(value = "走任务流程", required = true) String taskObjectId, String isSuccess, String auditor, String auditAdvice) {
+        CadreTaskObject submit = cadreTaskObjectService.submit(taskObjectId, isSuccess, auditor, auditAdvice);
+        return Result.of(submit.convert(CadreTaskObjectVO.class));
+    }
+
 }
