@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.dto.kpitownquota;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
+import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,9 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 镇考核指标 DTO
@@ -52,5 +51,7 @@ public class KPITownQuotaDTO extends BaseEditDTO {
     /** 分值 */
     @ApiModelProperty(value = "分值", position = 10, required = true)
     private String score;
+
+    List<KPIVillageQuotaDTO> kpiVillageQuotas;
 
 }

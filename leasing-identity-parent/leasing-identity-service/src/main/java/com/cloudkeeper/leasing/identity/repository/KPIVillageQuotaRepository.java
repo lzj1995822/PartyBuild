@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface KPIVillageQuotaRepository extends BaseRepository<KPIVillageQuota> {
-
+    void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId,String parentQuotaId);
 }

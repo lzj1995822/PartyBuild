@@ -31,7 +31,7 @@ public class KpiQuotaVO extends BaseVO {
     @ApiModelProperty(value = "父指标ID", position = 10, required = true)
     private String parentQuotaId;
     @ApiModelProperty(value = "子类", position = 19)
-    private List<KPITownQuotaVO> kpiTownQuotaVOS;
+    private List<KPITownQuotaVO> kpiTownQuotas;
 
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;

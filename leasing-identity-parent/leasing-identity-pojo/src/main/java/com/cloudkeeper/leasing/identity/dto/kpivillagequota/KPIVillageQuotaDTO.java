@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 /**
  * 村考核指标 DTO
  * @author yujian
@@ -40,5 +36,9 @@ public class KPIVillageQuotaDTO extends BaseEditDTO {
     /** 组织名 */
     @ApiModelProperty(value = "组织名", position = 10, required = true)
     private String districtName;
+
+    private String parentDistrictId;
+
+    private String parentQuotaId;
 
 }

@@ -42,6 +42,12 @@ public class KPIVillageQuota extends BaseEntity {
     @ApiModelProperty(value = "组织名", position = 10, required = true)
     @Column(length = 60)
     private String districtName;
+    @ApiModelProperty(value = "组织名", position = 10, required = true)
+    @Column(length = 60)
+    private String parentDistrictId;
+    @ApiModelProperty(value = "组织名", position = 10, required = true)
+    @Column(length = 60)
+    private String parentQuotaId;
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

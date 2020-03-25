@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.dto.kpiquota;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
+import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.util.List;
 
 /**
  * 村主任考核指标 DTO
@@ -31,5 +34,7 @@ public class KpiQuotaDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;
+
+    private List<KPITownQuotaDTO> kpiTownQuotas;
 
 }

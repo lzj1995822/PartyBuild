@@ -33,4 +33,8 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
                 .withMatcher("districtName", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId, String parentQuotaId) {
+        kPIVillageQuotaRepository.deleteAllByParentDistrictIdAndParentQuotaId(parentDistrictId,parentQuotaId);
+    }
 }
