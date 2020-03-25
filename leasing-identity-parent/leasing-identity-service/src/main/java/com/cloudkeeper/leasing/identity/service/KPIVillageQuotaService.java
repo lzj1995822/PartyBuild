@@ -8,5 +8,5 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  * @author yujian
  */
 public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
-
+    void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId,String parentQuotaId);
 }

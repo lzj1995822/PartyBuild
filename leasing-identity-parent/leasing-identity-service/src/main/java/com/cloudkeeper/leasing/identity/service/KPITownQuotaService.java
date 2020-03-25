@@ -9,4 +9,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface KPITownQuotaService extends BaseService<KPITownQuota> {
 
+
+    void deleteAllByDistrictIdAndParentQuotaId(String districtId,String parentQuotaId);
 }

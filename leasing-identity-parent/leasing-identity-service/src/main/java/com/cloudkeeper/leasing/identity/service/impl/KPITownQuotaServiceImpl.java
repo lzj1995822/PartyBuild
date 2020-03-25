@@ -35,4 +35,9 @@ public class KPITownQuotaServiceImpl extends BaseServiceImpl<KPITownQuota> imple
                 .withMatcher("score", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+
+    @Override
+    public void deleteAllByDistrictIdAndParentQuotaId(String districtId, String parentQuotaId) {
+        kPITownQuotaRepository.deleteAllByDistrictIdAndParentQuotaId(districtId,parentQuotaId);
+    }
 }

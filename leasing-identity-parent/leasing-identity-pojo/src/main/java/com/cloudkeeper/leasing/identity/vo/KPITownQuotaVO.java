@@ -51,6 +51,6 @@ public class KPITownQuotaVO extends BaseVO {
     @ApiModelProperty(value = "分值", position = 10, required = true)
     private String score;
 
-    List<KPIVillageQuotaVO> kpiVillageQuotaVOS;
+    List<KPIVillageQuotaVO> kpiVillageQuotas;
 
 }

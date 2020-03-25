@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * 村考核指标 VO
@@ -16,7 +15,6 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "村考核指标 VO", description = "村考核指标 VO")
 @Getter
 @Setter
-@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class KPIVillageQuotaVO extends BaseVO {

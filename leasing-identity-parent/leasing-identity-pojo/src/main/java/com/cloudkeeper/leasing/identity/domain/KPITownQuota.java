@@ -55,7 +55,8 @@ public class KPITownQuota extends BaseEntity {
 
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "townQuotaId")
+    @JoinColumn(name = "townQuotaId", insertable = false, updatable = false)
+    @OrderBy("districtId desc")
     @ApiModelProperty(value = "子类", position = 19)
     List<KPIVillageQuota> kpiVillageQuotas;
 
@@ -65,7 +66,7 @@ public class KPITownQuota extends BaseEntity {
         T convert = super.convert(clazz);
         KPITownQuotaVO kpiTownQuotaVO = (KPITownQuotaVO) convert;
         if (!StringUtils.isEmpty(this.kpiVillageQuotas)) {
-            kpiTownQuotaVO.setKpiVillageQuotaVOS(KPIVillageQuota.convert(this.kpiVillageQuotas, KPIVillageQuotaVO.class));
+            kpiTownQuotaVO.setKpiVillageQuotas(KPIVillageQuota.convert(this.kpiVillageQuotas, KPIVillageQuotaVO.class));
         }
         return (T) kpiTownQuotaVO;
     }
