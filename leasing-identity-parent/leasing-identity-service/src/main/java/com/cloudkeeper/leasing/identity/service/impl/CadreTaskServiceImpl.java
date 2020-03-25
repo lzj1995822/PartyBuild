@@ -36,6 +36,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String REVIEW_TASK = "年度考核";
 
+    private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
+
     private static final String Level_JUDGE_TASK = "职级评定";
 
     /** 村书记模块任务 repository */
@@ -71,13 +73,11 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     public CadreTask save(CadreTaskDTO cadreTaskDTO) {
         CadreTask cadreTask = super.save(cadreTaskDTO.convert(CadreTask.class));
         String type = cadreTaskDTO.getType();
-
+        String msg = "[村书记模块]您有一条村书记" + type + "任务待执行！";
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
-        if (BASE_INFO_TASK.equals(type) || Level_JUDGE_TASK.equals(type)) {
+        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
-        } else if (REVIEW_TASK.equals(type)) {
-            sysDistrictSearchable.setDistrictType("Party");
         } else {
             return null;
         }
@@ -92,7 +92,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             cadreTaskObject.setTaskName(cadreTask.getName());
             cadreTaskObject.setTownName(item.getParent().getDistrictName());
             cadreTaskObjectService.save(cadreTaskObject);
-            messageCenterService.villageCadresSave(cadreTask.getId(), item.getDistrictId(), type, "[村书记任务]您有一条村书记任务待执行！");
+            messageCenterService.villageCadresSave(cadreTask.getId(), item.getDistrictId(), type, msg);
         }
         return cadreTask;
     }
@@ -168,5 +168,6 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         map.put("title",strs);
         return map;
     }
+
 
 }

@@ -18,4 +18,6 @@ public interface CadreTaskObjectService extends BaseService<CadreTaskObject> {
     void deleteByTaskId(String taskId);
 
     List<CadreTaskObject> findAllByTaskId(String taskId);
+
+    CadreTaskObject submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice);
 }
