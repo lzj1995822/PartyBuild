@@ -9,10 +9,13 @@ import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaSearchable;
 import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
 import com.cloudkeeper.leasing.identity.service.KpiQuotaService;
+import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.vo.KPITownQuotaVO;
+import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import com.cloudkeeper.leasing.identity.vo.KpiQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +46,9 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     private final KPITownQuotaService kPITownQuotaService;
     /** 村主任考核指标 service */
     private final KpiQuotaService kpiQuotaService;
+
+    /** 组织 service */
+    private final SysDistrictService sysDistrictService;
     @Override
     public Result<KPITownQuotaVO> findOne(@ApiParam(value = "镇考核指标id", required = true) @PathVariable String id) {
         Optional<KPITownQuota> kPITownQuotaOptional = kPITownQuotaService.findOptionalById(id);
@@ -102,7 +109,24 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             detachedCriteria.addOrder(Order.desc("createdAt"));
             List<KPITownQuota> kpiTownQuotas = kPITownQuotaService.findAll(detachedCriteria);
             List<KPITownQuotaVO> kpiTownQuotaVOS = KPITownQuota.convert(kpiTownQuotas,KPITownQuotaVO.class);
+            if (CollectionUtils.isEmpty(kpiTownQuotaVOS)){
+
+            }
             k.setKpiTownQuotaVOS(kpiTownQuotaVOS);
+        }
+
+        List<KPITownQuotaVO> kpiTownQuotaVOS = null;
+        if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotaVOS())){
+            //二级为空，需要初始化一个二级和三级
+            kpiTownQuotaVOS = new ArrayList<>();//二级
+            KPITownQuotaVO vo = new KPITownQuotaVO();
+            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+districtId;
+            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
+            vo.setKpiVillageQuotaVOS(kpiVillageQuotaVOS1);
+            kpiTownQuotaVOS.add(vo);
+            KpiQuotaVO k = quotaVOList.get(0);
+            k.setKpiTownQuotaVOS(kpiTownQuotaVOS);
+            quotaVOList.set(0,k);
         }
         return Result.of(quotaVOList);
     }
