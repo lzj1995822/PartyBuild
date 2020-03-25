@@ -35,5 +35,11 @@ public class KPIVillageQuotaVO extends BaseVO {
     @ApiModelProperty(value = "组织名", position = 10, required = true)
     private String districtName;
 
+    private String score;
+
+    private String scoreEnd;
+
+    private String formulaScore;
+
 
 }

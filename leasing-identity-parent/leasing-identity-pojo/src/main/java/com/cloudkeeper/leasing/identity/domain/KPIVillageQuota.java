@@ -48,6 +48,18 @@ public class KPIVillageQuota extends BaseEntity {
     @ApiModelProperty(value = "组织名", position = 10, required = true)
     @Column(length = 60)
     private String parentQuotaId;
+    @ApiModelProperty(value = "分数", position = 10, required = true)
+    @Column(length = 60)
+    private String score;
+    @ApiModelProperty(value = "最终得分", position = 10, required = true)
+    @Column(length = 60)
+    private String scoreEnd;
+    @ApiModelProperty(value = "计算得分", position = 10, required = true)
+    @Column(length = 60)
+    private String formulaScore;
+    @ApiModelProperty(value = "季度", position = 10, required = true)
+    @Column(length = 60)
+    private String quarter;
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

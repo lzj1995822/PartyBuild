@@ -41,4 +41,12 @@ public class KPIVillageQuotaDTO extends BaseEditDTO {
 
     private String parentQuotaId;
 
+    private String score;
+
+    private String scoreEnd;
+
+    private String formulaScore;
+
+    private String quarter;
+
 }

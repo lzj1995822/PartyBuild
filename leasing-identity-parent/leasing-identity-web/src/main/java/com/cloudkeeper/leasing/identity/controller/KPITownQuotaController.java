@@ -104,11 +104,11 @@ public interface KPITownQuotaController {
     Result<Object> addAll(@RequestBody List<KpiQuotaDTO> kpiQuotas);
 
     /**
-     * 增加所有村的考核指标
+     * 初始化03,04,05的数据
      * @param
      * @return 镇考核指标
      */
     @ApiOperation(value = "初始化固定指标", notes = "初始化固定指标", position = 6)
-    @PostMapping("/initAll")
+    @GetMapping("/initAll")
     Result<Boolean> initAll();
 }
