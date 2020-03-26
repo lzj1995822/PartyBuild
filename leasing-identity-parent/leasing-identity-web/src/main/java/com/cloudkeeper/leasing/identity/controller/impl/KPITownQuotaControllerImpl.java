@@ -18,6 +18,7 @@ import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.vo.KPITownQuotaVO;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import com.cloudkeeper.leasing.identity.vo.KpiQuotaVO;
+import com.cloudkeeper.leasing.identity.vo.VillageQoutaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -240,5 +241,22 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             }
         }
         return Result.ofAddSuccess(true);
+    }
+
+    @Override
+    public Result<Object> getAllByVillageId(@PathVariable String districtId, @PathVariable String parentQuotaId) {
+        String sql = "SELECT v.id , quotaName,t.score FROM KPI_village_Quota v  JOIN KPI_Town_Quota t ON v.townQuotaId = t.id and v.districtId = '"+districtId+"' AND v.parentQuotaId = '"+parentQuotaId+"'";
+        List<VillageQoutaVO> kpiTownQuotaVOS = sysDistrictService.findAllBySql(VillageQoutaVO.class,sql);
+        return Result.of(kpiTownQuotaVOS);
+    }
+
+    @Override
+    public Result<Object> updateStatisticsQoutaScore(@RequestBody List<VillageQoutaVO> kpiVillageQuotaDTOS) {
+        for(VillageQoutaVO kpiVillageQuotaDTO : kpiVillageQuotaDTOS){
+            KPIVillageQuota kpiVillageQuota = kpiVillageQuotaService.findById(kpiVillageQuotaDTO.getId());
+            kpiVillageQuota.setScore(kpiVillageQuotaDTO.getScore());
+            kpiVillageQuotaService.save(kpiVillageQuota);
+        }
+        return Result.ofUpdateSuccess(kpiVillageQuotaDTOS);
     }
 }

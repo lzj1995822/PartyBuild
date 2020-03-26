@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaSearchable;
 import com.cloudkeeper.leasing.identity.vo.KPITownQuotaVO;
+import com.cloudkeeper.leasing.identity.vo.VillageQoutaVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -111,4 +112,23 @@ public interface KPITownQuotaController {
     @ApiOperation(value = "初始化固定指标", notes = "初始化固定指标", position = 6)
     @GetMapping("/initAll")
     Result<Boolean> initAll();
+
+    /**
+     * 获取所有镇考核指标
+     * @param districtId 组织ID
+     * @return 镇考核指标
+     */
+    @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
+    @GetMapping("/getAllByVillageId/{districtId}/{parentQuotaId}")
+    Result<Object> getAllByVillageId(@PathVariable String districtId,@PathVariable String parentQuotaId);
+
+    /**
+     * 获取所有镇考核指标
+     * @param kpiVillageQuotaDTOS 组织ID
+     * @return 镇考核指标
+     */
+    @ApiOperation(value = "设置固定指标的分值", notes = "设置固定指标的分值", position = 6)
+    @PostMapping("/updateStatisticsQoutaScore")
+    Result<Object> updateStatisticsQoutaScore(@RequestBody List<VillageQoutaVO> kpiVillageQuotaDTOS);
+
 }
