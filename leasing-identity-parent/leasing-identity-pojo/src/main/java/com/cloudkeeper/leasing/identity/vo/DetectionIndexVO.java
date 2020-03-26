@@ -101,4 +101,20 @@ public class DetectionIndexVO extends BaseVO {
     @ApiModelProperty(value = "人居佐证", position = 10, required = true)
     private String environmentSupportDoc;
 
+    /** 组织id */
+    @ApiModelProperty(value = "组织id", position = 10, required = true)
+    private String districtId;
+
+    /** 任务id */
+    @ApiModelProperty(value = "任务id", position = 10, required = true)
+    private String taskId;
+
+    /** 组织id */
+    @ApiModelProperty(value = "组织名称", position = 10, required = true)
+    private String districtName;
+
+    /** 任务id */
+    @ApiModelProperty(value = "任务名称", position = 10, required = true)
+    private String taskName;
+
 }

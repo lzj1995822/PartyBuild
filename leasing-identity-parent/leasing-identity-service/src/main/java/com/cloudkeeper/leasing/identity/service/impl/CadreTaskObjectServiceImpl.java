@@ -6,9 +6,12 @@ import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskObjectRepository;
+import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.service.InformationAuditService;
 import com.cloudkeeper.leasing.identity.vo.FinishRatioVO;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -30,6 +33,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     private final CadreTaskObjectRepository cadreTaskObjectRepository;
 
     private final InformationAuditService informationAuditService;
+
+    private final CadreTaskRepository cadreTaskRepository;
 
     @Override
     protected BaseRepository<CadreTaskObject> getBaseRepository() {
@@ -96,10 +101,14 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         CadreTaskObject cadreTaskObject = byId.get();
         Integer status = Integer.valueOf(cadreTaskObject.getStatus());
         if ("SUCCESS".equals(isSuccess)) {
-            cadreTaskObject.setStatus(String.valueOf(++status));
+            status++;
         } else {
-            cadreTaskObject.setStatus(String.valueOf(--status));
+            status--;
         }
+        if (status == 2) {
+            updateTotalProgress(cadreTaskObject.getCadreTask());
+        }
+        cadreTaskObject.setStatus(String.valueOf(status));
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setVillageId(cadreTaskObject.getObjectId());
         informationAudit.setAuditor(auditor);
@@ -108,5 +117,15 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         informationAudit.setProcessType(cadreTaskObject.getCadreTask().getType());
         informationAuditService.save(informationAudit);
         return save(cadreTaskObject);
+    }
+
+    private void updateTotalProgress(@NonNull CadreTask cadreTask) {
+        String sql = "select count(case when cto.status = '2' then 1 else null end) as finish, count(case when cto.status != '2' then 1 else null end) as unfinish, count(*) as total from cadres_task_object cto where cto.taskId = '" + cadreTask.getId() + "'";
+        FinishRatioVO bySql = findBySql(FinishRatioVO.class, sql);
+        if (bySql != null) {
+            BigDecimal divide1 = new BigDecimal(bySql.getFinish()).divide(new BigDecimal(bySql.getTotal()), 2, BigDecimal.ROUND_FLOOR);
+            cadreTask.setCurrentPercent(divide1.toString());
+            cadreTaskRepository.save(cadreTask);
+        }
     }
 }

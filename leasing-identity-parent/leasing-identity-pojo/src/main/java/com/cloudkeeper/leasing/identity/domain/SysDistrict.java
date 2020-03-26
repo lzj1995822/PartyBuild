@@ -97,6 +97,7 @@ public class SysDistrict extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "districtId", referencedColumnName = "districtId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private List<PositionInformation> positionInformation;
 
     /**
@@ -107,6 +108,7 @@ public class SysDistrict extends BaseEntity {
     @OrderBy("districtId asc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
+    @NotFound(action = NotFoundAction.IGNORE)
     private List<SysDistrict> children;
 
     /**
@@ -117,6 +119,7 @@ public class SysDistrict extends BaseEntity {
     @OrderBy("districtId asc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
+    @NotFound(action = NotFoundAction.IGNORE)
     private List<SysDistrict> orgChildren;
 
 

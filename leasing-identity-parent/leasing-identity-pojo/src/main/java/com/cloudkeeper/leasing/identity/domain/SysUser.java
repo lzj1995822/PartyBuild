@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
@@ -98,6 +100,7 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty(value = "组织", position = 28)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizationId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysDistrict sysDistrict;
 
 

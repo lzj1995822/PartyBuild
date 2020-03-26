@@ -34,7 +34,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String BASE_INFO_TASK = "基本信息更新";
 
-    private static final String REVIEW_TASK = "年度考核";
+    private static final String REVIEW_TASK = "考核内容实施";
 
     private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
 
@@ -52,6 +52,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     private final VillageCadresRepository villageCadresRepository;
 
     private final InformationAuditService informationAuditService;
+
+    private final DetectionIndexService detectionIndexService;
 
     @Override
     protected BaseRepository<CadreTask> getBaseRepository() {
@@ -78,7 +80,18 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
-        } else {
+        } else if (REVIEW_TASK.equals(type)) {
+            List<SysDistrict> party = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
+            for (SysDistrict sysDistrict: party) {
+                DetectionIndex detectionIndex = new DetectionIndex();
+                detectionIndex.setDistrictId(sysDistrict.getDistrictId());
+                detectionIndex.setDistrictName(sysDistrict.getDistrictName());
+                detectionIndex.setTaskId(cadreTask.getId());
+                detectionIndex.setTaskName(cadreTask.getName());
+                detectionIndexService.save(detectionIndex);
+            }
+            sysDistrictSearchable.setDistrictType("Depart");
+        }else {
             return null;
         }
         List<SysDistrict> all = sysDistrictService.findAll(sysDistrictSearchable);
@@ -143,9 +156,13 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     @Override
     public Map<String, List> activitiesCompletion(String year, String objectType,String taskType) {
-        String sql = "SELECT b.id,b.taskId as taskId,b.taskName as taskName,b.status as status,b.objectId as objectId,b.objectName as objectName,b.currentPercent as currentPercent FROM cadre_task a JOIN cadres_task_object b ON a.id = b.taskId and year(a.createdAt) = '"+year+"' and a.type = '"+taskType+"' and b.objectType = '"+objectType+"'ORDER BY b.objectId, a.createdAt";
-        System.out.println(sql);
-        String nameSql = "SELECT name FROM cadre_task   where year(createdAt) = '"+year+"' and type = '"+taskType+"' ORDER BY createdAt";
+        String sql = "SELECT b.id,b.taskId as taskId,b.taskName as taskName,b.status as status,b.objectId as objectId,b.objectName as objectName,b.currentPercent as currentPercent FROM cadre_task a JOIN cadres_task_object b ON a.id = b.taskId and year(a.createdAt) = '"+ year;
+        String nameSql = "SELECT name FROM cadre_task where year(createdAt) = '"+ year +"'";
+        if (taskType != null) {
+            sql += "' and a.type = '"+ taskType +"'";
+            nameSql += "' and type = '"+ taskType +"' ORDER BY createdAt";
+        }
+        sql += "' and b.objectType = '" + objectType + "' ORDER BY b.objectId, a.createdAt";
         List<CadreTaskObjectVO> allBySql = super.findAllBySql(CadreTaskObjectVO.class, sql);
         List<CadreTaskVO> cadreTaskVOS = super.findAllBySql(CadreTaskVO.class, nameSql);
         Map<String,List> map  = new LinkedHashMap<>();
