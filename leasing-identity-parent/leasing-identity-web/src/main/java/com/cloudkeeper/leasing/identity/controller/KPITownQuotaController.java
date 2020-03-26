@@ -87,12 +87,12 @@ public interface KPITownQuotaController {
 
     /**
      * 获取所有镇考核指标
-     * @param districtId 组织ID
+     * @param kpi 组织ID
      * @return 镇考核指标
      */
     @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
-    @GetMapping("/getAll/{districtId}/{parentQuotaId}/{quarter}")
-    Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId,@PathVariable String quarter);
+    @PostMapping("/getAll")
+    Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi);
 
 
     /**
