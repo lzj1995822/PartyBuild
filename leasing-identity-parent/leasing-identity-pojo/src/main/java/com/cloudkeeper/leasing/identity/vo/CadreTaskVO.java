@@ -49,4 +49,12 @@ public class CadreTaskVO extends BaseVO {
     @ApiModelProperty(value = "当前对象进度")
     private String currentPercent;
 
+    /** 年度 */
+    @ApiModelProperty(value = "年度")
+    private String taskYear;
+
+    /** 季度 */
+    @ApiModelProperty(value = "季度")
+    private String taskQuarter;
+
 }

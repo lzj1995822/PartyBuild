@@ -56,4 +56,11 @@ public class CadreTask extends BaseEntity {
     @ApiModelProperty(value = "市总进度")
     private String currentPercent;
 
+    /** 年度 */
+    @ApiModelProperty(value = "年度")
+    private String taskYear;
+
+    /** 季度 */
+    @ApiModelProperty(value = "季度")
+    private String taskQuarter;
 }
