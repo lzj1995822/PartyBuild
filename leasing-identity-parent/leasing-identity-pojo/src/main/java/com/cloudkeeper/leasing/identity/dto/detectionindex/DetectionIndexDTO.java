@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.dto.detectionindex;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
+import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 监测指标 DTO
@@ -117,5 +119,9 @@ public class DetectionIndexDTO extends BaseEditDTO {
     /** 任务id */
     @ApiModelProperty(value = "任务名称", position = 10, required = true)
     private String taskName;
+
+    /** 任务id */
+    @ApiModelProperty(value = "更新得分", position = 10, required = true)
+    List<KPIVillageQuota> quotas;
 
 }

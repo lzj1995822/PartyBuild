@@ -3,9 +3,11 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.DetectionIndexController;
 import com.cloudkeeper.leasing.identity.domain.DetectionIndex;
+import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
 import com.cloudkeeper.leasing.identity.dto.detectionindex.DetectionIndexDTO;
 import com.cloudkeeper.leasing.identity.dto.detectionindex.DetectionIndexSearchable;
 import com.cloudkeeper.leasing.identity.service.DetectionIndexService;
+import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
 import com.cloudkeeper.leasing.identity.vo.DetectionIndexVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +35,8 @@ public class DetectionIndexControllerImpl implements DetectionIndexController {
 
     /** 监测指标 service */
     private final DetectionIndexService detectionIndexService;
+
+    private final KPIVillageQuotaService kpiVillageQuotaService;
 
     @Override
     public Result<DetectionIndexVO> findOne(@ApiParam(value = "监测指标id", required = true) @PathVariable String id) {
@@ -79,5 +84,23 @@ public class DetectionIndexControllerImpl implements DetectionIndexController {
         Page<DetectionIndexVO> detectionIndexVOPage = DetectionIndex.convert(detectionIndexPage, DetectionIndexVO.class);
         return Result.of(detectionIndexVOPage);
     }
+
+    @Transactional
+    @Override
+    public Result<DetectionIndexVO> saveInfoAndQuota(@ApiParam(value = "监测指标id", required = true) @PathVariable String id,
+                                           @ApiParam(value = "监测指标 DTO", required = true) @RequestBody @Validated DetectionIndexDTO detectionIndexDTO) {
+        Optional<DetectionIndex> detectionIndexOptional = detectionIndexService.findOptionalById(id);
+        if (!detectionIndexOptional.isPresent()) {
+            return Result.ofLost();
+        }
+        DetectionIndex detectionIndex = detectionIndexOptional.get();
+        BeanUtils.copyProperties(detectionIndexDTO, detectionIndex);
+        detectionIndex = detectionIndexService.save(detectionIndex);
+        for (KPIVillageQuota item: detectionIndexDTO.getQuotas()) {
+            kpiVillageQuotaService.save(item);
+        }
+        return Result.ofUpdateSuccess(detectionIndex.convert(DetectionIndexVO.class));
+    }
+
 
 }
