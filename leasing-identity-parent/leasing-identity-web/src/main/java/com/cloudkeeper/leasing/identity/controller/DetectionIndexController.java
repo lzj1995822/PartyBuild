@@ -83,4 +83,10 @@ public interface DetectionIndexController {
     Result<Page<DetectionIndexVO>> page(@ApiParam(value = "监测指标查询条件", required = true) @RequestBody DetectionIndexSearchable detectionIndexSearchable,
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
+
+    @ApiOperation(value = "更新基本信息及得分", notes = "更新基本信息及得分", position = 6)
+    @PostMapping("/saveInfoAndQuota/{id}id")
+    Result<DetectionIndexVO> saveInfoAndQuota(@ApiParam(value = "监测指标id", required = true) @PathVariable String id,
+                                                     @ApiParam(value = "监测指标 DTO", required = true) @RequestBody @Validated DetectionIndexDTO detectionIndexDTO);
+
 }
