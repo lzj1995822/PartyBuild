@@ -91,7 +91,7 @@ public interface KPITownQuotaController {
      */
     @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
     @GetMapping("/getAll/{districtId}/{parentQuotaId}")
-    Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId,@PathVariable String childDistrictId);
+    Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId);
 
 
     /**
