@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -105,7 +106,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     }
 
     @Override
-    public Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId) {
+    public Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId,@PathVariable String childDistrictId) {
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
         kpiQuotaSearchable.setParentQuotaId(parentQuotaId);
         String d = districtId;
@@ -113,6 +114,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         List<KpiQuotaVO> quotaVOList = KpiQuota.convert(kpiQuotas,KpiQuotaVO.class);
         for (KpiQuotaVO k : quotaVOList){
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+            if (!StringUtils.isEmpty(childDistrictId)) {
+                detachedCriteria.createAlias("kpiTownQuotas","a");
+                detachedCriteria.add(Restrictions.eq("a.districtId", childDistrictId));
+            }
             detachedCriteria.add(Restrictions.eq("parentQuotaId", k.getQuotaId()));
             detachedCriteria.add(Restrictions.eq("districtId",d));
             detachedCriteria.addOrder(Order.desc("createdAt"));
