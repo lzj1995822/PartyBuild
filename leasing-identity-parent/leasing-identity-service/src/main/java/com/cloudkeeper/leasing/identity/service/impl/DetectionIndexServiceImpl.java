@@ -47,7 +47,11 @@ public class DetectionIndexServiceImpl extends BaseServiceImpl<DetectionIndex> i
                 .withMatcher("projectAmountSupportDoc", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("hasPass", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("avgScore", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("environmentSupportDoc", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("environmentSupportDoc", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId",  ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskId",  ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtName",  ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }

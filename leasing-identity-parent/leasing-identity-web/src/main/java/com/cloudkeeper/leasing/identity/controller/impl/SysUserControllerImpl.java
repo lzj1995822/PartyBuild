@@ -59,7 +59,9 @@ public class SysUserControllerImpl implements SysUserController {
     @Override
     public Result<SysUserVO> add(@ApiParam(value = "系统用户 DTO", required = true) @RequestBody @Validated SysUserDTO sysUserDTO) {
         SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(sysUserDTO.getDistrictId());
-        sysUserDTO.setOrganizationId(byDistrictId.getId());
+        if (byDistrictId != null) {
+            sysUserDTO.setOrganizationId(byDistrictId.getId());
+        }
         SysUser sysUser = sysUserService.save(sysUserDTO.convert(SysUser.class));
         return Result.ofAddSuccess(sysUser.convert(SysUserVO.class));
     }
@@ -68,7 +70,9 @@ public class SysUserControllerImpl implements SysUserController {
     public Result<SysUserVO> update(@ApiParam(value = "系统用户id", required = true) @PathVariable String id,
         @ApiParam(value = "系统用户 DTO", required = true) @RequestBody @Validated SysUserDTO sysUserDTO) {
         SysDistrict byDistrictId = sysDistrictRepository.findByDistrictId(sysUserDTO.getDistrictId());
-        sysUserDTO.setOrganizationId(byDistrictId.getId());
+        if (byDistrictId != null) {
+            sysUserDTO.setOrganizationId(byDistrictId.getId());
+        }
         SysUser sysUser = sysUserService.save(sysUserDTO.convert(SysUser.class));
         return Result.ofUpdateSuccess(sysUser.convert(SysUserVO.class));
     }
