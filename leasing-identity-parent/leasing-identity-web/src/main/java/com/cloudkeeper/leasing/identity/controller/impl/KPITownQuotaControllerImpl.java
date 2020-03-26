@@ -103,10 +103,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     }
 
     @Override
-    public Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId,@PathVariable String quarter) {
+    public Result<Object> getAll(@RequestBody KPITownQuotaVO kpi) {
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
-        kpiQuotaSearchable.setParentQuotaId(parentQuotaId);
-        String d = districtId;
+        kpiQuotaSearchable.setParentQuotaId(kpi.getParentQuotaId());
+        String d = kpi.getDistrictId();
         List<KpiQuota> kpiQuotas = kpiQuotaService.findAll(kpiQuotaSearchable,new Sort(Sort.Direction.DESC,"parentQuotaId"));
         List<KpiQuotaVO> quotaVOList = KpiQuota.convert(kpiQuotas,KpiQuotaVO.class);
         for (KpiQuotaVO k : quotaVOList){
@@ -114,8 +114,8 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             detachedCriteria.add(Restrictions.eq("parentQuotaId", k.getQuotaId()));
             detachedCriteria.add(Restrictions.eq("districtId",d));
             detachedCriteria.addOrder(Order.desc("createdAt"));
-            if (StringUtils.isNotBlank(quarter)){
-                detachedCriteria.add(Restrictions.eq("quarter",quarter));
+            if (StringUtils.isNotBlank(kpi.getQuarter())){
+                detachedCriteria.add(Restrictions.eq("quarter",kpi.getQuarter()));
             }
             List<KPITownQuota> kpiTownQuotas = kPITownQuotaService.findAll(detachedCriteria);
             List<KPITownQuotaVO> kpiTownQuotaVOS = KPITownQuota.convert(kpiTownQuotas,KPITownQuotaVO.class);
@@ -127,8 +127,8 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             //二级为空，需要初始化一个二级和三级
             kpiTownQuotaVOS = new ArrayList<>();//二级
             KPITownQuotaVO vo = new KPITownQuotaVO();
-            vo.setDistrictId(districtId);
-            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+districtId+" order by districtId desc";
+            vo.setDistrictId(d);
+            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
             List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
             vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
             kpiTownQuotaVOS.add(vo);
@@ -139,8 +139,8 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             //三级为空，需要初始化一个三级
             kpiTownQuotaVOS = quotaVOList.get(0).getKpiTownQuotas();//二级
             KPITownQuotaVO vo = new KPITownQuotaVO();
-            vo.setDistrictId(districtId);
-            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+districtId+" order by districtId desc";
+            vo.setDistrictId(d);
+            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
             List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
             vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
             kpiTownQuotaVOS.set(0,vo);
