@@ -52,7 +52,9 @@ public class KPITownQuota extends BaseEntity {
     @ApiModelProperty(value = "分值", position = 10, required = true)
     @Column(length = 60)
     private String score;
-
+    @ApiModelProperty(value = "季度", position = 10, required = true)
+    @Column(length = 60)
+    private String quarter;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "townQuotaId", insertable = false, updatable = false)

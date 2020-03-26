@@ -92,7 +92,7 @@ public interface KPITownQuotaController {
      */
     @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
     @GetMapping("/getAll/{districtId}/{parentQuotaId}")
-    Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId);
+    Result<Object> getAll(@PathVariable String districtId,@PathVariable String parentQuotaId,@PathVariable String quarter);
 
 
     /**
@@ -118,7 +118,7 @@ public interface KPITownQuotaController {
      * @param districtId 组织ID
      * @return 镇考核指标
      */
-    @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
+    @ApiOperation(value = "获取村考核指标", notes = "获取村考核指标", position = 6)
     @GetMapping("/getAllByVillageId/{districtId}/{parentQuotaId}")
     Result<Object> getAllByVillageId(@PathVariable String districtId,@PathVariable String parentQuotaId);
 
