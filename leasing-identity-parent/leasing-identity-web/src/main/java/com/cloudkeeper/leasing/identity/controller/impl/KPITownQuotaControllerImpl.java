@@ -258,6 +258,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         for(VillageQoutaVO kpiVillageQuotaDTO : kpiVillageQuotaDTOS){
             KPIVillageQuota kpiVillageQuota = kpiVillageQuotaService.findById(kpiVillageQuotaDTO.getId());
             kpiVillageQuota.setScore(kpiVillageQuotaDTO.getScore());
+            kpiVillageQuota.setScoreEnd(kpiVillageQuotaDTO.getScoreEnd());
             kpiVillageQuotaService.save(kpiVillageQuota);
         }
         return Result.ofUpdateSuccess(kpiVillageQuotaDTOS);
