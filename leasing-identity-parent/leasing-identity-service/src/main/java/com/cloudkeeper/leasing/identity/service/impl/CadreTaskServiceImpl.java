@@ -40,6 +40,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String Level_JUDGE_TASK = "职级评定";
 
+    private static final String DAILY_REVIEW = "日常工作考核";
+
     /** 村书记模块任务 repository */
     private final CadreTaskRepository cadreTaskRepository;
 
@@ -77,7 +79,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         String type = cadreTaskDTO.getType();
         String msg = "[村书记模块]您有一条村书记" + type + "任务待执行！";
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
-        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type)) {
+        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
         } else if (REVIEW_TASK.equals(type)) {

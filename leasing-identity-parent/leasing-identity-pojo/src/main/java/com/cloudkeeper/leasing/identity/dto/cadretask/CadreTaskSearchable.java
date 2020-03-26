@@ -49,4 +49,11 @@ public class CadreTaskSearchable extends BaseSearchable {
     @ApiModelProperty(value = "附件", position = 0)
     private String attach;
 
+    /** 年度 */
+    @ApiModelProperty(value = "年度")
+    private String taskYear;
+
+    /** 季度 */
+    @ApiModelProperty(value = "季度")
+    private String taskQuarter;
 }

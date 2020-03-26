@@ -88,7 +88,7 @@ public interface CadreTaskObjectController {
      * @return 村书记模块发布任务对象记录 VO 分页
      */
     @ApiOperation(value = "分页查询", notes = "走任务流程", position = 6)
-    @PostMapping("/progressNext")
+    @GetMapping("/progressNext")
     Result<CadreTaskObjectVO> progressNext(@ApiParam(value = "走任务流程", required = true) String taskObjectId, String isSuccess, String auditor, String auditAdvice);
 
 }
