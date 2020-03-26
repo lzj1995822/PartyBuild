@@ -103,7 +103,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     }
 
     @Override
-    public Result<Object> getAll(@RequestBody KPITownQuotaVO kpi) {
+    public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi) {
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
         kpiQuotaSearchable.setParentQuotaId(kpi.getParentQuotaId());
         String d = kpi.getDistrictId();
