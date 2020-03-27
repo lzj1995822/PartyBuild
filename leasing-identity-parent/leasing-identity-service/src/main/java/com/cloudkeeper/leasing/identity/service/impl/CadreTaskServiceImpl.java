@@ -34,7 +34,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String BASE_INFO_TASK = "基本信息更新";
 
-    private static final String REVIEW_TASK = "考核内容实施";
+    private static final String REVIEW_TASK = "考核实施";
 
     private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
 
@@ -78,10 +78,13 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         CadreTask cadreTask = super.save(cadreTaskDTO.convert(CadreTask.class));
         String type = cadreTaskDTO.getType();
         String msg = "[村书记模块]您有一条村书记" + type + "任务待执行！";
+        List<SysDistrict> all = new ArrayList<>();
+
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
         if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
+            all = sysDistrictService.findAll(sysDistrictSearchable);
         } else if (REVIEW_TASK.equals(type)) {
             List<SysDistrict> party = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
             for (SysDistrict sysDistrict: party) {
@@ -93,10 +96,12 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
                 detectionIndexService.save(detectionIndex);
             }
             sysDistrictSearchable.setDistrictType("Depart");
+            all = sysDistrictService.findAll(sysDistrictSearchable);
+            all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(2, "Party"));
+            all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(1, "Party"));
         }else {
             return null;
         }
-        List<SysDistrict> all = sysDistrictService.findAll(sysDistrictSearchable);
         for (SysDistrict item : all) {
             CadreTaskObject cadreTaskObject = new CadreTaskObject();
             cadreTaskObject.setTaskId(cadreTask.getId());
@@ -105,7 +110,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             cadreTaskObject.setStatus("0");
             cadreTaskObject.setObjectName(item.getDistrictName());
             cadreTaskObject.setTaskName(cadreTask.getName());
-            cadreTaskObject.setTownName(item.getParent().getDistrictName());
+            cadreTaskObject.setTownName(item.getOrgParentName());
             cadreTaskObjectService.save(cadreTaskObject);
             messageCenterService.villageCadresSave(cadreTask.getId(), item.getDistrictId(), type, msg);
         }

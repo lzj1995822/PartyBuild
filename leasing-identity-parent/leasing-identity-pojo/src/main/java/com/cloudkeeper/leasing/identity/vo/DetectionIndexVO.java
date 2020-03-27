@@ -117,4 +117,8 @@ public class DetectionIndexVO extends BaseVO {
     @ApiModelProperty(value = "任务名称", position = 10, required = true)
     private String taskName;
 
+    /** 素能评价附件佐证材料 */
+    @ApiModelProperty(value = "素能评价附件佐证材料", position = 10, required = true)
+    private String judgeSupportDoc;
+
 }

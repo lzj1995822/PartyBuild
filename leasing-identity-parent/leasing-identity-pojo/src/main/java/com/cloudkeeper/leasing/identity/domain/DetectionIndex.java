@@ -142,6 +142,8 @@ public class DetectionIndex extends BaseEntity {
     @Column(length = 60)
     private String taskName;
 
-
+    /** 素能评价附件佐证材料 */
+    @ApiModelProperty(value = "素能评价附件佐证材料", position = 10, required = true)
+    private String judgeSupportDoc;
 
 }

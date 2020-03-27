@@ -124,4 +124,9 @@ public class DetectionIndexDTO extends BaseEditDTO {
     @ApiModelProperty(value = "更新得分", position = 10, required = true)
     List<KPIVillageQuota> quotas;
 
+    /** 素能评价附件佐证材料 */
+    @ApiModelProperty(value = "素能评价附件佐证材料", position = 10, required = true)
+    private String judgeSupportDoc;
+
+
 }
