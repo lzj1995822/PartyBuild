@@ -96,4 +96,7 @@ public interface KPIEvaluationController {
     @PostMapping("/getEvaluations")
     Result<Object> getEvaluations(@RequestBody KPIEvaluationSearchable kpiEvaluationSearchable);
 
+    @ApiOperation(value = "测试Redis消息队列", notes = "测试Redis消息队列", position = 2)
+    @PostMapping("/testRedisChannel")
+    Result<Object> testRedisChannel();
 }

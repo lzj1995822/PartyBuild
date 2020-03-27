@@ -3,7 +3,6 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KPIEvaluationController;
 import com.cloudkeeper.leasing.identity.domain.KPIEvaluation;
-import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationDTO;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationSearchable;
 import com.cloudkeeper.leasing.identity.service.KPIEvaluationService;
@@ -15,11 +14,14 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.internal.CriteriaImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.dc;
 
 /**
  * 综合评议 controller
@@ -41,7 +41,8 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
 
     /** 综合评议 service */
     private final KPIEvaluationService kPIEvaluationService;
-
+    private final StringRedisTemplate template;
+    private static final Logger logger = LoggerFactory.getLogger(KPIEvaluationController.class);
     @Override
     public Result<KPIEvaluationVO> findOne(@ApiParam(value = "综合评议id", required = true) @PathVariable String id) {
         Optional<KPIEvaluation> kPIEvaluationOptional = kPIEvaluationService.findOptionalById(id);
@@ -108,11 +109,11 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
 
     @Override
     public Result<Object> getEvaluations(@RequestBody KPIEvaluationSearchable kpiEvaluationSearchable) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIEvaluation.class);
         detachedCriteria.add(Restrictions.eq("taskId",kpiEvaluationSearchable.getTaskId()));
         detachedCriteria.add(Restrictions.eq("type",kpiEvaluationSearchable.getType()));
         detachedCriteria.addOrder(Order.asc("indexNum"));
-        detachedCriteria.add(Restrictions.isNotNull("commentContent"));
+        detachedCriteria.add(Restrictions.or(Restrictions.ne("commentContent",""), Restrictions.isNotNull("commentContent")));
         List<KPIEvaluation> list = kPIEvaluationService.findAll(detachedCriteria);
         Map<String,Object> map = new HashMap<>();
         Field impl = null;
@@ -120,8 +121,9 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
             if (CollectionUtils.isNotEmpty(list)){
                 //不为空获取本taskId数据
                 //清空上一次detachedCriteria
-                impl = dc.getClass().getDeclaredField("impl");
-                CriteriaImpl cimpl = (CriteriaImpl) impl.get(dc);
+                impl = detachedCriteria.getClass().getDeclaredField("impl");
+                impl.setAccessible(true);
+                CriteriaImpl cimpl = (CriteriaImpl) impl.get(detachedCriteria);
                 Field criterionEntries = cimpl.getClass().getDeclaredField("criterionEntries");
                 criterionEntries.setAccessible(true);
                 criterionEntries.set(cimpl, new ArrayList());
@@ -129,29 +131,30 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
 
                 detachedCriteria.add(Restrictions.eq("taskId",kpiEvaluationSearchable.getTaskId()));
                 detachedCriteria.add(Restrictions.eq("type",kpiEvaluationSearchable.getType()));
-                detachedCriteria.add(Restrictions.isNull("commentContent"));
+                detachedCriteria.add(Restrictions.or(Restrictions.eq("commentContent",""), Restrictions.isNull("commentContent")));
                 List<KPIEvaluation> list1 = kPIEvaluationService.findAll(detachedCriteria);
                 map.put("base",list);
                 map.put("endOne",list1);
             }else {
                 //获取基础模板数据
-                impl = dc.getClass().getDeclaredField("impl");
-                CriteriaImpl cimpl = (CriteriaImpl) impl.get(dc);
+                impl = detachedCriteria.getClass().getDeclaredField("impl");
+                impl.setAccessible(true);
+                CriteriaImpl cimpl = (CriteriaImpl) impl.get(detachedCriteria);
                 Field criterionEntries = cimpl.getClass().getDeclaredField("criterionEntries");
                 criterionEntries.setAccessible(true);
                 criterionEntries.set(cimpl, new ArrayList());
 
                 detachedCriteria.add(Restrictions.eq("taskId","-1"));
                 detachedCriteria.add(Restrictions.eq("type",kpiEvaluationSearchable.getType()));
-                detachedCriteria.addOrder(Order.asc("indexNum"));
-                detachedCriteria.add(Restrictions.isNotNull("commentContent"));
-                list = kPIEvaluationService.findAll(detachedCriteria);
+                detachedCriteria.add(Restrictions.or(Restrictions.ne("commentContent",""), Restrictions.isNotNull("commentContent")));
 
+                list = kPIEvaluationService.findAll(detachedCriteria);
+                criterionEntries.setAccessible(true);
                 criterionEntries.set(cimpl, new ArrayList());
 
-                detachedCriteria.add(Restrictions.eq("taskId",kpiEvaluationSearchable.getTaskId()));
+                detachedCriteria.add(Restrictions.eq("taskId","-1"));
                 detachedCriteria.add(Restrictions.eq("type",kpiEvaluationSearchable.getType()));
-                detachedCriteria.add(Restrictions.isNull("commentContent"));
+                detachedCriteria.add(Restrictions.or(Restrictions.eq("commentContent",""), Restrictions.isNull("commentContent")));
                 List<KPIEvaluation> list1 = kPIEvaluationService.findAll(detachedCriteria);
                 map.put("base",list);
                 map.put("endOne",list1);
@@ -163,6 +166,12 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
             e.printStackTrace();
         }
         return  Result.of(map);
+    }
+
+    @Override
+    public Result<Object> testRedisChannel() {
+        template.convertAndSend("checkHasCompleted","测试消息---"+Math.random());
+        return Result.of(true);
     }
 
 }
