@@ -8,13 +8,13 @@ import com.cloudkeeper.leasing.identity.domain.InformationAudit;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
-import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.service.InformationAuditService;
 import com.cloudkeeper.leasing.identity.vo.FinishRatioVO;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     private final InformationAuditService informationAuditService;
 
     private final CadreTaskRepository cadreTaskRepository;
-
+    private final StringRedisTemplate template;
     @Override
     protected BaseRepository<CadreTaskObject> getBaseRepository() {
         return cadreTaskObjectRepository;
@@ -107,6 +107,10 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         }
         if (status == 2) {
             updateTotalProgress(cadreTaskObject.getCadreTask());
+            if ("考核内容实施".equals(cadreTaskObject.getCadreTask().getType())){
+                //如果是考核内容实施完成去检测是否所有项都完成,使用redis消息队列
+                //template.convertAndSend("checkHasCompleted",cadreTaskObject.getTaskId());
+            }
         }
         cadreTaskObject.setStatus(String.valueOf(status));
         InformationAudit informationAudit = new InformationAudit();
@@ -128,4 +132,6 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
             cadreTaskRepository.save(cadreTask);
         }
     }
+
+
 }

@@ -176,6 +176,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
                             kpiVillageQuotaDTO.setTownQuotaId(kPITownQuota.getId());
                             kpiVillageQuotaDTO.setParentQuotaId(kPITownQuota.getParentQuotaId());
                             kpiVillageQuotaDTO.setQuarter(quarter);
+                            kpiVillageQuotaDTO.setWeight("1");//日常考核权重默认为1
                             KPIVillageQuota kpiVillageQuota = kpiVillageQuotaDTO.convert(KPIVillageQuota.class);
                             kpiVillageQuotaService.save(kpiVillageQuota);//保存三级
                         }
@@ -248,7 +249,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
     @Override
     public Result<Object> getAllByVillageId(@PathVariable String districtId, @PathVariable String parentQuotaId) {
-        String sql = "SELECT v.id , quotaName,t.score FROM KPI_village_Quota v  JOIN KPI_Town_Quota t ON v.townQuotaId = t.id and v.districtId = '"+districtId+"' AND v.parentQuotaId = '"+parentQuotaId+"'";
+        String sql = "SELECT v.id , quotaName,v.score FROM KPI_village_Quota v  JOIN KPI_Town_Quota t ON v.townQuotaId = t.id and v.districtId = '"+districtId+"' AND v.parentQuotaId = '"+parentQuotaId+"'";
         List<VillageQoutaVO> kpiTownQuotaVOS = sysDistrictService.findAllBySql(VillageQoutaVO.class,sql);
         return Result.of(kpiTownQuotaVOS);
     }
@@ -263,4 +264,6 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         }
         return Result.ofUpdateSuccess(kpiVillageQuotaDTOS);
     }
+
+
 }
