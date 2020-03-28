@@ -38,4 +38,13 @@ public class PromotionCadresSearchable extends BaseSearchable {
     private String townId;
 
     private String taskId;
+
+    // 是否破格
+    private String isBreakRule;
+
+    // 理由
+    private String reason;
+
+    // 晋升状态
+    private String status;
 }

@@ -1,18 +1,18 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
-import com.cloudkeeper.leasing.identity.domain.CadrePosition;
-import com.cloudkeeper.leasing.identity.domain.VillageCadres;
-import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
+import com.cloudkeeper.leasing.identity.dto.cadretaskobject.CadreTaskObjectSearchable;
+import com.cloudkeeper.leasing.identity.dto.promotioncadres.PromotionCadresSearchable;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
+import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.dto.villagecadresterm.VillageCadresTermDTO;
-import com.cloudkeeper.leasing.identity.service.CadrePositionService;
-import com.cloudkeeper.leasing.identity.service.SysLogService;
-import com.cloudkeeper.leasing.identity.service.VillageCadresService;
-import com.cloudkeeper.leasing.identity.service.VillageCadresTermService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
 import com.cloudkeeper.leasing.identity.vo.CadresGroupByLevelVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 村干部管理 controller
@@ -58,6 +57,12 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     private final SysLogService sysLogService;
 
     private final CadrePositionService cadrePositionService;
+
+    private final StatisticsService statisticsService;
+
+    private final PromotionCadresService promotionCadresService;
+
+    private final CadreTaskObjectService cadreTaskObjectService;
 
     @Override
     public Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
@@ -370,4 +375,44 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         return Result.of(villageCadresService.getCadresGroupByLevel(districtId));
     }
 
+    @GetMapping("/downloadPromotion")
+    @Transactional
+    Result<String> downloadPromotion(String districtId, String taskId) {
+        CadreTaskObjectSearchable cadreTaskObjectSearchable = new CadreTaskObjectSearchable();
+        List<CadreTaskObject> all1 = cadreTaskObjectService.findAll(cadreTaskObjectSearchable);
+        CadreTaskObject cadreTaskObject = all1.get(0);
+        cadreTaskObject.setStatus("1");
+        cadreTaskObjectService.save(cadreTaskObject);
+        PromotionCadresSearchable promotionCadresSearchable = new PromotionCadresSearchable();
+        if (districtId != null) {
+            promotionCadresSearchable.setTownId(districtId);
+        }
+        promotionCadresSearchable.setTaskId(taskId);
+        List<PromotionCadres> all = promotionCadresService.findAll(promotionCadresSearchable);
+        List<String> ids = all.stream().map(promotionCadres -> "'" + promotionCadres + "'").collect(Collectors.toList());
+        String join = org.apache.commons.lang3.StringUtils.join(ids.toArray(), ",");
+        String sql = "select * from village_cadres  WHERE id in ("+ join +")";
+        return Result.of(statisticsService.generateFileUrl(buildExportDTO(), sql));
+    }
+
+    private ExportDTO buildExportDTO() {
+        ExportDTO exportDTO = new ExportDTO();
+        List<VillageCadresStatisticsSearchable> list = new ArrayList<>();
+        list.add(new VillageCadresStatisticsSearchable("parentDistrictName", "镇名"));
+        list.add(new VillageCadresStatisticsSearchable("districtName", "村名"));
+        list.add(new VillageCadresStatisticsSearchable("type", "类型"));
+        list.add(new VillageCadresStatisticsSearchable("name", "姓名"));
+        list.add(new VillageCadresStatisticsSearchable("sex", "性别"));
+        list.add(new VillageCadresStatisticsSearchable("identityCard", "身份证"));
+        list.add(new VillageCadresStatisticsSearchable("birth", "出生日期"));
+        list.add(new VillageCadresStatisticsSearchable("nation", "民族"));
+        list.add(new VillageCadresStatisticsSearchable("nativePlace", "籍贯"));
+        list.add(new VillageCadresStatisticsSearchable("education", "学历"));
+        list.add(new VillageCadresStatisticsSearchable("contact", "联系方式"));
+        list.add(new VillageCadresStatisticsSearchable("partyTime", "入党时间"));
+        list.add(new VillageCadresStatisticsSearchable("workTime", "工作时间"));
+        list.add(new VillageCadresStatisticsSearchable("postExperience", "任职经历"));
+        exportDTO.setExportFields(list);
+        return exportDTO;
+    }
 }

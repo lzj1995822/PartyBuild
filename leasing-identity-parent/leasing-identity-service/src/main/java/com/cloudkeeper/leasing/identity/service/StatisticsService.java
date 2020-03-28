@@ -33,4 +33,7 @@ public interface StatisticsService {
     Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
     Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, Integer page, Integer size, Pageable pageable);
     String export(ExportDTO exportDTO);
+
+    // 生成文件
+    String generateFileUrl(ExportDTO exportDTO, String resSql);
 }

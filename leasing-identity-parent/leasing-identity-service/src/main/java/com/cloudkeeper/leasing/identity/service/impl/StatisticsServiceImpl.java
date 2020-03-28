@@ -329,8 +329,11 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         StringBuilder resSql = new StringBuilder();
         resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         resSql.append(s);
-        System.out.println(resSql.toString());
-        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
+        return generateFileUrl(exportDTO, resSql.toString());
+    }
+
+    public String generateFileUrl(ExportDTO exportDTO, String resSql) {
+        List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = findAllBySql(VillageCadresStatisticsVO.class, resSql);
         String url = null;
         //设置excel列头信息
         String[] rowsName = new String[exportDTO.getExportFields().size()+1];
@@ -371,10 +374,8 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return url;
     }
-
 
     //拼接字符串
     private StringBuilder createSql(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables){

@@ -57,4 +57,8 @@ public class CadreTaskVO extends BaseVO {
     @ApiModelProperty(value = "季度")
     private String taskQuarter;
 
+    /** 成果相关文件 */
+    @ApiModelProperty(value = "成果相关文件")
+    private String resultFiles;
+
 }

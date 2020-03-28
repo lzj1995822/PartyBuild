@@ -65,4 +65,8 @@ public class CadreTaskObjectVO extends BaseVO {
     private String taskType;
 
     private LocalDate endTime;
+
+    /** 成果相关文件 */
+    @ApiModelProperty(value = "成果相关文件")
+    private String resultFiles;
 }

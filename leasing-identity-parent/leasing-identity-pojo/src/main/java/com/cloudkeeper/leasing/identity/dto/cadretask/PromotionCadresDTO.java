@@ -34,4 +34,10 @@ public class PromotionCadresDTO extends BaseDTO {
 //    镇id
     private String townId;
 
+    // 是否破格
+    private String isBreakRule;
+
+    // 理由
+    private String reason;
+
 }

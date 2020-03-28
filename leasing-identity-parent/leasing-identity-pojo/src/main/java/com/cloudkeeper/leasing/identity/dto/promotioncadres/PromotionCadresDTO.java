@@ -39,4 +39,7 @@ public class PromotionCadresDTO extends BaseEditDTO {
 
     private String taskId;
 
+    // 晋升状态
+    private String status;
+
 }

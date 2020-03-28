@@ -56,4 +56,8 @@ public class CadreTaskObjectSearchable extends BaseSearchable {
     /** 镇名 */
     @ApiModelProperty(value = "镇名", position = 10, required = true)
     private String townName;
+
+    /** 成果相关文件 */
+    @ApiModelProperty(value = "成果相关文件")
+    private String resultFiles;
 }

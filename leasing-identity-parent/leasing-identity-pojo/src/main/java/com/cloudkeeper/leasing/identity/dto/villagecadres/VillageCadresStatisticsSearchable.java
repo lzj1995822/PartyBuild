@@ -27,4 +27,9 @@ public class VillageCadresStatisticsSearchable extends BaseSearchable {
     private String valueMin;
     @ApiModelProperty(value = "值2-用于between", position = 10)
     private String valueMax;
+
+    public VillageCadresStatisticsSearchable(String filedName, String filedDesc) {
+        this.filedName = filedName;
+        this.filedDesc = filedDesc;
+    }
 }

@@ -72,6 +72,10 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "当前对象进度")
     private String currentPercent;
 
+    /** 成果相关文件 */
+    @ApiModelProperty(value = "成果相关文件")
+    private String resultFiles;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

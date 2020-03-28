@@ -31,7 +31,12 @@ public class PromotionCadresServiceImpl extends BaseServiceImpl<PromotionCadres>
         return super.defaultExampleMatcher()
                 .withMatcher("cadresName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("postName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("purposeLevelName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("purposeLevelName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("townId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("villageId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("isBreakRule", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
 }

@@ -58,6 +58,10 @@ public class CadreTaskDTO extends BaseEditDTO {
     @ApiModelProperty(value = "季度")
     private String taskQuarter;
 
+    /** 成果相关文件 */
+    @ApiModelProperty(value = "成果相关文件")
+    private String resultFiles;
+
     // 晋升名单
     private List<PromotionCadresDTO> promotionCadres;
 }

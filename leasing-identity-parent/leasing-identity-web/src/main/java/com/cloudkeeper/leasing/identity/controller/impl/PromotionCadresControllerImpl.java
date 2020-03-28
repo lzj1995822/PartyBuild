@@ -14,11 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +81,19 @@ public class PromotionCadresControllerImpl implements PromotionCadresController 
         Page<PromotionCadres> promotionCadresPage = promotionCadresService.findAll(promotionCadresSearchable, pageable);
         Page<PromotionCadresVO> promotionCadresVOPage = PromotionCadres.convert(promotionCadresPage, PromotionCadresVO.class);
         return Result.of(promotionCadresVOPage);
+    }
+
+    @PostMapping("/filterPromotion")
+    @Transactional
+    public Result<List<PromotionCadresVO>> filterPromotion(String status, @RequestBody List<String> ids) {
+        ArrayList<PromotionCadresVO> promotionCadresVOS = new ArrayList<>();
+        for (String item: ids) {
+            PromotionCadres byId = promotionCadresService.findById(item);
+            byId.setStatus(status);
+            byId = promotionCadresService.save(byId);
+            promotionCadresVOS.add(byId.convert(PromotionCadresVO.class));
+        }
+        return Result.of(promotionCadresVOS);
     }
 
 }
