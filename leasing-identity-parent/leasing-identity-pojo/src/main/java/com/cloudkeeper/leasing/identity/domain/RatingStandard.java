@@ -119,6 +119,18 @@ public class RatingStandard extends BaseEntity {
     @ApiModelProperty(value = "当前评级状态", position = 10, required = true)
     private String status;
 
+    /** 标准整数值 */
+    @ApiModelProperty(value = "标准整数值", position = 10, required = true)
+    private Integer standardValue;
+
+    /** 是否可晋升 */
+    @ApiModelProperty(value = "是否可晋升", position = 10, required = true)
+    private String promotable;
+
+    /** 是否有效 */
+    @ApiModelProperty(value = "是否有效", position = 10, required = true)
+    private String enable;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
@@ -132,8 +144,8 @@ public class RatingStandard extends BaseEntity {
                 e.printStackTrace();
             }
             ratingStandardVO.setEducation(villageCadres.getEducation());
-            ratingStandardVO.setVillageName(villageCadres.getSysDistrict().getDistrictName());
-            ratingStandardVO.setTownName(villageCadres.getParentSysDistrict().getDistrictName());
+            ratingStandardVO.setVillageName(villageCadres.getDistrictName());
+            ratingStandardVO.setTownName(villageCadres.getParentDistrictName());
             ratingStandardVO.setCurrentLevel(villageCadres.getQuasiAssessmentRank());
             ratingStandardVO.setCurrentLevelJudgeTime(villageCadres.getTermOfOffice());
         }

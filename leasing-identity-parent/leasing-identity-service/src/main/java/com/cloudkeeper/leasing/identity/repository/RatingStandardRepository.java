@@ -19,4 +19,6 @@ public interface RatingStandardRepository extends BaseRepository<RatingStandard>
 
     @Transactional
     void deleteByCadresId(String cadresId);
+
+    RatingStandard findByNameAndIsStandard(String name, String isStandard);
 }

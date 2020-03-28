@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 村书记模块任务 DTO
@@ -56,4 +57,7 @@ public class CadreTaskDTO extends BaseEditDTO {
     /** 季度 */
     @ApiModelProperty(value = "季度")
     private String taskQuarter;
+
+    // 晋升名单
+    private List<PromotionCadresDTO> promotionCadres;
 }

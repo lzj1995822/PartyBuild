@@ -20,4 +20,8 @@ public interface VillageCadresRepository extends BaseRepository<VillageCadres> {
     List<VillageCadres> findAllByParentDistrictId(String objectId);
 
     List<VillageCadres> findAllByParentDistrictIdAndHasRetire(String objectId, String hasRetire);
+
+    List<VillageCadres> findAllByQuasiAssessmentRankAndParentDistrictIdAndHasRetire(String rank, String parentDistrictId, String hasRetire);
+
+    List<VillageCadres> findAllByQuasiAssessmentRankAndHasRetire(String rank, String hasRetire);
 }

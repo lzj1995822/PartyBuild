@@ -3,9 +3,12 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
 import com.cloudkeeper.leasing.identity.domain.CadreTask;
+import com.cloudkeeper.leasing.identity.domain.PromotionCadres;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskSearchable;
+import com.cloudkeeper.leasing.identity.dto.cadretask.PromotionCadresDTO;
 import com.cloudkeeper.leasing.identity.service.CadreTaskService;
+import com.cloudkeeper.leasing.identity.service.PromotionCadresService;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +38,9 @@ public class CadreTaskControllerImpl implements CadreTaskController {
 
     /** 村书记模块任务 service */
     private final CadreTaskService cadreTaskService;
+
+    /** 拟晋升人员名单 service */
+    private final PromotionCadresService promotionCadresService;
 
     @Override
     public Result<CadreTaskVO> findOne(@ApiParam(value = "村书记模块任务id", required = true) @PathVariable String id) {
@@ -109,5 +116,19 @@ public class CadreTaskControllerImpl implements CadreTaskController {
             return Result.of(null);
         }
         return Result.of(detailByTaskId);
+    }
+
+    @ApiOperation(value = "发布职级评定任务", notes = "发布职级评定任务", position = 3)
+    @PostMapping("/publishJudgeTask")
+    @Transactional
+    public Result<CadreTaskVO> publishJudgeTask(@RequestBody CadreTaskDTO cadreTaskDTO) {
+        CadreTask save = cadreTaskService.save(cadreTaskDTO.convert(CadreTask.class));
+        List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
+        for(PromotionCadresDTO item: promotionCadres) {
+            PromotionCadres convert = item.convert(PromotionCadres.class);
+            convert.setTaskId(save.getId());
+            promotionCadresService.save(convert);
+        }
+        return Result.of(save.convert(CadreTaskVO.class));
     }
 }

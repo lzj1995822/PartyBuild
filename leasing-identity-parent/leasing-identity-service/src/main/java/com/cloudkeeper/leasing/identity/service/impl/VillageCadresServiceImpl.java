@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
+import com.cloudkeeper.leasing.identity.vo.CadresGroupByLevelVO;
 import com.cloudkeeper.leasing.identity.vo.CadresStatisticsVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import lombok.RequiredArgsConstructor;
@@ -267,19 +268,21 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 RatingStandard checkRes = ratingStandardService.checkEnter(actual);
                 if (checkRes != null) {
                     actual.setName(checkRes.getName());
-                    villageCadres.setQuasiAssessmentRank(checkRes.getName());
-                    messageCenterService.save(villageCadres.getId(), villageCadres.getDistrictId(),
-                            "[村书记信息]经过系统审核，" + villageCadres.getCadrePosition().getName() +
-                                    villageCadres.getName() + "定级为" + checkRes.getName() + "！");
-                } else {
-                    actual.setName(null);
-                    villageCadres.setQuasiAssessmentRank(null);
-                    messageCenterService.save(villageCadres.getId(), villageCadres.getDistrictId(),
-                            "[村书记信息]经过系统审核，" + villageCadres.getCadrePosition().getName() +
-                                    villageCadres.getName() + "不符合任意一级专职村书记！");
+                    String quasiAssessmentRank = villageCadres.getQuasiAssessmentRank();
+                    if (!StringUtils.isEmpty(quasiAssessmentRank)) {
+                        RatingStandard standard = ratingStandardService.findByNameAndIsStandard(quasiAssessmentRank, "1");
+                        if (checkRes.getStandardValue() > standard.getStandardValue()) {
+                            actual.setPromotable("1");
+                        } else {
+                            actual.setPromotable("0");
+                        }
+                    } else {
+                        actual.setPromotable("1");
+                    }
                 }
                 actual.setCadresId(id);
                 actual.setIsStandard("0");
+                actual.setEnable("1");
                 actual.setDistrictId(villageCadres.getDistrictId());
                 ratingStandardService.deleteByCadresId(id);
                 ratingStandardService.save(actual);
@@ -411,5 +414,44 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             villageCadres.setCadresType("SECRETARY");
             villageCadresRepository.save(villageCadres);
         }
+    }
+
+    @Override
+    public List<CadresGroupByLevelVO> getCadresGroupByLevel(String districtId) {
+        List<String> levels = new ArrayList();
+        levels.add("一级专职村书记");
+        levels.add("二级专职村书记");
+        levels.add("三级专职村书记");
+        levels.add("四级专职村书记");
+        levels.add("五级专职村书记");
+        List<CadresGroupByLevelVO> res = new ArrayList<>();
+        for (String item: levels) {
+            List<VillageCadres> allByQuasiAssessmentRank;
+            if (districtId == null) {
+                allByQuasiAssessmentRank = findAllByQuasiAssessmentRankAndHasRetire(item, "0");
+            } else {
+                allByQuasiAssessmentRank = findAllByQuasiAssessmentRankAndParentDistrictIdAndHasRetire(item, districtId, "0");
+            }
+            List<Map<String, String>> values = new ArrayList<>();
+            for (VillageCadres subItem : allByQuasiAssessmentRank) {
+                HashMap<String, String> stringStringHashMap = new HashMap<>();
+                stringStringHashMap.put("name", subItem.getName());
+                stringStringHashMap.put("postName", subItem.getCadrePosition().getName());
+                values.add(stringStringHashMap);
+            }
+            CadresGroupByLevelVO cadresGroupByLevelVO = new CadresGroupByLevelVO();
+            cadresGroupByLevelVO.setLevelName(item);
+            cadresGroupByLevelVO.setCadres(values);
+            res.add(cadresGroupByLevelVO);
+        }
+        return res;
+    }
+
+    private List<VillageCadres> findAllByQuasiAssessmentRankAndParentDistrictIdAndHasRetire(String rank, String districtId, String hasRetire) {
+        return villageCadresRepository.findAllByQuasiAssessmentRankAndParentDistrictIdAndHasRetire(rank, districtId, hasRetire);
+    }
+
+    private List<VillageCadres> findAllByQuasiAssessmentRankAndHasRetire(String rank, String hasRetire) {
+        return villageCadresRepository.findAllByQuasiAssessmentRankAndHasRetire(rank, hasRetire);
     }
 }

@@ -181,4 +181,9 @@ public class RatingStandardServiceImpl extends BaseServiceImpl<RatingStandard> i
     public void deleteByCadresId(String cadresId) {
         ratingStandardRepository.deleteByCadresId(cadresId);
     }
+
+    @Override
+    public RatingStandard findByNameAndIsStandard(String name, String isStandard) {
+        return ratingStandardRepository.findByNameAndIsStandard(name, isStandard);
+    }
 }

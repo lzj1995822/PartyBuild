@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.service.VillageCadresTermService;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
+import com.cloudkeeper.leasing.identity.vo.CadresGroupByLevelVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
 import io.swagger.annotations.ApiParam;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -361,4 +363,11 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         return detachedCriteria;
     }
+
+
+    @GetMapping("/getCadresGroupByLevel")
+    Result<List<CadresGroupByLevelVO>> getCadresGroupByLevel(String districtId) {
+        return Result.of(villageCadresService.getCadresGroupByLevel(districtId));
+    }
+
 }

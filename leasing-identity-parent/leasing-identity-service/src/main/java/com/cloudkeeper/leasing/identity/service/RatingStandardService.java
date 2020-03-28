@@ -28,4 +28,6 @@ public interface RatingStandardService extends BaseService<RatingStandard> {
     Integer checkFifthLevel(RatingStandard standard, RatingStandard source);
 
     void deleteByCadresId(String cadresId);
+
+    RatingStandard findByNameAndIsStandard(String name, String isStandard);
 }

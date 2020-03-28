@@ -86,4 +86,16 @@ public class RatingStandardSearchable extends BaseSearchable {
     @ApiModelProperty(value = "村id", position = 10, required = true)
     private String districtId;
 
+    /** 标准整数值 */
+    @ApiModelProperty(value = "标准整数值", position = 10, required = true)
+    private Integer standardValue;
+
+    /** 是否可晋升 */
+    @ApiModelProperty(value = "是否可晋升", position = 10, required = true)
+    private String promotable;
+
+    /** 是否有效 */
+    @ApiModelProperty(value = "是否有效", position = 10, required = true)
+    private String enable;
+
 }

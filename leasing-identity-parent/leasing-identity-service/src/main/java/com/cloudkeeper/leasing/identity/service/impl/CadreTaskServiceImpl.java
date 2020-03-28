@@ -38,7 +38,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
 
-    private static final String Level_JUDGE_TASK = "职级评定";
+    private static final String LEVEL_JUDGE_TASK = "职级评定";
 
     private static final String DAILY_REVIEW = "日常工作考核";
 
@@ -81,7 +81,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         List<SysDistrict> all = new ArrayList<>();
 
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
-        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type)) {
+        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type) || LEVEL_JUDGE_TASK.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
             all = sysDistrictService.findAll(sysDistrictSearchable);
@@ -129,7 +129,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     @Override
     public CadreTask getCurrentLevelJudgeTask() {
-        return getCurrentTaskByType(Level_JUDGE_TASK);
+        return getCurrentTaskByType(LEVEL_JUDGE_TASK);
     }
 
     @Override

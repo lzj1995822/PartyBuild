@@ -6,6 +6,7 @@ import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
 import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
+import com.cloudkeeper.leasing.identity.vo.CadresGroupByLevelVO;
 import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
 
 import java.util.List;
@@ -45,4 +46,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
     List<VillageCadres> findAllByParentDistrictId(String objectId);
 
     void initCadres();
+
+
+    List<CadresGroupByLevelVO> getCadresGroupByLevel(String districtId);
 }
