@@ -123,7 +123,7 @@ public interface ParActivityController {
     Result updateProject();
 
     @ApiOperation(value = "获取当前执行的任务以及下月要执行的任务", notes = "手动更新进度", position = 6)
-    @Authorization(required = true)
+    @Authorization(required = false)
     @GetMapping("/tv/index")
     Result<TVIndexVO> tv();
 

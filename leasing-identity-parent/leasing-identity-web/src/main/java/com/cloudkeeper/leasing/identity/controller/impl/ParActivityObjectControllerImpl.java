@@ -156,7 +156,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> TVIndexDetailList(@PathVariable String number){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.TVIndexDetailList(number);
         return Result.of(parActivityObjectVO);

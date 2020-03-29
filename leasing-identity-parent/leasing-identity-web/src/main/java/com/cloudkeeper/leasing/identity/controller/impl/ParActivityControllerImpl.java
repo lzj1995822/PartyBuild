@@ -142,7 +142,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<TVIndexVO> tv() {
         return parActivityService.tvIndex();
     }
