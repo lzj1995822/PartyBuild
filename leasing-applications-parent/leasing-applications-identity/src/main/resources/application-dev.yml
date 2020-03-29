@@ -5,13 +5,13 @@ spring:
 #    url: jdbc:mysql://rm-uf639z9s4zf5n7c9gko.mysql.rds.aliyuncs.com:3306/keyproject?useUnicode=true&characterEncoding=utf-8&useSSL=false
 #    url: jdbc:sqlserver://asher.wicp.vip:10858;DatabaseName=JRParty
 #    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=PartyBuild
-    # url: jdbc:sqlserver://172.16.0.221:1433;DatabaseName=PartyBuild
-    url: jdbc:sqlserver://localhost:1433;DatabaseName=Copy3
+    url: jdbc:sqlserver://172.16.0.221:1433;DatabaseName=PartyBuild
+    # url: jdbc:sqlserver://localhost:1433;DatabaseName=Copy3
     # 用户名
 #    username: lxw
-    username: asherlv
+    username: asher
     # 密码-
-    password: q243485
+    password: q243485908
     # 驱动类型
 #   driver-class-name: com.mysql.jdbc.Driver
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -98,7 +98,7 @@ spring:
   # redis 配置
   redis:
 #    host: localhost
-    host: localhost
+    host: 172.16.0.199
     port: 6379
     password: abc123
     database: 1
