@@ -379,6 +379,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Transactional
     Result<String> downloadPromotion(String districtId, String taskId) {
         CadreTaskObjectSearchable cadreTaskObjectSearchable = new CadreTaskObjectSearchable();
+        cadreTaskObjectSearchable.setTaskId(taskId);
+        cadreTaskObjectSearchable.setObjectId(districtId);
         List<CadreTaskObject> all1 = cadreTaskObjectService.findAll(cadreTaskObjectSearchable);
         CadreTaskObject cadreTaskObject = all1.get(0);
         cadreTaskObject.setStatus("1");
@@ -389,10 +391,13 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         promotionCadresSearchable.setTaskId(taskId);
         List<PromotionCadres> all = promotionCadresService.findAll(promotionCadresSearchable);
+        if (all.size() == 0) {
+            return Result.ofNotFound();
+        }
         List<String> ids = all.stream().map(promotionCadres -> "'" + promotionCadres + "'").collect(Collectors.toList());
         String join = org.apache.commons.lang3.StringUtils.join(ids.toArray(), ",");
         String sql = "select * from village_cadres  WHERE id in ("+ join +")";
-        return Result.of(statisticsService.generateFileUrl(buildExportDTO(), sql));
+        return Result.of("下載成功", statisticsService.generateFileUrl(buildExportDTO(), sql));
     }
 
     private ExportDTO buildExportDTO() {

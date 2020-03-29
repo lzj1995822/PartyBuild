@@ -122,7 +122,7 @@ public class CadreTaskControllerImpl implements CadreTaskController {
     @PostMapping("/publishJudgeTask")
     @Transactional
     public Result<CadreTaskVO> publishJudgeTask(@RequestBody CadreTaskDTO cadreTaskDTO) {
-        CadreTask save = cadreTaskService.save(cadreTaskDTO.convert(CadreTask.class));
+        CadreTask save = cadreTaskService.save(cadreTaskDTO);
         List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
         for(PromotionCadresDTO item: promotionCadres) {
             PromotionCadres convert = item.convert(PromotionCadres.class);
