@@ -200,10 +200,10 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         //List<KPIVillageStatistics> c = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
         List<KPIVillageStatistics> chenzhi = new ArrayList<>();
         List<KPIVillageStatistics> jibenchenzhi = new ArrayList<>();
-        for (int i = 0;i < quanbu.size();i++){
+        for (int i = 0;i < quanbu.size()-1;i++){
             if (i < 24){
                 youxiu.add(quanbu.get(i));
-            }else if (23 < i || i < 106){
+            }else if (i < 106){
                 chenzhi.add(quanbu.get(i));
             }else {
                 jibenchenzhi.add(quanbu.get(i));
