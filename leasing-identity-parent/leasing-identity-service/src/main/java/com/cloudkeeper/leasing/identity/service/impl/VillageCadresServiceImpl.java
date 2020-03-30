@@ -88,7 +88,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 .withMatcher("contact", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("postExperience", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("hasRetire", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("hasRetire", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("quasiAssessmentRank", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override
