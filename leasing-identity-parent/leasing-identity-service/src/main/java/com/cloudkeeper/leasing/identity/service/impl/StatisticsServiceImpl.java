@@ -170,13 +170,13 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public List<StatisticsListVO> getRewardsStatistics(String districtId) {
-        String sql = "SELECT count(1) as val,'句容市级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '荣誉' and honourDescription = '句容市级'\n" +
+        String sql = "SELECT count(1) as val,'句容市级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '表彰' and honourDescription = '句容市级'\n" +
                 "UNION ALL\n" +
-                "SELECT count(1) as val,'镇江市级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '荣誉' and honourDescription = '镇江市级'\n" +
+                "SELECT count(1) as val,'镇江市级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '表彰' and honourDescription = '镇江市级'\n" +
                 "UNION ALL\n" +
-                "SELECT count(1) as val,'省级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '荣誉' and honourDescription = '省级'\n" +
+                "SELECT count(1) as val,'省级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '表彰' and honourDescription = '省级'\n" +
                 "UNION ALL\n" +
-                "SELECT count(1) as val,'党中央国务院' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '荣誉' and honourDescription = '党中央国务院'";
+                "SELECT count(1) as val,'党中央国务院' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'    and cadres.districtId like '"+districtId+"%' and rewardsType = '表彰' and honourDescription = '党中央国务院'";
         List<StatisticsVO> rys = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         sql = "SELECT count(1) as val,'句容市级' as name from Honour_Info honour join village_cadres cadres on honour.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and hasRetire = '0' and cadres.isDelete = '0'  and cadres.districtId like '"+districtId+"%' and rewardsType = '处分' and honourDescription = '句容市级'\n" +
                 "UNION ALL\n" +
@@ -189,7 +189,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         List<StatisticsListVO> statisticsListVOS = new ArrayList<>();
         StatisticsListVO statisticsListVO1 = new StatisticsListVO();
         StatisticsListVO statisticsListVO2 = new StatisticsListVO();
-        statisticsListVO1.setName("荣誉");
+        statisticsListVO1.setName("表彰");
         statisticsListVO1.setStatistics(rys);
         statisticsListVO2.setName("处分");
         statisticsListVO2.setStatistics(cfs);

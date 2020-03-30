@@ -335,7 +335,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         if (!StringUtils.isEmpty(villageCadresSearchable.getOnDutyTime())){
             //任职年限
             int end = Integer.valueOf(villageCadresSearchable.getOnDutyTime());
-            int start = end - 5;
+            int start = end - 4;
             if (end == -1){
                 end = 100;
                 start = 20;
