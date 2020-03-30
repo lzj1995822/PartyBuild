@@ -6,6 +6,8 @@ import com.cloudkeeper.leasing.identity.domain.KPIEvaluation;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationDTO;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationSearchable;
 import com.cloudkeeper.leasing.identity.service.KPIEvaluationService;
+import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
+import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.vo.KPIEvaluationVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +42,8 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
 
     /** 综合评议 service */
     private final KPIEvaluationService kPIEvaluationService;
-    private final StringRedisTemplate template;
+    private final KPITownQuotaService kPITownQuotaService;
+    private final KPIVillageStatisticsService kpiVillageStatisticsService;
     private static final Logger logger = LoggerFactory.getLogger(KPIEvaluationController.class);
     @Override
     public Result<KPIEvaluationVO> findOne(@ApiParam(value = "综合评议id", required = true) @PathVariable String id) {
@@ -170,8 +172,7 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
 
     @Override
     public Result<Object> testRedisChannel() {
-        template.convertAndSend("checkHasCompleted","测试消息---"+Math.random());
-        return Result.of(true);
+       return new Result<>();
     }
 
 }
