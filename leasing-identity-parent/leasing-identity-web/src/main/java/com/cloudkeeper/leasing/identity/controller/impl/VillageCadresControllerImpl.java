@@ -1,7 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
-import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
@@ -319,7 +318,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             int end = 0;
             if (villageCadresSearchable.getAge().equals("-1")){
                 start = year - 200;
-                end = year - 50;
+                end = year - 51;
             }else if (villageCadresSearchable.getAge().equals("35")){
                 start = year - 35;
                 end = year;

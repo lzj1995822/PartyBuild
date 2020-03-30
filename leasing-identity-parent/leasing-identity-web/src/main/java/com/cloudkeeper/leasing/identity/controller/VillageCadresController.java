@@ -164,4 +164,5 @@ public interface VillageCadresController {
     @PostMapping("/init")
     Result<Boolean> init();
 
+
 }
