@@ -103,4 +103,9 @@ public interface KPIVillageStatisticsController {
     @ApiOperation(value = "获取平均值一下数量", notes = "获取平均值一下数量", position = 6)
     @GetMapping("/getStatisticsOnAverage/{quotaId}")
     Result<Object> getStatisticsOnAverage(@PathVariable String quotaId);
+
+
+    @ApiOperation(value = "获取平均值一下数量", notes = "获取平均值一下数量", position = 6)
+    @GetMapping("/getExcellent")
+    Result<Object> getExcellent();
 }

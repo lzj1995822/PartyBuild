@@ -180,17 +180,17 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     @Override
     public Result<Object> getStatistics(@PathVariable String districtId) {
 
-        String sql = "SELECT top 10 a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
+        String sql = "SELECT top 10 * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
         List<KPIVillageStatistics> qianshi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql);
 
 
-        String sql1 = "SELECT top 10 a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where CAST (a.score as FLOAT) >0 ORDER BY a.score asc";
+        String sql1 = "SELECT top 10 * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where CAST (a.score as FLOAT) >0 ORDER BY a.score asc";
         List<KPIVillageStatistics> houshi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql1);
 
-        String sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
+        String sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
         List<KPIVillageStatistics> quanbu = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
 
-        String sql3 = "SELECT * FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE parentDistrictId = '"+districtId+"' and quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
+        String sql3 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE parentDistrictId = '"+districtId+"' and quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
         List<KPIVillageStatistics> quanzhen = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql3);
 
         //String sql4 = "SELECT top 24 a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
@@ -200,16 +200,16 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         //List<KPIVillageStatistics> c = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
         List<KPIVillageStatistics> chenzhi = new ArrayList<>();
         List<KPIVillageStatistics> jibenchenzhi = new ArrayList<>();
-        for (int i = 0;i < quanzhen.size();i++){
+        for (int i = 0;i < quanbu.size();i++){
             if (i < 24){
-                youxiu.add(quanzhen.get(i));
+                youxiu.add(quanbu.get(i));
             }else if (23 < i || i < 106){
-                chenzhi.add(quanzhen.get(i));
+                chenzhi.add(quanbu.get(i));
             }else {
-                jibenchenzhi.add(quanzhen.get(i));
+                jibenchenzhi.add(quanbu.get(i));
             }
         }
-        String sql5 = "SELECT a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where (CAST (a.score as FLOAT) > 0 and cast(a.score as FLOAT) <60)   ORDER BY a.score asc";
+        String sql5 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where (CAST (a.score as FLOAT) > 0 and cast(a.score as FLOAT) <60)   ORDER BY a.score asc";
         List<KPIVillageStatistics> buchengzhi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
 
         Map<String,Object> map = new HashMap<>();
@@ -225,10 +225,17 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     }
 
     @Override
-    public Result<Object> getStatisticsOnAverage(String quotaId) {
-        String sql = "SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) < (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' GROUP BY parentDistrictName";
+    public Result<Object> getStatisticsOnAverage(@PathVariable String quotaId) {
+        String sql = "SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) < (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
         List<StatisticsVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsVO.class,sql);
         return Result.of(buchengzhi);
+    }
+
+    @Override
+    public Result<Object> getExcellent() {
+        String sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName HAVING SUM(CAST (score as FLOAT) )> 0) a ORDER BY a.score DESC";
+        List<KPIVillageStatistics> quanbu = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        return Result.of(quanbu);
     }
 
 

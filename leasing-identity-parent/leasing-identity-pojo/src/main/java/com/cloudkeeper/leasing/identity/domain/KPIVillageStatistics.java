@@ -64,4 +64,7 @@ public class KPIVillageStatistics extends BaseEntity {
     @ApiModelProperty(value = "排名", position = 10, required = true)
     @Column(length = 60)
     private String ranking;
+    @ApiModelProperty(value = "排名", position = 10, required = true)
+    @Column(length = 60)
+    private String cadresName;
 }
