@@ -15,12 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 村书记评级标准 controller
@@ -79,5 +79,28 @@ public class RatingStandardControllerImpl implements RatingStandardController {
         Page<RatingStandardVO> ratingStandardVOPage = RatingStandard.convert(ratingStandardPage, RatingStandardVO.class);
         return Result.of(ratingStandardVOPage);
     }
+
+    @GetMapping("/getAllGroupByLevel")
+    public Result<Map<String, List<RatingStandardVO>>> getAllGroupByLevel() {
+        Map resMap = new HashMap<String, RatingStandardVO>();
+        List<String> levels = new ArrayList();
+        levels.add("一级专职村书记");
+        levels.add("二级专职村书记");
+        levels.add("三级专职村书记");
+        levels.add("四级专职村书记");
+        levels.add("五级专职村书记");
+        RatingStandardSearchable ratingStandardSearchable = new RatingStandardSearchable();
+        ratingStandardSearchable.setIsStandard("0");
+        ratingStandardSearchable.setPromotable("1");
+        for (int i = 0; i < levels.size(); i++) {
+            ratingStandardSearchable.setName(levels.get(i));
+            int labelIndex = i;
+            labelIndex++;
+            resMap.put("level" + labelIndex, RatingStandard.convert(ratingStandardService.findAll(ratingStandardSearchable), RatingStandardVO.class));
+        }
+        return Result.of(resMap);
+    }
+
+
 
 }

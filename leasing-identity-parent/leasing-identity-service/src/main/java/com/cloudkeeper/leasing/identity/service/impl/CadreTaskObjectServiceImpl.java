@@ -35,6 +35,9 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     private final InformationAuditService informationAuditService;
 
     private final CadreTaskRepository cadreTaskRepository;
+
+    private static final String LEVEL_JUDGE_TASK = "职级评定";
+
     private final StringRedisTemplate template;
     @Override
     protected BaseRepository<CadreTaskObject> getBaseRepository() {
@@ -112,6 +115,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
                 //template.convertAndSend("checkHasCompleted",cadreTaskObject.getTaskId());
             }
         }
+        cadreTaskObject.setLastestAuditor(auditor);
+        cadreTaskObject.setLastestAdvice(auditorAdvice);
         cadreTaskObject.setStatus(String.valueOf(status));
         InformationAudit informationAudit = new InformationAudit();
         informationAudit.setVillageId(cadreTaskObject.getObjectId());
@@ -124,7 +129,13 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     }
 
     private void updateTotalProgress(@NonNull CadreTask cadreTask) {
-        String sql = "select count(case when cto.status = '2' then 1 else null end) as finish, count(case when cto.status != '2' then 1 else null end) as unfinish, count(*) as total from cadres_task_object cto where cto.taskId = '" + cadreTask.getId() + "'";
+        String finalStatus = "2";
+        if (LEVEL_JUDGE_TASK.equals(cadreTask.getType())) {
+            finalStatus = "4";
+        }
+        String sql = "select count(case when cto.status = '" +finalStatus+ "' then 1 else null end) as finish, " +
+                "count(case when cto.status != '" +finalStatus+ "' then 1 else null end) as unfinish, count(*) as total" +
+                " from cadres_task_object cto where cto.taskId = '" + cadreTask.getId() + "'";
         FinishRatioVO bySql = findBySql(FinishRatioVO.class, sql);
         if (bySql != null) {
             BigDecimal divide1 = new BigDecimal(bySql.getFinish()).divide(new BigDecimal(bySql.getTotal()), 2, BigDecimal.ROUND_FLOOR);

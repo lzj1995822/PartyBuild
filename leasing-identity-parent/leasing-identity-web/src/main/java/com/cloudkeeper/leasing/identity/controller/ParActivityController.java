@@ -35,7 +35,7 @@ public interface ParActivityController {
      */
 
     @ApiOperation(value = "查询", notes = "查询", position = 1)
-    @Authorization(required = true)
+    @Authorization(required = false)
     @GetMapping("/{id}id")
     Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id);
 
@@ -123,7 +123,7 @@ public interface ParActivityController {
     Result updateProject();
 
     @ApiOperation(value = "获取当前执行的任务以及下月要执行的任务", notes = "手动更新进度", position = 6)
-    @Authorization(required = true)
+    @Authorization(required = false)
     @GetMapping("/tv/index")
     Result<TVIndexVO> tv();
 

@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.InformationAuditSearchable;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
+import com.cloudkeeper.leasing.identity.dto.cadretask.PromotionCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.repository.VillageCadresRepository;
@@ -14,6 +15,8 @@ import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 村书记模块任务 service
@@ -81,7 +85,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         List<SysDistrict> all = new ArrayList<>();
 
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
-        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type) || LEVEL_JUDGE_TASK.equals(type)) {
+        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type)) {
             sysDistrictSearchable.setDistrictType("Party");
             sysDistrictSearchable.setDistrictLevel(2);
             all = sysDistrictService.findAll(sysDistrictSearchable);
@@ -99,7 +103,16 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             all = sysDistrictService.findAll(sysDistrictSearchable);
             all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(2, "Party"));
             all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(1, "Party"));
-        }else {
+        }else if (LEVEL_JUDGE_TASK.equals(type)) {
+            List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
+            Set<String> set = promotionCadres.stream().map(PromotionCadresDTO::getTownId).collect(Collectors.toSet());
+            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+            if (set.size() == 0) {
+                return null;
+            }
+            detachedCriteria.add(Restrictions.in("districtId", set));
+            all = sysDistrictService.findAll(detachedCriteria);
+        } else {
             return null;
         }
         for (SysDistrict item : all) {

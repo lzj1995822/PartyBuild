@@ -127,6 +127,7 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         for(PromotionCadresDTO item: promotionCadres) {
             PromotionCadres convert = item.convert(PromotionCadres.class);
             convert.setTaskId(save.getId());
+            convert.setStatus("0");
             promotionCadresService.save(convert);
         }
         return Result.of(save.convert(CadreTaskVO.class));

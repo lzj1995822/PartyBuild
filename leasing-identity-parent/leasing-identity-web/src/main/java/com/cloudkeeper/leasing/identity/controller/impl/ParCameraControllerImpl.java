@@ -93,13 +93,13 @@ public class ParCameraControllerImpl implements ParCameraController {
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<ParCameraVO> findByNumber(@PathVariable String number) {
         ParCamera byNumber = parCameraService.findByNumber(number);
         return Result.of(byNumber.convert(ParCameraVO.class));
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<ParCamera> findRedisIp(String key){
         ParCamera parCamera = parCameraService.redisIp(key);
