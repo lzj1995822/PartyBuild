@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatistic
 import com.cloudkeeper.leasing.identity.service.StatisticsService;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
+import com.cloudkeeper.leasing.identity.vo.StatisticsNotIntegerVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +76,15 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     @Override
     public Result<List<StatisticsClassifyVO>> getSalaryStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsClassifyVO> list = statisticsService.getSalaryStatistics(districtId);
+        List<StatisticsNotIntegerVO> list = statisticsService.getSalaryStatistics(districtId);
         Result r = new Result();
         r.setContent(list);
         return r;
+    }
+
+    @Override
+    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(String type) {
+        return Result.of(statisticsService.getRewardsStatisticsByType(type));
     }
 
     @Override

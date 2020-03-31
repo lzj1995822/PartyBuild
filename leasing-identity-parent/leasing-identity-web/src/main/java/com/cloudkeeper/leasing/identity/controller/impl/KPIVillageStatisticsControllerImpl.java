@@ -212,6 +212,17 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         String sql5 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where (CAST (a.score as FLOAT) > 0 and cast(a.score as FLOAT) <60)   ORDER BY a.score asc";
         List<KPIVillageStatistics> buchengzhi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
 
+        //获取每一项的排名
+        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '01' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
+        List<KPIVillageStatistics> rcgz = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '02' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
+        List<KPIVillageStatistics> cjsj = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '03' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
+        List<KPIVillageStatistics> jczb = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '04' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
+        List<KPIVillageStatistics> snpj = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '05' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
+        List<KPIVillageStatistics> zhpy = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
         Map<String,Object> map = new HashMap<>();
         map.put("qianshi",qianshi);
         map.put("houshi",houshi);
@@ -221,12 +232,19 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         map.put("chenzhi",chenzhi);
         map.put("jibenchenzhi",jibenchenzhi);
         map.put("buchengzhi",buchengzhi);
+
+        map.put("rcgz",rcgz);
+        map.put("cjsj",cjsj);
+        map.put("jczb",jczb);
+        map.put("snpj",snpj);
+        map.put("zhpy",zhpy);
         return Result.of(map);
+
     }
 
     @Override
     public Result<Object> getStatisticsOnAverage(@PathVariable String quotaId) {
-        String sql = "SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) < (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
+        String sql = "SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
         List<StatisticsVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsVO.class,sql);
         return Result.of(buchengzhi);
     }
