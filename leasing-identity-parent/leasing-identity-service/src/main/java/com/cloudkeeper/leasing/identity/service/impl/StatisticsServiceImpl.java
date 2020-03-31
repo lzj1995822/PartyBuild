@@ -54,7 +54,11 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                 "UNION all\n" +
                 "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
-                "select  count(1) as val,'35-50周岁' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
+                "select  count(1) as val,'35-40周岁' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 40 and districtId like '"+districtId+"%'\n" +
+                "UNION all\n" +
+                "select  count(1) as val,'40-45周岁' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 40 and DATEDIFF(YEAR,birth,GETDATE()) <= 45 and districtId like '"+districtId+"%'\n" +
+                "UNION all\n" +
+                "select  count(1) as val,'45-50周岁' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 45 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
                 "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
                 "\n";
@@ -108,46 +112,54 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     @Override
     public List<StatisticsVO> getRankStatistics(String districtId) {
 
-        String sql = "SELECT count(1) as val,'一级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  rank = '一级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
+        String sql = "SELECT count(1) as val,'一级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  quasiAssessmentRank = '一级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'二级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  rank = '二级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
+                "SELECT count(1) as val,'二级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  quasiAssessmentRank = '二级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'三级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  rank = '三级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
+                "SELECT count(1) as val,'三级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  quasiAssessmentRank = '三级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'四级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  rank = '四级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
+                "SELECT count(1) as val,'四级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  quasiAssessmentRank = '四级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'五级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  rank = '五级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'";
+                "SELECT count(1) as val,'五级专职村书记' as name from village_cadres WHERE cadresType = 'SECRETARY' and hasRetire = '0'  and  quasiAssessmentRank = '五级专职村书记' and districtId like '"+districtId+"%'  and isDelete = '0'";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;
     }
 
     @Override
-    public List<StatisticsClassifyVO> getSalaryStatistics(String districtId) {
-        String sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
-        List<StatisticsNotIntegerVO> basics = (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均基本报酬
-        sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null   and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
-        List<StatisticsNotIntegerVO> reviews = (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均考核报酬
-        sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null   and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
-        List<StatisticsNotIntegerVO> others =  (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均增收报酬
-        sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,DateName(year,reward.achieveTime) as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null   and cadres.districtId like '"+districtId+"%' GROUP BY DateName(year,reward.achieveTime)";
-        List<StatisticsNotIntegerVO> totals =  (List<StatisticsNotIntegerVO>)findAllBySql(StatisticsNotIntegerVO.class,sql);//年平均报酬
-        StatisticsClassifyVO statisticsClassifyVO1 = new StatisticsClassifyVO();
-        statisticsClassifyVO1.setName("年平均基本报酬");
-        statisticsClassifyVO1.setStatistics(basics);
-        StatisticsClassifyVO statisticsClassifyVO2 = new StatisticsClassifyVO();
-        statisticsClassifyVO2.setName("年平均考核报酬");
-        statisticsClassifyVO2.setStatistics(reviews);
-        StatisticsClassifyVO statisticsClassifyVO3 = new StatisticsClassifyVO();
-        statisticsClassifyVO3.setName("年平均增收报酬");
-        statisticsClassifyVO3.setStatistics(others);
-        StatisticsClassifyVO statisticsClassifyVO4 = new StatisticsClassifyVO();
-        statisticsClassifyVO4.setName("年平均报酬");
-        statisticsClassifyVO4.setStatistics(totals);
-        List<StatisticsClassifyVO> list = new ArrayList<>();
-        list.add(statisticsClassifyVO1);
-        list.add(statisticsClassifyVO2);
-        list.add(statisticsClassifyVO3);
-        list.add(statisticsClassifyVO4);
+    public List<StatisticsNotIntegerVO> getSalaryStatistics(String districtId) {
+        String sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'年平均基本报酬' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null ";
+        StatisticsNotIntegerVO basics = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均基本报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'全职村干部基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '全职村干部'";
+        StatisticsNotIntegerVO basicsQzcgb = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均全职村干部
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'公务员基本报酬平均值' as nam from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员'";
+        StatisticsNotIntegerVO basicsGwy = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均公务员
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'事业编制基本报酬平均值' as nam from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制'";
+        StatisticsNotIntegerVO basicsSybz = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均事业编制
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'考核报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        StatisticsNotIntegerVO reviews = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均考核报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'增收报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        StatisticsNotIntegerVO others =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均增收报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val,'其他报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        StatisticsNotIntegerVO des =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均其他报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'总报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        StatisticsNotIntegerVO totals =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均总报酬
+
+        List<StatisticsNotIntegerVO> list = new ArrayList<>();
+        list.add(basics);
+        list.add(basicsQzcgb);
+        list.add(basicsGwy);
+        list.add(basicsSybz);
+        list.add(reviews);
+        list.add(others);
+        list.add(des);
+        list.add(totals);
         return list;
     }
 
@@ -163,7 +175,13 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                 "UNION ALL\n" +
                 "SELECT count(1) as val, '15-20年' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) < 20 and DATEDIFF(YEAR,partyTime,GETDATE()) >= 15 and cadresType = 'SECRETARY' and hasRetire = '0' and isDelete = '0'    and districtId like '"+districtId+"%'\n" +
                 "UNION ALL\n" +
-                "SELECT count(1) as val, '20年以上' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) >= 20 and cadresType = 'SECRETARY' and hasRetire = '0'  and districtId like '"+districtId+"%'";
+                "SELECT count(1) as val, '20-30年' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) < 30 and DATEDIFF(YEAR,partyTime,GETDATE()) >= 20 and cadresType = 'SECRETARY' and hasRetire = '0'  and districtId like '"+districtId+"%'"+
+                "UNION ALL\n" +
+                "SELECT count(1) as val, '30-40年' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) < 40 and DATEDIFF(YEAR,partyTime,GETDATE()) >= 30 and cadresType = 'SECRETARY' and hasRetire = '0'  and districtId like '"+districtId+"%'"+
+                "UNION ALL\n" +
+                "SELECT count(1) as val, '40-50年' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) < 50 and DATEDIFF(YEAR,partyTime,GETDATE()) >= 40 and cadresType = 'SECRETARY' and hasRetire = '0'  and districtId like '"+districtId+"%'"+
+                "UNION ALL\n" +
+                "SELECT count(1) as val, '50年以上' as name FROM village_cadres WHERE DATEDIFF(YEAR,partyTime,GETDATE()) >= 50 and cadresType = 'SECRETARY' and hasRetire = '0'  and districtId like '"+districtId+"%'";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;
     }
@@ -375,6 +393,37 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
             e.printStackTrace();
         }
         return url;
+    }
+
+    @Override
+    public List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type) {
+        String sql = "";
+        if ("1".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+        }else if ("2".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '全职村干部' group by cadres.parentDistrictName";
+
+        }else if ("3".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as nam from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员' group by cadres.parentDistrictName";
+
+        }else if ("4".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as nam from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制' group by cadres.parentDistrictName";
+
+        }else if ("5".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+
+        }else if ("6".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+
+        }else if ("7".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+
+        }else if ("8".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType = 'SECRETARY' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+
+        }
+        List<StatisticsNotIntegerVO> totals = findAllBySql(StatisticsNotIntegerVO.class,sql);//平均总报酬
+        return totals;
     }
 
     //拼接字符串

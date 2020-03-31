@@ -2,11 +2,11 @@ package com.cloudkeeper.leasing.identity.service;
 
 import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
-import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
+import com.cloudkeeper.leasing.identity.vo.StatisticsNotIntegerVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
-
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface StatisticsService {
@@ -22,7 +22,7 @@ public interface StatisticsService {
 
     List<StatisticsVO> getRankStatistics(String districtId);
 
-    List<StatisticsClassifyVO> getSalaryStatistics(String districtId);
+    List<StatisticsNotIntegerVO> getSalaryStatistics(String districtId);
 
     List<StatisticsVO> getPartyStandingStatistics(String districtId);
 
@@ -36,4 +36,6 @@ public interface StatisticsService {
 
     // 生成文件
     String generateFileUrl(ExportDTO exportDTO, String resSql);
+    List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type);
+
 }

@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.vo.StatisticsClassifyVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsListVO;
+import com.cloudkeeper.leasing.identity.vo.StatisticsNotIntegerVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,7 +83,14 @@ public interface StatisticsController {
     @GetMapping("/getSalaryStatistics/{districtId}")
     Result<List<StatisticsClassifyVO>> getSalaryStatistics(@ApiParam(value = "组织ID", required = true) @PathVariable("districtId") String districtId);
 
-
+    /**
+     * 报酬结构分析
+     * @param  组织ID
+     * @return 专职村主任统计 VO
+     */
+    @ApiOperation(value = "报酬结构列表", notes = "报酬结构列表", position = 1)
+    @GetMapping("/getSalaryStatisticsList/{type}")
+    Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@ApiParam(value = "组织ID", required = true) @PathVariable("type") String type);
 
     /**
      * 党龄情况分析

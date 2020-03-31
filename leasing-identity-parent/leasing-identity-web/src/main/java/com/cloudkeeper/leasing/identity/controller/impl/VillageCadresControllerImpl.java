@@ -314,23 +314,15 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getAge())){
             //通过年龄
-            int start = 0;
-            int end = 0;
+            String sql = "";
             if (villageCadresSearchable.getAge().equals("-1")){
-                start = year - 200;
-                end = year - 51;
+                sql = "DATEDIFF(YEAR,birth,GETDATE()) > 50";
             }else if (villageCadresSearchable.getAge().equals("35")){
-                start = year - 35;
-                end = year;
-            }else if (villageCadresSearchable.getAge().equals("50")){
-                start = year - 50;
-                end = year - 35;
+                sql = "DATEDIFF(YEAR,birth,GETDATE()) <= 35";
+            }else {
+                sql = "DATEDIFF(YEAR,birth,GETDATE()) <= "+villageCadresSearchable.getAge() +"and DATEDIFF(YEAR,birth,GETDATE()) >"+(Integer.valueOf(villageCadresSearchable.getAge())-5);
             }
-            Date s = getCurrYearFirst(start);
-            Date e = getCurrYearLast(end);
-            LocalDate ls = s.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate le = e.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            detachedCriteria.add(Restrictions.between("birth",ls,le));
+            detachedCriteria.add(Restrictions.sqlRestriction(sql));
         }
         if (!StringUtils.isEmpty(villageCadresSearchable.getOnDutyTime())){
             //任职年限
