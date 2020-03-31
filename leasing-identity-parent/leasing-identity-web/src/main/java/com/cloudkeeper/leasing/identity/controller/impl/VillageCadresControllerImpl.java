@@ -377,13 +377,6 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @GetMapping("/downloadPromotion")
     @Transactional
     Result<String> downloadPromotion(String districtId, String taskId) {
-        CadreTaskObjectSearchable cadreTaskObjectSearchable = new CadreTaskObjectSearchable();
-        cadreTaskObjectSearchable.setTaskId(taskId);
-        cadreTaskObjectSearchable.setObjectId(districtId);
-        List<CadreTaskObject> all1 = cadreTaskObjectService.findAll(cadreTaskObjectSearchable);
-        CadreTaskObject cadreTaskObject = all1.get(0);
-        cadreTaskObject.setStatus("1");
-        cadreTaskObjectService.save(cadreTaskObject);
         PromotionCadresSearchable promotionCadresSearchable = new PromotionCadresSearchable();
         if (districtId != null) {
             promotionCadresSearchable.setTownId(districtId);

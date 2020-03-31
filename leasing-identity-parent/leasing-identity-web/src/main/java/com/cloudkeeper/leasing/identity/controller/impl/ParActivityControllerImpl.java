@@ -46,7 +46,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     private final SysLogService sysLogService;
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<ParActivityVO> findOne(@ApiParam(value = "活动id", required = true) @PathVariable String id) {
         Optional<ParActivity> parActivityOptional = parActivityService.findOptionalById(id);
         return parActivityOptional.map(parActivity -> Result.of(parActivity.convert(ParActivityVO.class))).orElseGet(Result::ofNotFound);
@@ -84,7 +84,7 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.ofDeleteSuccess();
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityVO>> list(@ApiParam(value = "活动查询条件", required = true) @RequestBody ParActivitySearchable parActivitySearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
@@ -99,7 +99,7 @@ public class ParActivityControllerImpl implements ParActivityController {
         return Result.of(parActivityList);
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityVO>> listByCurrentMonth() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
@@ -142,7 +142,7 @@ public class ParActivityControllerImpl implements ParActivityController {
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<TVIndexVO> tv() {
         return parActivityService.tvIndex();
     }

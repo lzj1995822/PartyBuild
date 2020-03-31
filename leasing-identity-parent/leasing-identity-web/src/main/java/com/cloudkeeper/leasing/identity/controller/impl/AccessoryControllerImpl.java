@@ -136,7 +136,7 @@ public class AccessoryControllerImpl implements AccessoryController {
     }
 
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public void getFromRedis(@PathVariable String uuid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String base64 = accessoryService.getFromRedis(uuid);
 
