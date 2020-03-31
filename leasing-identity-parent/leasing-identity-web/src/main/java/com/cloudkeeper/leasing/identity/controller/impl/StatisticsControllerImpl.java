@@ -83,7 +83,7 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(String type) {
+    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@PathVariable("type")String type) {
         return Result.of(statisticsService.getRewardsStatisticsByType(type));
     }
 
