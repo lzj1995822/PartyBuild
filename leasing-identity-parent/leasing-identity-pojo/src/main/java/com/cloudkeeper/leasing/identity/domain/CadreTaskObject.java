@@ -76,6 +76,26 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "成果相关文件")
     private String resultFiles;
 
+    /** 个人申请 */
+    @ApiModelProperty(value = "个人申请")
+    private String applyFiles;
+
+    /** 考察审查文件 */
+    @ApiModelProperty(value = "考察审查文件")
+    private String reviewFiles;
+
+    /** 获奖证书 */
+    @ApiModelProperty(value = "获奖证书")
+    private String rewardFiles;
+
+    /** 最新审核人 */
+    @ApiModelProperty(value = "最新审核人")
+    private String lastestAuditor;
+
+    /** 最新审核意见 */
+    @ApiModelProperty(value = "最新审核意见")
+    private String lastestAdvice;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

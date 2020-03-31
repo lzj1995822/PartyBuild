@@ -88,7 +88,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.ofDeleteSuccess();
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<List<ParActivityObjectVO>> list(@ApiParam(value = "任务对象查询条件", required = true) @RequestBody ParActivityObjectSearchable parActivityObjectSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
@@ -122,7 +122,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
      * @return
      */
     @Override
-    @Authorization(required = true)
+    @Authorization(required = false)
     public Result<ParActivityObjectVO> findByOrganizationIdAndActivityId(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO) {
         ParActivityObject parActivityObject = parActivityObjectService.findByOrganizationIdAndActivityId(parActivityObjectDTO.getOrganizationId(), parActivityObjectDTO.getActivityId());
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
@@ -135,7 +135,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
     }
     @Override
     @Transactional
-    @Authorization(required = true)
+    @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> execute(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.execute(parActivityObjectDTO,sort);
@@ -146,7 +146,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
 
     @Override
     @Transactional
-    @Authorization(required = true)
+    @Authorization(required = false)
     public  Result<List<ParActivityObjectVO>> executeOver(@ApiParam(value = "任务对象 DTO", required = true) @RequestBody @Validated ParActivityObjectDTO parActivityObjectDTO,
                                                       @ApiParam(value = "排序条件", required = true) Sort sort){
         List<ParActivityObjectVO> parActivityObjectVO = parActivityObjectService.executeOver(parActivityObjectDTO,sort);
@@ -216,7 +216,7 @@ public class ParActivityObjectControllerImpl implements ParActivityObjectControl
         return Result.of(parActivityObject.convert(ParActivityObjectVO.class));
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<List<CurrentMonthActivityVO>> currentMonthActivity(@PathVariable String districtId) {
         List<CurrentMonthActivityVO> currentMonthActivityVOS = parActivityObjectService.currentMonthActivity(districtId);

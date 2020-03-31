@@ -65,7 +65,7 @@ public class ParPictureInfroControllerImpl implements ParPictureInfroController 
         return Result.ofDeleteSuccess();
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<List<ParPictureInfroVO>> list(@ApiParam(value = "电视截图查询条件", required = true) @RequestBody ParPictureInfroSearchable parPictureInfroSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {

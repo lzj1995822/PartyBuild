@@ -99,7 +99,7 @@ public class ParCameraControllerImpl implements ParCameraController {
         return Result.of(byNumber.convert(ParCameraVO.class));
     }
 
-    @Authorization(required = true)
+    @Authorization(required = false)
     @Override
     public Result<ParCamera> findRedisIp(String key){
         ParCamera parCamera = parCameraService.redisIp(key);
