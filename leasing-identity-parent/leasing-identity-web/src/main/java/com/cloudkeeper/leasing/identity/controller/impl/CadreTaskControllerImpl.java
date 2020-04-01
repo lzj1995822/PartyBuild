@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,13 @@ public class CadreTaskControllerImpl implements CadreTaskController {
 
     @Override
     public Result<CadreTaskVO> add(@ApiParam(value = "村书记模块任务 DTO", required = true) @RequestBody @Validated CadreTaskDTO cadreTaskDTO) {
+        if (StringUtils.isEmpty(cadreTaskDTO.getType())) {
+            return Result.of(500, "任务类型不能为空");
+        }
+        CadreTask currentTask = cadreTaskService.getCurrentTaskByType(cadreTaskDTO.getType());
+        if (currentTask != null) {
+            return Result.of(500, "发布失败！当前已存在有效任务！");
+        }
         CadreTask cadreTask = cadreTaskService.save(cadreTaskDTO);
         return Result.ofAddSuccess(cadreTask.convert(CadreTaskVO.class));
     }
@@ -122,6 +130,10 @@ public class CadreTaskControllerImpl implements CadreTaskController {
     @PostMapping("/publishJudgeTask")
     @Transactional
     public Result<CadreTaskVO> publishJudgeTask(@RequestBody CadreTaskDTO cadreTaskDTO) {
+        CadreTask currentTask = cadreTaskService.getCurrentLevelJudgeTask();
+        if (currentTask != null) {
+            return Result.of(500, "发布失败！当前已存在有效任务！");
+        }
         CadreTask save = cadreTaskService.save(cadreTaskDTO);
         List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
         for(PromotionCadresDTO item: promotionCadres) {
