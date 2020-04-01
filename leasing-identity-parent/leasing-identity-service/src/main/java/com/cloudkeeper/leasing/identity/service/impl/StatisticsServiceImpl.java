@@ -46,9 +46,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     @Override
     public List<StatisticsVO> getAgeStatistics(String districtId) {
 
-        String sql = "select  cast(isNULL(MAX(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最高年龄' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
+        String sql =  "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
                 "select  isNULL(cast(round(avg(DATEDIFF(DY, birth, GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType = 'SECRETARY' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
                 "UNION all\n" +
