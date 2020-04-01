@@ -61,4 +61,8 @@ public class HonourInfoDTO extends BaseEditDTO {
     @ApiModelProperty(value = "组织ID", position = 25)
     private String districtId;
 
+    /** 表彰类型 */
+    @ApiModelProperty(value = "表彰类型", position = 25)
+    private String honourType;
+
 }
