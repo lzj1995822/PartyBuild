@@ -67,7 +67,7 @@ public class SysClassPropertyControllerImpl implements SysClassPropertyControlle
     @Override
     public Result<List<SysClassPropertyVO>> list(@ApiParam(value = "类属性配置查询条件", required = true) @RequestBody SysClassPropertySearchable sysClassPropertySearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
-        List<SysClassProperty> sysClassPropertyList = sysClassPropertyService.findAll(sysClassPropertySearchable, sort);
+        List<SysClassProperty> sysClassPropertyList = sysClassPropertyService.findAll(sysClassPropertySearchable, new Sort(Sort.Direction.ASC,"sort"));
         List<SysClassPropertyVO> sysClassPropertyVOList = SysClassProperty.convert(sysClassPropertyList, SysClassPropertyVO.class);
         return Result.of(sysClassPropertyVOList);
     }

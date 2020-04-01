@@ -13,7 +13,7 @@ import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
 import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.vo.ImportVO;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageStatisticsVO;
-import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
+import com.cloudkeeper.leasing.identity.vo.StatisticsStringVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -244,8 +244,8 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
 
     @Override
     public Result<Object> getStatisticsOnAverage(@PathVariable String quotaId) {
-        String sql = "SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
-        List<StatisticsVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsVO.class,sql);
+        String sql = "SELECT (cast (CONVERT(decimal(18, 2),a.val * 1.0 / (SELECT count(1) FROM SYS_District WHERE parentName = a.name AND districtType = 'Party')) as VARCHAR)) val,a.name as name FROM (SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName) a";
+        List<StatisticsStringVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsStringVO.class,sql);
         return Result.of(buchengzhi);
     }
 
