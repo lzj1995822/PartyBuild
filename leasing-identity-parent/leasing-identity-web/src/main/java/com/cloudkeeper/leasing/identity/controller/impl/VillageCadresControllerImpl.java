@@ -2,9 +2,11 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
-import com.cloudkeeper.leasing.identity.domain.*;
+import com.cloudkeeper.leasing.identity.domain.CadrePosition;
+import com.cloudkeeper.leasing.identity.domain.PromotionCadres;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
+import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
-import com.cloudkeeper.leasing.identity.dto.cadretaskobject.CadreTaskObjectSearchable;
 import com.cloudkeeper.leasing.identity.dto.promotioncadres.PromotionCadresSearchable;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresDTO;
