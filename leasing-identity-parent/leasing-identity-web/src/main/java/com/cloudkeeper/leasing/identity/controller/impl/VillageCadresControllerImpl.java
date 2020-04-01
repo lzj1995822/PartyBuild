@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -328,15 +327,17 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         if (!StringUtils.isEmpty(villageCadresSearchable.getOnDutyTime())){
             //任职年限
-            int end = Integer.valueOf(villageCadresSearchable.getOnDutyTime());
-            int start = end - 4;
-            if (end == -1){
-                end = 100;
-                start = 20;
+            String sql = "";
+            if (villageCadresSearchable.getOnDutyTime().equals("-1")){
+                sql = "cast(onDutyTime as FLOAT) >= 20";
+            }else if (villageCadresSearchable.getOnDutyTime().equals("1")){
+                sql = "cast(onDutyTime as FLOAT) < 1";
+            }else if (villageCadresSearchable.getOnDutyTime().equals("5")){
+                sql = "cast(onDutyTime as FLOAT) < 5 and cast(onDutyTime as FLOAT) >= 1";
+            }else {
+                sql = "cast(onDutyTime as FLOAT) < "+villageCadresSearchable.getOnDutyTime() +"and cast(onDutyTime as FLOAT)  >="+(Integer.valueOf(villageCadresSearchable.getOnDutyTime())-5);
             }
-            String send = String.valueOf(end);
-            String sstart = String.valueOf(start);
-            detachedCriteria.add(Restrictions.between("onDutyTime",sstart,send));
+            detachedCriteria.add(Restrictions.sqlRestriction(sql));
         }
         if (!StringUtils.isEmpty(villageCadresSearchable.getRank())){
             //职级等次
@@ -344,20 +345,19 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getEnterPartyTime())){
             //通过党龄
-            int start = 0;
-            int end = 0;
+            String sql = "";
             if (villageCadresSearchable.getEnterPartyTime().equals("-1")){
-                start = year - 200;
-                end = year - 20;
-            }else{
-                start = year - Integer.valueOf(villageCadresSearchable.getEnterPartyTime());
-                end = year - Integer.valueOf(villageCadresSearchable.getEnterPartyTime()) + 4;
+                sql = "DATEDIFF(YEAR,partyTime,GETDATE()) >= 50";
+            }else if (villageCadresSearchable.getEnterPartyTime().equals("1")){
+                sql = "DATEDIFF(YEAR,partyTime,GETDATE()) < 1";
+            }else if (villageCadresSearchable.getEnterPartyTime().equals("5")){
+                sql = "DATEDIFF(YEAR,partyTime,GETDATE()) < 5 and DATEDIFF(YEAR,partyTime,GETDATE()) >= 1";
+            }else if(Integer.valueOf(villageCadresSearchable.getEnterPartyTime())<=20){
+                sql = "DATEDIFF(YEAR,partyTime,GETDATE()) < "+villageCadresSearchable.getEnterPartyTime() +"and DATEDIFF(YEAR,partyTime,GETDATE())  >="+(Integer.valueOf(villageCadresSearchable.getEnterPartyTime())-5);
+            }else {
+                sql = "DATEDIFF(YEAR,partyTime,GETDATE()) < "+villageCadresSearchable.getEnterPartyTime() +"and DATEDIFF(YEAR,partyTime,GETDATE())  >="+(Integer.valueOf(villageCadresSearchable.getEnterPartyTime())-10);
             }
-            Date s = getCurrYearFirst(start);
-            Date e = getCurrYearLast(end);
-            LocalDate ls = s.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate le = e.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            detachedCriteria.add(Restrictions.between("partyTime",ls,le));
+            detachedCriteria.add(Restrictions.sqlRestriction(sql));
         }
         return detachedCriteria;
     }
