@@ -244,7 +244,13 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
 
     @Override
     public Result<Object> getStatisticsOnAverage(@PathVariable String quotaId) {
-        String sql = "SELECT (cast (CONVERT(decimal(18, 2),a.val * 1.0 / (SELECT count(1) FROM SYS_District WHERE parentName = a.name AND districtType = 'Party')) as VARCHAR)) val,a.name as name FROM (SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName) a";
+        String sql = "";
+        if ("02".equals(quotaId)){
+            sql = "SELECT (cast (count(1) as VARCHAR)) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '02') AND quotaId = '02' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
+        }else {
+            sql = "SELECT (cast (CONVERT(decimal(18, 2),a.val * 1.0 / (SELECT count(1) FROM SYS_District WHERE parentName = a.name AND districtType = 'Party')) as VARCHAR)) val,a.name as name FROM (SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName) a";
+        }
+
         List<StatisticsStringVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsStringVO.class,sql);
         return Result.of(buchengzhi);
     }
