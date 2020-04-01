@@ -379,8 +379,11 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         // 村书记时长
         ratingStandard.setWorkDuration(villageCadres.getOnDutyTime());
         // 能力研判
-        ratingStandard.setAbilityJudgement(villageCadres.getEvaluation());
+        if (!StringUtils.isEmpty(villageCadres.getEvaluation())) {
+            ratingStandard.setAbilityJudgement(villageCadres.getEvaluation());
+        }
         // 上年度专职村书记考核等次
+        ratingStandard.setLastGrade("1");
         // 年度考核获得称职及以上等次累计次数
         // 年度考核获得称职及以上等次连续年数
         // 年度考核获得优秀等次累计次数

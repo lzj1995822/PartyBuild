@@ -76,19 +76,19 @@ public class RatingStandardServiceImpl extends BaseServiceImpl<RatingStandard> i
         List<Integer> res = new ArrayList<>();
         for (RatingStandard item:allByIsStandard) {
             switch (item.getName()) {
-                case "一级":
+                case "一级专职村书记":
                     res.add(checkFirstLevel(item, ratingStandard));
                     break;
-                case "二级":
+                case "二级专职村书记":
                     res.add(checkSecondLevel(item, ratingStandard));
                     break;
-                case "三级":
+                case "三级专职村书记":
                     res.add(checkThirdLevel(item, ratingStandard));
                     break;
-                case "四级":
+                case "四级专职村书记":
                     res.add(checkFourthLevel(item, ratingStandard));
                     break;
-                case "五级":
+                case "五级专职村书记":
                     res.add(checkFifthLevel(item, ratingStandard));
                     break;
                 default:
