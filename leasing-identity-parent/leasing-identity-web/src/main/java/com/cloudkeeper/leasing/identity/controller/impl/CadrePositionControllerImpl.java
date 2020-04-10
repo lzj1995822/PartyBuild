@@ -119,6 +119,9 @@ public class CadrePositionControllerImpl implements CadrePositionController {
         if (!StringUtils.isEmpty(cadrePositionSearchable.getDistrictId())) {
             detachedCriteria.add(Restrictions.and(Restrictions.like("districtId", cadrePositionSearchable.getDistrictId(), MatchMode.START)));
         }
+        if (!StringUtils.isEmpty(cadrePositionSearchable.getPost())) {
+            detachedCriteria.add(Restrictions.and(Restrictions.like("post", cadrePositionSearchable.getPost(), MatchMode.START)));
+        }
         if (!StringUtils.isEmpty(cadrePositionSearchable.getIsExist())) {
             if (cadrePositionSearchable.getIsExist().equals("1")) {
                 detachedCriteria.add(Restrictions.or(Restrictions.ne("cadreId", null), Property.forName("cadreId").isNotNull()));

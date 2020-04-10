@@ -87,6 +87,9 @@ public class VillageCadresTermControllerImpl implements VillageCadresTermControl
         if (!StringUtils.isEmpty(villageCadresTermSearchable.getDistrictId())){
             detachedCriteria.add(Restrictions.ilike("districtId",villageCadresTermSearchable.getDistrictId(), MatchMode.START));
         }
+        if (!StringUtils.isEmpty(villageCadresTermSearchable.getCadresType())){
+            detachedCriteria.add(Restrictions.ilike("cadresType",villageCadresTermSearchable.getCadresType(), MatchMode.START));
+        }
         Integer total = villageCadresTermService.getTotalCount(detachedCriteria);
         pageable.getSort().forEach(item -> {
             if (item.isAscending()) {

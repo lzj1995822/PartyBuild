@@ -49,5 +49,19 @@ public class CentralConsoleVo extends BaseVO {
     //当日阵地平均人流量
     private Double streamRate = 0d;
 
+    // 机关党组织数
+    private Integer officeOrgNumber= 0;
+
+    // 机关党委数
+    private Integer officeCommitteeOrgNumber= 0;
+
+    // 机关党总支数
+    private Integer officeGeneralBranchOrgNumber = 0;
+
+    // 机关党支部数
+    private Integer officeBranchOrgNumber = 0;
+
+    // 机关党小组数
+    private Integer officeGroupOrgNumber= 0;
 
 }

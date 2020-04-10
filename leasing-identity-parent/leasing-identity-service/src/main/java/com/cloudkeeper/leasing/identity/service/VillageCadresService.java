@@ -38,7 +38,7 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
     //根据等级统计村书记的数量
     SecretaryNumberVO countNumber();
     //获取带审核数据
-    List<CadresExamineVO> getExamines();
+    List<CadresExamineVO> getExamines(String cadresType);
     void updateIsEdit(String cadresId);
 
     RatingStandard generatePostLevel(VillageCadres villageCadres);

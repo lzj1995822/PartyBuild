@@ -19,7 +19,7 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     List<SysDistrict> findAllByDistrictLevelNot(Integer districtLevel);
 
-    List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer districtLevel, String districtType);
+    List<SysDistrict> findAllByDistrictLevelAndDistrictTypeOrderByDistrictIdAsc(Integer districtLevel, String districtType);
 
     Set<SysDistrict> findAllByAttachTo(String districtId);
 
@@ -49,8 +49,9 @@ public interface SysDistrictRepository extends BaseRepository<SysDistrict> {
 
     SysDistrict findByDistrictId(String districtId);
 
-    Integer countAllByDistrictIdStartingWith(String districtId);
+    Integer countAllByDistrictIdStartingWithAndIsPartyGroup(String districtId, String isPartyGroup);
 
     List<SysDistrict> findAllByDistrictIdGreaterThanEqual(String districtId);
 
+    Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName);
 }
