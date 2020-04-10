@@ -49,4 +49,7 @@ public class CadrePositionDTO extends BaseEditDTO {
     @ApiModelProperty(value = "在职人员", position = 10, required = true)
     private String cadreId;
 
+    /** 所属组织 */
+    @ApiModelProperty(value = "所属组织", position = 10, required = true)
+    private String parentDistrictId;
 }

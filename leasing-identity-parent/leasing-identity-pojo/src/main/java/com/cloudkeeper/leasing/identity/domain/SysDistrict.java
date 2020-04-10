@@ -158,6 +158,10 @@ public class SysDistrict extends BaseEntity {
 
     private String orgParentName;
 
+    /** 是否为机关党小组 */
+    @ApiModelProperty(value = "是否为机关党小组")
+    private String isPartyGroup;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

@@ -243,4 +243,11 @@ public class VillageCadresDTO extends BaseEditDTO {
     private String medicalInsurance;
     @ApiModelProperty(value = "社保类型", position = 10, required = true)
     private String socialSecurityDatabases;
+
+    @ApiModelProperty(value = "干部id", position = 10, required = true)
+    private String cadresId;
+
+    @ApiModelProperty(value = "岗位id", position = 10, required = true)
+    private String positionId;
+
 }

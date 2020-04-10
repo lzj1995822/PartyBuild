@@ -55,4 +55,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     SysDistrict handleRelation(SysDistrict sysDistrict);
 
     List<SysDistrictTreeVO> findOfficeDistrictTree();
+
+    Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName);
 }

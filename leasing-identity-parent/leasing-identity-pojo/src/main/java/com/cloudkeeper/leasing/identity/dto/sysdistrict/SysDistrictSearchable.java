@@ -76,4 +76,8 @@ public class SysDistrictSearchable extends BaseSearchable {
     private String parentName;
 
     private String orgParentName;
+
+    /** 是否为机关党小组 */
+    @ApiModelProperty(value = "是否为机关党小组")
+    private String isPartyGroup;
 }

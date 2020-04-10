@@ -98,4 +98,8 @@ public class SysDistrictVO extends BaseVO {
     @ApiModelProperty(value = "任务对象编码", position = 10, required = true)
     private String objectTypeCode;
 
+    /** 是否为机关党小组 */
+    @ApiModelProperty(value = "是否为机关党小组")
+    private String isPartyGroup;
+
 }

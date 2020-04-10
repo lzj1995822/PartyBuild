@@ -89,7 +89,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("postExperience", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("hasRetire", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("quasiAssessmentRank", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("quasiAssessmentRank", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("cadresType", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
     @Override
@@ -116,12 +117,20 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     @Override
     @Transactional
     public VillageCadres save(VillageCadresDTO villageCadresDTO) {
-        // 检查是否有当前任务
-        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
-        if (currentBaseInfoTask == null) {
+        String cadresType = villageCadresDTO.getCadresType();
+        if (StringUtils.isEmpty(cadresType)) {
             return null;
         }
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), "SECRETARY");
+        CadreTask currentBaseInfoTask = new CadreTask();
+        if (!cadresType.contains("IN_SECRETARY")) {
+            // 检查是否有当前任务
+            currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+            if (currentBaseInfoTask == null) {
+                return null;
+            }
+        }
+
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), cadresType);
         if (cadrePosition == null) {
             return null;
         }
@@ -193,13 +202,30 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     @Override
     public VillageCadres saveBaseInfo(VillageCadresDTO villageCadresDTO) {
+        // 已存在系统中的干部和新岗位维护关系
+        if (!StringUtils.isEmpty(villageCadresDTO.getCadresId()) && !StringUtils.isEmpty(villageCadresDTO.getPositionId())) {
+            Optional<CadrePosition> optionalById = cadrePositionService.findOptionalById(villageCadresDTO.getPositionId());
+            if (!optionalById.isPresent()) {
+                return null;
+            }
+            Optional<VillageCadres> byId = villageCadresRepository.findById(villageCadresDTO.getCadresId());
+            if (!byId.isPresent()) {
+                return null;
+            }
+            VillageCadres villageCadres = byId.get();
+            CadrePosition cadrePosition = optionalById.get();
+            cadrePosition.setCadreId(villageCadres.getId());
+            cadrePositionService.save(cadrePosition);
+            return villageCadres;
+        }
+        // 新增干部的处理
         VillageCadres convert = villageCadresDTO.convert(VillageCadres.class);
         SysDistrict byDistrictId = sysDistrictService.findByDistrictId(villageCadresDTO.getDistrictId());
         convert.setParentDistrictId(byDistrictId.getOrgParent());
         convert.setParentDistrictName(byDistrictId.getParentName());
         convert.setDistrictName(byDistrictId.getDistrictName());
         convert = super.save(convert);
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), "SECRETARY");
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), villageCadresDTO.getCadresType());
         if (cadrePosition == null) {
             return null;
         }
@@ -210,10 +236,17 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     @Override
     public Boolean submit(VillageCadres villageCadres) {
-        // 检查是否有当前任务
-        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
-        if (currentBaseInfoTask == null) {
+        String cadresType = villageCadres.getCadresType();
+        if (StringUtils.isEmpty(cadresType)) {
             return false;
+        }
+        CadreTask currentBaseInfoTask = new CadreTask();
+        if (!cadresType.contains("IN_SECRETARY")) {
+            // 检查是否有当前任务
+            currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+            if (currentBaseInfoTask == null) {
+                return false;
+            }
         }
 
         villageCadres.setState("2");
@@ -233,15 +266,22 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
 
     @Override
     public Boolean virify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody  InformationAuditDTO informationAuditDTO2 ) {
-        // 检查是否有当前任务
-        CadreTask currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
-        if (currentBaseInfoTask == null) {
-            return false;
-        }
-
         Optional<VillageCadres> byId = villageCadresRepository.findById(id);
         if(!byId.isPresent()){
             return false;
+        }
+        String cadresType = byId.get().getCadresType();
+        if (StringUtils.isEmpty(cadresType)) {
+            return false;
+        }
+
+        CadreTask currentBaseInfoTask = new CadreTask();
+        if (!cadresType.contains("IN_SECRETARY")) {
+            // 检查是否有当前任务
+            currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
+            if (currentBaseInfoTask == null) {
+                return false;
+            }
         }
 
         VillageCadres villageCadres = byId.get();
@@ -262,7 +302,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         if (code.equals("SUCCESS")) {
             integer++;
             checkMsg = "审核通过意见:";
-            if (integer == 3) {
+            //只有村书记才生成职级评定标准
+            if (integer == 3 && villageCadres.getCadresType().equals("SECRETARY")) {
                 // 如果市委审核通过后，把表彰和报酬不可更改
                 this.updateIsEdit(id);
                 RatingStandard actual = this.generatePostLevel(villageCadres);
@@ -328,9 +369,21 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     }
 
     @Override
-    public List<CadresExamineVO> getExamines() {
-        String sql = "SELECT cadres.id,cadres.name, cadres.parentDistrictName, info.modifiedAt FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt";
-        String sqlCount = "SELECT cadres.parentDistrictName as districtName, count(1) as number FROM Information_Audit info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt  group by cadres.parentDistrictName";
+    public List<CadresExamineVO> getExamines(String cadresType1) {
+        String cadresType = "SECRETARY";
+        if (!StringUtils.isEmpty(cadresType1)) {
+            cadresType = cadresType1;
+        }
+        String sql = "SELECT cadres.id,cadres.name, cadres.parentDistrictName, info.modifiedAt FROM Information_Audit info" +
+                " JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN " +
+                " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  " +
+                " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
+                " where cadres.cadresType like '" + cadresType + "%'";
+        String sqlCount = "SELECT cadres.parentDistrictName as districtName, count(1) as number FROM Information_Audit " +
+                " info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN " +
+                " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit " +
+                " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
+                "  where cadres.cadresType like '" + cadresType + "%' group by cadres.parentDistrictName";
         List<CadresStatisticsVO> villageCadres = findAllBySql(CadresStatisticsVO.class,sql);
         List<CadresExamineVO> list = findAllBySql(CadresExamineVO.class,sqlCount);
         for (CadresExamineVO c : list){
@@ -440,7 +493,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             for (VillageCadres subItem : allByQuasiAssessmentRank) {
                 HashMap<String, String> stringStringHashMap = new HashMap<>();
                 stringStringHashMap.put("name", subItem.getName());
-                stringStringHashMap.put("postName", subItem.getCadrePosition().getName());
+                stringStringHashMap.put("postName", subItem.getCadrePosition().stream().map(CadrePosition::getName).collect(Collectors.joining("、")));
                 values.add(stringStringHashMap);
             }
             CadresGroupByLevelVO cadresGroupByLevelVO = new CadresGroupByLevelVO();
