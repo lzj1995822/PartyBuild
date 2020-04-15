@@ -20,6 +20,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 村干部管理
@@ -133,9 +134,9 @@ public class VillageCadres extends BaseEntity {
 
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
-    @OneToOne(mappedBy = "villageCadres", cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @OneToMany(mappedBy = "villageCadres")
     @NotFound(action = NotFoundAction.IGNORE)
-    private CadrePosition cadrePosition;
+    private List<CadrePosition> cadrePosition;
 
     @ApiModelProperty(value = "职称", position = 15)
     private String trainingTitle;
@@ -319,9 +320,9 @@ public class VillageCadres extends BaseEntity {
     public <T> T convert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
-        if (!StringUtils.isEmpty(this.cadrePosition)){
-            villageCadresVO.setPost(this.cadrePosition.getId());
-            villageCadresVO.setPostName(this.cadrePosition.getName());
+        if (!StringUtils.isEmpty(this.cadrePosition) && this.cadrePosition.size() > 0){
+//            villageCadresVO.setPost(this.cadrePosition.getId());
+            villageCadresVO.setPostName(this.cadrePosition.stream().map(CadrePosition::getName).collect(Collectors.joining("、")));
         }
         if (informationAudits.size() > 0) {
             InformationAudit first = informationAudits.get(0);
@@ -352,9 +353,9 @@ public class VillageCadres extends BaseEntity {
     public <T> T pageConvert(@Nonnull Class<T> clazz) {
         T convert = super.convert(clazz);
         VillageCadresVO villageCadresVO = (VillageCadresVO) convert;
-        if (!StringUtils.isEmpty(this.cadrePosition)){
-            villageCadresVO.setPost(this.cadrePosition.getId());
-            villageCadresVO.setPostName(this.cadrePosition.getName());
+        if (!StringUtils.isEmpty(this.cadrePosition) && this.cadrePosition.size() > 0){
+//            villageCadresVO.setPost(this.cadrePosition.getId());
+            villageCadresVO.setPostName(this.cadrePosition.stream().map(CadrePosition::getName).collect(Collectors.joining("、")));
         }
         if (informationAudits.size() > 0) {
             InformationAudit first = informationAudits.get(0);

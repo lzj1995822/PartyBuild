@@ -641,14 +641,14 @@ public class ParActivityServiceImpl extends BaseServiceImpl<ParActivity> impleme
                 "FROM PAR_Activity AS a " +
                 "INNER JOIN  SYS_District AS d ON LEN(d.districtId)=6 " +
                 "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                "WHERE d.districtLevel != '5' and year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
+                "WHERE d.districtLevel != '5' and year(month)="+year+" AND d.districtId like "+"'"+districtId+"%"+"' "+" AND d.isPartyGroup != 1 AND  d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
                 "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         if (objectType.contains("2")) {
             sql = "SELECT a.id as activityId,a.month,a.title,d.districtId,d.districtLevel, d.id AS organizationId,d.districtName,a.objectType,o.status,o.id AS objectId " +
                     "FROM PAR_Activity AS a " +
                     "INNER JOIN  SYS_District AS d ON d.districtType = 'Office' AND d.districtId != '0118'" +
                     "LEFT JOIN PAR_ActivityObject AS o ON a.id = o.activityId AND d.districtId = o.organizationId " +
-                    "WHERE d.districtLevel != '5' and year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+"AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
+                    "WHERE d.districtLevel != '5' and year(month)="+year+"AND d.districtId like "+"'"+districtId+"%"+"' "+" AND d.isPartyGroup != 1 AND d.isDelete = 0 "+"And a.objectType like '" + objectType +"%' And d.districtType ="+"'"+districtType+"' "+
                     "ORDER BY districtId ASC,month Asc , releaseTime Asc";
         }
         List<ActivitiesCompletionVO> allBySql = super.findAllBySql(ActivitiesCompletionVO.class, sql);

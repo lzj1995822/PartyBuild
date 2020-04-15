@@ -50,7 +50,7 @@ public interface VillageCadresController {
 
     @ApiOperation(value = "获取带审核数据", notes = "离任", position = 1)
     @GetMapping("/getExamines")
-    Result<List<CadresExamineVO>> getExamines();
+    Result<List<CadresExamineVO>> getExamines(String cadresType);
 /**
  * 新增
  * @param villageCadresDTO 村干部管理 DTO

@@ -7,6 +7,7 @@ import com.cloudkeeper.leasing.identity.domain.SysUser;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.CentralConsoleVo;
+import com.cloudkeeper.leasing.identity.vo.StatisticsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,6 +28,9 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
 
     //活动执行次数
     private final ParActivityPerformService parActivityPerformService;
+
+    // 活动service
+    private final ParActivityService parActivityService;
 
     //基本阵地
     private final PositionInformationService positionInformationService;
@@ -80,7 +86,18 @@ public class CentralConsoleServiceImpl extends BaseServiceImpl<BaseEntity> imple
             if (positionNumber != 0) {
                 centralConsoleVo.setStreamRate((double) (centralConsoleVo.getStreamTotal()/centralConsoleVo.getPositionNumber()));
             }
+            centralConsoleVo.setOfficeOrgNumber(sysDistrictService.countAllByDistrictId(districtId));
+            centralConsoleVo.setOfficeCommitteeOrgNumber(sysDistrictService.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, "党委"));
+            centralConsoleVo.setOfficeGeneralBranchOrgNumber(sysDistrictService.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, "党总支"));
+            centralConsoleVo.setOfficeBranchOrgNumber(sysDistrictService.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, "党支部"));
+            centralConsoleVo.setOfficeGroupOrgNumber(sysDistrictService.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, "党小组"));
         }
         return centralConsoleVo;
+    }
+
+    @Override
+    public List<StatisticsVO> countActivityGroupByType() {
+        String sql = "select pa.type as name, count(1) as val from PAR_Activity pa WHERE pa.objectType like '2%' GROUP BY pa.type";
+        return parActivityService.findAllBySql(StatisticsVO.class, sql);
     }
 }

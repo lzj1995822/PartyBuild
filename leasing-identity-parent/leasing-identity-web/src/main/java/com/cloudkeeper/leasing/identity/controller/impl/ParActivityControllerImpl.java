@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.vo.TVIndexVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
@@ -101,9 +102,12 @@ public class ParActivityControllerImpl implements ParActivityController {
 
     @Authorization(required = false)
     @Override
-    public Result<List<ParActivityVO>> listByCurrentMonth() {
+    public Result<List<ParActivityVO>> listByCurrentMonth(String objectType) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(ParActivity.class);
         detachedCriteria.add(Restrictions.between("month", firstDay(),lastDay()));
+        if (!StringUtils.isEmpty(objectType)) {
+            detachedCriteria.add(Restrictions.like("objectType", objectType, MatchMode.ANYWHERE));
+        }
         List<ParActivity> all = parActivityService.findAll(detachedCriteria);
         return Result.of(ParActivity.convert(all, ParActivityVO.class));
     }

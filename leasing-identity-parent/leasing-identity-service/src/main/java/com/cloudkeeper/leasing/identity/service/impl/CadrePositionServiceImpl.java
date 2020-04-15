@@ -33,7 +33,7 @@ public class CadrePositionServiceImpl extends BaseServiceImpl<CadrePosition> imp
                 .withMatcher("workPlace", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("duty", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("post", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("post", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
     @Override

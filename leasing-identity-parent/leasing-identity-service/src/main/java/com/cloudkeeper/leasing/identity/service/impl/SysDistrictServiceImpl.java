@@ -105,7 +105,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
 
     @Override
     public List<SysDistrict> findAllByDistrictLevelAndDistrictType(Integer level, String districtType) {
-        return sysDistrictRepository.findAllByDistrictLevelAndDistrictType(level, districtType);
+        return sysDistrictRepository.findAllByDistrictLevelAndDistrictTypeOrderByDistrictIdAsc(level, districtType);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
 
     @Override
     public Integer countAllByDistrictId(String districtId) {
-        Integer integer = sysDistrictRepository.countAllByDistrictIdStartingWith(districtId);
+        Integer integer = sysDistrictRepository.countAllByDistrictIdStartingWithAndIsPartyGroup(districtId, "0");
         return integer;
     }
 
@@ -188,7 +188,7 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
 
     @Override
     public List<SysDistrictTreeVO> findOfficeDistrictTree() {
-        List<SysDistrict> office = sysDistrictRepository.findAllByDistrictLevelAndDistrictType(2, "Office");
+        List<SysDistrict> office = sysDistrictRepository.findAllByDistrictLevelAndDistrictTypeOrderByDistrictIdAsc(2, "Office");
         List<SysDistrictTreeVO> sysDistrictTreeVOS = translateToVO(office, null);
 
         ArrayList<SysDistrictTreeVO> resList = new ArrayList<>();
@@ -206,5 +206,10 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
         sysDistrictTreeVO.setChildren(partyList);
         resList.add(sysDistrictTreeVO);
         return resList;
+    }
+
+    @Override
+    public Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName) {
+        return sysDistrictRepository.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, districtName);
     }
 }

@@ -87,16 +87,16 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             villageCadresTerm.setTermFile(villageCadresTermDTO.getTermFile());
             villageCadresTermService.save(villageCadresTerm);
         }
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), "SECRETARY");
+        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), villageCadres.getCadresType());
         cadrePosition.setCadreId(null);
         cadrePositionService.save(cadrePosition);
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
     @Override
-    public Result<List<CadresExamineVO>> getExamines() {
+    public Result<List<CadresExamineVO>> getExamines(String cadresType) {
 
-        return Result.of(villageCadresService.getExamines());
+        return Result.of(villageCadresService.getExamines(cadresType));
     }
 
     @Override
@@ -154,6 +154,9 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             return Result.ofLost();
         }
         VillageCadres villageCadres = villageCadresService.save(villageCadresDTO);
+        if (villageCadres == null) {
+            return Result.of(500, "当前无任务或者干部类型未明确");
+        }
         String  msg= villageCadresService.actionLog("修改","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
