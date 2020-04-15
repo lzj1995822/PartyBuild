@@ -61,14 +61,14 @@ public class ParActivityObject extends BaseEntity {
 
     /** 活动信息 */
     @ApiModelProperty(value = "活动信息", position = 10, required = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "activityId", insertable = false, updatable = false)
     private ParActivity parActivity;
 
     /** 组织信息 */
     @ApiModelProperty(value = "组织信息", position = 10, required = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "organizationId", referencedColumnName = "districtId", insertable = false, updatable = false)
     private SysDistrict sysDistrict;
