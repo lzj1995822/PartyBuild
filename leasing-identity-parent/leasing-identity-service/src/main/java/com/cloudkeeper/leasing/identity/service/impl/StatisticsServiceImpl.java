@@ -291,29 +291,32 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     @Override
     public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
 
+        try {
+            //2.查询按镇统计
+            StringBuilder s = new StringBuilder();
+            s.append(createSql(villageCadresStatisticsSearchables));
+            StringBuilder statisticsSql = new StringBuilder();
+            statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+            statisticsSql.append(s);
+            statisticsSql.append(" group by parentDistrictName");
+            List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,statisticsSql.toString());
 
-        //2.查询按镇统计
-        StringBuilder s = new StringBuilder();
-        s.append(createSql(villageCadresStatisticsSearchables));
-        StringBuilder statisticsSql = new StringBuilder();
-        statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
-        statisticsSql.append(s);
-        statisticsSql.append(" group by parentDistrictName");
-        List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,statisticsSql.toString());
-
-        //没有统计数据的镇补0
-        String sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party'";
-        List<StatisticsVO> districts = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
-        for (StatisticsVO district : districts){
-            for (StatisticsVO statisticsVO : statistics){
-                if (district.getName().equals(statisticsVO.getName())){
-                    district.setVal(statisticsVO.getVal());
+            //没有统计数据的镇补0
+            String sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party'";
+            List<StatisticsVO> districts = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
+            for (StatisticsVO district : districts){
+                for (StatisticsVO statisticsVO : statistics){
+                    if (district.getName().equals(statisticsVO.getName())){
+                        district.setVal(statisticsVO.getVal());
+                    }
                 }
             }
+            Map<String,Object> map = new HashMap<>();
+            map.put("statistics",districts);
+            return map;
+        }catch (Exception e){
+            return "error";
         }
-        Map<String,Object> map = new HashMap<>();
-        map.put("statistics",districts);
-        return map;
     }
 
     @Override
@@ -465,7 +468,6 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                     break;
             }
         }
-
         return s;
     }
 }

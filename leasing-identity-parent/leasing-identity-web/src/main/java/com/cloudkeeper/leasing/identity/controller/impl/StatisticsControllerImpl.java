@@ -113,7 +113,11 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     @Override
     public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
-        return Result.of(statisticsService.getCustomStatistics(villageCadresStatisticsSearchables));
+        Object obj = statisticsService.getCustomStatistics(villageCadresStatisticsSearchables);
+        if ("error".equals(obj.toString())){
+            return Result.of("非法查询条件！");
+        }
+        return Result.of(obj);
     }
 
     @Override
