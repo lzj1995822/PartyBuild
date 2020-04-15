@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,7 +33,7 @@ public class RoleMenu extends BaseEntity {
 
     /** 角色 */
     @ApiModelProperty(value = "角色", position = 11, required = true)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId", insertable = false, updatable = false)
     private Role role;
 
@@ -42,7 +44,8 @@ public class RoleMenu extends BaseEntity {
 
     /** 角色 */
     @ApiModelProperty(value = "菜单id", position = 15, required = true)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumn(name = "sysRouteId", insertable = false, updatable = false)
     private SysRoutes sysRoutes;
 

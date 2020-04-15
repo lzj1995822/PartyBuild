@@ -43,7 +43,7 @@ public class SysRoutes extends BaseEntity implements Comparable{
     @Column(length = 36)
     private String classId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classId", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysClass sysClass;
@@ -84,10 +84,10 @@ public class SysRoutes extends BaseEntity implements Comparable{
 
     /** 子路由*/
     @ApiModelProperty(value = "子路由", position = 13)
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentId")
     @Fetch(FetchMode.JOIN)
-    private Set<SysRoutes> children;
+    private List<SysRoutes> children;
 
     @Override
     public int compareTo(Object roleMenu) {
