@@ -30,15 +30,19 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
      * @return
      */
     VillageCadres save(VillageCadresDTO villageCadresDTO);
+
     VillageCadres saveBaseInfo(VillageCadresDTO villageCadresDTO);
+
     Boolean submit(VillageCadres villageCadres);
 
     Boolean  virify(String id, String code, InformationAuditDTO informationAuditDTO2);
 
     //根据等级统计村书记的数量
     SecretaryNumberVO countNumber();
+
     //获取带审核数据
-    List<CadresExamineVO> getExamines(String cadresType);
+    List<CadresExamineVO> getExamines(String cadresType, String districtId1);
+
     void updateIsEdit(String cadresId);
 
     RatingStandard generatePostLevel(VillageCadres villageCadres);
@@ -49,4 +53,8 @@ public interface VillageCadresService extends BaseService<VillageCadres> {
 
 
     List<CadresGroupByLevelVO> getCadresGroupByLevel(String districtId);
+
+    Boolean secretarySubmit(VillageCadres villageCadres);
+
+    public Boolean secretaryReview(String id, String code, InformationAuditDTO informationAuditDTO);
 }

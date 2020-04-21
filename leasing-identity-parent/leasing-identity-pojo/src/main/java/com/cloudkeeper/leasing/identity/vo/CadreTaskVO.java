@@ -61,4 +61,8 @@ public class CadreTaskVO extends BaseVO {
     @ApiModelProperty(value = "成果相关文件")
     private String resultFiles;
 
+    /** 任务所属模块 */
+    @ApiModelProperty(value = "任务所属模块")
+    private String taskModule;
+
 }

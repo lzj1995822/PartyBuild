@@ -312,8 +312,17 @@ public class VillageCadres extends BaseEntity {
     @Column(length = 60)
     private String socialSecurityDatabases;
 
+    @ApiModelProperty(value = "全日制学历", position = 10, required = true)
+    private String fullTimeEdu;
 
+    @ApiModelProperty(value = "非全日制学历", position = 10, required = true)
+    private String partTimeEdu;
 
+    @ApiModelProperty(value = "全日制学校", position = 10, required = true)
+    private String fullTimeSchool;
+
+    @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
+    private String partTimeSchool;
 
     @Nonnull
     @Override

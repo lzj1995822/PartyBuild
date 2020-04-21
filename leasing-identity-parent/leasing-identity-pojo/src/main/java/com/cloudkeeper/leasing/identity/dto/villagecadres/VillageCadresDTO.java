@@ -250,4 +250,16 @@ public class VillageCadresDTO extends BaseEditDTO {
     @ApiModelProperty(value = "岗位id", position = 10, required = true)
     private String positionId;
 
+    @ApiModelProperty(value = "全日制学历", position = 10, required = true)
+    private String fullTimeEdu;
+
+    @ApiModelProperty(value = "非全日制学历", position = 10, required = true)
+    private String partTimeEdu;
+
+    @ApiModelProperty(value = "全日制学校", position = 10, required = true)
+    private String fullTimeSchool;
+
+    @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
+    private String partTimeSchool;
+
 }

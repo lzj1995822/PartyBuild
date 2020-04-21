@@ -94,9 +94,8 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
-    public Result<List<CadresExamineVO>> getExamines(String cadresType) {
-
-        return Result.of(villageCadresService.getExamines(cadresType));
+    public Result<List<CadresExamineVO>> getExamines(String cadresType, String districtId) {
+        return Result.of(villageCadresService.getExamines(cadresType, districtId));
     }
 
     @Override
@@ -214,7 +213,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     @Override
     public Result<Boolean> verify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody InformationAuditDTO informationAuditDTO2) {
-        return  Result.of(villageCadresService.virify(id,code,informationAuditDTO2));
+        return Result.of(villageCadresService.virify(id,code,informationAuditDTO2));
     }
 
     @Override
@@ -247,6 +246,21 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     public Result<Boolean> init() {
         villageCadresService.initCadres();
         return Result.of(true);
+    }
+
+    @Override
+    public Result<Boolean> secretarySubmit(@PathVariable String id) {
+        Optional<VillageCadres> optionalById = villageCadresService.findOptionalById(id);
+
+        if(optionalById.isPresent()){
+            return  Result.of(villageCadresService.secretarySubmit(optionalById.get()));
+        }
+        return Result.ofNotFound();
+    }
+
+    @Override
+    public Result<Boolean> secretaryReview(@PathVariable String id, @PathVariable String code, @RequestBody InformationAuditDTO informationAuditDTO2) {
+        return Result.of(villageCadresService.secretaryReview(id,code,informationAuditDTO2));
     }
 
     /**

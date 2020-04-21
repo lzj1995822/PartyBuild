@@ -191,4 +191,16 @@ public class VillageCadresSearchable extends BaseSearchable {
     private String termOfOfficeAnnex;
     @ApiModelProperty(value = "任命文件材料", position = 10, required = true)
     private String appointmentAnnex;
+
+    @ApiModelProperty(value = "全日制学历", position = 10, required = true)
+    private String fullTimeEdu;
+
+    @ApiModelProperty(value = "非全日制学历", position = 10, required = true)
+    private String partTimeEdu;
+
+    @ApiModelProperty(value = "全日制学校", position = 10, required = true)
+    private String fullTimeSchool;
+
+    @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
+    private String partTimeSchool;
 }

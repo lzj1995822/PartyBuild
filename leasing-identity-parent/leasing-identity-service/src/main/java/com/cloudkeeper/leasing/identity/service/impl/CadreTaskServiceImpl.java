@@ -38,6 +38,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String BASE_INFO_TASK = "基本信息更新";
 
+    private static final String GANBU_INFO_TASK = "村干部信息更新";
+
     private static final String REVIEW_TASK = "考核实施";
 
     private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
@@ -73,7 +75,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("score", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("attach", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("attach", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskModule", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
     @Override
@@ -112,6 +115,8 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             }
             detachedCriteria.add(Restrictions.in("districtId", set));
             all = sysDistrictService.findAll(detachedCriteria);
+        } else if (GANBU_INFO_TASK.equals(type)){
+            all = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
         } else {
             return null;
         }
@@ -133,6 +138,11 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
     @Override
     public CadreTask getCurrentBaseInfoTask() {
         return getCurrentTaskByType(BASE_INFO_TASK);
+    }
+
+    @Override
+    public CadreTask getSecretaryTask() {
+        return getCurrentTaskByType(GANBU_INFO_TASK);
     }
 
     @Override
