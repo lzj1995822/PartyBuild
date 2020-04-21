@@ -11,22 +11,22 @@ import java.util.List;
 
 public interface StatisticsService {
 
-    List<StatisticsVO> getSxStatistics(String districtId);
+    List<StatisticsVO> getSxStatistics(String districtId,String cadresType);
 
-    List<StatisticsVO> getAgeStatistics(String districtId);
+    List<StatisticsVO> getAgeStatistics(String districtId,String cadresType);
 
-    List<StatisticsVO> getEduStatistics(String districtId);
+    List<StatisticsVO> getEduStatistics(String districtId,String cadresType);
 
-    List<StatisticsVO> getcadresTypeStatistics(String districtId);
-    List<StatisticsVO> getServingYearStatistics(String districtId);
+    List<StatisticsVO> getcadresTypeStatistics(String districtId,String cadresType);
+    List<StatisticsVO> getServingYearStatistics(String districtId,String cadresType);
 
-    List<StatisticsVO> getRankStatistics(String districtId);
+    List<StatisticsVO> getRankStatistics(String districtId,String cadresType);
 
-    List<StatisticsNotIntegerVO> getSalaryStatistics(String districtId);
+    List<StatisticsNotIntegerVO> getSalaryStatistics(String districtId,String cadresType);
 
-    List<StatisticsVO> getPartyStandingStatistics(String districtId);
+    List<StatisticsVO> getPartyStandingStatistics(String districtId,String cadresType);
 
-    List<StatisticsListVO> getRewardsStatistics(String districtId);
+    List<StatisticsListVO> getRewardsStatistics(String districtId,String cadresType);
 
     List<StatisticsVO> getAllStatistics();
 
@@ -36,6 +36,6 @@ public interface StatisticsService {
 
     // 生成文件
     String generateFileUrl(ExportDTO exportDTO, String resSql);
-    List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type);
+    List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type,String cadresType);
 
 }
