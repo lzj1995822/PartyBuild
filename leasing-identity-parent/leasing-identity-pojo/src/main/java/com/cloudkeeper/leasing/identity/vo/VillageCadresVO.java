@@ -247,4 +247,16 @@ public class VillageCadresVO extends BaseVO {
     private String medicalInsurance;
     @ApiModelProperty(value = "社保类型", position = 10, required = true)
     private String socialSecurityDatabases;
+
+    @ApiModelProperty(value = "全日制学历", position = 10, required = true)
+    private String fullTimeEdu;
+
+    @ApiModelProperty(value = "非全日制学历", position = 10, required = true)
+    private String partTimeEdu;
+
+    @ApiModelProperty(value = "全日制学校", position = 10, required = true)
+    private String fullTimeSchool;
+
+    @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
+    private String partTimeSchool;
 }

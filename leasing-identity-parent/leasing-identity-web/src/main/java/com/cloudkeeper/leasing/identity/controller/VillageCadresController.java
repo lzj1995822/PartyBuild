@@ -50,7 +50,7 @@ public interface VillageCadresController {
 
     @ApiOperation(value = "获取带审核数据", notes = "离任", position = 1)
     @GetMapping("/getExamines")
-    Result<List<CadresExamineVO>> getExamines(String cadresType);
+    Result<List<CadresExamineVO>> getExamines(String cadresType, String districtId);
 /**
  * 新增
  * @param villageCadresDTO 村干部管理 DTO
@@ -163,6 +163,25 @@ public interface VillageCadresController {
     @ApiOperation(value = "init", notes = "init", position = 6)
     @PostMapping("/init")
     Result<Boolean> init();
+
+    /**
+     * 村干部状态提交结果
+     * @param
+     * @return 提交结果
+     */
+    @ApiOperation(value = "村干部状态提交结果", notes = "村干部状态提交结果", position = 6)
+    @PutMapping("/secretarySubmit/{id}")
+    Result<Boolean> secretarySubmit(@ApiParam(value = "村干部状态提交结果", required = true) @PathVariable("id")String id);
+
+    /**
+     * 村干部状态审核
+     * @param
+     * @return 审核
+     */
+    @ApiOperation(value = "村干部审核", notes = "村干部审核", position = 6)
+    @PutMapping("/secretaryReview/{id}/{code}")
+    Result<Boolean> secretaryReview(@ApiParam(value = "村干部审核", required = true) @PathVariable("id") String id, @PathVariable("code") String code,
+                           @RequestBody InformationAuditDTO informationAuditDTO2);
 
 
 }

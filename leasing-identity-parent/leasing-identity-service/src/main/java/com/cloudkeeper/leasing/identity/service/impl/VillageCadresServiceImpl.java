@@ -23,8 +23,6 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -122,14 +120,15 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             return null;
         }
         CadreTask currentBaseInfoTask = new CadreTask();
-        if (!cadresType.contains("IN_SECRETARY")) {
+        if (cadresType.contains("IN_SECRETARY")) {
             // 检查是否有当前任务
+            currentBaseInfoTask = cadreTaskService.getSecretaryTask();
+        } else {
             currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
-            if (currentBaseInfoTask == null) {
-                return null;
-            }
         }
-
+        if (currentBaseInfoTask == null) {
+            return null;
+        }
         CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), cadresType);
         if (cadrePosition == null) {
             return null;
@@ -265,7 +264,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     }
 
     @Override
-    public Boolean virify(@PathVariable("id") String id, @PathVariable("code") String code, @RequestBody  InformationAuditDTO informationAuditDTO2 ) {
+    public Boolean virify(String id, String code, InformationAuditDTO informationAuditDTO2 ) {
         Optional<VillageCadres> byId = villageCadresRepository.findById(id);
         if(!byId.isPresent()){
             return false;
@@ -357,6 +356,90 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         return true;
     }
 
+    // 村干部提交
+    public Boolean secretarySubmit(VillageCadres villageCadres) {
+        String cadresType = villageCadres.getCadresType();
+        if (StringUtils.isEmpty(cadresType)) {
+            return false;
+        }
+        CadreTask currentBaseInfoTask = cadreTaskService.getSecretaryTask();
+        if (currentBaseInfoTask == null) {
+            return false;
+        }
+
+        villageCadres.setState("1");
+        villageCadres = villageCadresRepository.save(villageCadres);
+
+        InformationAudit informationAudit = new InformationAudit();
+        informationAudit.setVillageId(villageCadres.getId());
+        informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setProcessType(currentBaseInfoTask.getType());
+        informationAudit.setStatus(villageCadres.getState());
+        informationAudit.setAuditor(villageCadres.getParentDistrictName());
+        informationAudit.setAuditAdvice("提交了该村干部信息！");
+        informationAuditService.save(informationAudit);
+
+        return true;
+    }
+
+    // 村干部审核
+    public Boolean secretaryReview(String id, String code, InformationAuditDTO informationAuditDTO2) {
+        Optional<VillageCadres> byId = villageCadresRepository.findById(id);
+        if(!byId.isPresent()){
+            return false;
+        }
+        String cadresType = byId.get().getCadresType();
+        if (StringUtils.isEmpty(cadresType)) {
+            return false;
+        }
+
+        // 检查是否有当前任务
+        CadreTask currentBaseInfoTask = cadreTaskService.getSecretaryTask();
+        if (currentBaseInfoTask == null) {
+            return false;
+        }
+
+        VillageCadres villageCadres = byId.get();
+        String currentState = villageCadres.getState();
+        Integer integer = Integer.valueOf(currentState);
+
+        String districtId = new String();
+        if (villageCadres.getState().equals("2")){
+            districtId = villageCadres.getDistrictId().substring(0,4);
+        }else if(villageCadres.getState().equals("3")){
+            districtId=villageCadres.getDistrictId().substring(0,2);
+        }
+
+        String checkMsg = new String();
+        /*判断前端传来的提交 villageId ,code是否通过*/
+        if (code.equals("SUCCESS")) {
+            integer++;
+            checkMsg = "审核通过意见:";
+        } else {
+            integer = 0;
+            checkMsg = "审核驳回意见:";
+        }
+        villageCadres.setState(integer.toString());
+        villageCadres = villageCadresRepository.save(villageCadres);
+
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(getCurrentPrincipalId());
+        if (!optionalById.isPresent()) {
+            return false;
+        }
+        String districtName = optionalById.get().getName();
+        InformationAudit informationAudit = new InformationAudit();
+        informationAudit.setStatus(villageCadres.getState());
+        informationAudit.setVillageId(id);
+        informationAudit.setTaskId(currentBaseInfoTask.getId());
+        informationAudit.setProcessType(currentBaseInfoTask.getType());
+        informationAudit.setAuditAdvice("审核意见：" + informationAuditDTO2.getAuditAdvice());
+        informationAudit.setAuditor(districtName + "-" + informationAuditDTO2.getAuditor());
+        informationAuditService.save(informationAudit);
+        messageCenterService.save(villageCadres.getId(),districtId,
+                "[村书记信息]" + villageCadres.getName() + checkMsg + informationAuditDTO2.getAuditAdvice());
+        return true;
+    }
+
     @Override
     public SecretaryNumberVO countNumber() {
         SecretaryNumberVO secretaryNumberVO = new SecretaryNumberVO();
@@ -369,21 +452,31 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     }
 
     @Override
-    public List<CadresExamineVO> getExamines(String cadresType1) {
+    public List<CadresExamineVO> getExamines(String cadresType1, String districtId1) {
         String cadresType = "SECRETARY";
+        String districtId = "01";
+        String queryStatus = "2";
         if (!StringUtils.isEmpty(cadresType1)) {
             cadresType = cadresType1;
+            // 村干部并且镇审
+            if (cadresType1.equals("IN_SECRETARY") && districtId1.length() == 4){
+                queryStatus = "1";
+            }
+        }
+        if (!StringUtils.isEmpty(districtId)) {
+            districtId = districtId1;
         }
         String sql = "SELECT cadres.id,cadres.name, cadres.parentDistrictName, info.modifiedAt FROM Information_Audit info" +
-                " JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN " +
+                " JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '" +queryStatus + "'  JOIN " +
                 " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  " +
                 " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
-                " where cadres.cadresType like '" + cadresType + "%'";
+                " where cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%'";
         String sqlCount = "SELECT cadres.parentDistrictName as districtName, count(1) as number FROM Information_Audit " +
-                " info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '2'  JOIN " +
+                " info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '" +queryStatus + "'  JOIN " +
                 " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit " +
                 " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
-                "  where cadres.cadresType like '" + cadresType + "%' group by cadres.parentDistrictName";
+                "  where cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%' " +
+                "group by cadres.parentDistrictName";
         List<CadresStatisticsVO> villageCadres = findAllBySql(CadresStatisticsVO.class,sql);
         List<CadresExamineVO> list = findAllBySql(CadresExamineVO.class,sqlCount);
         for (CadresExamineVO c : list){

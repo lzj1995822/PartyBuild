@@ -18,6 +18,9 @@ public interface CadreTaskService extends BaseService<CadreTask> {
 
     CadreTask getCurrentBaseInfoTask();
 
+    // 获取当前村干部任务
+    CadreTask getSecretaryTask();
+
     CadreTask getCurrentReviewTask();
 
     CadreTask getCurrentLevelJudgeTask();
