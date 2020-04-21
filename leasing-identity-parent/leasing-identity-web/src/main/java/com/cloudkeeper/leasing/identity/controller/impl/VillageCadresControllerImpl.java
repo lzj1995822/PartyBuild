@@ -304,7 +304,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getCadresType())){
             //通过姓名模糊查询
-            detachedCriteria.add(Restrictions.eq("cadresType", villageCadresSearchable.getCadresType()));
+            detachedCriteria.add(Restrictions.like("cadresType", villageCadresSearchable.getCadresType(),MatchMode.START));
         }
         if(!StringUtils.isEmpty(villageCadresSearchable.getDistrictId())){
             //通过组织模糊查询
