@@ -27,77 +27,77 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     private final StatisticsService statisticsService;
     @Override
-    public Result<List<StatisticsVO>> getSxStatistics(@PathVariable("districtId") String districtId) {
-        List<StatisticsVO> list = statisticsService.getSxStatistics(districtId);
+    public Result<List<StatisticsVO>> getSxStatistics(@PathVariable("districtId") String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getSxStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsVO>> getAgeStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsVO> list = statisticsService.getAgeStatistics(districtId);
+    public Result<List<StatisticsVO>> getAgeStatistics(@PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getAgeStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsVO>> getEduStatistics( @PathVariable("districtId") String districtId) {
-        List<StatisticsVO> list = statisticsService.getEduStatistics(districtId);
+    public Result<List<StatisticsVO>> getEduStatistics( @PathVariable("districtId") String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getEduStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsVO>> getcadresTypeStatistics(@PathVariable("districtId") String districtId) {
-        List<StatisticsVO> list = statisticsService.getcadresTypeStatistics(districtId);
+    public Result<List<StatisticsVO>> getcadresTypeStatistics(@PathVariable("districtId") String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getcadresTypeStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsVO>> getServingYearStatistics( @PathVariable("districtId")String districtId) {
-        List<StatisticsVO> list = statisticsService.getServingYearStatistics(districtId);
+    public Result<List<StatisticsVO>> getServingYearStatistics( @PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getServingYearStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsVO>> getRankStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsVO> list = statisticsService.getRankStatistics(districtId);
+    public Result<List<StatisticsVO>> getRankStatistics(@PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getRankStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsClassifyVO>> getSalaryStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsNotIntegerVO> list = statisticsService.getSalaryStatistics(districtId);
+    public Result<List<StatisticsClassifyVO>> getSalaryStatistics(@PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsNotIntegerVO> list = statisticsService.getSalaryStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@PathVariable("type")String type) {
-        return Result.of(statisticsService.getRewardsStatisticsByType(type));
+    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@PathVariable("type")String type,@PathVariable("cadresType") String cadresType) {
+        return Result.of(statisticsService.getRewardsStatisticsByType(type,cadresType));
     }
 
     @Override
-    public Result<List<StatisticsVO>> getPartyStandingStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsVO> list = statisticsService.getPartyStandingStatistics(districtId);
+    public Result<List<StatisticsVO>> getPartyStandingStatistics(@PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsVO> list = statisticsService.getPartyStandingStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;
     }
 
     @Override
-    public Result<List<StatisticsListVO>> getRewardsStatistics(@PathVariable("districtId")String districtId) {
-        List<StatisticsListVO> list = statisticsService.getRewardsStatistics(districtId);
+    public Result<List<StatisticsListVO>> getRewardsStatistics(@PathVariable("districtId")String districtId,@PathVariable("cadresType") String cadresType) {
+        List<StatisticsListVO> list = statisticsService.getRewardsStatistics(districtId,cadresType);
         Result r = new Result();
         r.setContent(list);
         return r;

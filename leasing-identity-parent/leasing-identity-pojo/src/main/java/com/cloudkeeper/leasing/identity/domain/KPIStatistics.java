@@ -65,5 +65,7 @@ public class KPIStatistics extends BaseEntity {
     @ApiModelProperty(value = "满意度", position = 10, required = true)
     @Column(length = 60)
     private String satisfactionDegree;
-
+    @ApiModelProperty(value = "总排名", position = 10, required = true)
+    @Column(length = 60)
+    private String totalRanking;
 }

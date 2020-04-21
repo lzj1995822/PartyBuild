@@ -93,23 +93,110 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
 
     @Override
     public Result<Boolean> init() {
-        String sql = "SELECT districtId,districtName FROM SYS_District WHERE districtType = 'Party' and districtLevel = '3' order by districtId desc";
+        //总排名
+        //String sql = "SELECT cast( row_number()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' GROUP BY districtName,districtId) t";
+
+        //村级实绩排名
+        String sql = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '02' GROUP BY districtName,districtId) t";
         List<DistrictsVo> sysDistricts = sysDistrictService.findAllBySql(DistrictsVo.class,sql);
         for (DistrictsVo d : sysDistricts){
-            KPIStatistics kpiStatistics = new KPIStatistics();
-            kpiStatistics.setDistrictId(d.getDistrictId());
-            kpiStatistics.setDistrictName(d.getDistrictName());
-            kpiStatistics.setAbilityJudgement(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setComprehensiveEvaluation(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setComprehensiveEvaluationABC(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setDvm(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setMonitoringIndex(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setRoutine(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setSatisfactionDegree(String.valueOf((int) (Math.random() * 100000) % 100));
-            kpiStatistics.setVillagePerformance(String.valueOf((int) (Math.random() * 100000) % 100));
-            kPIStatisticsService.save(kpiStatistics);
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setVillagePerformance(d.getVal().toString());
+            kPIStatisticsService.save(k);
         }
-        return null;
+
+        //村级实绩排名
+        String sql1 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '03' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts1 = sysDistrictService.findAllBySql(DistrictsVo.class,sql1);
+        for (DistrictsVo d : sysDistricts1){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setMonitoringIndex(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+
+        //日常工作村级实绩监测指标排名
+        String sql2 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND (quotaId = '01' or quotaId = '02'or quotaId = '03') GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts2 = sysDistrictService.findAllBySql(DistrictsVo.class,sql2);
+        for (DistrictsVo d : sysDistricts2){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setDvm(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+
+        //能力研判排名
+        String sql3 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0402' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts3 = sysDistrictService.findAllBySql(DistrictsVo.class,sql3);
+        for (DistrictsVo d : sysDistricts3){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setAbilityJudgement(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+        //日常工作
+        String sql4 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '01' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts4 = sysDistrictService.findAllBySql(DistrictsVo.class,sql4);
+        for (DistrictsVo d : sysDistricts4){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setRoutine(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+
+        //综合评议
+        String sql5 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '05' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts5 = sysDistrictService.findAllBySql(DistrictsVo.class,sql5);
+        for (DistrictsVo d : sysDistricts5){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setComprehensiveEvaluation(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+        //综合评议镇
+        String sql6 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0501' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts6 = sysDistrictService.findAllBySql(DistrictsVo.class,sql6);
+        for (DistrictsVo d : sysDistricts6){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setComprehensiveEvaluationABC(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+        //满意度
+        String sql7 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0503' GROUP BY districtName,districtId) t";
+        List<DistrictsVo> sysDistricts7 = sysDistrictService.findAllBySql(DistrictsVo.class,sql7);
+        for (DistrictsVo d : sysDistricts7){
+            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
+            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
+            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
+            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
+            KPIStatistics k = kPIStatisticsList.get(0);
+            k.setSatisfactionDegree(d.getVal().toString());
+            kPIStatisticsService.save(k);
+        }
+        return new Result<>();
     }
 
 }

@@ -249,7 +249,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
     @Override
     public Result<Object> getAllByVillageId(@PathVariable String districtId, @PathVariable String parentQuotaId) {
-        String sql = "SELECT v.id , quotaName,v.score FROM KPI_village_Quota v  JOIN KPI_Town_Quota t ON v.townQuotaId = t.id and v.districtId = '"+districtId+"' AND v.parentQuotaId = '"+parentQuotaId+"'";
+        String sql = "SELECT v.id , quotaName,v.score FROM KPI_village_Quota v  JOIN KPI_Town_Quota t ON v.townQuotaId = t.id and v.districtId = '"+districtId+"' AND v.parentQuotaId like '"+parentQuotaId+"%'";
         List<VillageQoutaVO> kpiTownQuotaVOS = sysDistrictService.findAllBySql(VillageQoutaVO.class,sql);
         return Result.of(kpiTownQuotaVOS);
     }
