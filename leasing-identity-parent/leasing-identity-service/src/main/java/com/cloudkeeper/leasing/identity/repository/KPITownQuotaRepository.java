@@ -4,6 +4,8 @@ import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 镇考核指标 repository
  * @author yujian
@@ -13,4 +15,6 @@ public interface KPITownQuotaRepository extends BaseRepository<KPITownQuota> {
 
 
     void deleteAllByDistrictIdAndParentQuotaId(String districtId,String parentQuotaId);
+
+    List<KPITownQuota> findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(String districtId, String parentQuotaId, String taskId);
 }

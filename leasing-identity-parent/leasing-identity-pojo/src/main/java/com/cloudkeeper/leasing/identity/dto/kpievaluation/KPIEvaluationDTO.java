@@ -43,18 +43,22 @@ public class KPIEvaluationDTO extends BaseEditDTO {
 
     /** 满意 */
     @ApiModelProperty(value = "满意", position = 10, required = true)
-    private int good;
+    private Integer good;
 
     /** 比较满意 */
     @ApiModelProperty(value = "比较满意", position = 10, required = true)
-    private int preferably;
+    private Integer preferably;
 
     /** 基本满意 */
     @ApiModelProperty(value = "基本满意", position = 10, required = true)
-    private int commonly;
+    private Integer commonly;
 
     /** 不满意 */
     @ApiModelProperty(value = "不满意", position = 10, required = true)
-    private int bad;
+    private Integer bad;
+
+    /** 村名 */
+    @ApiModelProperty(value = "村名", position = 10, required = true)
+    private String districtId;
 
 }

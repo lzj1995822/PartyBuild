@@ -66,13 +66,17 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public List<StatisticsVO> getEduStatistics(String districtId,String cadresType) {
-        String sql = "SELECT count(1) as val,'研究生' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and education = '研究生' and districtId like '"+districtId+"%'" +
+        String type = "education";
+        if (!StringUtils.isEmpty(cadresType) && "IN_SECRETARY".equals(cadresType)) {
+            type = "fullTimeEdu";
+        }
+        String sql = "SELECT count(1) as val,'研究生' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '研究生' and districtId like '"+districtId+"%'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'本科' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and education = '本科' and districtId like '"+districtId+"%'" +
+                "SELECT count(1) as val,'本科' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '本科' and districtId like '"+districtId+"%'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'大专' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and education = '大专' and districtId like '"+districtId+"%'" +
+                "SELECT count(1) as val,'大专' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '大专' and districtId like '"+districtId+"%'" +
                 "UNION all\n" +
-                "SELECT count(1) as val,'高中及以下' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and education = '高中及以下' and districtId like '"+districtId+"%'";
+                "SELECT count(1) as val,'高中及以下' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '高中及以下' and districtId like '"+districtId+"%'";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;
     }

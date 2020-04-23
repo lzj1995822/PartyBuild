@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 村主任考核指标 service
  * @author yujian
@@ -32,4 +34,8 @@ public class KpiQuotaServiceImpl extends BaseServiceImpl<KpiQuota> implements Kp
                 .withMatcher("quotaName", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public List<KpiQuota> findAllByParentQuotaIdOrderByQuotaIdAsc(String parentQuotaId) {
+        return kpiQuotaRepository.findAllByParentQuotaIdOrderByQuotaIdAsc(parentQuotaId);
+    }
 }

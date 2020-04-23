@@ -97,12 +97,11 @@ public class KPIEvaluationControllerImpl implements KPIEvaluationController {
     public Result<Object> addEvaluations(@RequestBody List<KPIEvaluationDTO> kPIEvaluationDTO) {
         int index = 1;
         for (KPIEvaluationDTO k : kPIEvaluationDTO){
-            kPIEvaluationService.deleteByTypeAndTaskId(k.getType(),k.getTaskId());
+            kPIEvaluationService.deleteByTypeAndTaskIdAndDistrictId(k.getType(),k.getTaskId(), k.getDistrictId());
         }
         for (KPIEvaluationDTO k : kPIEvaluationDTO){
             k.setIndexNum(String.valueOf(index));
             index++;
-            k.setId(null);
             KPIEvaluation kpiEvaluation = k.convert(KPIEvaluation.class);
             kPIEvaluationService.save(kpiEvaluation);
         }
