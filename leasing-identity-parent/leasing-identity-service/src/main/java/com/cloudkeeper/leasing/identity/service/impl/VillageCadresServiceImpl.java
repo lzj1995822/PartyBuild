@@ -88,7 +88,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 .withMatcher("postExperience", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("hasRetire", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("quasiAssessmentRank", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("cadresType", ExampleMatcher.GenericPropertyMatchers.startsWith());
+                .withMatcher("cadresType", ExampleMatcher.GenericPropertyMatchers.startsWith())
+                .withMatcher("fullTimeEdu", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override
@@ -463,19 +464,19 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 queryStatus = "1";
             }
         }
-        if (!StringUtils.isEmpty(districtId)) {
+        if (!StringUtils.isEmpty(districtId1)) {
             districtId = districtId1;
         }
         String sql = "SELECT cadres.id,cadres.name, cadres.parentDistrictName, info.modifiedAt FROM Information_Audit info" +
                 " JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '" +queryStatus + "'  JOIN " +
                 " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit  " +
                 " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
-                " where cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%'";
+                " where cadres.hasRetire = 0 and cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%'";
         String sqlCount = "SELECT cadres.parentDistrictName as districtName, count(1) as number FROM Information_Audit " +
                 " info JOIN village_cadres cadres ON info.villageId = cadres.id and info.status = '" +queryStatus + "'  JOIN " +
                 " (select audit.villageId, max(audit.modifiedAt) as modifiedAt  from Information_Audit audit " +
                 " GROUP BY audit.villageId ) a on info.villageId = a.villageId and info.modifiedAt = a.modifiedAt " +
-                "  where cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%' " +
+                "  where cadres.hasRetire = 0 and cadres.cadresType like '" + cadresType + "%' and cadres.districtId like '" + districtId + "%' " +
                 "group by cadres.parentDistrictName";
         List<CadresStatisticsVO> villageCadres = findAllBySql(CadresStatisticsVO.class,sql);
         List<CadresExamineVO> list = findAllBySql(CadresExamineVO.class,sqlCount);

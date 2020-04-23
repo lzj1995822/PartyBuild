@@ -37,7 +37,8 @@ public class KPIStatisticsServiceImpl extends BaseServiceImpl<KPIStatistics> imp
                 .withMatcher("routine", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("comprehensiveEvaluation", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("comprehensiveEvaluationABC", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("satisfactionDegree", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("satisfactionDegree", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 
 }

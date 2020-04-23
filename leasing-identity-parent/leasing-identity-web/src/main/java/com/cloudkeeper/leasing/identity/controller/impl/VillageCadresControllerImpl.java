@@ -318,6 +318,10 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             //通过学历
             detachedCriteria.add(Restrictions.eq("education",villageCadresSearchable.getEducation()));
         }
+        if(!StringUtils.isEmpty(villageCadresSearchable.getFullTimeEdu())){
+            //通过全日制学历
+            detachedCriteria.add(Restrictions.eq("fullTimeEdu",villageCadresSearchable.getFullTimeEdu()));
+        }
         if(!StringUtils.isEmpty(villageCadresSearchable.getSex())){
             //通过性别
             detachedCriteria.add(Restrictions.eq("sex",villageCadresSearchable.getSex()));

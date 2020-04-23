@@ -52,20 +52,24 @@ public class KPIEvaluation extends BaseEntity {
     /** 名称 */
     @ApiModelProperty(value = "满意", position = 10, required = true)
     @Column(length = 60)
-    private int good;
+    private Integer good;
 
     /** 名称 */
     @ApiModelProperty(value = "比较满意", position = 10, required = true)
     @Column(length = 60)
-    private int preferably;
+    private Integer preferably;
 
     /** 名称 */
     @ApiModelProperty(value = "基本满意", position = 10, required = true)
     @Column(length = 60)
-    private int commonly;
+    private Integer commonly;
 
     /** 名称 */
     @ApiModelProperty(value = "不满意", position = 10, required = true)
     @Column(length = 60)
-    private int bad;
+    private Integer bad;
+
+    /** 村名 */
+    @ApiModelProperty(value = "村名", position = 10, required = true)
+    private String districtId;
 }

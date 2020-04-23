@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,11 +10,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 村考核指标
@@ -60,6 +61,13 @@ public class KPIVillageQuota extends BaseEntity {
     @ApiModelProperty(value = "季度", position = 10, required = true)
     @Column(length = 60)
     private String quarter;
+
+    @OneToOne
+    @Fetch(value = FetchMode.JOIN)
+    @JoinColumn(name = "townQuotaId", updatable = false, insertable = false)
+    @JsonIgnore
+    private KPITownQuota kpiTownQuota;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {

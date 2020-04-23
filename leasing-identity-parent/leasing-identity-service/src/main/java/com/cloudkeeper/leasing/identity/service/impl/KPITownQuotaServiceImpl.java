@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 镇考核指标 service
  * @author yujian
@@ -39,5 +41,10 @@ public class KPITownQuotaServiceImpl extends BaseServiceImpl<KPITownQuota> imple
     @Override
     public void deleteAllByDistrictIdAndParentQuotaId(String districtId, String parentQuotaId) {
         kPITownQuotaRepository.deleteAllByDistrictIdAndParentQuotaId(districtId,parentQuotaId);
+    }
+
+    @Override
+    public List<KPITownQuota> findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(String districtId, String parentQuotaId, String taskId) {
+        return kPITownQuotaRepository.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId,parentQuotaId,taskId);
     }
 }

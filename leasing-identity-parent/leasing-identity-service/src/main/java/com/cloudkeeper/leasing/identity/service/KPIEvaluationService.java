@@ -9,6 +9,6 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  */
 public interface KPIEvaluationService extends BaseService<KPIEvaluation> {
 
-    void deleteByTypeAndTaskId(String type,String taskId);
+    void deleteByTypeAndTaskIdAndDistrictId(String type,String taskId, String districtId);
 
 }

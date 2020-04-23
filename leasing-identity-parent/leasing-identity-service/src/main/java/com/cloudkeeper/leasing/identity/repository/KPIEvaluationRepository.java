@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface KPIEvaluationRepository extends BaseRepository<KPIEvaluation> {
-    void  deleteByTypeAndTaskId(String type, String taskId);
+
+    void  deleteByTypeAndTaskIdAndDistrictId(String type, String taskId, String districtId);
+
 }

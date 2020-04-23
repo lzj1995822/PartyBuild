@@ -32,11 +32,13 @@ public class KPIEvaluationServiceImpl extends BaseServiceImpl<KPIEvaluation> imp
                 .withMatcher("type", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("indexNum", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("commentProject", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("commentContent", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("commentContent", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("districtId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override
-    public void deleteByTypeAndTaskId(String type, String taskId) {
-        kPIEvaluationRepository.deleteByTypeAndTaskId(type,taskId);
+    public void deleteByTypeAndTaskIdAndDistrictId(String type, String taskId, String districtId) {
+        kPIEvaluationRepository.deleteByTypeAndTaskIdAndDistrictId(type, taskId, districtId);
     }
 }

@@ -14,12 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -80,4 +84,15 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         return Result.of(kPIVillageQuotaVOPage);
     }
 
+    @GetMapping("/loadVillageAllQuota")
+    public Result<Map<String, Object>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("commonWork", kPIVillageQuotaService.buildCommonWorkData(districtId, taskId));
+        res.put("villageActual", kPIVillageQuotaService.buildCommonData(districtId, taskId, "02"));
+        res.put("judgement", kPIVillageQuotaService.buildCommonData(districtId, taskId, "04"));
+        res.put("watchQuota", kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId));
+        res.put("comment", kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId));
+        res.put("plusMinus", kPIVillageQuotaService.buildCommonData(districtId, taskId, "06"));
+        return Result.of(res);
+    }
 }
