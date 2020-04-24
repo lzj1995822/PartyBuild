@@ -259,4 +259,7 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
     private String partTimeSchool;
+
+    @ApiModelProperty(value = "村干部职务", position = 10, required = true)
+    private String cadresPost;
 }
