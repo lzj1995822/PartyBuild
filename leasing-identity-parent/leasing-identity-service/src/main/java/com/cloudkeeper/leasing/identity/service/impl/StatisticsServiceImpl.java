@@ -45,21 +45,35 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public List<StatisticsVO> getAgeStatistics(String districtId,String cadresType) {
+        String sql = "";
+        if("SECRETARY".equals(cadresType)){
+            sql =  "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  isNULL(cast(round(avg(DATEDIFF(DY, birth, GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'35-40周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 40 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'40-45周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 40 and DATEDIFF(YEAR,birth,GETDATE()) <= 45 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'45-50周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 45 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
+                    "\n";
+        }else {
+            sql =  "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  isNULL(cast(round(avg(DATEDIFF(DY, birth, GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'35-40周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
+                    "UNION all\n" +
+                    "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
+                    "\n";
+        }
 
-        String sql =  "select  cast(isNULL(MIN(FLOOR(DATEDIFF(DY, birth, GETDATE()) / 365.25)),0) as int) as val,'最低年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  isNULL(cast(round(avg(DATEDIFF(DY, birth, GETDATE()) / 365.25),0) as int),0) as val,'平均年龄' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  count(1) as val,'35-40周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 40 and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  count(1) as val,'40-45周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 40 and DATEDIFF(YEAR,birth,GETDATE()) <= 45 and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  count(1) as val,'45-50周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 45 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
-                "UNION all\n" +
-                "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
-                "\n";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;
     }
