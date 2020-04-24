@@ -71,25 +71,40 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
+    @Transactional
     public Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true)@RequestBody VillageCadresTermDTO villageCadresTermDTO) {
-        VillageCadres villageCadres = villageCadresService.findById(villageCadresTermDTO.getCadresId());
-        String msg;
-        if (villageCadres == null){
-            return Result.ofNotFound();
+        // 岗位关系端移除
+        String positionId = villageCadresTermDTO.getPositionId();
+        Optional<CadrePosition> optionalById = cadrePositionService.findOptionalById(positionId);
+        if (StringUtils.isEmpty(positionId) || !optionalById.isPresent()) {
+            return Result.of(404, "该职位不存在");
         }
-        villageCadres.setHasRetire("1");
+        CadrePosition currentPosition = optionalById.get();
+        currentPosition.setCadreId(null);
+        cadrePositionService.saveAndFlush(currentPosition);
+
+        // 人员退休标记
+        Optional<VillageCadres> optional = villageCadresService.findOptionalById(villageCadresTermDTO.getCadresId());
+        if (!optional.isPresent()) {
+            return Result.of(404, "该村干部不存在");
+        }
+        // 没有任何职位的时候标记退休
+        VillageCadres villageCadres = optional.get();
+        List<CadrePosition> cadrePosition = villageCadres.getCadrePosition();
+        if (cadrePosition.size() == 0) {
+            villageCadres.setHasRetire("1");
+        }
         villageCadresService.save(villageCadres);
-        msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
-        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
-        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(villageCadresTermDTO.getCadresId());
+
+        // 任期信息记录
+        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(villageCadres.getId());
         if (villageCadresTerm != null){
             villageCadresTerm.setDepartureTime(LocalDate.now());
             villageCadresTerm.setTermFile(villageCadresTermDTO.getTermFile());
             villageCadresTermService.save(villageCadresTerm);
         }
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadres.getDistrictId(), villageCadres.getCadresType());
-        cadrePosition.setCadreId(null);
-        cadrePositionService.save(cadrePosition);
+        String msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
+        sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
         return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
     }
 
@@ -100,7 +115,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     @Override
     public Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
-        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO);
+        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO.convert(VillageCadres.class));
         String msg;
         if (villageCadres == null) {
             msg = villageCadresService.actionLog("新增村干部失败，职位不存在","[村干部信息]", villageCadres.getName());
@@ -127,17 +142,6 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     @Override
     public Result<VillageCadresVO> addBaseInfo(@RequestBody @Validated VillageCadresDTO villageCadresDTO) {
         VillageCadres villageCadres = villageCadresService.saveBaseInfo(villageCadresDTO);
-
-        //添加村干部任期信息----开始
-        VillageCadresTerm villageCadresTerm = new VillageCadresTerm();
-        villageCadresTerm.setCadresId(villageCadres.getId());
-        villageCadresTerm.setCadresName(villageCadres.getName());
-        villageCadresTerm.setAppointmentTime(LocalDate.now());
-        villageCadresTerm.setDistrictId(villageCadres.getDistrictId());
-        villageCadresTerm.setCadresType(villageCadres.getCadresType());
-        villageCadresTerm.setDistrictName(villageCadres.getDistrictName());
-        villageCadresTermService.save(villageCadresTerm);
-        //添加村干部任期信息----结束
 
         String msg = villageCadresService.actionLog("新增","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
@@ -278,6 +282,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     /**
      * 获取某年最后一天日期
+     * @param year 年份
      * @param year 年份
      * @return Date
      */

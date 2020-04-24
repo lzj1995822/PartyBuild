@@ -8,6 +8,8 @@ import com.cloudkeeper.leasing.base.service.BaseService;
  * @author yujian
  */
 public interface VillageCadresTermService extends BaseService<VillageCadresTerm> {
+
     void deleteAllByCadresId(String cadresId);
+
     VillageCadresTerm findByCadresId(String cadresId);
 }

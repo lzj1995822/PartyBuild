@@ -203,4 +203,8 @@ public class VillageCadresSearchable extends BaseSearchable {
 
     @ApiModelProperty(value = "非全日制学校", position = 10, required = true)
     private String partTimeSchool;
+
+    @ApiModelProperty(value = "村干部职务", position = 10, required = true)
+    private String cadresPost;
+
 }
