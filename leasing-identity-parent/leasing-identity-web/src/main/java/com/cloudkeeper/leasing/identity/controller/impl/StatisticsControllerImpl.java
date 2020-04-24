@@ -131,4 +131,10 @@ public class StatisticsControllerImpl implements StatisticsController {
         map.put("file",statisticsService.export(exportDTO));
         return Result.of(map);
     }
+
+    @Override
+    public Result<Object> getAgeCountByDistrict(@PathVariable("cadresType")String cadresType) {
+        return Result.of(statisticsService.getAgeCountByDistrict(cadresType));
+
+    }
 }

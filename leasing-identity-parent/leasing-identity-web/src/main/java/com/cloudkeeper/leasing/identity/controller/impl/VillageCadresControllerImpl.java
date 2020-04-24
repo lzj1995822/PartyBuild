@@ -109,7 +109,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
-    public Result<VillageCadresVO> cadresDeparture(VillageCadresTermDTO villageCadresTermDTO) {
+    public Result<VillageCadresVO> cadresDeparture(@RequestBody VillageCadresTermDTO villageCadresTermDTO) {
         // 人员退休标记
         Optional<VillageCadres> optional = villageCadresService.findOptionalById(villageCadresTermDTO.getCadresId());
         if (!optional.isPresent()) {

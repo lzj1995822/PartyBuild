@@ -131,4 +131,8 @@ public interface StatisticsController {
     @ApiOperation(value = "导出", notes = "导出", position = 1)
     @PostMapping("/export")
     Result<Object> export(@RequestBody ExportDTO exportDTO);
+
+    @ApiOperation(value = "获取年龄段统计", notes = "获取年龄段统计", position = 1)
+    @GetMapping("/getAgeCountByDistrict/{cadresType}")
+    Result<Object> getAgeCountByDistrict(@PathVariable("cadresType") String cadresType);
 }

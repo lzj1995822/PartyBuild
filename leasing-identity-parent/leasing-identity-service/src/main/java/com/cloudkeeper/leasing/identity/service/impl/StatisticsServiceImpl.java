@@ -233,6 +233,21 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
+    public Object getAgeCountByDistrict(String cadresType) {
+        String sql = "SELECT a.districtName as name, cast((case  WHEN  a.val1 = 0 THEN 0 ELSE 1 END) as varchar) v1 " +
+                ",cast((case  WHEN  a.val1 = 0 THEN a.val2 ELSE a.val2/a.val1 END) as varchar) v2 " +
+                ",cast((case  WHEN  a.val1 = 0 THEN a.val3 ELSE a.val3/a.val1 END) as varchar) v3 " +
+                " FROM (select districtName" +
+                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) < 35 THEN 1 ELSE 0 END) as val1 " +
+                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) BETWEEN 35 AND 50 THEN 1 ELSE 0 END) as val2 " +
+                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) >50 THEN 1 ELSE 0 END) as val3 " +
+                "from village_cadres WHERE cadresType like '"+cadresType+"%' AND hasRetire = '0' and isDelete = '0'  GROUP BY districtName ) a";
+
+        List<StatisticsListVO> list = findAllBySql(StatisticsListVO.class,sql);
+        return list;
+    }
+
+    @Override
     public List<StatisticsVO> getAllStatistics() {
         String sql = "select parentDistrictName as 'name', \n" +
                 "(convert(varchar(10),sum(case  WHEN  sex = '男' THEN 1 ELSE 0 END))+ '_' + \n" +

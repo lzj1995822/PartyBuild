@@ -11,5 +11,8 @@ import java.util.List;
 public class StatisticsListVO {
     private String name;
 
+    private String v1;
+    private String v2;
+    private String V3;
     private List<StatisticsVO> statistics;
 }
