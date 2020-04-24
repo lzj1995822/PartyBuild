@@ -48,6 +48,10 @@ public class VillageCadresTermDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "人员类型", position = 10, required = true)
     private String cadresType;
+
     @ApiModelProperty(value = "离退休材料", position = 10, required = true)
     private String termFile;
+
+    @ApiModelProperty(value = "离任职位id", position = 10, required = true)
+    private String positionId;
 }

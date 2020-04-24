@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,8 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
     private final TrainingInfoService trainingInfoService;
 
     private final SysUserService sysUserService;
+
+    private final VillageCadresTermService villageCadresTermService;
 
     @Override
     protected BaseRepository<VillageCadres> getBaseRepository() {
@@ -130,10 +133,6 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         if (currentBaseInfoTask == null) {
             return null;
         }
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), cadresType);
-        if (cadrePosition == null) {
-            return null;
-        }
         VillageCadres convert = villageCadresDTO.convert(VillageCadres.class);
 
         SysDistrict byDistrictId = sysDistrictService.findByDistrictId(villageCadresDTO.getDistrictId());
@@ -154,9 +153,6 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setAuditor(convert.getParentDistrictName());
         informationAudit.setAuditAdvice("更新了该村书记信息！");
         informationAuditService.save(informationAudit);
-
-        cadrePosition.setCadreId(convert.getId());
-        cadrePositionService.save(cadrePosition);
 
         // 删除奖惩
         String cadresId = convert.getId();
@@ -225,12 +221,25 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         convert.setParentDistrictName(byDistrictId.getParentName());
         convert.setDistrictName(byDistrictId.getDistrictName());
         convert = super.save(convert);
-        CadrePosition cadrePosition = cadrePositionService.findByDistrictIdAndPost(villageCadresDTO.getDistrictId(), villageCadresDTO.getCadresType());
-        if (cadrePosition == null) {
+        Optional<CadrePosition> cadrePosition = cadrePositionService.findOptionalById(villageCadresDTO.getPositionId());
+        if (!cadrePosition.isPresent()) {
             return null;
         }
-        cadrePosition.setCadreId(convert.getId());
-        cadrePositionService.save(cadrePosition);
+        CadrePosition cadrePosition1 = cadrePosition.get();
+        cadrePosition1.setCadreId(convert.getId());
+        cadrePositionService.save(cadrePosition1);
+
+        //添加村干部任期信息----开始
+        VillageCadresTerm villageCadresTerm = new VillageCadresTerm();
+        villageCadresTerm.setCadresId(convert.getId());
+        villageCadresTerm.setCadresName(convert.getName());
+        villageCadresTerm.setAppointmentTime(LocalDate.now());
+        villageCadresTerm.setDistrictId(convert.getDistrictId());
+        villageCadresTerm.setCadresType(convert.getCadresType());
+        villageCadresTerm.setDistrictName(convert.getDistrictName());
+        villageCadresTermService.save(villageCadresTerm);
+        //添加村干部任期信息----结束
+
         return convert;
     }
 
