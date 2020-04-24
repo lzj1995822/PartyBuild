@@ -130,5 +130,8 @@ public interface KPITownQuotaController {
     @ApiOperation(value = "设置固定指标的分值", notes = "设置固定指标的分值", position = 6)
     @PostMapping("/updateStatisticsQoutaScore")
     Result<Object> updateStatisticsQoutaScore(@RequestBody List<VillageQoutaVO> kpiVillageQuotaDTOS);
+    @ApiOperation(value = "获取指标树形结构", notes = "设置固定指标的分值", position = 6)
+    @PostMapping("/getTownQoutaTree")
+    Result<Object> getTownQoutaTree(@RequestBody KPITownQuotaSearchable kPITownQuotaSearchable);
 
 }

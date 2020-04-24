@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
 @ApiModel(value = "村主任考核指标 VO", description = "村主任考核指标 VO")
 @Getter
 @Setter
-@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class KpiQuotaVO extends BaseVO {
@@ -35,4 +33,6 @@ public class KpiQuotaVO extends BaseVO {
 
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;
+    private String quotaYear;
+    private List<KpiQuotaVO> kpiQuotas;
 }

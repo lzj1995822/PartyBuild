@@ -33,10 +33,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 镇考核指标 controller
@@ -263,6 +261,65 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             kpiVillageQuotaService.save(kpiVillageQuota);
         }
         return Result.ofUpdateSuccess(kpiVillageQuotaDTOS);
+    }
+
+    @Override
+    public Result<Object> getTownQoutaTree(@RequestBody KPITownQuotaSearchable kPITownQuotaSearchable) {
+        if (!StringUtils.isNotBlank(kPITownQuotaSearchable.getQuotaYear())){
+            //年份为空获取最近一年的数据
+            String sql = "SELECT top 1 * FROM KPI_Quota ORDER BY CAST(quotaYear as INT) DESC";
+            KpiQuotaVO kpiQuota = kpiQuotaService.findBySql(KpiQuotaVO.class,sql);
+            kPITownQuotaSearchable.setQuotaYear(kpiQuota.getQuotaYear());
+        }
+
+        //获取三级，districtId = -1
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+        detachedCriteria.add(Restrictions.eq("districtId", "-1"));
+        detachedCriteria.add(Restrictions.eq("quotaYear",kPITownQuotaSearchable.getQuotaYear()));
+        List<KPITownQuota> list = kPITownQuotaService.findAll(detachedCriteria);
+        List<KPITownQuotaVO> listVOs = KPITownQuota.convert(list,KPITownQuotaVO.class);
+        Map<String,List<KPITownQuotaVO>> thirdMap = listVOs.stream().collect(Collectors.groupingBy(KPITownQuotaVO::getParentQuotaId));
+
+        //获取二级
+        DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KpiQuota.class);
+        detachedCriteria1.add(Restrictions.eq("quotaYear",kPITownQuotaSearchable.getQuotaYear()))
+                .add(Restrictions.ne("parentQuotaId","0"))
+                .addOrder(Order.asc("quotaId"));
+        List<KpiQuota> seconds = kpiQuotaService.findAll(detachedCriteria1);
+        List<KpiQuotaVO> secondVOS = KpiQuota.convert(seconds, KpiQuotaVO.class);
+
+        //组装二级，三级
+        Map<String,List<KpiQuotaVO>> secondMap = secondVOS.stream().collect(Collectors.toMap(
+                key -> key.getParentQuotaId(),
+                val -> {
+                    List<KpiQuotaVO> valList = new ArrayList();
+                    if (thirdMap.containsKey(val.getQuotaId())){
+                        val.setKpiTownQuotas(thirdMap.get(val.getQuotaId()));
+                    }
+                    valList.add(val);
+                    return valList;
+                },
+                (List<KpiQuotaVO> newValueList, List<KpiQuotaVO> oldValueList) -> {
+                    oldValueList.addAll(newValueList);
+                    return oldValueList;
+                }));
+
+
+        //获取一级
+        DetachedCriteria detachedCriteria2 = DetachedCriteria.forClass(KpiQuota.class);
+        detachedCriteria2.add(Restrictions.eq("quotaYear",kPITownQuotaSearchable.getQuotaYear()))
+                .add(Restrictions.eq("parentQuotaId","0"))
+                .addOrder(Order.asc("quotaId"));
+        List<KpiQuota> frists = kpiQuotaService.findAll(detachedCriteria2);
+        List<KpiQuotaVO> fristVOS = KpiQuota.convert(frists, KpiQuotaVO.class);
+
+        //组装一级，二级
+        for (KpiQuotaVO k : fristVOS){
+            if (secondMap.containsKey( k.getQuotaId())){
+                k.setKpiQuotas(secondMap.get( k.getQuotaId()));
+            }
+        }
+        return Result.of(fristVOS);
     }
 
 

@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 /**
  * 镇考核指标 查询DTO
  * @author yujian
@@ -52,5 +48,7 @@ public class KPITownQuotaSearchable extends BaseSearchable {
     /** 分值 */
     @ApiModelProperty(value = "分值", position = 10, required = true)
     private String score;
+
+    private String quotaYear;
 
 }

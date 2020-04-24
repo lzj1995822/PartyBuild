@@ -68,7 +68,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                     "UNION all\n" +
                     "select  count(1) as val,'35周岁以下' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) <= 35 and districtId like '"+districtId+"%'\n" +
                     "UNION all\n" +
-                    "select  count(1) as val,'35-40周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
+                    "select  count(1) as val,'35-50周岁' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 35 and DATEDIFF(YEAR,birth,GETDATE()) <= 50 and districtId like '"+districtId+"%'\n" +
                     "UNION all\n" +
                     "select  count(1) as val,'50周岁以上' as name from village_cadres where cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and DATEDIFF(YEAR,birth,GETDATE()) > 50 and districtId like '"+districtId+"%'\n" +
                     "\n";

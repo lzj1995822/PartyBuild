@@ -56,6 +56,10 @@ public class KPITownQuota extends BaseEntity {
     @Column(length = 60)
     private String quarter;
 
+    @ApiModelProperty(value = "季度", position = 10, required = true)
+    @Column(length = 60)
+    private String quotaYear;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "townQuotaId", insertable = false, updatable = false)
     @OrderBy("districtId desc")

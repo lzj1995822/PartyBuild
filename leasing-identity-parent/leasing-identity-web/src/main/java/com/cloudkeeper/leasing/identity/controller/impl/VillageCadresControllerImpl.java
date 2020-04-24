@@ -347,7 +347,11 @@ public class VillageCadresControllerImpl implements VillageCadresController {
             }else if (villageCadresSearchable.getAge().equals("35")){
                 sql = "DATEDIFF(YEAR,birth,GETDATE()) <= 35";
             }else {
-                sql = "DATEDIFF(YEAR,birth,GETDATE()) <= "+villageCadresSearchable.getAge() +"and DATEDIFF(YEAR,birth,GETDATE()) >"+(Integer.valueOf(villageCadresSearchable.getAge())-5);
+                if("SECRETARY".equals(villageCadresSearchable.getCadresType())){
+                    sql = "DATEDIFF(YEAR,birth,GETDATE()) <= "+villageCadresSearchable.getAge() +"and DATEDIFF(YEAR,birth,GETDATE()) >"+(Integer.valueOf(villageCadresSearchable.getAge())-5);
+                }else {
+                    sql = "DATEDIFF(YEAR,birth,GETDATE()) <= "+villageCadresSearchable.getAge() +"and DATEDIFF(YEAR,birth,GETDATE()) >"+(Integer.valueOf(villageCadresSearchable.getAge())-15);
+                }
             }
             detachedCriteria.add(Restrictions.sqlRestriction(sql));
         }

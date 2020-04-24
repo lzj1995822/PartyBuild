@@ -40,4 +40,8 @@ public class KpiQuota extends BaseEntity {
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     @Column(length = 60)
     private String quotaId;
+    @ApiModelProperty(value = "年度", position = 10, required = true)
+    @Column(length = 60)
+    private String quotaYear;
+
 }
