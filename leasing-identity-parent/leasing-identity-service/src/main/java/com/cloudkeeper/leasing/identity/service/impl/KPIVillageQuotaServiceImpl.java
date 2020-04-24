@@ -5,12 +5,13 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.DetectionIndex;
 import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
-import com.cloudkeeper.leasing.identity.domain.KpiQuota;
 import com.cloudkeeper.leasing.identity.dto.detectionindex.DetectionIndexSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationSearchable;
-import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaSearchable;
 import com.cloudkeeper.leasing.identity.repository.KPIVillageQuotaRepository;
-import com.cloudkeeper.leasing.identity.service.*;
+import com.cloudkeeper.leasing.identity.service.DetectionIndexService;
+import com.cloudkeeper.leasing.identity.service.KPIEvaluationService;
+import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
+import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
@@ -37,10 +38,10 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     /* 二级指标service */
     private final KPITownQuotaService kpiTownQuotaService;
 
-    //    监测指标
+    //监测指标
     private final DetectionIndexService detectionIndexService;
 
-    // 综合评价
+    //综合评价
     private final KPIEvaluationService kpiEvaluationService;
 
     @Override
