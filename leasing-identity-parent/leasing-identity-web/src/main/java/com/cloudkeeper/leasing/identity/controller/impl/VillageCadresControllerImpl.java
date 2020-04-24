@@ -115,7 +115,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     @Override
     public Result<VillageCadresVO> add(@ApiParam(value = "村干部管理 DTO", required = true) @RequestBody @Validated VillageCadresDTO villageCadresDTO) {
-        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO);
+        VillageCadres villageCadres = villageCadresService.save(villageCadresDTO.convert(VillageCadres.class));
         String msg;
         if (villageCadres == null) {
             msg = villageCadresService.actionLog("新增村干部失败，职位不存在","[村干部信息]", villageCadres.getName());
