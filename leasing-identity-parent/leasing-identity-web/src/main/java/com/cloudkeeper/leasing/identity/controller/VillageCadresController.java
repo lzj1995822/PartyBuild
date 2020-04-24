@@ -47,7 +47,14 @@ public interface VillageCadresController {
     @ApiOperation(value = "离任", notes = "离任", position = 1)
     @PostMapping("/departure")
     Result<VillageCadresVO> departure(@ApiParam(value = "村干部管理id", required = true) @RequestBody VillageCadresTermDTO villageCadresTermDTO);
-
+    /**
+     * 查询
+     * @param id 村干部管理id
+     * @return 村干部管理 VO
+     */
+    @ApiOperation(value = "离任", notes = "离任", position = 1)
+    @PostMapping("/cadresDeparture")
+    Result<VillageCadresVO> cadresDeparture(@ApiParam(value = "村干部管理id", required = true) @RequestBody VillageCadresTermDTO villageCadresTermDTO);
     @ApiOperation(value = "获取带审核数据", notes = "离任", position = 1)
     @GetMapping("/getExamines")
     Result<List<CadresExamineVO>> getExamines(String cadresType, String districtId);

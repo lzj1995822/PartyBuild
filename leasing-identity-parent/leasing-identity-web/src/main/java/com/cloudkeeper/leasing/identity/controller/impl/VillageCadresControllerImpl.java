@@ -109,6 +109,20 @@ public class VillageCadresControllerImpl implements VillageCadresController {
     }
 
     @Override
+    public Result<VillageCadresVO> cadresDeparture(VillageCadresTermDTO villageCadresTermDTO) {
+        // 人员退休标记
+        Optional<VillageCadres> optional = villageCadresService.findOptionalById(villageCadresTermDTO.getCadresId());
+        if (!optional.isPresent()) {
+            return Result.of(404, "该村干部不存在");
+        }
+        // 没有任何职位的时候标记退休
+        VillageCadres villageCadres = optional.get();
+        villageCadres.setHasRetire("1");
+        villageCadresService.save(villageCadres);
+        return Result.ofUpdateSuccess(villageCadres.convert(VillageCadresVO.class));
+    }
+
+    @Override
     public Result<List<CadresExamineVO>> getExamines(String cadresType, String districtId) {
         return Result.of(villageCadresService.getExamines(cadresType, districtId));
     }
