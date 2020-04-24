@@ -27,7 +27,7 @@ public interface StatisticsService {
     List<StatisticsVO> getPartyStandingStatistics(String districtId,String cadresType);
 
     List<StatisticsListVO> getRewardsStatistics(String districtId,String cadresType);
-
+    Object getAgeCountByDistrict(String cadresType);
     List<StatisticsVO> getAllStatistics();
 
     Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
