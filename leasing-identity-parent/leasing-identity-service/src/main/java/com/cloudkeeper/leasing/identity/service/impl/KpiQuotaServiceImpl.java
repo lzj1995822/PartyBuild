@@ -31,7 +31,8 @@ public class KpiQuotaServiceImpl extends BaseServiceImpl<KpiQuota> implements Kp
     @Override
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
-                .withMatcher("quotaName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("quotaName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("quotaLevel", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override

@@ -8,10 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * 村主任考核指标
@@ -29,19 +30,25 @@ public class KpiQuota extends BaseEntity {
 
     /** 名称 */
     @ApiModelProperty(value = "指标名称", position = 10, required = true)
-    @Column(length = 60)
     private String quotaName;
 
     /** 名称 */
     @ApiModelProperty(value = "父指标ID", position = 10, required = true)
-    @Column(length = 60)
     private String parentQuotaId;
 
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
-    @Column(length = 60)
     private String quotaId;
+
     @ApiModelProperty(value = "年度", position = 10, required = true)
-    @Column(length = 60)
     private String quotaYear;
+
+    @ApiModelProperty(value = "指标层级", position = 10, required = true)
+    private String quotaLevel;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentQuotaId", referencedColumnName = "quotaId", insertable = false, updatable = false)
+    @OrderBy("quotaId asc")
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<KpiQuota> kpiQuotas;
 
 }

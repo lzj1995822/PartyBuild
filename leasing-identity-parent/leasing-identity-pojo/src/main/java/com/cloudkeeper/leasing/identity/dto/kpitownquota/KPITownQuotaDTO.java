@@ -51,7 +51,9 @@ public class KPITownQuotaDTO extends BaseEditDTO {
     /** 分值 */
     @ApiModelProperty(value = "分值", position = 10, required = true)
     private String score;
+
     private String quarter;
+
     List<KPIVillageQuotaDTO> kpiVillageQuotas;
 
 }

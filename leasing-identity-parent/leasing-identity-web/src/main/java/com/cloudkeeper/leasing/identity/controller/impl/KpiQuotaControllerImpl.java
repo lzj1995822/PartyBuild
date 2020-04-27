@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -78,6 +80,19 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
         Page<KpiQuota> kpiQuotaPage = kpiQuotaService.findAll(kpiQuotaSearchable, pageable);
         Page<KpiQuotaVO> kpiQuotaVOPage = KpiQuota.convert(kpiQuotaPage, KpiQuotaVO.class);
         return Result.of(kpiQuotaVOPage);
+    }
+
+    @PostMapping("/blukSave")
+    @Transactional
+    public Result<List<KpiQuotaVO>> blukSave(@RequestBody List<KpiQuotaDTO> kpiQuotaDTOS) {
+        for (KpiQuotaDTO item :kpiQuotaDTOS) {
+            kpiQuotaService.save(item.convert(KpiQuota.class));
+        }
+        KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
+        kpiQuotaSearchable.setQuotaYear(kpiQuotaDTOS.get(0).getQuotaYear());
+        List<KpiQuota> all = kpiQuotaService.findAll(kpiQuotaSearchable);
+        List<KpiQuotaVO> convert = KpiQuota.convert(all, KpiQuotaVO.class);
+        return Result.of(convert);
     }
 
 
