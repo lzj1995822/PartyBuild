@@ -30,4 +30,5 @@ public class KpiQuotaSearchable extends BaseSearchable {
     private String parentQuotaId;
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;
+    private String quotaYear;
 }
