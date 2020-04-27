@@ -35,6 +35,12 @@ public class KpiQuotaDTO extends BaseEditDTO {
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;
 
+    @ApiModelProperty(value = "指标年度", position = 10, required = true)
+    private String quotaYear;
+
+    @ApiModelProperty(value = "指标层级", position = 10, required = true)
+    private String quotaLevel;
+
     private List<KPITownQuotaDTO> kpiTownQuotas;
 
 }

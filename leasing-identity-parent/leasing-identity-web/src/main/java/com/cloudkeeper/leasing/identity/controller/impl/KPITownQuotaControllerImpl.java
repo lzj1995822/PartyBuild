@@ -29,9 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -322,5 +320,28 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         return Result.of(fristVOS);
     }
 
+    @PostMapping("/townAndVillageQuota")
+    @Transactional
+    public Result<KPITownQuotaVO> allOneTownQuotaAndVillageQuota(@RequestBody KPITownQuotaDTO kpiTownQuotaDTO) {
+        List<KPIVillageQuotaDTO> kpiVillageQuotas = kpiTownQuotaDTO.getKpiVillageQuotas();
+        KPITownQuota convert = kpiTownQuotaDTO.convert(KPITownQuota.class);
+        convert.setKpiVillageQuotas(null);
+        convert = kPITownQuotaService.save(convert);
+        kpiVillageQuotaService.deleteAllByTownQuotaId(convert.getId());
+        for (KPIVillageQuotaDTO item : kpiVillageQuotas) {
+            item.setId(null);
+            item.setTownQuotaId(convert.getId());
+            kpiVillageQuotaService.save(item.convert(KPIVillageQuota.class));
+        }
+        return Result.of(convert.convert(KPITownQuotaVO.class));
+    }
+
+    @DeleteMapping("/townAndVillageQuota/{id}")
+    @Transactional
+    public Result<KPITownQuotaVO> allOneTownQuotaAndVillageQuota(@PathVariable String id) {
+        kpiVillageQuotaService.deleteAllByTownQuotaId(id);
+        kPITownQuotaService.deleteById(id);
+        return Result.of(200, "删除成功！");
+    }
 
 }
