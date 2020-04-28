@@ -272,13 +272,13 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             kPITownQuotaSearchable.setQuotaYear(kpiQuota.getQuotaYear());
         }
 
-        //获取三级，districtId = -1
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
-        detachedCriteria.add(Restrictions.eq("districtId", "-1"));
-        detachedCriteria.add(Restrictions.eq("quotaYear",kPITownQuotaSearchable.getQuotaYear()));
-        List<KPITownQuota> list = kPITownQuotaService.findAll(detachedCriteria);
-        List<KPITownQuotaVO> listVOs = KPITownQuota.convert(list,KPITownQuotaVO.class);
-        Map<String,List<KPITownQuotaVO>> thirdMap = listVOs.stream().collect(Collectors.groupingBy(KPITownQuotaVO::getParentQuotaId));
+//        //获取三级，districtId = -1
+//        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+//        detachedCriteria.add(Restrictions.eq("districtId", "-1"));
+//        detachedCriteria.add(Restrictions.eq("quotaYear",kPITownQuotaSearchable.getQuotaYear()));
+//        List<KPITownQuota> list = kPITownQuotaService.findAll(detachedCriteria);
+//        List<KPITownQuotaVO> listVOs = KPITownQuota.convert(list,KPITownQuotaVO.class);
+//        Map<String,List<KPITownQuotaVO>> thirdMap = listVOs.stream().collect(Collectors.groupingBy(KPITownQuotaVO::getParentQuotaId));
 
         //获取二级
         DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KpiQuota.class);
@@ -293,9 +293,9 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
                 key -> key.getParentQuotaId(),
                 val -> {
                     List<KpiQuotaVO> valList = new ArrayList();
-                    if (thirdMap.containsKey(val.getQuotaId())){
-                        val.setKpiTownQuotas(thirdMap.get(val.getQuotaId()));
-                    }
+//                    if (thirdMap.containsKey(val.getQuotaId())){
+//                        val.setKpiTownQuotas(thirdMap.get(val.getQuotaId()));
+//                    }
                     valList.add(val);
                     return valList;
                 },
