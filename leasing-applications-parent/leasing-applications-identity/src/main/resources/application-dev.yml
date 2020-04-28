@@ -120,7 +120,7 @@ fdfs:
   thumbImage:             #缩略图生成参数
     width: 150
     height: 150
-  trackerList: 172.16.0.199:22122
+  trackerList: 172.22.116.2:22122
   pool:
     max-total: -1
     max-wait-millis: 5000
