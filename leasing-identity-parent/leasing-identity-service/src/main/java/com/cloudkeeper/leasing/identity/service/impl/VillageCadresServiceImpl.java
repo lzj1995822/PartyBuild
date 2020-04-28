@@ -124,9 +124,11 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
             return null;
         }
         CadreTask currentBaseInfoTask = new CadreTask();
+        String msg = "更新了该村书记信息！";
         if (cadresType.contains("IN_SECRETARY")) {
             // 检查是否有当前任务
             currentBaseInfoTask = cadreTaskService.getSecretaryTask();
+            msg = "更新了该村干部信息！";
         } else {
             currentBaseInfoTask = cadreTaskService.getCurrentBaseInfoTask();
         }
@@ -151,7 +153,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         informationAudit.setTaskId(currentBaseInfoTask.getId());
         informationAudit.setProcessType(currentBaseInfoTask.getType());
         informationAudit.setAuditor(convert.getParentDistrictName());
-        informationAudit.setAuditAdvice("更新了该村书记信息！");
+        informationAudit.setAuditAdvice(msg);
         informationAuditService.save(informationAudit);
 
         // 删除奖惩

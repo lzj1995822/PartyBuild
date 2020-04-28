@@ -105,7 +105,7 @@ public class SysDistrict extends BaseEntity {
      */
     @ApiModelProperty(value = "审核下属子组织", position = 10, required = true)
     @OneToMany(mappedBy = "sysDistrict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @OrderBy("districtId asc")
+    @OrderBy("districtId desc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -116,7 +116,7 @@ public class SysDistrict extends BaseEntity {
      */
     @ApiModelProperty(value = "组织架构子组织", position = 10, required = true)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @OrderBy("districtId asc")
+    @OrderBy("districtId desc")
     @Fetch(value = FetchMode.SUBSELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
     @NotFound(action = NotFoundAction.IGNORE)

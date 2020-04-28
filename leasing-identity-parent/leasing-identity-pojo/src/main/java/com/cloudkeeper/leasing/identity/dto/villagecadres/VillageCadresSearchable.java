@@ -207,4 +207,7 @@ public class VillageCadresSearchable extends BaseSearchable {
     @ApiModelProperty(value = "村干部职务", position = 10, required = true)
     private String cadresPost;
 
+    @ApiModelProperty(value = "政治面貌", position = 10, required = true)
+    private String politicalOutlook;
+
 }
