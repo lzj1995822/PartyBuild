@@ -45,6 +45,24 @@ public class KpiQuota extends BaseEntity {
     @ApiModelProperty(value = "指标层级", position = 10, required = true)
     private String quotaLevel;
 
+    @ApiModelProperty(value = "指标分值", position = 10, required = true)
+    private String quotaScore;
+
+    @ApiModelProperty(value = "指标是否需要设置权重", position = 10, required = true)
+    private String isSetWeight;
+
+    @ApiModelProperty(value = "指标制定部门", position = 10, required = true)
+    private String quotaMakeDepartId;
+
+    @ApiModelProperty(value = "指标打分部门", position = 10, required = true)
+    private String quotaScoringDepartId;
+
+    @ApiModelProperty(value = "指标积分方法", position = 10, required = true)
+    private String quotaIntegrationMethod;
+
+    @ApiModelProperty(value = "指标内容", position = 10, required = true)
+    private String quotaContent;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentQuotaId", referencedColumnName = "quotaId", insertable = false, updatable = false)
     @OrderBy("quotaId asc")

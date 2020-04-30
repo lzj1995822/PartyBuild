@@ -25,12 +25,6 @@ public class KpiQuotaVO extends BaseVO {
     @ApiModelProperty(value = "指标名称", position = 10, required = true)
     private String quotaName;
 
-    /** 父指标ID */
-    @ApiModelProperty(value = "父指标ID", position = 10, required = true)
-    private String parentQuotaId;
-    @ApiModelProperty(value = "子类", position = 19)
-    private List<KPITownQuotaVO> kpiTownQuotas;
-
     @ApiModelProperty(value = "指标标识", position = 10, required = true)
     private String quotaId;
 
@@ -40,5 +34,36 @@ public class KpiQuotaVO extends BaseVO {
     @ApiModelProperty(value = "指标层级", position = 10, required = true)
     private String quotaLevel;
 
+    @ApiModelProperty(value = "指标分值", position = 10, required = true)
+    private String quotaScore;
+
+    @ApiModelProperty(value = "指标是否需要设置权重", position = 10, required = true)
+    private String isSetWeight;
+
+    @ApiModelProperty(value = "指标制定部门", position = 10, required = true)
+    private String quotaMakeDepartId;
+
+    @ApiModelProperty(value = "指标打分部门", position = 10, required = true)
+    private String quotaScoringDepartId;
+
+    @ApiModelProperty(value = "指标积分方法", position = 10, required = true)
+    private String quotaIntegrationMethod;
+
+    @ApiModelProperty(value = "指标制定部门", position = 10, required = true)
+    private String quotaMakeDepartName;
+
+    @ApiModelProperty(value = "指标打分部门", position = 10, required = true)
+    private String quotaScoringDepartName;
+
+    @ApiModelProperty(value = "指标内容", position = 10, required = true)
+    private String quotaContent;
+
     private List<KpiQuotaVO> kpiQuotas;
+
+    /** 父指标ID */
+    @ApiModelProperty(value = "父指标ID", position = 10, required = true)
+    private String parentQuotaId;
+    @ApiModelProperty(value = "子类", position = 19)
+    private List<KPITownQuotaVO> kpiTownQuotas;
+
 }
