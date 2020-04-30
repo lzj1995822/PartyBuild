@@ -235,7 +235,16 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public Object getAgeCountByDistrict(String cadresType,String districtId) {
-        String sql = "SELECT a.districtName as name,a.parentDistrictName as parentDistrictName, cast((case  WHEN  a.val1 = 0 THEN 0 ELSE 1 END) as varchar) v1 ,cast((case  WHEN  a.val1 = 0 THEN a.val2 ELSE a.val2/a.val1 END) as varchar) v2 ,cast((case  WHEN  a.val1 = 0 THEN a.val3 ELSE a.val3/a.val1 END) as varchar) v3  FROM (select districtName,parentDistrictName,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) < 35 THEN 1 ELSE 0 END) as val1 ,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) BETWEEN 35 AND 50 THEN 1 ELSE 0 END) as val2 ,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) >50 THEN 1 ELSE 0 END) as val3 from village_cadres WHERE cadresType like '"+cadresType+"%' AND hasRetire = '0' and isDelete = '0'  AND districtName IS NOT NULL  GROUP BY districtName,parentDistrictName ) a";
+        String sql = "SELECT a.districtName as name,a.parentDistrictName as parentDistrictName, \n" +
+                "cast((case  WHEN  a.val1 = 0 THEN 0 ELSE 1 END) as varchar) v1 ,\n" +
+                "cast((case  WHEN  a.val1 = 0 THEN a.val2 ELSE ROUND(a.val2/a.val1, 1) END) as varchar) v2 ,\n" +
+                "cast((case  WHEN  a.val1 = 0 THEN a.val3 ELSE ROUND(a.val3/a.val1, 1) END) as varchar) v3  \n" +
+                "FROM \n" +
+                "(select districtName,parentDistrictName,\n" +
+                "cast(sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) < 35 THEN 1 ELSE 0 END) as FLOAT) as val1 ,\n" +
+                "cast(sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) BETWEEN 35 AND 50 THEN 1 ELSE 0 END)  as FLOAT) as val2 ,\n" +
+                "cast(sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) >50 THEN 1 ELSE 0 END)  as FLOAT) as val3 \n" +
+                "from village_cadres WHERE cadresType like '"+cadresType+"%' AND hasRetire = '0' and isDelete = '0'  AND districtName IS NOT NULL  GROUP BY districtName,parentDistrictName ) a";
 
         String districtSQL = "SELECT districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party' AND districtName NOT LIKE '%广电%' and districtId like '"+districtId +"%'";
         List<StatisticsListVO> dis = findAllBySql(StatisticsListVO.class,districtSQL);
