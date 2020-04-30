@@ -232,8 +232,8 @@ public class ExaScoreServiceImpl extends BaseServiceImpl<ExaScore> implements Ex
             querySql = " sd.districtId like '" + search + "%' ";
         }
         String sql = "Select temp2.*, sd.districtName from (\n" +
-                "SELECT  LEFT(temp.districtId, 4) as districtId, sum(temp.score) as total, CONVERT(DECIMAL(18,2),AVG(cast(temp.score as FLOAT))) as score, CONVERT(DECIMAL(18,2),sum(temp.finish)/cast(sum(temp.total) as FLOAT)) as finishRatio FROM (\n" +
-                "SELECT sd.districtId, sum(ISNULL(es.score, 0)) as score, COUNT(CASE WHEN pao.status = 2 THEN 1 ELSE NULL END) as finish, COUNT(1) as total FROM PAR_ActivityObject pao LEFT JOIN PAR_Activity pa on pao.activityId = pa.id \n" +
+                "SELECT  LEFT(temp.districtId, 4) as districtId, sum(temp.score) as total, CONVERT(DECIMAL(18,2), cast(temp.score/temp.noRetireBranch as FLOAT))  as score, CONVERT(DECIMAL(18,2),sum(temp.finish)/cast(sum(temp.total) as FLOAT)) as finishRatio FROM (\n" +
+                "SELECT sd.districtId, sum(ISNULL(case when sd.isRetiredBranch != '1' then es.score else 0 end, 0)) as score, COUNT(CASE WHEN pao.status = 2 THEN 1 ELSE NULL END) as finish, COUNT(1) as total, COUNT(case when sd.isRetiredBranch != '1' then 1 else 0 end) as noRetireBranch FROM PAR_ActivityObject pao LEFT JOIN PAR_Activity pa on pao.activityId = pa.id \n" +
                 "left JOIN SYS_District sd on pao.organizationId = sd.districtId\n" +
                 "LEFT JOIN EXA_Score es on pao.activityId = es.activityId and es.organizationId = sd.id\n" +
                 "WHERE LEFT(pa.[month], 4) = '" + year + "' and sd.districtId is not null and " + querySql +

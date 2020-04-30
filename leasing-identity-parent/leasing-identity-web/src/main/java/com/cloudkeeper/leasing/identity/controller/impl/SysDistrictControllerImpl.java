@@ -9,14 +9,19 @@ import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.service.SysLogService;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictTreeVO;
 import com.cloudkeeper.leasing.identity.vo.SysDistrictVO;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -119,5 +124,19 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     @Override
     public Result<List<SysDistrictTreeVO>> officeTree() {
         return Result.of(sysDistrictService.findOfficeDistrictTree());
+    }
+
+    @GetMapping("/quotaDepartments")
+    @ApiOperation(value = "指标制定下拉项", notes = "指标制定下拉项", position = 2)
+    public Result<List<Map<String, String>>> quotaDepartments() {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+        detachedCriteria.add(Restrictions.or(Restrictions.and(Restrictions.eq("districtType", "Party"), Restrictions.eq("districtLevel", 2)),
+                Restrictions.eq("districtType", "Depart")));
+        List<SysDistrict> all = sysDistrictService.findAll(detachedCriteria);
+        List<Map<String, String>> res = new LinkedList<>();
+        for (SysDistrict item:all) {
+            res.add(new HashMap<String, String>(){{put(item.getDistrictId(), item.getDistrictName());}});
+        }
+        return Result.of(res);
     }
 }
