@@ -133,8 +133,8 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<Object> getAgeCountByDistrict(@PathVariable("cadresType")String cadresType) {
-        return Result.of(statisticsService.getAgeCountByDistrict(cadresType));
+    public Result<Object> getAgeCountByDistrict(@PathVariable("cadresType")String cadresType,@PathVariable("districtId") String districtId) {
+        return Result.of(statisticsService.getAgeCountByDistrict(cadresType,districtId));
 
     }
 }

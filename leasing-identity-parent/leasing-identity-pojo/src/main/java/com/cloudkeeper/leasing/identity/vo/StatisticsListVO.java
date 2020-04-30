@@ -10,9 +10,5 @@ import java.util.List;
 @Setter
 public class StatisticsListVO {
     private String name;
-
-    private String v1;
-    private String v2;
-    private String V3;
     private List<StatisticsVO> statistics;
 }

@@ -133,6 +133,6 @@ public interface StatisticsController {
     Result<Object> export(@RequestBody ExportDTO exportDTO);
 
     @ApiOperation(value = "获取年龄段统计", notes = "获取年龄段统计", position = 1)
-    @GetMapping("/getAgeCountByDistrict/{cadresType}")
-    Result<Object> getAgeCountByDistrict(@PathVariable("cadresType") String cadresType);
+    @GetMapping("/getAgeCountByDistrict/{cadresType}/{districtId}")
+    Result<Object> getAgeCountByDistrict(@PathVariable("cadresType") String cadresType,@PathVariable("districtId") String districtId);
 }

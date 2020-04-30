@@ -12,4 +12,8 @@ public class StatisticsVO {
     private String name;
     private Integer val;
     private String value;
+    private String v1;
+    private String v2;
+    private String V3;
+    private String parentDistrictName;
 }

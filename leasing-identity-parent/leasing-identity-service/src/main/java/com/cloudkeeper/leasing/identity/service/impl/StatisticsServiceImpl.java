@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -233,18 +234,20 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public Object getAgeCountByDistrict(String cadresType) {
-        String sql = "SELECT a.districtName as name, cast((case  WHEN  a.val1 = 0 THEN 0 ELSE 1 END) as varchar) v1 " +
-                ",cast((case  WHEN  a.val1 = 0 THEN a.val2 ELSE a.val2/a.val1 END) as varchar) v2 " +
-                ",cast((case  WHEN  a.val1 = 0 THEN a.val3 ELSE a.val3/a.val1 END) as varchar) v3 " +
-                " FROM (select districtName" +
-                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) < 35 THEN 1 ELSE 0 END) as val1 " +
-                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) BETWEEN 35 AND 50 THEN 1 ELSE 0 END) as val2 " +
-                ",sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) >50 THEN 1 ELSE 0 END) as val3 " +
-                "from village_cadres WHERE cadresType like '"+cadresType+"%' AND hasRetire = '0' and isDelete = '0'  GROUP BY districtName ) a";
+    public Object getAgeCountByDistrict(String cadresType,String districtId) {
+        String sql = "SELECT a.districtName as name,a.parentDistrictName as parentDistrictName, cast((case  WHEN  a.val1 = 0 THEN 0 ELSE 1 END) as varchar) v1 ,cast((case  WHEN  a.val1 = 0 THEN a.val2 ELSE a.val2/a.val1 END) as varchar) v2 ,cast((case  WHEN  a.val1 = 0 THEN a.val3 ELSE a.val3/a.val1 END) as varchar) v3  FROM (select districtName,parentDistrictName,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) < 35 THEN 1 ELSE 0 END) as val1 ,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) BETWEEN 35 AND 50 THEN 1 ELSE 0 END) as val2 ,sum(case  WHEN  DATEDIFF(YEAR,birth,GETDATE()) >50 THEN 1 ELSE 0 END) as val3 from village_cadres WHERE cadresType like '"+cadresType+"%' AND hasRetire = '0' and isDelete = '0'  AND districtName IS NOT NULL  GROUP BY districtName,parentDistrictName ) a";
 
-        List<StatisticsListVO> list = findAllBySql(StatisticsListVO.class,sql);
-        return list;
+        String districtSQL = "SELECT districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party' AND districtName NOT LIKE '%广电%' and districtId like '"+districtId +"%'";
+        List<StatisticsListVO> dis = findAllBySql(StatisticsListVO.class,districtSQL);
+        List<StatisticsVO> list = findAllBySql(StatisticsVO.class,sql);
+
+        Map<String,List<StatisticsVO>> map = list.stream().collect(Collectors.groupingBy(StatisticsVO::getParentDistrictName));
+        for (StatisticsListVO s : dis){
+            if (map.containsKey(s.getName())){
+                s.setStatistics(map.get(s.getName()));
+            }
+        }
+        return dis;
     }
 
     @Override
