@@ -212,4 +212,9 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     public Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName) {
         return sysDistrictRepository.countAllByDistrictIdStartingWithAndDistrictNameContains(districtId, districtName);
     }
+
+    @Override
+    public List<SysDistrict> findAllTowns() {
+        return sysDistrictRepository.findAllByDistrictTypeAndDistrictLevel("Party", 2);
+    }
 }

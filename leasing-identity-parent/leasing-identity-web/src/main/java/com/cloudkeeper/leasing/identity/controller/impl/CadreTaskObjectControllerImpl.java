@@ -15,10 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +86,16 @@ public class CadreTaskObjectControllerImpl implements CadreTaskObjectController 
     public Result<CadreTaskObjectVO> progressNext(@ApiParam(value = "走任务流程", required = true) String taskObjectId, String isSuccess, String auditor, String auditAdvice) {
         CadreTaskObject submit = cadreTaskObjectService.submit(taskObjectId, isSuccess, auditor, auditAdvice);
         return Result.of(submit.convert(CadreTaskObjectVO.class));
+    }
+
+    @GetMapping("/quota/confirm")
+    public Result<Boolean> quotaConfirm(@Nonnull String taskId) {
+        List<CadreTaskObject> allByTaskId = cadreTaskObjectService.findAllByTaskId(taskId);
+        for (CadreTaskObject item : allByTaskId) {
+            item.setStatus("3");
+            cadreTaskObjectService.save(item);
+        }
+        return Result.of(Boolean.TRUE);
     }
 
 }

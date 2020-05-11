@@ -91,6 +91,8 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                 "UNION all\n" +
                 "SELECT count(1) as val,'大专' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '大专' and districtId like '"+districtId+"%'" +
                 "UNION all\n" +
+                "SELECT count(1) as val,'中专' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '中专' and districtId like '"+districtId+"%'" +
+                "UNION all\n" +
                 "SELECT count(1) as val,'高中及以下' as name from village_cadres WHERE  cadresType like '"+cadresType+"%' and isDelete = '0' and hasRetire = '0'  and " + type + " = '高中及以下' and districtId like '"+districtId+"%'";
         List<StatisticsVO> list = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
         return list;

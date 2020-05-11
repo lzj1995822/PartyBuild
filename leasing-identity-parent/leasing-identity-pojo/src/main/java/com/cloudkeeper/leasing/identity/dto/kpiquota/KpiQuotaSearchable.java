@@ -62,4 +62,6 @@ public class KpiQuotaSearchable extends BaseSearchable {
     @ApiModelProperty(value = "指标内容", position = 10, required = true)
     private String quotaContent;
 
+    @ApiModelProperty(value = "多次执行还是一次执行", position = 10, required = true)
+    private String onceOrMore;
 }

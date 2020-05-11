@@ -47,4 +47,19 @@ public class KPITownQuotaServiceImpl extends BaseServiceImpl<KPITownQuota> imple
     public List<KPITownQuota> findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(String districtId, String parentQuotaId, String taskId) {
         return kPITownQuotaRepository.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId,parentQuotaId,taskId);
     }
+
+    @Override
+    public List<KPITownQuota> findAllByParentQuotaId(String parentQuotaId) {
+        return kPITownQuotaRepository.findAllByParentQuotaId(parentQuotaId);
+    }
+
+    @Override
+    public void deleteAllByIdIn(List<String> ids) {
+        kPITownQuotaRepository.deleteAllByIdIn(ids);
+    }
+
+    @Override
+    public List<KPITownQuota> findAllByQuotaName(String quotaName) {
+        return kPITownQuotaRepository.findAllByQuotaName(quotaName);
+    }
 }

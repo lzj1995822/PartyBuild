@@ -12,4 +12,6 @@ import java.util.List;
 public interface KpiQuotaService extends BaseService<KpiQuota> {
     
     List<KpiQuota> findAllByParentQuotaIdOrderByQuotaIdAsc(String parentQuotaId);
+
+    KpiQuota findByQuotaId(String quotaId);
 }

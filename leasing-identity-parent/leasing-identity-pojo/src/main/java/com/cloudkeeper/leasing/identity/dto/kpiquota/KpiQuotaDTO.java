@@ -65,6 +65,9 @@ public class KpiQuotaDTO extends BaseEditDTO {
     @ApiModelProperty(value = "指标内容", position = 10, required = true)
     private String quotaContent;
 
+    @ApiModelProperty(value = "多次执行还是一次执行", position = 10, required = true)
+    private String onceOrMore;
+
     private List<KPITownQuotaDTO> kpiTownQuotas;
 
 }

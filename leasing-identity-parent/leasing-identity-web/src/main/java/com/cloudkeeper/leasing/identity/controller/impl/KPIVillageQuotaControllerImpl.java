@@ -9,6 +9,9 @@ import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -94,5 +97,15 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         res.put("comment", kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId));
         res.put("plusMinus", kPIVillageQuotaService.buildCommonData(districtId, taskId, "06"));
         return Result.of(res);
+    }
+
+    @GetMapping("/getAllByTownQuotaId")
+    public Result<List<KPIVillageQuotaVO>> loadAllVillageAllQuota(@NonNull String townQuotaId) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
+        detachedCriteria.add(Restrictions.eq("townQuotaId", townQuotaId));
+        detachedCriteria.addOrder(Order.asc("districtId"));
+        List<KPIVillageQuota> all = kPIVillageQuotaService.findAll(detachedCriteria);
+        List<KPIVillageQuotaVO> convert = KPIVillageQuota.convert(all, KPIVillageQuotaVO.class);
+        return Result.of(convert);
     }
 }

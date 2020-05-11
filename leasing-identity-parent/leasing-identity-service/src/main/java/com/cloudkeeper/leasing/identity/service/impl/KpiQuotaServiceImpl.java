@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,11 +33,18 @@ public class KpiQuotaServiceImpl extends BaseServiceImpl<KpiQuota> implements Kp
     public ExampleMatcher defaultExampleMatcher() {
         return super.defaultExampleMatcher()
                 .withMatcher("quotaName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("quotaLevel", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("quotaLevel", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("quotaYear", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("quotaMakeDepartId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override
     public List<KpiQuota> findAllByParentQuotaIdOrderByQuotaIdAsc(String parentQuotaId) {
         return kpiQuotaRepository.findAllByParentQuotaIdOrderByQuotaIdAsc(parentQuotaId);
+    }
+
+    @Override
+    public KpiQuota findByQuotaId(String quotaId) {
+        return kpiQuotaRepository.findByQuotaId(quotaId);
     }
 }

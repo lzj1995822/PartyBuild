@@ -101,22 +101,22 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         List<KPIVillageStatistics> res = new ArrayList<>();
         String taskId = "";
         for (KPITownQuota kpiTownQuota : list) {
-            for (KPIVillageQuota kpiVillageQuota : kpiTownQuota.getKpiVillageQuotas()) {
-                //整合至统计表
-                KPIVillageStatistics k = new KPIVillageStatistics();
-                k.setDistrictId(kpiVillageQuota.getDistrictId());
-                k.setDistrictName(kpiVillageQuota.getDistrictName());
-                k.setParentDistrictId(kpiTownQuota.getDistrictId());
-                k.setParentDistrictName(kpiTownQuota.getDistrictName());
-                k.setParentQuotaId(kpiTownQuota.getParentQuotaId());
-                k.setParentQuotaName(kpiTownQuota.getParentQuotaName());
-                k.setQuotaName(kpiTownQuota.getQuotaName());
-                k.setQuarter(kpiTownQuota.getQuarter());
-                k.setScore(StringUtils.isNotBlank(kpiVillageQuota.getScore()) ? kpiVillageQuota.getScore() : "0");
-                k.setTaskId(taskId);
-                k.setWeight(kpiVillageQuota.getWeight());
-                res.add(k);
-            }
+//            for (KPIVillageQuota kpiVillageQuota : kpiTownQuota.getKpiVillageQuotas()) {
+//                //整合至统计表
+//                KPIVillageStatistics k = new KPIVillageStatistics();
+//                k.setDistrictId(kpiVillageQuota.getDistrictId());
+//                k.setDistrictName(kpiVillageQuota.getDistrictName());
+//                k.setParentDistrictId(kpiTownQuota.getDistrictId());
+//                k.setParentDistrictName(kpiTownQuota.getDistrictName());
+//                k.setParentQuotaId(kpiTownQuota.getParentQuotaId());
+//                k.setParentQuotaName(kpiTownQuota.getParentQuotaName());
+//                k.setQuotaName(kpiTownQuota.getQuotaName());
+//                k.setQuarter(kpiTownQuota.getQuarter());
+//                k.setScore(StringUtils.isNotBlank(kpiVillageQuota.getScore()) ? kpiVillageQuota.getScore() : "0");
+//                k.setTaskId(taskId);
+//                k.setWeight(kpiVillageQuota.getWeight());
+//                res.add(k);
+//            }
         }
         kPIVillageStatisticsService.addStatistics(res);//三级统计
 

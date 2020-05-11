@@ -66,6 +66,10 @@ public class CadreTaskDTO extends BaseEditDTO {
     @ApiModelProperty(value = "任务所属模块")
     private String taskModule;
 
+    /** 任务对象 */
+    @ApiModelProperty(value = "任务对象")
+    private String taskObject;
+
     // 晋升名单
     private List<PromotionCadresDTO> promotionCadres;
 }

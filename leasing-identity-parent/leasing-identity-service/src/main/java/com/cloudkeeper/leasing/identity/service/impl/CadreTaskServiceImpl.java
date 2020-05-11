@@ -63,6 +63,12 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private final DetectionIndexService detectionIndexService;
 
+    private final KpiQuotaService kpiQuotaService;
+
+    private final KPITownQuotaService kpiTownQuotaService;
+
+    private final KPIVillageQuotaService kpiVillageQuotaService;
+
     @Override
     protected BaseRepository<CadreTask> getBaseRepository() {
         return cadreTaskRepository;
@@ -88,37 +94,46 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         List<SysDistrict> all = new ArrayList<>();
 
         SysDistrictSearchable sysDistrictSearchable = new SysDistrictSearchable();
-        if (BASE_INFO_TASK.equals(type) || MAKE_REVIEW_API_CONTENT.equals(type) || DAILY_REVIEW.equals(type)) {
-            sysDistrictSearchable.setDistrictType("Party");
-            sysDistrictSearchable.setDistrictLevel(2);
-            all = sysDistrictService.findAll(sysDistrictSearchable);
-        } else if (REVIEW_TASK.equals(type)) {
-            List<SysDistrict> party = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
-            for (SysDistrict sysDistrict: party) {
-                DetectionIndex detectionIndex = new DetectionIndex();
-                detectionIndex.setDistrictId(sysDistrict.getDistrictId());
-                detectionIndex.setDistrictName(sysDistrict.getDistrictName());
-                detectionIndex.setTaskId(cadreTask.getId());
-                detectionIndex.setTaskName(cadreTask.getName());
-                detectionIndexService.save(detectionIndex);
-            }
-            sysDistrictSearchable.setDistrictType("Depart");
-            all = sysDistrictService.findAll(sysDistrictSearchable);
-            all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(2, "Party"));
-            all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(1, "Party"));
-        }else if (LEVEL_JUDGE_TASK.equals(type)) {
-            List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
-            Set<String> set = promotionCadres.stream().map(PromotionCadresDTO::getTownId).collect(Collectors.toSet());
-            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
-            if (set.size() == 0) {
+        switch (type) {
+            case BASE_INFO_TASK:
+            case DAILY_REVIEW:
+                sysDistrictSearchable.setDistrictType("Party");
+                sysDistrictSearchable.setDistrictLevel(2);
+                all = sysDistrictService.findAll(sysDistrictSearchable);
+                break;
+            case REVIEW_TASK:
+                List<SysDistrict> party = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
+                for (SysDistrict sysDistrict: party) {
+                    DetectionIndex detectionIndex = new DetectionIndex();
+                    detectionIndex.setDistrictId(sysDistrict.getDistrictId());
+                    detectionIndex.setDistrictName(sysDistrict.getDistrictName());
+                    detectionIndex.setTaskId(cadreTask.getId());
+                    detectionIndex.setTaskName(cadreTask.getName());
+                    detectionIndexService.save(detectionIndex);
+                }
+                sysDistrictSearchable.setDistrictType("Depart");
+                all = sysDistrictService.findAll(sysDistrictSearchable);
+                all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(2, "Party"));
+                all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(1, "Party"));
+                break;
+            case LEVEL_JUDGE_TASK:
+                List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();
+                Set<String> set = promotionCadres.stream().map(PromotionCadresDTO::getTownId).collect(Collectors.toSet());
+                DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+                if (set.size() == 0) {
+                    return null;
+                }
+                detachedCriteria.add(Restrictions.in("districtId", set));
+                all = sysDistrictService.findAll(detachedCriteria);
+                break;
+            case GANBU_INFO_TASK:
+                all = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
+                break;
+            case MAKE_REVIEW_API_CONTENT:
+                all = handleApiContentTask(cadreTaskDTO, cadreTask.getId());
+                break;
+            default:
                 return null;
-            }
-            detachedCriteria.add(Restrictions.in("districtId", set));
-            all = sysDistrictService.findAll(detachedCriteria);
-        } else if (GANBU_INFO_TASK.equals(type)){
-            all = sysDistrictService.findAllByDistrictLevelAndDistrictType(3, "Party");
-        } else {
-            return null;
         }
         for (SysDistrict item : all) {
             CadreTaskObject cadreTaskObject = new CadreTaskObject();
@@ -214,6 +229,15 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         }
         map.put("title",strs);
         return map;
+    }
+
+    private List<SysDistrict> handleApiContentTask(CadreTaskDTO cadreTaskDTO, String taskId) {
+        // 获取需要制定指标的对象
+        String taskObject = cadreTaskDTO.getTaskObject();
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
+        detachedCriteria.add(Restrictions.in("districtId", taskObject.split(",")));
+        List<SysDistrict> all = sysDistrictService.findAll(detachedCriteria);
+        return all;
     }
 
 

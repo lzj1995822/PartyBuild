@@ -60,9 +60,13 @@ public class KpiQuotaVO extends BaseVO {
 
     private List<KpiQuotaVO> kpiQuotas;
 
+    @ApiModelProperty(value = "多次执行还是一次执行", position = 10, required = true)
+    private String onceOrMore;
+
     /** 父指标ID */
     @ApiModelProperty(value = "父指标ID", position = 10, required = true)
     private String parentQuotaId;
+
     @ApiModelProperty(value = "子类", position = 19)
     private List<KPITownQuotaVO> kpiTownQuotas;
 

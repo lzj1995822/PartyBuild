@@ -54,6 +54,8 @@ public class KPITownQuotaDTO extends BaseEditDTO {
 
     private String quarter;
 
+    private String quotaYear;
+
     List<KPIVillageQuotaDTO> kpiVillageQuotas;
 
 }

@@ -228,6 +228,11 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
         kPIVillageQuotaRepository.deleteAllByTownQuotaId(townQuotaId);
     }
 
+    @Override
+    public void deleteAllByTownQuotaIdIn(List<String> townQuotaIds) {
+        kPIVillageQuotaRepository.deleteAllByTownQuotaIdIn(townQuotaIds);
+    }
+
     private void handleAttachInfo(Map<String, List<Map<String, Object>>> cols, @NonNull String parentQuotaId, @NonNull String taskId, @NonNull String districtId) {
         List<Map<String, Object>> maps = cols.get(parentQuotaId);
         KPIEvaluationSearchable kpiEvaluationSearchable = new KPIEvaluationSearchable();

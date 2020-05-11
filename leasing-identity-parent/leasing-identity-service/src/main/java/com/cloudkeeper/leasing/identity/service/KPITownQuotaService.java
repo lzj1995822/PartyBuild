@@ -15,4 +15,10 @@ public interface KPITownQuotaService extends BaseService<KPITownQuota> {
     void deleteAllByDistrictIdAndParentQuotaId(String districtId,String parentQuotaId);
 
     List<KPITownQuota> findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(String districtId, String parentQuotaId, String taskId);
+
+    List<KPITownQuota> findAllByParentQuotaId(String parentQuotaId);
+
+    void deleteAllByIdIn(List<String> ids);
+
+    List<KPITownQuota> findAllByQuotaName(String quotaName);
 }

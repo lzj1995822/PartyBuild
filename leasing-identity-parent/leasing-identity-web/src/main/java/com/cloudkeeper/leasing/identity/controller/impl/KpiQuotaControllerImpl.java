@@ -95,5 +95,4 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
         return Result.of(convert);
     }
 
-
 }

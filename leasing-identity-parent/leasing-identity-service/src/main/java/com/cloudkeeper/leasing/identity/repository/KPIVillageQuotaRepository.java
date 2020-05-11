@@ -16,4 +16,6 @@ public interface KPIVillageQuotaRepository extends BaseRepository<KPIVillageQuot
     void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId,String parentQuotaId);
 
     void deleteAllByTownQuotaId(String townQuotaId);
+
+    void deleteAllByTownQuotaIdIn(List<String> townQuotaIds);
 }

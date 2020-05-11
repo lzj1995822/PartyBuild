@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.identity.controller.KPITownQuotaController;
 import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
 import com.cloudkeeper.leasing.identity.domain.KpiQuota;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaDTO;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -99,15 +101,20 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     }
 
     @Override
-    public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi) {
-        KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
-        kpiQuotaSearchable.setParentQuotaId(kpi.getParentQuotaId());
+    public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart) {
         String d = kpi.getDistrictId();
+
+        KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
+        kpiQuotaSearchable.setQuotaMakeDepartId(d);
+        kpiQuotaSearchable.setParentQuotaId(kpi.getParentQuotaId());
         List<KpiQuota> kpiQuotas = kpiQuotaService.findAll(kpiQuotaSearchable,new Sort(Sort.Direction.DESC,"parentQuotaId"));
         List<KpiQuotaVO> quotaVOList = KpiQuota.convert(kpiQuotas,KpiQuotaVO.class);
         for (KpiQuotaVO k : quotaVOList){
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
             detachedCriteria.add(Restrictions.eq("parentQuotaId", k.getQuotaId()));
+            if ("1".equals(isDepart)) {
+                d = "0101";
+            }
             detachedCriteria.add(Restrictions.eq("districtId",d));
             detachedCriteria.addOrder(Order.desc("createdAt"));
             if (StringUtils.isNotBlank(kpi.getQuarter())){
@@ -118,32 +125,32 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             k.setKpiTownQuotas(kpiTownQuotaVOS);
         }
 
-        List<KPITownQuotaVO> kpiTownQuotaVOS ;
-        if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas())){//此处为了前端初始化考核指标中村数据
-            //二级为空，需要初始化一个二级和三级
-            kpiTownQuotaVOS = new ArrayList<>();//二级
-            KPITownQuotaVO vo = new KPITownQuotaVO();
-            vo.setDistrictId(d);
-            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
-            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
-            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
-            kpiTownQuotaVOS.add(vo);
-            KpiQuotaVO k = quotaVOList.get(0);
-            k.setKpiTownQuotas(kpiTownQuotaVOS);
-            quotaVOList.set(0,k);
-        }else if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas().get(0).getKpiVillageQuotas())){
-            //三级为空，需要初始化一个三级
-            kpiTownQuotaVOS = quotaVOList.get(0).getKpiTownQuotas();//二级
-            KPITownQuotaVO vo = new KPITownQuotaVO();
-            vo.setDistrictId(d);
-            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
-            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
-            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
-            kpiTownQuotaVOS.set(0,vo);
-            KpiQuotaVO k = quotaVOList.get(0);
-            k.setKpiTownQuotas(kpiTownQuotaVOS);
-            quotaVOList.set(0,k);
-        }
+//        List<KPITownQuotaVO> kpiTownQuotaVOS ;
+//        if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas())){//此处为了前端初始化考核指标中村数据
+//            //二级为空，需要初始化一个二级和三级
+//            kpiTownQuotaVOS = new ArrayList<>();//二级
+//            KPITownQuotaVO vo = new KPITownQuotaVO();
+//            vo.setDistrictId(d);
+//            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
+//            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
+//            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
+//            kpiTownQuotaVOS.add(vo);
+//            KpiQuotaVO k = quotaVOList.get(0);
+//            k.setKpiTownQuotas(kpiTownQuotaVOS);
+//            quotaVOList.set(0,k);
+//        }else if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas().get(0).getKpiVillageQuotas())){
+//            //三级为空，需要初始化一个三级
+//            kpiTownQuotaVOS = quotaVOList.get(0).getKpiTownQuotas();//二级
+//            KPITownQuotaVO vo = new KPITownQuotaVO();
+//            vo.setDistrictId(d);
+//            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
+//            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
+//            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
+//            kpiTownQuotaVOS.set(0,vo);
+//            KpiQuotaVO k = quotaVOList.get(0);
+//            k.setKpiTownQuotas(kpiTownQuotaVOS);
+//            quotaVOList.set(0,k);
+//        }
         return Result.of(quotaVOList);
     }
 
@@ -323,6 +330,19 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     @PostMapping("/townAndVillageQuota")
     @Transactional
     public Result<KPITownQuotaVO> allOneTownQuotaAndVillageQuota(@RequestBody KPITownQuotaDTO kpiTownQuotaDTO) {
+
+        KpiQuota kpiQuota = kpiQuotaService.findByQuotaId(kpiTownQuotaDTO.getParentQuotaId());
+        if (kpiQuota == null) {
+            return Result.of(500, "二级指标不能为空");
+        }
+        String quotaMakeDepartId = kpiQuota.getQuotaMakeDepartId();
+        String[] split = quotaMakeDepartId.split(",");
+        if (split.length == 1) {
+            // 处理单部门制定多组织指标问题
+            handleMutipartQuota(kpiTownQuotaDTO);
+            return Result.of(kpiTownQuotaDTO.convert(KPITownQuotaVO.class));
+        }
+
         List<KPIVillageQuotaDTO> kpiVillageQuotas = kpiTownQuotaDTO.getKpiVillageQuotas();
         KPITownQuota convert = kpiTownQuotaDTO.convert(KPITownQuota.class);
         convert.setKpiVillageQuotas(null);
@@ -342,6 +362,81 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         kpiVillageQuotaService.deleteAllByTownQuotaId(id);
         kPITownQuotaService.deleteById(id);
         return Result.of(200, "删除成功！");
+    }
+
+    @GetMapping("/getAllByDistrictId")
+    public Result<List<KpiQuotaVO>> getAllByDistrictId(@Nonnull String districtId,@Nonnull String quotaYear) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+        detachedCriteria.add(Restrictions.eq("districtId", districtId));
+        detachedCriteria.add(Restrictions.eq("quotaYear", quotaYear));
+        List<KPITownQuota> all = kPITownQuotaService.findAll(detachedCriteria);
+
+        Map<String, List<KPITownQuotaVO>> map = new HashMap<>();
+        for (KPITownQuota item : all) {
+            String parentQuotaId = item.getParentQuotaId();
+            List<KPITownQuotaVO> currentList = null;
+            if (!map.containsKey(parentQuotaId)) {
+                map.put(parentQuotaId, new ArrayList<>());
+            }
+            currentList = map.get(parentQuotaId);
+            currentList.add(item.convert(KPITownQuotaVO.class));
+        }
+
+        DetachedCriteria quota = DetachedCriteria.forClass(KpiQuota.class);
+        quota.add(Restrictions.eq("quotaYear", quotaYear));
+        quota.add(Restrictions.eq("quotaLevel", "1"));
+        List<KpiQuota> first = kpiQuotaService.findAll(quota);
+
+        List<KpiQuotaVO> firstRes = new ArrayList<>();
+        for (KpiQuota item : first) {
+            List<KpiQuota> second = item.getKpiQuotas();
+            if (CollectionUtils.isEmpty(second)) {
+                continue;
+            }
+            KpiQuotaVO firstConvert = item.convert(KpiQuotaVO.class);
+            List<KpiQuotaVO> secondRes = new ArrayList<>();
+            for (KpiQuota subItem : second) {
+                KpiQuotaVO secondConvert = subItem.convert(KpiQuotaVO.class);
+                secondConvert.setKpiTownQuotas(map.get(subItem.getQuotaId()));
+                secondRes.add(secondConvert);
+            }
+            firstConvert.setKpiQuotas(secondRes);
+            firstRes.add(firstConvert);
+        }
+        return Result.of(firstRes);
+    }
+
+    public void handleMutipartQuota(KPITownQuotaDTO kpiTownQuotaDTO) {
+        if (!StringUtils.isEmpty(kpiTownQuotaDTO.getId())) {
+            KPITownQuota byId = kPITownQuotaService.findById(kpiTownQuotaDTO.getId());
+            List<KPITownQuota> allByParentQuotaId = kPITownQuotaService.findAllByQuotaName(byId.getQuotaName());
+            List<String> collect = allByParentQuotaId.stream().map(KPITownQuota::getId).collect(Collectors.toList());
+            kpiVillageQuotaService.deleteAllByTownQuotaIdIn(collect);
+            kPITownQuotaService.deleteAllByIdIn(collect);
+        }
+        List<SysDistrict> allTowns = sysDistrictService.findAllTowns();
+        for (SysDistrict item : allTowns) {
+            KPITownQuota kpiTownQuota = new KPITownQuota();
+            BeanUtils.copyProperties(kpiTownQuotaDTO, kpiTownQuota, "id");
+            kpiTownQuota.setDistrictId(item.getDistrictId());
+            kpiTownQuota.setDistrictName(item.getDistrictName());
+            KPITownQuota save = kPITownQuotaService.save(kpiTownQuota);
+            List<SysDistrict> orgChildren = item.getOrgChildren();
+            for (SysDistrict subItem : orgChildren) {
+                KPIVillageQuota kpiVillageQuota = new KPIVillageQuota();
+                kpiVillageQuota.setTownQuotaId(save.getId());
+                kpiVillageQuota.setWeight("1");
+                kpiVillageQuota.setDistrictId(subItem.getDistrictId());
+                kpiVillageQuota.setDistrictName(subItem.getDistrictName());
+                kpiVillageQuota.setParentDistrictId(item.getDistrictId());
+                kpiVillageQuota.setParentQuotaId(save.getParentQuotaId());
+                kpiVillageQuota.setScore("0");
+                kpiVillageQuota.setScoreEnd("0");
+                kpiVillageQuota.setFormulaScore("0");
+                kpiVillageQuota.setQuarter(kpiTownQuotaDTO.getQuarter());
+                kpiVillageQuotaService.save(kpiVillageQuota);
+            }
+        }
     }
 
 }

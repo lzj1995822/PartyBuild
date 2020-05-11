@@ -23,4 +23,6 @@ public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
     List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId);
 
     void deleteAllByTownQuotaId(String townQuotaId);
+
+    void deleteAllByTownQuotaIdIn(List<String> townQuotaIds);
 }

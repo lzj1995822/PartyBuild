@@ -130,8 +130,7 @@ public class SysDistrictControllerImpl implements SysDistrictController {
     @ApiOperation(value = "指标制定下拉项", notes = "指标制定下拉项", position = 2)
     public Result<List<Map<String, String>>> quotaDepartments() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(SysDistrict.class);
-        detachedCriteria.add(Restrictions.or(Restrictions.and(Restrictions.eq("districtType", "Party"), Restrictions.eq("districtLevel", 2)),
-                Restrictions.eq("districtType", "Depart")));
+        detachedCriteria.add(Restrictions.eq("districtType", "Depart"));
         List<SysDistrict> all = sysDistrictService.findAll(detachedCriteria);
         List<Map<String, String>> res = new LinkedList<>();
         for (SysDistrict item:all) {

@@ -14,4 +14,6 @@ import java.util.List;
 public interface KpiQuotaRepository extends BaseRepository<KpiQuota> {
 
     List<KpiQuota> findAllByParentQuotaIdOrderByQuotaIdAsc(String parentQuotaId);
+
+    KpiQuota findByQuotaId(String quotaId);
 }

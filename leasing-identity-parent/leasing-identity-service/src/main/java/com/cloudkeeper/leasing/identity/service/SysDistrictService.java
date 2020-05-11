@@ -57,4 +57,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     List<SysDistrictTreeVO> findOfficeDistrictTree();
 
     Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName);
+
+    List<SysDistrict> findAllTowns();
 }
