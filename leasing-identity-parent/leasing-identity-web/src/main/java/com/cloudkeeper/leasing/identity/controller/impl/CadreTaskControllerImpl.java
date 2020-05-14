@@ -2,29 +2,35 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadreTaskController;
-import com.cloudkeeper.leasing.identity.domain.CadreTask;
-import com.cloudkeeper.leasing.identity.domain.PromotionCadres;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskSearchable;
 import com.cloudkeeper.leasing.identity.dto.cadretask.PromotionCadresDTO;
+import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
 import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.service.PromotionCadresService;
+import com.cloudkeeper.leasing.identity.service.SysUserService;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +46,14 @@ public class CadreTaskControllerImpl implements CadreTaskController {
     /** 村书记模块任务 service */
     private final CadreTaskService cadreTaskService;
 
+    /** 任务对象 service */
+    private final CadreTaskObjectService cadreTaskObjectService;
+
     /** 拟晋升人员名单 service */
     private final PromotionCadresService promotionCadresService;
+
+    /** 用户名单 service */
+    private final SysUserService sysUserService;
 
     @Override
     public Result<CadreTaskVO> findOne(@ApiParam(value = "村书记模块任务id", required = true) @PathVariable String id) {
@@ -143,5 +155,34 @@ public class CadreTaskControllerImpl implements CadreTaskController {
             promotionCadresService.save(convert);
         }
         return Result.of(save.convert(CadreTaskVO.class));
+    }
+
+    @PostMapping("/currentTask/list")
+    public Result currentTaskList(@Nonnull @RequestBody List<String> types) {
+        String currentPrincipalId = cadreTaskService.getCurrentPrincipalId();
+        Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
+        if (!optionalById.isPresent()) {
+            return Result.of(500, "当前用户不存在！");
+        }
+        SysDistrict sysDistrict = optionalById.get().getSysDistrict();
+        if (sysDistrict.getDistrictLevel() == 2) {
+            // 镇的待执行列表有状态
+            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTaskObject.class);
+            detachedCriteria.add(Restrictions.eq("objectId", sysDistrict.getDistrictId()));
+            detachedCriteria.createAlias("cadreTask", "c");
+            detachedCriteria.add(Restrictions.in("c.type", types));
+            detachedCriteria.add(Restrictions.gt("c.endTime", LocalDate.now()));
+            detachedCriteria.addOrder(Order.desc("c.endTime"));
+            return Result.of(CadreTaskObject.convert(cadreTaskObjectService.findAll(detachedCriteria), CadreTaskObjectVO.class));
+        }
+        // 市委的正在执行列表
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
+        if (CollectionUtils.isEmpty(types)) {
+            return Result.of(500, "参数不能为空！");
+        }
+        detachedCriteria.add(Restrictions.in("type", types));
+        detachedCriteria.add(Restrictions.gt("endTime", LocalDate.now()));
+        detachedCriteria.addOrder(Order.desc("endTime"));
+        return Result.of(CadreTask.convert(cadreTaskService.findAll(detachedCriteria), CadreTaskVO.class));
     }
 }

@@ -40,7 +40,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     private static final String GANBU_INFO_TASK = "村干部信息更新";
 
-    private static final String REVIEW_TASK = "考核实施";
+    private static final String REVIEW_TASK = "综合年度考核";
 
     private static final String MAKE_REVIEW_API_CONTENT = "考核指标内容制定";
 
@@ -114,7 +114,6 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
                 sysDistrictSearchable.setDistrictType("Depart");
                 all = sysDistrictService.findAll(sysDistrictSearchable);
                 all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(2, "Party"));
-                all.addAll(sysDistrictService.findAllByDistrictLevelAndDistrictType(1, "Party"));
                 break;
             case LEVEL_JUDGE_TASK:
                 List<PromotionCadresDTO> promotionCadres = cadreTaskDTO.getPromotionCadres();

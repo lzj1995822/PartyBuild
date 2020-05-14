@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,5 +70,7 @@ public class KpiQuotaDTO extends BaseEditDTO {
     private String onceOrMore;
 
     private List<KPITownQuotaDTO> kpiTownQuotas;
+
+    private List<KpiQuotaDTO> kpiQuotas = new ArrayList<>();
 
 }

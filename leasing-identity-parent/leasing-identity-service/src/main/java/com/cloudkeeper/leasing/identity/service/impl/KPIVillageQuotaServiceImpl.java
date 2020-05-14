@@ -62,8 +62,8 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     }
 
     @Override
-    public List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId) {
-        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), "01", taskId);
+    public List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId) {
+        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
@@ -81,14 +81,14 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
         ArrayList<KPITownQuota> thirdCollect = townQuota.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(KPITownQuota::getQuotaName))), ArrayList::new));
         Map<String, List<Map<String, Object>>> thirdRes = new HashMap<>();
         for (KPITownQuota item : thirdCollect) {
-            String parentQuotaId = item.getParentQuotaId();
-            if (!thirdRes.containsKey(parentQuotaId)) {
-                thirdRes.put(parentQuotaId, new ArrayList<>());
+            String parentQuotaId1 = item.getParentQuotaId();
+            if (!thirdRes.containsKey(parentQuotaId1)) {
+                thirdRes.put(parentQuotaId1, new ArrayList<>());
             }
             Map<String, Object> val = new HashMap<>();
             val.put("quotasName", item.getQuotaName());
             val.put("quarters", map.get(item.getQuotaName()));
-            thirdRes.get(parentQuotaId).add(val);
+            thirdRes.get(parentQuotaId1).add(val);
         }
 
         ArrayList<KPITownQuota> secondCollect = thirdCollect.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(KPITownQuota::getParentQuotaId))), ArrayList::new));
@@ -141,8 +141,8 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     }
 
     @Override
-    public List<Map<String, Object>> buildWatchQuotaData(String districtId, String taskId) {
-        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), "03", taskId);
+    public List<Map<String, Object>> buildWatchQuotaData(String districtId, String taskId, String parentQuotaId) {
+        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
@@ -155,14 +155,14 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
 
         Map<String, List<Map<String, Object>>> thirdRes = new HashMap<>();
         for (KPITownQuota item : townQuota) {
-            String parentQuotaId = item.getParentQuotaId();
-            if (!thirdRes.containsKey(parentQuotaId)) {
-                thirdRes.put(parentQuotaId, new ArrayList<>());
+            String parentQuotaId1 = item.getParentQuotaId();
+            if (!thirdRes.containsKey(parentQuotaId1)) {
+                thirdRes.put(parentQuotaId1, new ArrayList<>());
             }
             Map<String, Object> val = new HashMap<>();
             val.put("quotasName", item.getQuotaName());
             val.put("value", map.get(item.getQuotaName()));
-            thirdRes.get(parentQuotaId).add(val);
+            thirdRes.get(parentQuotaId1).add(val);
         }
 
         handleAttachInfo(thirdRes, "0301", taskId, districtId);
@@ -184,8 +184,8 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     }
 
     @Override
-    public List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId) {
-        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), "05", taskId);
+    public List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId, String parentQuotaId) {
+        List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
@@ -198,14 +198,14 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
 
         Map<String, List<Map<String, Object>>> thirdRes = new HashMap<>();
         for (KPITownQuota item : townQuota) {
-            String parentQuotaId = item.getParentQuotaId();
-            if (!thirdRes.containsKey(parentQuotaId)) {
-                thirdRes.put(parentQuotaId, new ArrayList<>());
+            String parentQuotaId1 = item.getParentQuotaId();
+            if (!thirdRes.containsKey(parentQuotaId1)) {
+                thirdRes.put(parentQuotaId1, new ArrayList<>());
             }
             Map<String, Object> val = new HashMap<>();
             val.put("quotasName", item.getQuotaName());
             val.put("value", map.get(item.getQuotaName()));
-            thirdRes.get(parentQuotaId).add(val);
+            thirdRes.get(parentQuotaId1).add(val);
         }
         handleAttachInfo(thirdRes, "0501", taskId, districtId);
         handleAttachInfo(thirdRes, "0502", taskId, districtId);
@@ -231,6 +231,11 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     @Override
     public void deleteAllByTownQuotaIdIn(List<String> townQuotaIds) {
         kPIVillageQuotaRepository.deleteAllByTownQuotaIdIn(townQuotaIds);
+    }
+
+    @Override
+    public void updateScoreById(String score, String scoreEnd, String id) {
+        kPIVillageQuotaRepository.updateScoreById(score, scoreEnd, id);
     }
 
     private void handleAttachInfo(Map<String, List<Map<String, Object>>> cols, @NonNull String parentQuotaId, @NonNull String taskId, @NonNull String districtId) {

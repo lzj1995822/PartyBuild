@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 综合评议 service
  * @author yujian
@@ -40,5 +42,10 @@ public class KPIEvaluationServiceImpl extends BaseServiceImpl<KPIEvaluation> imp
     @Override
     public void deleteByTypeAndTaskIdAndDistrictId(String type, String taskId, String districtId) {
         kPIEvaluationRepository.deleteByTypeAndTaskIdAndDistrictId(type, taskId, districtId);
+    }
+
+    @Override
+    public List<KPIEvaluation> findAllByVillageQuotaId(String villageQuotaId) {
+        return kPIEvaluationRepository.findAllByVillageQuotaId(villageQuotaId);
     }
 }

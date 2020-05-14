@@ -2,19 +2,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KPITownQuotaController;
-import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
-import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
-import com.cloudkeeper.leasing.identity.domain.KpiQuota;
-import com.cloudkeeper.leasing.identity.domain.SysDistrict;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpitownquota.KPITownQuotaSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaDTO;
-import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
-import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
-import com.cloudkeeper.leasing.identity.service.KpiQuotaService;
-import com.cloudkeeper.leasing.identity.service.SysDistrictService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.*;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +27,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +52,15 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
     /** 组织 service */
     private final SysDistrictService sysDistrictService;
+
+    /** 组织 service */
+    private final DetectionIndexService detectionIndexService;
+
+
+    private final CadreTaskService cadreTaskService;
+
+    private final KPIEvaluationService kpiEvaluationService;
+
     @Override
     public Result<KPITownQuotaVO> findOne(@ApiParam(value = "镇考核指标id", required = true) @PathVariable String id) {
         Optional<KPITownQuota> kPITownQuotaOptional = kPITownQuotaService.findOptionalById(id);
@@ -406,6 +414,33 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         return Result.of(firstRes);
     }
 
+    @GetMapping("/scoringBasic")
+    @Transactional
+    public Result<List<Map>> getScoringBasic(String townQuotaId, String taskId) {
+        KPITownQuota byId = kPITownQuotaService.findById(townQuotaId);
+        if (byId == null) {
+            return Result.of(500, "当前三级指标不存在！");
+        }
+        List<KPIVillageQuota> kpiVillageQuotas = byId.getKpiVillageQuotas();
+        List<String> collect = kpiVillageQuotas.stream().map(KPIVillageQuota::getDistrictId).collect(Collectors.toList());
+
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(DetectionIndex.class);
+        detachedCriteria.add(Restrictions.in("districtId", collect));
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        List<DetectionIndex> all = detectionIndexService.findAll(detachedCriteria);
+        Map<String, DetectionIndex> detectionIndexMap = all.stream().collect(Collectors.toMap(DetectionIndex::getDistrictId, detectionIndex -> detectionIndex));
+        List<Map> res = new LinkedList<>();
+        for (KPIVillageQuota item : kpiVillageQuotas) {
+            Map<String, Object> map = transBean2Map(detectionIndexMap.get(item.getDistrictId()));
+            map.putAll(transBean2Map(item));
+            List<KPIEvaluation> kpiEvaluations = kpiEvaluationService.findAllByVillageQuotaId(item.getId());
+            map.put("kpiEvaluations", kpiEvaluations);
+            map.remove("kpiTownQuota");
+            res.add(map);
+        }
+        return Result.of(res);
+    }
+
     public void handleMutipartQuota(KPITownQuotaDTO kpiTownQuotaDTO) {
         if (!StringUtils.isEmpty(kpiTownQuotaDTO.getId())) {
             KPITownQuota byId = kPITownQuotaService.findById(kpiTownQuotaDTO.getId());
@@ -439,4 +474,27 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         }
     }
 
+    private static Map<String, Object> transBean2Map(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        Map<String, Object> map = new HashMap<>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor property : propertyDescriptors) {
+                String key = property.getName();
+                // 过滤class属性
+                if (!key.equals("class")) {
+                    // 得到property对应的getter方法
+                    Method getter = property.getReadMethod();
+                    Object value = getter.invoke(obj);
+                    map.put(key, value);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("transBean2Map Error " + e);
+        }
+        return map;
+    }
 }

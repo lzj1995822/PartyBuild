@@ -4,6 +4,8 @@ import com.cloudkeeper.leasing.identity.domain.KPIEvaluation;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 综合评议 repository
  * @author yujian
@@ -12,5 +14,7 @@ import org.springframework.stereotype.Repository;
 public interface KPIEvaluationRepository extends BaseRepository<KPIEvaluation> {
 
     void  deleteByTypeAndTaskIdAndDistrictId(String type, String taskId, String districtId);
+
+    List<KPIEvaluation> findAllByVillageQuotaId(String villageQuotaId);
 
 }

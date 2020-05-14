@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,9 +85,17 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
 
     @PostMapping("/blukSave")
     @Transactional
-    public Result<List<KpiQuotaVO>> blukSave(@RequestBody List<KpiQuotaDTO> kpiQuotaDTOS) {
+    public Result<List<KpiQuotaVO>> blukSave(@RequestBody List<KpiQuotaDTO> kpiQuotaDTOS, @Nonnull String quotaYear) {
+        kpiQuotaService.deleteAllByQuotaYear(quotaYear);
         for (KpiQuotaDTO item :kpiQuotaDTOS) {
-            kpiQuotaService.save(item.convert(KpiQuota.class));
+            KpiQuota convert = item.convert(KpiQuota.class);
+            convert.setKpiQuotas(null);
+            kpiQuotaService.save(convert);
+            for (KpiQuotaDTO subItem : item.getKpiQuotas()) {
+                KpiQuota convert1 = subItem.convert(KpiQuota.class);
+                convert1.setKpiQuotas(null);
+                kpiQuotaService.save(convert1);
+            }
         }
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
         kpiQuotaSearchable.setQuotaYear(kpiQuotaDTOS.get(0).getQuotaYear());

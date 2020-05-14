@@ -2,9 +2,17 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KPIVillageQuotaController;
+import com.cloudkeeper.leasing.identity.domain.CadreTask;
+import com.cloudkeeper.leasing.identity.domain.DetectionIndex;
+import com.cloudkeeper.leasing.identity.domain.KPIEvaluation;
 import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
+import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaSearchable;
+import com.cloudkeeper.leasing.identity.dto.kpivillagequota.ScoringDTO;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
+import com.cloudkeeper.leasing.identity.service.DetectionIndexService;
+import com.cloudkeeper.leasing.identity.service.KPIEvaluationService;
 import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import io.swagger.annotations.ApiParam;
@@ -13,21 +21,20 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 村考核指标 controller
@@ -39,6 +46,14 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
 
     /** 村考核指标 service */
     private final KPIVillageQuotaService kPIVillageQuotaService;
+
+    /** 考核指标附加 service */
+    private final DetectionIndexService detectionIndexService;
+
+    private final KPIEvaluationService kpiEvaluationService;
+
+    private final CadreTaskService cadreTaskService;
+
 
     @Override
     public Result<KPIVillageQuotaVO> findOne(@ApiParam(value = "村考核指标id", required = true) @PathVariable String id) {
@@ -88,14 +103,23 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     }
 
     @GetMapping("/loadVillageAllQuota")
-    public Result<Map<String, Object>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId) {
+    public Result<Map<String, Object>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear) {
+        CadreTask byId = cadreTaskService.findById(taskId);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
+        detachedCriteria.add(Restrictions.eq("taskYear", byId.getTaskYear()));
+        detachedCriteria.add(Restrictions.eq("type", "考核指标内容制定"));
+        List<CadreTask> all = cadreTaskService.findAll(detachedCriteria);
+        if (all.size() == 0) {
+            return Result.of(500, "对应考核指标任务不存在！");
+        }
+        taskId = all.get(0).getId();
         Map<String, Object> res = new HashMap<>();
-        res.put("commonWork", kPIVillageQuotaService.buildCommonWorkData(districtId, taskId));
-        res.put("villageActual", kPIVillageQuotaService.buildCommonData(districtId, taskId, "02"));
-        res.put("judgement", kPIVillageQuotaService.buildCommonData(districtId, taskId, "04"));
-        res.put("watchQuota", kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId));
-        res.put("comment", kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId));
-        res.put("plusMinus", kPIVillageQuotaService.buildCommonData(districtId, taskId, "06"));
+        res.put("commonWork", kPIVillageQuotaService.buildCommonWorkData(districtId, taskId, taskYear + "01"));
+        res.put("villageActual", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "02"));
+        res.put("judgement", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "04"));
+        res.put("watchQuota", kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId, taskYear + "03"));
+        res.put("comment", kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId, taskYear + "05"));
+        res.put("plusMinus", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "06"));
         return Result.of(res);
     }
 
@@ -108,4 +132,48 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         List<KPIVillageQuotaVO> convert = KPIVillageQuota.convert(all, KPIVillageQuotaVO.class);
         return Result.of(convert);
     }
+
+    @PostMapping("/scoring")
+    @Transactional
+    public Result scoring(@Nonnull String taskId,@Nonnull @RequestBody List<ScoringDTO> scoringDTOS) {
+        for (ScoringDTO item : scoringDTOS) {
+            String score = item.getScore();
+            String weight = item.getWeight();
+            BigDecimal multiply = new BigDecimal(score).multiply(new BigDecimal(weight));
+            kPIVillageQuotaService.updateScoreById(score, multiply.toString(), item.getId());
+            DetectionIndex detectionIndex = detectionIndexService.findByDistrictIdAndTaskId(item.getDistrictId(), taskId);
+            if (detectionIndex == null) {
+                detectionIndex = new DetectionIndex();
+            }
+            String[] nullPropertyNames = getNullPropertyNames(item);
+            List<String> strings = Arrays.asList(nullPropertyNames);
+            List<String> ignoreProperties = new ArrayList<>(strings);
+            ignoreProperties.add("id");
+            BeanUtils.copyProperties(item, detectionIndex, ignoreProperties.toArray(nullPropertyNames));
+            detectionIndexService.save(detectionIndex);
+
+            if (item.getKpiEvaluations() == null) {
+                continue;
+            }
+            for (KPIEvaluationDTO subItem : item.getKpiEvaluations()) {
+                subItem.setVillageQuotaId(item.getId());
+                kpiEvaluationService.save(subItem.convert(KPIEvaluation.class));
+            }
+        }
+        return Result.of(200,"打分成功！");
+    }
+
+    public static String[] getNullPropertyNames (Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<String>();
+        for(java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
 }

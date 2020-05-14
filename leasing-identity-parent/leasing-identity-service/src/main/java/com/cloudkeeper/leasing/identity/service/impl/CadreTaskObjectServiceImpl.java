@@ -50,7 +50,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
                 .withMatcher("status", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("objectType", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("note", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("townName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("townName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
     @Override

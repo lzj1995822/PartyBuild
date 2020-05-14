@@ -72,4 +72,8 @@ public class KPIEvaluation extends BaseEntity {
     /** 村名 */
     @ApiModelProperty(value = "村名", position = 10, required = true)
     private String districtId;
+
+    /** 关联到村的指标记录id */
+    @ApiModelProperty(value = "关联到村的指标记录id", position = 10, required = true)
+    private String villageQuotaId;
 }

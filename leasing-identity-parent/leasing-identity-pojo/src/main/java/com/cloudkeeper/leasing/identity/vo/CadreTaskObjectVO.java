@@ -89,4 +89,8 @@ public class CadreTaskObjectVO extends BaseVO {
     /** 最新审核意见 */
     @ApiModelProperty(value = "最新审核意见")
     private String lastestAdvice;
+
+    /** 任务年份 */
+    @ApiModelProperty(value = "任务年份")
+    private String taskYear;
 }

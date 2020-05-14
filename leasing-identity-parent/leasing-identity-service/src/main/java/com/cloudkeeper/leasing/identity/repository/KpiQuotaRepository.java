@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.domain.KpiQuota;
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -16,4 +17,6 @@ public interface KpiQuotaRepository extends BaseRepository<KpiQuota> {
     List<KpiQuota> findAllByParentQuotaIdOrderByQuotaIdAsc(String parentQuotaId);
 
     KpiQuota findByQuotaId(String quotaId);
+
+    void deleteAllByQuotaYear(@Nonnull String quotaYear);
 }

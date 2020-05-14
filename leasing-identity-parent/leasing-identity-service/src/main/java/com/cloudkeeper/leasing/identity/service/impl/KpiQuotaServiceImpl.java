@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,5 +47,10 @@ public class KpiQuotaServiceImpl extends BaseServiceImpl<KpiQuota> implements Kp
     @Override
     public KpiQuota findByQuotaId(String quotaId) {
         return kpiQuotaRepository.findByQuotaId(quotaId);
+    }
+
+    @Override
+    public void deleteAllByQuotaYear(@Nonnull String quotaYear) {
+        kpiQuotaRepository.deleteAllByQuotaYear(quotaYear);
     }
 }

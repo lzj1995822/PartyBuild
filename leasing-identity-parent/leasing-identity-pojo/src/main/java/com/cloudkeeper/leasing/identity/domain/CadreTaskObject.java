@@ -104,6 +104,7 @@ public class CadreTaskObject extends BaseEntity {
         if (!StringUtils.isEmpty(cadreTask)) {
             cadreTaskObjectVO.setTaskType(cadreTask.getType());
             cadreTaskObjectVO.setEndTime(cadreTask.getEndTime());
+            cadreTaskObjectVO.setTaskYear(cadreTask.getTaskYear());
         }
         return (T) cadreTaskObjectVO;
     }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
+
 /**
  * 监测指标 service
  * @author asher
@@ -54,4 +56,8 @@ public class DetectionIndexServiceImpl extends BaseServiceImpl<DetectionIndex> i
                 .withMatcher("districtName",  ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public DetectionIndex findByDistrictIdAndTaskId(@Nonnull String districtId, @Nonnull String taskId) {
+        return detectionIndexRepository.findByDistrictIdAndTaskId(districtId, taskId);
+    }
 }
