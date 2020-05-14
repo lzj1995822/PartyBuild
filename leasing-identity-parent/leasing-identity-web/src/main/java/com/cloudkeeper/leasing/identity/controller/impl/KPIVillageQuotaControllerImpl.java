@@ -2,18 +2,12 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KPIVillageQuotaController;
-import com.cloudkeeper.leasing.identity.domain.CadreTask;
-import com.cloudkeeper.leasing.identity.domain.DetectionIndex;
-import com.cloudkeeper.leasing.identity.domain.KPIEvaluation;
-import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.kpievaluation.KPIEvaluationDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.ScoringDTO;
-import com.cloudkeeper.leasing.identity.service.CadreTaskService;
-import com.cloudkeeper.leasing.identity.service.DetectionIndexService;
-import com.cloudkeeper.leasing.identity.service.KPIEvaluationService;
-import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
+import com.cloudkeeper.leasing.identity.service.*;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +48,7 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
 
     private final CadreTaskService cadreTaskService;
 
+    private final KpiQuotaService kpiQuotaService;
 
     @Override
     public Result<KPIVillageQuotaVO> findOne(@ApiParam(value = "村考核指标id", required = true) @PathVariable String id) {
@@ -103,7 +98,7 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     }
 
     @GetMapping("/loadVillageAllQuota")
-    public Result<Map<String, Object>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear) {
+    public Result<List<Map<String, Object>>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear) {
         CadreTask byId = cadreTaskService.findById(taskId);
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
         detachedCriteria.add(Restrictions.eq("taskYear", byId.getTaskYear()));
@@ -112,14 +107,29 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         if (all.size() == 0) {
             return Result.of(500, "对应考核指标任务不存在！");
         }
+        List<Map<String, Object>> res = new ArrayList<>();
         taskId = all.get(0).getId();
-        Map<String, Object> res = new HashMap<>();
-        res.put("commonWork", kPIVillageQuotaService.buildCommonWorkData(districtId, taskId, taskYear + "01"));
-        res.put("villageActual", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "02"));
-        res.put("judgement", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "04"));
-        res.put("watchQuota", kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId, taskYear + "03"));
-        res.put("comment", kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId, taskYear + "05"));
-        res.put("plusMinus", kPIVillageQuotaService.buildCommonData(districtId, taskId, taskYear + "06"));
+        for (int i = 1; i < 7; i ++) {
+            String quotaId = taskYear + "0" + i;
+            Map<String, Object> temps = new HashMap<>();
+            KpiQuota byQuotaId = kpiQuotaService.findByQuotaId(quotaId);
+            List<Map<String, Object>> maps = new LinkedList<>();
+            if (i == 1) {
+                maps = kPIVillageQuotaService.buildCommonWorkData(districtId, taskId, quotaId, null);
+            } else if (i == 3) {
+                maps = kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId, quotaId);
+            } else if (i == 5) {
+                maps = kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId, quotaId);
+            } else {
+                maps = kPIVillageQuotaService.buildCommonData(districtId, taskId, quotaId);
+            }
+            temps.put("quotaId", quotaId);
+            temps.put("quotaName", byQuotaId.getQuotaName());
+            temps.put("quotaScore", byQuotaId.getQuotaScore());
+            temps.put("isSetWeight", byQuotaId.getIsSetWeight());
+            temps.put("kpiQuotas", maps);
+            res.add(temps);
+        }
         return Result.of(res);
     }
 

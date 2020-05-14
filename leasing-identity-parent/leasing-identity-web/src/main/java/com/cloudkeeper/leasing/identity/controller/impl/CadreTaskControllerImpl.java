@@ -66,7 +66,7 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         if (StringUtils.isEmpty(cadreTaskDTO.getType())) {
             return Result.of(500, "任务类型不能为空");
         }
-        CadreTask currentTask = cadreTaskService.getCurrentTaskByType(cadreTaskDTO.getType());
+        CadreTask currentTask = cadreTaskService.getCurrentTaskByType(cadreTaskDTO.getType(), cadreTaskDTO.getTaskYear(), cadreTaskDTO.getTaskQuarter());
         if (currentTask != null) {
             return Result.of(500, "发布失败！当前已存在有效任务！");
         }
@@ -110,8 +110,11 @@ public class CadreTaskControllerImpl implements CadreTaskController {
     }
 
     @Override
-    public Result<CadreTaskVO> getCurrentTask(@PathVariable @Nonnull String type) {
-        CadreTask cadreTask = cadreTaskService.getCurrentTaskByType(type);
+    public Result<CadreTaskVO> getCurrentTask(@PathVariable @Nonnull String type, String year) {
+        if (StringUtils.isEmpty(year)) {
+            year = String.valueOf(LocalDate.now().getYear());
+        }
+        CadreTask cadreTask = cadreTaskService.getCurrentTaskByType(type, year, null);
         if (cadreTask == null) {
             return Result.of(null);
         }

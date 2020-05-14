@@ -15,6 +15,6 @@ public interface KPIEvaluationRepository extends BaseRepository<KPIEvaluation> {
 
     void  deleteByTypeAndTaskIdAndDistrictId(String type, String taskId, String districtId);
 
-    List<KPIEvaluation> findAllByVillageQuotaId(String villageQuotaId);
+    List<KPIEvaluation> findAllByVillageQuotaIdOrderByIndexNumAsc(String villageQuotaId);
 
 }

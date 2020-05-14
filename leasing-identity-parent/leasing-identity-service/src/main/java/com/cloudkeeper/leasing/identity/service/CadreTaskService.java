@@ -25,7 +25,7 @@ public interface CadreTaskService extends BaseService<CadreTask> {
 
     CadreTask getCurrentLevelJudgeTask();
 
-    CadreTask getCurrentTaskByType(String type);
+    CadreTask getCurrentTaskByType(String type, String taskYear, String quarter);
 
     void deleteById(String id);
 

@@ -14,6 +14,7 @@ import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
 import com.cloudkeeper.leasing.identity.service.KPIVillageQuotaService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +63,15 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     }
 
     @Override
-    public List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId) {
+    public List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId, String quarter) {
         List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
+        if (!StringUtils.isEmpty(quarter)) {
+            detachedCriteria.add(Restrictions.eq("quarter", quarter));
+        }
+        detachedCriteria.add(Restrictions.eq("districtId", districtId));
         List<KPIVillageQuota> villageQuotas = findAll(detachedCriteria);
         Map<String, Map<String, String>> map = new HashMap<>();
         for (KPIVillageQuota item : villageQuotas) {

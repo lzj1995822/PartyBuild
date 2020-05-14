@@ -151,26 +151,33 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     @Override
     public CadreTask getCurrentBaseInfoTask() {
-        return getCurrentTaskByType(BASE_INFO_TASK);
+        return getCurrentTaskByType(BASE_INFO_TASK, String.valueOf(LocalDate.now().getYear()), null);
     }
 
     @Override
     public CadreTask getSecretaryTask() {
-        return getCurrentTaskByType(GANBU_INFO_TASK);
+        return getCurrentTaskByType(GANBU_INFO_TASK, String.valueOf(LocalDate.now().getYear()), null);
     }
 
     @Override
     public CadreTask getCurrentReviewTask() {
-        return getCurrentTaskByType(REVIEW_TASK);
+        return getCurrentTaskByType(REVIEW_TASK, String.valueOf(LocalDate.now().getYear()), null);
     }
 
     @Override
     public CadreTask getCurrentLevelJudgeTask() {
-        return getCurrentTaskByType(LEVEL_JUDGE_TASK);
+        return getCurrentTaskByType(LEVEL_JUDGE_TASK, String.valueOf(LocalDate.now().getYear()), null);
     }
 
     @Override
-    public CadreTask getCurrentTaskByType(String type) {
+    public CadreTask getCurrentTaskByType(String type, String taskYear, String quarter) {
+        switch (type) {
+            case MAKE_REVIEW_API_CONTENT:
+            case REVIEW_TASK:
+                return cadreTaskRepository.findByTypeAndTaskYear(type, taskYear);
+            case DAILY_REVIEW:
+                return cadreTaskRepository.findByTypeAndTaskYearAndTaskQuarter(type, taskYear, quarter);
+        }
         return cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
     }
 

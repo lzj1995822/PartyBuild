@@ -16,7 +16,7 @@ public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
 
     void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId,String parentQuotaId);
 
-    List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId);
+    List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId, String quarter);
 
     List<Map<String, Object>> buildCommonData(String districtId, String taskId, String rootQuotaId);
 

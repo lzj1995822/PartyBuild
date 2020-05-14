@@ -46,6 +46,6 @@ public class KPIEvaluationServiceImpl extends BaseServiceImpl<KPIEvaluation> imp
 
     @Override
     public List<KPIEvaluation> findAllByVillageQuotaId(String villageQuotaId) {
-        return kPIEvaluationRepository.findAllByVillageQuotaId(villageQuotaId);
+        return kPIEvaluationRepository.findAllByVillageQuotaIdOrderByIndexNumAsc(villageQuotaId);
     }
 }

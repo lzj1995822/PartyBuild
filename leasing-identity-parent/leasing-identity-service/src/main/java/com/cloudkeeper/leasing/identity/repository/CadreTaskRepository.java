@@ -14,4 +14,8 @@ import java.time.LocalDate;
 public interface CadreTaskRepository extends BaseRepository<CadreTask> {
 
     CadreTask findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(String type, LocalDate endTime);
+
+    CadreTask findByTypeAndTaskYear(String type, String taskYear);
+
+    CadreTask findByTypeAndTaskYearAndTaskQuarter(String type, String taskYear, String taskQuarter);
 }

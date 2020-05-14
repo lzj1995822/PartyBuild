@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
@@ -106,6 +107,52 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         Page<KPITownQuota> kPITownQuotaPage = kPITownQuotaService.findAll(kPITownQuotaSearchable, pageable);
         Page<KPITownQuotaVO> kPITownQuotaVOPage = KPITownQuota.convert(kPITownQuotaPage, KPITownQuotaVO.class);
         return Result.of(kPITownQuotaVOPage);
+    }
+
+
+    @GetMapping("/commonWork")
+    public Result<List<KpiQuotaVO>> getCommonWorkByQuarter(String taskYear, String quarter, String districtId) {
+        String quotaId = taskYear + "01";
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
+        detachedCriteria.add(Restrictions.like("parentQuotaId", quotaId, MatchMode.START));
+        detachedCriteria.add(Restrictions.eq("quotaYear", taskYear));
+        detachedCriteria.add(Restrictions.eq("quarter", quarter));
+        detachedCriteria.add(Restrictions.eq("districtId", districtId));
+        detachedCriteria.addOrder(Order.asc("parentQuotaId"));
+        List<KPITownQuota> all = kPITownQuotaService.findAll(detachedCriteria);
+        Map<String, List<KPITownQuota>> map = new HashMap<>();
+
+        for (KPITownQuota item : all) {
+            if (!map.containsKey(item.getParentQuotaId())) {
+                map.put(item.getParentQuotaId(), new ArrayList<>());
+            }
+            List<KPITownQuota> kpiTownQuotas = map.get(item.getParentQuotaId());
+            kpiTownQuotas.add(item);
+        }
+
+        // 一级指标实体
+        KpiQuota first = kpiQuotaService.findByQuotaId(quotaId);
+
+        // 一级指标VO
+        KpiQuotaVO kpiQuotaVO = first.convert(KpiQuotaVO.class);
+
+        // 二级指标实体
+        List<KpiQuota> seconds = first.getKpiQuotas();
+
+        if (seconds == null) {
+            return Result.of(500, "二级指标内容不全！");
+        }
+        List<KpiQuotaVO> secondVOS = new ArrayList<>();
+
+        for (KpiQuota item : seconds) {
+            KpiQuotaVO convert = item.convert(KpiQuotaVO.class);
+            convert.setKpiTownQuotas(KPITownQuota.convert(map.get(item.getQuotaId()), KPITownQuotaVO.class));
+            secondVOS.add(convert);
+        }
+        ArrayList<KpiQuotaVO> res = new ArrayList<>();
+        kpiQuotaVO.setKpiQuotas(secondVOS);
+        res.add(kpiQuotaVO);
+        return Result.of(res);
     }
 
     @Override
