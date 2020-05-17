@@ -22,6 +22,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,9 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     public List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId, String quarter) {
         List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
 
+        if (townQuota.size() == 0) {
+            return new ArrayList<>();
+        }
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
         if (!StringUtils.isEmpty(quarter)) {
@@ -112,6 +116,10 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     public List<Map<String, Object>> buildCommonData(String districtId, String taskId, String rootQuotaId) {
         List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), rootQuotaId, taskId);
 
+        if (townQuota.size() == 0) {
+            return new ArrayList<>();
+        }
+
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
         detachedCriteria.add(Restrictions.eq("districtId", districtId));
@@ -148,6 +156,10 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     @Override
     public List<Map<String, Object>> buildWatchQuotaData(String districtId, String taskId, String parentQuotaId) {
         List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
+
+        if (townQuota.size() == 0) {
+            return new ArrayList<>();
+        }
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
@@ -191,6 +203,10 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     @Override
     public List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId, String parentQuotaId) {
         List<KPITownQuota> townQuota = kpiTownQuotaService.findAllByDistrictIdAndParentQuotaIdStartingWithAndTaskId(districtId.substring(0,4), parentQuotaId, taskId);
+
+        if (townQuota.size() == 0) {
+            return new ArrayList<>();
+        }
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageQuota.class);
         detachedCriteria.add(Restrictions.in("townQuotaId", townQuota.stream().map(KPITownQuota::getId).collect(Collectors.toList())));
@@ -241,6 +257,11 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
     @Override
     public void updateScoreById(String score, String scoreEnd, String id) {
         kPIVillageQuotaRepository.updateScoreById(score, scoreEnd, id);
+    }
+
+    @Override
+    public List<KPIVillageQuota> findAllByTownQuotaIdAndQuarter(@Nonnull String townQuotaId, @Nonnull String quarter) {
+        return kPIVillageQuotaRepository.findAllByTownQuotaIdAndQuarter(townQuotaId, quarter);
     }
 
     private void handleAttachInfo(Map<String, List<Map<String, Object>>> cols, @NonNull String parentQuotaId, @NonNull String taskId, @NonNull String districtId) {

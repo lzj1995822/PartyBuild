@@ -29,4 +29,6 @@ public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
     void deleteAllByTownQuotaIdIn(List<String> townQuotaIds);
 
     void updateScoreById(@Nonnull String score, @Nonnull String scoreEnd, @Nonnull String id);
+
+    List<KPIVillageQuota> findAllByTownQuotaIdAndQuarter(@Nonnull String townQuotaId, @Nonnull String quarter);
 }

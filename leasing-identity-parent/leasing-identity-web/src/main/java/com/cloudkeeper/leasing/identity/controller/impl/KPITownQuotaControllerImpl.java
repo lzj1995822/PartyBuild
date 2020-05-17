@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -146,7 +147,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
         for (KpiQuota item : seconds) {
             KpiQuotaVO convert = item.convert(KpiQuotaVO.class);
-            convert.setKpiTownQuotas(KPITownQuota.convert(map.get(item.getQuotaId()), KPITownQuotaVO.class));
+            List<KPITownQuota> kpiTownQuotas = map.get(item.getQuotaId());
+            if (!CollectionUtils.isEmpty(kpiTownQuotas)) {
+                convert.setKpiTownQuotas(KPITownQuota.convert(kpiTownQuotas, KPITownQuotaVO.class));
+            }
             secondVOS.add(convert);
         }
         ArrayList<KpiQuotaVO> res = new ArrayList<>();
@@ -156,7 +160,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     }
 
     @Override
-    public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart) {
+    public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart, String townDistrictId) {
         String d = kpi.getDistrictId();
 
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
@@ -169,6 +173,9 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             detachedCriteria.add(Restrictions.eq("parentQuotaId", k.getQuotaId()));
             if ("1".equals(isDepart)) {
                 d = "0101";
+                if (!StringUtils.isEmpty(townDistrictId)) {
+                    d = townDistrictId;
+                }
             }
             detachedCriteria.add(Restrictions.eq("districtId",d));
             detachedCriteria.addOrder(Order.desc("createdAt"));
@@ -403,10 +410,21 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         convert.setKpiVillageQuotas(null);
         convert = kPITownQuotaService.save(convert);
         kpiVillageQuotaService.deleteAllByTownQuotaId(convert.getId());
+        String[] quarters = {"第一季度", "第二季度", "第三季度", "第四季度"};
+        List<String> quarterList = Arrays.asList(quarters);
+
         for (KPIVillageQuotaDTO item : kpiVillageQuotas) {
             item.setId(null);
             item.setTownQuotaId(convert.getId());
-            kpiVillageQuotaService.save(item.convert(KPIVillageQuota.class));
+            if (kpiQuota.getOnceOrMore().equals("一年多次")) {
+                for (String subItem : quarterList) {
+                    KPIVillageQuota k = item.convert(KPIVillageQuota.class);
+                    k.setQuarter(subItem);
+                    kpiVillageQuotaService.save(k);
+                }
+            } else {
+                kpiVillageQuotaService.save(item.convert(KPIVillageQuota.class));
+            }
         }
         return Result.of(convert.convert(KPITownQuotaVO.class));
     }
@@ -463,12 +481,17 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
     @GetMapping("/scoringBasic")
     @Transactional
-    public Result<List<Map>> getScoringBasic(String townQuotaId, String taskId) {
+    public Result<List<Map>> getScoringBasic(String townQuotaId, String taskId, String quarter) {
         KPITownQuota byId = kPITownQuotaService.findById(townQuotaId);
         if (byId == null) {
             return Result.of(500, "当前三级指标不存在！");
         }
-        List<KPIVillageQuota> kpiVillageQuotas = byId.getKpiVillageQuotas();
+        List<KPIVillageQuota> kpiVillageQuotas;
+        if (!StringUtils.isEmpty(quarter)) {
+            kpiVillageQuotas = kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(byId.getId(), quarter);
+        } else {
+            kpiVillageQuotas = byId.getKpiVillageQuotas();
+        }
         List<String> collect = kpiVillageQuotas.stream().map(KPIVillageQuota::getDistrictId).collect(Collectors.toList());
 
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(DetectionIndex.class);
@@ -478,7 +501,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         Map<String, DetectionIndex> detectionIndexMap = all.stream().collect(Collectors.toMap(DetectionIndex::getDistrictId, detectionIndex -> detectionIndex));
         List<Map> res = new LinkedList<>();
         for (KPIVillageQuota item : kpiVillageQuotas) {
-            Map<String, Object> map = transBean2Map(detectionIndexMap.get(item.getDistrictId()));
+            Map<String, Object> map = new HashMap<>();
+            if (detectionIndexMap.get(item.getDistrictId()) != null) {
+                map = transBean2Map(detectionIndexMap.get(item.getDistrictId()));
+            }
             map.putAll(transBean2Map(item));
             List<KPIEvaluation> kpiEvaluations = kpiEvaluationService.findAllByVillageQuotaId(item.getId());
             map.put("kpiEvaluations", kpiEvaluations);

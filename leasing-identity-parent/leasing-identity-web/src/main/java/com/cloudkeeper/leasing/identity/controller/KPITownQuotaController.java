@@ -92,7 +92,7 @@ public interface KPITownQuotaController {
      */
     @ApiOperation(value = "获取所有镇考核指标", notes = "获取所有镇考核指标", position = 6)
     @PostMapping("/getAll")
-    Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart);
+    Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart, String townDistrictId);
 
 
     /**
