@@ -106,8 +106,10 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         Integer status = Integer.valueOf(cadreTaskObject.getStatus());
         if ("SUCCESS".equals(isSuccess)) {
             status++;
+            cadreTaskObject.setIsRejected("0");
         } else {
             status--;
+            cadreTaskObject.setIsRejected("1");
         }
         if (status == 2) {
             updateTotalProgress(cadreTaskObject.getCadreTask());

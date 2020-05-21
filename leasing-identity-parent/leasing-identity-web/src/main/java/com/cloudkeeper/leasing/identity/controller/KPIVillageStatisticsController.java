@@ -2,6 +2,7 @@ package com.cloudkeeper.leasing.identity.controller;
 
 import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
+import com.cloudkeeper.leasing.identity.domain.KPIVillageStatistics;
 import com.cloudkeeper.leasing.identity.dto.kpivillagestatistics.KPIVillageStatisticsDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagestatistics.KPIVillageStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageStatisticsVO;
@@ -86,8 +87,8 @@ public interface KPIVillageStatisticsController {
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
     @ApiOperation(value = "设置统计", notes = "设置统计", position = 6)
-    @PostMapping("/setSatistcs")
-    Result<Boolean> setSatistcs();
+    @PostMapping("/generateStatistics")
+    Result<Boolean> generateStatistics(String taskId);
 
 
     @ApiOperation(value = "导入文件", notes = "导入文件", position = 6)
@@ -97,8 +98,8 @@ public interface KPIVillageStatisticsController {
 
 
     @ApiOperation(value = "获取统计数据", notes = "获取统计数据", position = 6)
-    @GetMapping("/getStatistics/{districtId}")
-    Result<Object> getStatistics(@PathVariable String districtId);
+    @GetMapping("/getStatistics")
+    Result<Object> getStatistics(String taskYear);
 
     @ApiOperation(value = "获取平均值一下数量", notes = "获取平均值一下数量", position = 6)
     @GetMapping("/getStatisticsOnAverage/{quotaId}")
@@ -107,5 +108,5 @@ public interface KPIVillageStatisticsController {
 
     @ApiOperation(value = "获取平均值一下数量", notes = "获取平均值一下数量", position = 6)
     @GetMapping("/getExcellent")
-    Result<Object> getExcellent();
+    Result<List<KPIVillageStatistics>> getExcellent(String taskYear);
 }

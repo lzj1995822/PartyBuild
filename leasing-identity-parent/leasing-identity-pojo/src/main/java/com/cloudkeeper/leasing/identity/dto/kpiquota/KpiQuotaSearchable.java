@@ -64,4 +64,13 @@ public class KpiQuotaSearchable extends BaseSearchable {
 
     @ApiModelProperty(value = "多次执行还是一次执行", position = 10, required = true)
     private String onceOrMore;
+
+    @ApiModelProperty(value = "季度", position = 10, required = true)
+    private String quarter;
+
+    @ApiModelProperty(value = "任务id", position = 10, required = true)
+    private String taskId;
+
+    @ApiModelProperty(value = "当前选择的单位查询佐证材料的", position = 10, required = true)
+    private String districtId;
 }

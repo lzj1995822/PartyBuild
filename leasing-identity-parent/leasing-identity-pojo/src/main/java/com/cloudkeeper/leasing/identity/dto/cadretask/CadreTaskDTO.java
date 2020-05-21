@@ -72,4 +72,12 @@ public class CadreTaskDTO extends BaseEditDTO {
 
     // 晋升名单
     private List<PromotionCadresDTO> promotionCadres;
+
+    /** 是否生成考核结果 */
+    @ApiModelProperty(value = "是否生成考核结果")
+    private String hasGenerateResult;
+
+    /** 是否可以生成考核结果 */
+    @ApiModelProperty(value = "是否可以生成考核结果")
+    private String generateResultEnable;
 }

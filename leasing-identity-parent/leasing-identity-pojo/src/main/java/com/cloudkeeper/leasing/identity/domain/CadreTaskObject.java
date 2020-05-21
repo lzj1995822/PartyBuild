@@ -96,6 +96,10 @@ public class CadreTaskObject extends BaseEntity {
     @ApiModelProperty(value = "最新审核意见")
     private String lastestAdvice;
 
+    /** 是否为被驳回状态 */
+    @ApiModelProperty(value = "是否为被驳回状态")
+    private String isRejected;
+
     @Nonnull
     @Override
     public <T> T convert(@Nonnull Class<T> clazz) {
@@ -105,6 +109,7 @@ public class CadreTaskObject extends BaseEntity {
             cadreTaskObjectVO.setTaskType(cadreTask.getType());
             cadreTaskObjectVO.setEndTime(cadreTask.getEndTime());
             cadreTaskObjectVO.setTaskYear(cadreTask.getTaskYear());
+            cadreTaskObjectVO.setTaskQuarter(cadreTask.getTaskQuarter());
         }
         return (T) cadreTaskObjectVO;
     }

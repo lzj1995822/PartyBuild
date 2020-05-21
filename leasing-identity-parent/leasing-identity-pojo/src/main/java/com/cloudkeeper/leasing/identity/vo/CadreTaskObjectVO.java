@@ -93,4 +93,12 @@ public class CadreTaskObjectVO extends BaseVO {
     /** 任务年份 */
     @ApiModelProperty(value = "任务年份")
     private String taskYear;
+
+    /** 季度 */
+    @ApiModelProperty(value = "季度")
+    private String taskQuarter;
+
+    /** 是否为被驳回状态 */
+    @ApiModelProperty(value = "是否为被驳回状态")
+    private String isRejected;
 }

@@ -65,4 +65,12 @@ public class CadreTaskVO extends BaseVO {
     @ApiModelProperty(value = "任务所属模块")
     private String taskModule;
 
+    /** 是否生成考核结果 */
+    @ApiModelProperty(value = "是否生成考核结果")
+    private String hasGenerateResult;
+
+    /** 是否可以生成考核结果 */
+    @ApiModelProperty(value = "是否可以生成考核结果")
+    private String generateResultEnable;
+
 }

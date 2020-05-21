@@ -8,10 +8,13 @@ import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.KPIVillageQuotaSearchable;
 import com.cloudkeeper.leasing.identity.dto.kpivillagequota.ScoringDTO;
 import com.cloudkeeper.leasing.identity.service.*;
+import com.cloudkeeper.leasing.identity.vo.FullScoreVO;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +52,8 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     private final CadreTaskService cadreTaskService;
 
     private final KpiQuotaService kpiQuotaService;
+
+    private final KPIAttachmentService kpiAttachmentService;
 
     @Override
     public Result<KPIVillageQuotaVO> findOne(@ApiParam(value = "村考核指标id", required = true) @PathVariable String id) {
@@ -98,7 +103,11 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     }
 
     @GetMapping("/loadVillageAllQuota")
-    public Result<List<Map<String, Object>>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear) {
+    public Result<List<Map<String, Object>>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear, @Nonnull String departDistrictId) {
+        String makeQuotaDistrictId = districtId.substring(0, 4);
+        if (!StringUtils.isEmpty(departDistrictId)) {
+            makeQuotaDistrictId = departDistrictId;
+        }
         CadreTask byId = cadreTaskService.findById(taskId);
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
         detachedCriteria.add(Restrictions.eq("taskYear", byId.getTaskYear()));
@@ -108,28 +117,42 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
             return Result.of(500, "对应考核指标任务不存在！");
         }
         List<Map<String, Object>> res = new ArrayList<>();
-        taskId = all.get(0).getId();
-        for (int i = 1; i < 7; i ++) {
-            String quotaId = taskYear + "0" + i;
+        CadreTask quotaTask = all.get(0);
+        String quotaTaskId = quotaTask.getId();
+
+        DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KpiQuota.class);
+        detachedCriteria1.add(Restrictions.like("quotaMakeDepartId", makeQuotaDistrictId, MatchMode.ANYWHERE));
+        detachedCriteria1.add(Restrictions.eq("quotaLevel", "1"));
+        detachedCriteria1.add(Restrictions.eq("quotaYear", taskYear));
+        detachedCriteria1.addOrder(Order.asc("quotaId"));
+        List<KpiQuota> all1 = kpiQuotaService.findAll(detachedCriteria1);
+        for (KpiQuota item : all1) {
+            String quotaId = item.getQuotaId();
             Map<String, Object> temps = new HashMap<>();
             KpiQuota byQuotaId = kpiQuotaService.findByQuotaId(quotaId);
             List<Map<String, Object>> maps = new LinkedList<>();
-            if (i == 1) {
-                maps = kPIVillageQuotaService.buildCommonWorkData(districtId, taskId, quotaId, null);
-            } else if (i == 3) {
-                maps = kPIVillageQuotaService.buildWatchQuotaData(districtId, taskId, quotaId);
-            } else if (i == 5) {
-                maps = kPIVillageQuotaService.buildCommentQuotaData(districtId, taskId, quotaId);
+            if (quotaId.equals(taskYear + "01")) {
+                maps = kPIVillageQuotaService.buildCommonWorkData(districtId, quotaTaskId, taskId, quotaId, null, makeQuotaDistrictId);
+            } else if (quotaId.equals(taskYear + "03")) {
+                maps = kPIVillageQuotaService.buildWatchQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, makeQuotaDistrictId);
+            } else if (quotaId.equals(taskYear + "05")) {
+                maps = kPIVillageQuotaService.buildCommentQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, makeQuotaDistrictId);
             } else {
-                maps = kPIVillageQuotaService.buildCommonData(districtId, taskId, quotaId);
+                maps = kPIVillageQuotaService.buildCommonData(districtId, quotaTaskId, taskId, quotaId, makeQuotaDistrictId);
             }
             temps.put("quotaId", quotaId);
             temps.put("quotaName", byQuotaId.getQuotaName());
             temps.put("quotaScore", byQuotaId.getQuotaScore());
             temps.put("isSetWeight", byQuotaId.getIsSetWeight());
+            if (quotaId.equals(taskYear + "01")) {
+                temps.put("attachment", kpiAttachmentService.findAllByQuota(item.getQuotaId(), makeQuotaDistrictId));
+            } else {
+                temps.put("attachment", kpiAttachmentService.findByQuota(item.getQuotaId(), makeQuotaDistrictId, null, taskId));
+            }
             temps.put("kpiQuotas", maps);
             res.add(temps);
         }
+
         return Result.of(res);
     }
 
@@ -148,7 +171,13 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     public Result scoring(@Nonnull String taskId,@Nonnull @RequestBody List<ScoringDTO> scoringDTOS) {
         for (ScoringDTO item : scoringDTOS) {
             String score = item.getScore();
+            if (StringUtils.isEmpty(score)) {
+                score = "0";
+            }
             String weight = item.getWeight();
+            if (StringUtils.isEmpty(weight)) {
+                weight = "0";
+            }
             BigDecimal multiply = new BigDecimal(score).multiply(new BigDecimal(weight));
             kPIVillageQuotaService.updateScoreById(score, multiply.toString(), item.getId());
             DetectionIndex detectionIndex = detectionIndexService.findByDistrictIdAndTaskId(item.getDistrictId(), taskId);
@@ -186,4 +215,41 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         return emptyNames.toArray(result);
     }
 
+    @GetMapping("/getFullScore")
+    public Result<List<String>> getFullScore(String taskYear) {
+        String sql = "SELECT\n" +
+                "\t* \n" +
+                "FROM\n" +
+                "\t(\n" +
+                "\tSELECT COUNT\n" +
+                "\t\t( 1 ) AS total,\n" +
+                "\t\tSUM ( CASE kvq.scoreEnd WHEN ktq.score THEN 1 ELSE 0 END ) AS fullTotal,\n" +
+                "\t\tktq.quotaName,\n" +
+                "\t\tktq.parentQuotaId \n" +
+                "\tFROM\n" +
+                "\t\tKPI_village_Quota kvq\n" +
+                "\t\tLEFT JOIN KPI_Town_Quota ktq ON ktq.id = kvq.townQuotaId \n" +
+                "\t\tWHERE\n" +
+                "\t\tkvq.parentQuotaId like '" + taskYear + "%'\n" +
+                "\tGROUP BY\n" +
+                "\t\tktq.id,\n" +
+                "\t\tktq.quotaName,\n" +
+                "\t\tktq.parentQuotaId \n" +
+                "\t) a \n" +
+                "WHERE\n" +
+                "\ta.total = a.fullTotal";
+        List<FullScoreVO> fullScoreVOS = kPIVillageQuotaService.findAllBySql(FullScoreVO.class, sql);
+
+        ArrayList<String> actualVillage = new ArrayList<>();
+        Set<String> noActualVillage = new HashSet<>();
+        for (FullScoreVO item : fullScoreVOS) {
+            if (item.getParentQuotaId().contains(taskYear + "02")) {
+                actualVillage.add(item.getQuotaName());
+            } else {
+                noActualVillage.add(item.getQuotaName());
+            }
+        }
+        actualVillage.addAll(noActualVillage);
+        return Result.of(actualVillage);
+    }
 }

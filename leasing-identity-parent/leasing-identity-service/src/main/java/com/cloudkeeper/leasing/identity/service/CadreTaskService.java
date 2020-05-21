@@ -33,4 +33,6 @@ public interface CadreTaskService extends BaseService<CadreTask> {
 
     Map<String,List> activitiesCompletion(String year, String objectType,String taskType);
 
+    CadreTask updateResultStatus(String taskId);
+
 }

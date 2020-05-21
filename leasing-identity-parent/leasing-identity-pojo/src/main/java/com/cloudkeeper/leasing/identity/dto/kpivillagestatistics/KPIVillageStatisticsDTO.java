@@ -25,52 +25,52 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class KPIVillageStatisticsDTO extends BaseEditDTO {
 
-    /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     private String districtId;
 
-    /** 组织名称 */
     @ApiModelProperty(value = "组织名称", position = 10, required = true)
     private String districtName;
 
-    /** 父组织ID */
     @ApiModelProperty(value = "父组织ID", position = 10, required = true)
     private String parentDistrictId;
 
-    /** 父组织名称 */
     @ApiModelProperty(value = "父组织名称", position = 10, required = true)
     private String parentDistrictName;
 
-    /** 指标ID */
     @ApiModelProperty(value = "指标ID", position = 10, required = true)
     private String quotaId;
 
-    /** 指标名称 */
     @ApiModelProperty(value = "指标名称", position = 10, required = true)
     private String quotaName;
 
-    /** 父类指标ID */
     @ApiModelProperty(value = "父类指标ID", position = 10, required = true)
     private String parentQuotaId;
 
-    /** 父类指标名称 */
     @ApiModelProperty(value = "父类指标名称", position = 10, required = true)
     private String parentQuotaName;
 
-    /** 分数 */
     @ApiModelProperty(value = "分数", position = 10, required = true)
     private String score;
 
-    /** 权重 */
-    @ApiModelProperty(value = "权重", position = 10, required = true)
-    private String weight;
-
-    /** 任务ID */
     @ApiModelProperty(value = "任务ID", position = 10, required = true)
     private String taskId;
 
-    /** 季节 */
-    @ApiModelProperty(value = "季节", position = 10, required = true)
-    private String quarter;
+    @ApiModelProperty(value = "排名", position = 10, required = true)
+    private String ranking;
+
+    @ApiModelProperty(value = "村书记姓名", position = 10, required = true)
+    private String cadresName;
+
+    @ApiModelProperty(value = "指标层级", position = 10, required = true)
+    private String quotaLevel;
+
+    @ApiModelProperty(value = "镇内排名", position = 10, required = true)
+    private String townRanking;
+
+    @ApiModelProperty(value = "分区等级ABCD", position = 10, required = true)
+    private String partitionLevel;
+
+    @ApiModelProperty(value = "村级实绩老的得分", position = 10, required = true)
+    private String oldScore;
 
 }

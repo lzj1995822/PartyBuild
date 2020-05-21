@@ -161,22 +161,27 @@ public class CadreTaskControllerImpl implements CadreTaskController {
     }
 
     @PostMapping("/currentTask/list")
-    public Result currentTaskList(@Nonnull @RequestBody List<String> types) {
+    public Result currentTaskList(@Nonnull @RequestBody List<String> types,@RequestParam("isReview") String isReview,Pageable pageable) {
         String currentPrincipalId = cadreTaskService.getCurrentPrincipalId();
         Optional<SysUser> optionalById = sysUserService.findOptionalById(currentPrincipalId);
         if (!optionalById.isPresent()) {
             return Result.of(500, "当前用户不存在！");
         }
         SysDistrict sysDistrict = optionalById.get().getSysDistrict();
-        if (sysDistrict.getDistrictLevel() == 2) {
+        if (sysDistrict.getDistrictLevel() == 2 || "1".equals(isReview)) {
             // 镇的待执行列表有状态
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTaskObject.class);
-            detachedCriteria.add(Restrictions.eq("objectId", sysDistrict.getDistrictId()));
+            if ("1".equals(isReview)) {
+                detachedCriteria.add(Restrictions.eq("status", "1"));
+            } else {
+                detachedCriteria.add(Restrictions.eq("objectId", sysDistrict.getDistrictId()));
+            }
             detachedCriteria.createAlias("cadreTask", "c");
             detachedCriteria.add(Restrictions.in("c.type", types));
             detachedCriteria.add(Restrictions.gt("c.endTime", LocalDate.now()));
+            Integer totalCount = cadreTaskObjectService.getTotalCount(detachedCriteria);
             detachedCriteria.addOrder(Order.desc("c.endTime"));
-            return Result.of(CadreTaskObject.convert(cadreTaskObjectService.findAll(detachedCriteria), CadreTaskObjectVO.class));
+            return Result.of(CadreTaskObject.convert(cadreTaskObjectService.findAll(detachedCriteria, pageable, totalCount), CadreTaskObjectVO.class));
         }
         // 市委的正在执行列表
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
@@ -185,7 +190,8 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         }
         detachedCriteria.add(Restrictions.in("type", types));
         detachedCriteria.add(Restrictions.gt("endTime", LocalDate.now()));
+        Integer totalCount = cadreTaskObjectService.getTotalCount(detachedCriteria);
         detachedCriteria.addOrder(Order.desc("endTime"));
-        return Result.of(CadreTask.convert(cadreTaskService.findAll(detachedCriteria), CadreTaskVO.class));
+        return Result.of(CadreTask.convert(cadreTaskService.findAll(detachedCriteria, pageable, totalCount), CadreTaskVO.class));
     }
 }

@@ -29,6 +29,7 @@ public interface KPIVillageQuotaRepository extends BaseRepository<KPIVillageQuot
     @Query(value = "update dbo.KPI_village_Quota set score = :score, scoreEnd = :scoreEnd where id = :id", nativeQuery = true)
     Integer updateScoreById(@Param("score") String score,@Param("scoreEnd") String scoreEnd,@Param("id") String id);
 
-    List<KPIVillageQuota> findAllByTownQuotaIdAndQuarter(@Nonnull String townQuotaId, @Nonnull String quarter);
+    List<KPIVillageQuota> findAllByTownQuotaIdAndQuarterOrderByDistrictId(@Nonnull String townQuotaId, @Nonnull String quarter);
 
+    List<KPIVillageQuota> findAllByParentQuotaId(String parentQuotaId);
 }

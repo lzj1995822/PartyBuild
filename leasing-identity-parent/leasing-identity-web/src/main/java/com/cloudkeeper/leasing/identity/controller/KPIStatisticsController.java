@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -84,7 +85,7 @@ public interface KPIStatisticsController {
         @ApiParam(value = "分页参数", required = true) Pageable pageable);
 
     @ApiOperation(value = "初始化", notes = "初始化", position = 5)
-    @GetMapping("/init")
-    Result<Boolean> init();
+    @GetMapping("/generateKpiResult")
+    Result<Boolean> generateKpiResult(@Nonnull String taskId);
 
 }

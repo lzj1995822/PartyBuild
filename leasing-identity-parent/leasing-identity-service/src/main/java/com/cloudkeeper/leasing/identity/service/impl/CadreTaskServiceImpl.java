@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -171,14 +173,33 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
 
     @Override
     public CadreTask getCurrentTaskByType(String type, String taskYear, String quarter) {
+        CadreTask currentTask;
+        String finishStatus = "2";
         switch (type) {
             case MAKE_REVIEW_API_CONTENT:
             case REVIEW_TASK:
-                return cadreTaskRepository.findByTypeAndTaskYear(type, taskYear);
+                currentTask = cadreTaskRepository.findByTypeAndTaskYear(type, taskYear);
+                break;
             case DAILY_REVIEW:
-                return cadreTaskRepository.findByTypeAndTaskYearAndTaskQuarter(type, taskYear, quarter);
+                currentTask = cadreTaskRepository.findByTypeAndTaskYearAndTaskQuarter(type, taskYear, quarter);
+                break;
+            case LEVEL_JUDGE_TASK:
+                currentTask = cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
+                finishStatus = "4";
+                break;
+            default:
+                currentTask = cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
         }
-        return cadreTaskRepository.findByTypeAndEndTimeGreaterThanEqualOrderByEndTimeDesc(type, LocalDate.now());
+        if (currentTask == null) {
+            return null;
+        }
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTaskObject.class);
+        detachedCriteria.add(Restrictions.eq("taskId", currentTask.getId()));
+        Integer totalCount = super.getTotalCount(detachedCriteria);
+        detachedCriteria.add(Restrictions.ge("status", finishStatus));
+        Integer finishCount = super.getTotalCount(detachedCriteria);
+        currentTask.setCurrentPercent(new BigDecimal(finishCount).divide(new BigDecimal(totalCount), 2, RoundingMode.FLOOR).toString());
+        return cadreTaskRepository.save(currentTask);
     }
 
     @Override
@@ -235,6 +256,18 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         }
         map.put("title",strs);
         return map;
+    }
+
+    @Override
+    public CadreTask updateResultStatus(String taskId) {
+        Optional<CadreTask> optionalById = findOptionalById(taskId);
+        if (!optionalById.isPresent()) {
+            return null;
+        }
+        CadreTask cadreTask = optionalById.get();
+        cadreTask.setHasGenerateResult("1");
+        cadreTaskRepository.save(cadreTask);
+        return cadreTask;
     }
 
     private List<SysDistrict> handleApiContentTask(CadreTaskDTO cadreTaskDTO, String taskId) {

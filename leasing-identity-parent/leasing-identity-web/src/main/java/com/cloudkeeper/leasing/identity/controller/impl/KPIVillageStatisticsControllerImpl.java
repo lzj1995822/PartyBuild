@@ -4,11 +4,13 @@ import com.cloudkeeper.leasing.base.annotation.Authorization;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.config.ExcelUtils;
 import com.cloudkeeper.leasing.identity.controller.KPIVillageStatisticsController;
+import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.identity.domain.KPIVillageQuota;
 import com.cloudkeeper.leasing.identity.domain.KPIVillageStatistics;
 import com.cloudkeeper.leasing.identity.dto.kpivillagestatistics.KPIVillageStatisticsDTO;
 import com.cloudkeeper.leasing.identity.dto.kpivillagestatistics.KPIVillageStatisticsSearchable;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
 import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.vo.ImportVO;
@@ -27,12 +29,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nonnull;
+import javax.management.Query;
 import java.util.*;
 
 /**
@@ -47,6 +48,8 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     private final KPIVillageStatisticsService kPIVillageStatisticsService;
 
     private final KPITownQuotaService kPITownQuotaService;
+
+    private final CadreTaskService cadreTaskService;
 
     @Override
     public Result<KPIVillageStatisticsVO> findOne(@ApiParam(value = "村一级指标统计id", required = true) @PathVariable String id) {
@@ -96,55 +99,11 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     }
 
     @Override
-    public Result<Boolean> setSatistcs() {
-        List<KPITownQuota> list = kPITownQuotaService.findAll();
-        List<KPIVillageStatistics> res = new ArrayList<>();
-        String taskId = "";
-        for (KPITownQuota kpiTownQuota : list) {
-//            for (KPIVillageQuota kpiVillageQuota : kpiTownQuota.getKpiVillageQuotas()) {
-//                //整合至统计表
-//                KPIVillageStatistics k = new KPIVillageStatistics();
-//                k.setDistrictId(kpiVillageQuota.getDistrictId());
-//                k.setDistrictName(kpiVillageQuota.getDistrictName());
-//                k.setParentDistrictId(kpiTownQuota.getDistrictId());
-//                k.setParentDistrictName(kpiTownQuota.getDistrictName());
-//                k.setParentQuotaId(kpiTownQuota.getParentQuotaId());
-//                k.setParentQuotaName(kpiTownQuota.getParentQuotaName());
-//                k.setQuotaName(kpiTownQuota.getQuotaName());
-//                k.setQuarter(kpiTownQuota.getQuarter());
-//                k.setScore(StringUtils.isNotBlank(kpiVillageQuota.getScore()) ? kpiVillageQuota.getScore() : "0");
-//                k.setTaskId(taskId);
-//                k.setWeight(kpiVillageQuota.getWeight());
-//                res.add(k);
-//            }
+    public Result<Boolean> generateStatistics(String taskId) {
+        if (kPIVillageStatisticsService.generateVillageStatistic(taskId)) {
+            Result.of(200, true);
         }
-        kPIVillageStatisticsService.addStatistics(res);//三级统计
-
-
-        //二级统计
-        String sql = "SELECT cast(sum(cast(score as FLOAT)) as VARCHAR) as score,districtId,districtName, parentDistrictName,parentDistrictId,parentQuotaId as quotaId,parentQuotaName as quotaName FROM KPI_Village_Statistics GROUP BY districtId,districtName, parentDistrictName,parentDistrictId,parentQuotaId,parentQuotaName";
-        res = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, sql);
-        List<KPIVillageStatistics> s = new ArrayList<>();
-        for (KPIVillageStatistics kpiVillageStatistics : res){
-            kpiVillageStatistics.setTaskId(taskId);
-            kpiVillageStatistics.setParentQuotaId(kpiVillageStatistics.getQuotaId().substring(0,2));
-            s.add(kpiVillageStatistics);
-        }
-        kPIVillageStatisticsService.addStatistics(s);
-
-
-        //一级考核
-        String sql1 = "SELECT cast(sum(cast(score as FLOAT)) as VARCHAR) as score,districtId,districtName, parentDistrictName,parentDistrictId,parentQuotaId as quotaId FROM KPI_Village_Statistics where parentQuotaName is null  GROUP BY districtId,districtName, parentDistrictName,parentDistrictId,parentQuotaId";
-        res = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, sql1);
-        //获取所有村，生成MAP
-        List<KPIVillageStatistics> t = new ArrayList<>();
-        for (KPIVillageStatistics kpiVillageStatistics : res){
-            kpiVillageStatistics.setTaskId(taskId);
-            kpiVillageStatistics.setParentQuotaId("0");
-            t.add(kpiVillageStatistics);
-        }
-        kPIVillageStatisticsService.addStatistics(t);
-        return Result.of(true);
+        return Result.of(500, false);
     }
 
     @Override
@@ -178,89 +137,160 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     }
 
     @Override
-    public Result<Object> getStatistics(@PathVariable String districtId) {
+    public Result<Object> getStatistics(String taskYear) {
+        String taskId = getCurrentTaskId(taskYear);
+        if (taskId == null) {
+            return Result.of(500, "当前年份对应的考核任务不存在！");
+        }
 
-        String sql = "SELECT top 10 * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
-        List<KPIVillageStatistics> qianshi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql);
+        String top10Sql = "SELECT TOP 10 * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
+        List<KPIVillageStatistics> top10 = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, top10Sql);
 
 
-        String sql1 = "SELECT top 10 * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where CAST (a.score as FLOAT) >0 ORDER BY a.score asc";
-        List<KPIVillageStatistics> houshi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql1);
+        String last10Sql = "SELECT TOP 10 * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) ASC";
+        List<KPIVillageStatistics> last10 = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, last10Sql);
 
-        String sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
-        List<KPIVillageStatistics> quanbu = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
+        String lastGroupByTownSql = "SELECT\n" +
+                "\t* \n" +
+                "FROM\n" +
+                "\tKPI_Village_Statistics kvs \n" +
+                "WHERE\n" +
+                "\tkvs.score IN ( SELECT MIN ( CAST ( score AS FLOAT ) ) AS score FROM KPI_Village_Statistics WHERE " +
+                "quotaLevel = '0' and taskId = '" + taskId + "' GROUP BY parentDistrictId, parentDistrictName ) \n" +
+                "ORDER BY\n" +
+                "\tscore DESC";
+        List<KPIVillageStatistics> lastGroupByTown = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, lastGroupByTownSql);
 
-        String sql3 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE parentDistrictId = '"+districtId+"' and quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
-        List<KPIVillageStatistics> quanzhen = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql3);
+        String top3ByQuotasSql = "SELECT * from (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and quotaId = '" + taskYear+ "04' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp1\n" +
+                "UNION ALL\n" +
+                "SELECT * from (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and quotaId = '" + taskYear+ "05' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp2\n" +
+                "UNION ALL\n" +
+                "SELECT * FROM (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '2' and quotaId = '" + taskYear+ "0301' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp3\n" +
+                "UNION ALL\n" +
+                "SELECT * FROM (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '2' and quotaId = '" + taskYear+ "0302' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp4\n" +
+                "UNION ALL\n" +
+                "SELECT * FROM (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '2' and quotaId = '" + taskYear+ "0303' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp5\n" +
+                "UNION ALL\n" +
+                "SELECT * FROM (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '2' and quotaId = '" + taskYear+ "0304' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp6\n" +
+                "UNION ALL\n" +
+                "SELECT * FROM (SELECT top 3 * from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '2' and quotaId = '" + taskYear+ "0305' and taskId = '" +taskId+ "' ORDER BY cast(score as FLOAT) desc) as temp7";
+        List<KPIVillageStatistics> top3ByQuotas = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, top3ByQuotasSql);
 
-        //String sql4 = "SELECT top 24 a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
-        List<KPIVillageStatistics> youxiu = new ArrayList<>();
+        Map<String, List<KPIVillageStatistics>> map = new HashMap<>();
+        for (KPIVillageStatistics item : top3ByQuotas) {
+            if (!map.containsKey(item.getQuotaName())) {
+                map.put(item.getQuotaName(), new ArrayList<>());
+            }
+            List<KPIVillageStatistics> kpiVillageStatisticsList = map.get(item.getQuotaName());
+            kpiVillageStatisticsList.add(item);
+        }
 
-        //String sql5 = "SELECT top 106 a.* FROM(SELECT  districtName,parentDistrictName,SUM(CAST (score as FLOAT)) score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY a.score DESC";
-        //List<KPIVillageStatistics> c = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
-        List<KPIVillageStatistics> chenzhi = new ArrayList<>();
-        List<KPIVillageStatistics> jibenchenzhi = new ArrayList<>();
-        for (int i = 0;i < quanbu.size()-1;i++){
-            if (i < 24){
-                youxiu.add(quanbu.get(i));
-            }else if (i < 106){
-                chenzhi.add(quanbu.get(i));
-            }else {
-                jibenchenzhi.add(quanbu.get(i));
+        String allSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
+        List<KPIVillageStatistics> allBySql = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, allSql);
+
+        List<KPIVillageStatistics> good = new ArrayList<>();
+        List<KPIVillageStatistics> competent = new ArrayList<>();
+        List<KPIVillageStatistics> basicCompetent = new ArrayList<>();
+        for (KPIVillageStatistics item : allBySql) {
+            if (Integer.valueOf(item.getRanking()) <= 24) {
+                good.add(item);
+            } else if (Integer.valueOf(item.getRanking()) <= 106) {
+                competent.add(item);
+            } else {
+                basicCompetent.add(item);
             }
         }
-        String sql5 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName) a where (CAST (a.score as FLOAT) > 0 and cast(a.score as FLOAT) <60)   ORDER BY a.score asc";
-        List<KPIVillageStatistics> buchengzhi = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql5);
 
-        //获取每一项的排名
-        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '01' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
-        List<KPIVillageStatistics> rcgz = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '02' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
-        List<KPIVillageStatistics> cjsj = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '03' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
-        List<KPIVillageStatistics> jczb = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '04' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
-        List<KPIVillageStatistics> snpj = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null and quotaId = '05' AND CAST (score as FLOAT) > 0 GROUP BY districtName,parentDistrictName,cadresName) a ORDER BY CAST (a.score as FLOAT) DESC";
-        List<KPIVillageStatistics> zhpy = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        Map<String,Object> map = new HashMap<>();
-        map.put("qianshi",qianshi);
-        map.put("houshi",houshi);
-        map.put("quanbu",quanbu);
-        map.put("quanzhen",quanzhen);
-        map.put("youxiu",youxiu);
-        map.put("chenzhi",chenzhi);
-        map.put("jibenchenzhi",jibenchenzhi);
-        map.put("buchengzhi",buchengzhi);
+        String incompetenceSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and CAST (kvs.score as FLOAT) > 0 and cast(kvs.score as FLOAT) < 60  ORDER BY kvs.score asc";
+        List<KPIVillageStatistics> incompetence = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, incompetenceSql);
 
-        map.put("rcgz",rcgz);
-        map.put("cjsj",cjsj);
-        map.put("jczb",jczb);
-        map.put("snpj",snpj);
-        map.put("zhpy",zhpy);
-        return Result.of(map);
-
+        Map<String,Object> res = new HashMap<>();
+        res.put("top10", top10);
+        res.put("last10", last10);
+        res.put("lastGroupByTown", lastGroupByTown);
+        res.put("top3ByQuotas", map);
+        res.put("good", good);
+        res.put("competent", competent);
+        res.put("basicCompetent", basicCompetent);
+        res.put("incompetence", incompetence);
+        return Result.of(res);
     }
 
     @Override
     public Result<Object> getStatisticsOnAverage(@PathVariable String quotaId) {
-        String sql = "";
+        String  sql = "SELECT (cast (CONVERT(decimal(18, 2),a.val * 1.0 / (SELECT count(1) FROM SYS_District WHERE parentName = a.name AND districtType = 'Party')) as VARCHAR)) val,a.name as name FROM (SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName) a";;
         if ("02".equals(quotaId)){
             sql = "SELECT (cast (count(1) as VARCHAR)) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '02') AND quotaId = '02' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName";
-        }else {
-            sql = "SELECT (cast (CONVERT(decimal(18, 2),a.val * 1.0 / (SELECT count(1) FROM SYS_District WHERE parentName = a.name AND districtType = 'Party')) as VARCHAR)) val,a.name as name FROM (SELECT COUNT(1) AS val,parentDistrictName as name FROM KPI_Village_Statistics WHERE CAST (score as FLOAT) > (SELECT AVG(CAST (score as FLOAT)) FROM KPI_Village_Statistics  WHERE quotaId = '"+quotaId+"') AND quotaId = '"+quotaId+"' AND parentDistrictName != '广电测试镇党委' AND districtId != '-1' GROUP BY parentDistrictName) a";
         }
-
         List<StatisticsStringVO> buchengzhi = kPIVillageStatisticsService.findAllBySql(StatisticsStringVO.class,sql);
         return Result.of(buchengzhi);
     }
 
     @Override
-    public Result<Object> getExcellent() {
-        String sql2 = "SELECT * FROM(SELECT  districtName,parentDistrictName,CAST(SUM(CAST (score as FLOAT)) as varchar) as  score,cadresName FROM KPI_Village_Statistics WHERE quotaName IS null GROUP BY districtName,parentDistrictName,cadresName HAVING SUM(CAST (score as FLOAT) )> 0) a ORDER BY a.score DESC";
-        List<KPIVillageStatistics> quanbu = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class,sql2);
-        return Result.of(quanbu);
+    public Result<List<KPIVillageStatistics>> getExcellent(String taskYear) {
+        String currentTaskId = getCurrentTaskId(taskYear);
+        if (currentTaskId == null) {
+            return Result.of(500, "当前年份对应的考核任务不存在！");
+        }
+        String allSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +currentTaskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
+        List<KPIVillageStatistics> all = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, allSql);
+        return Result.of(all);
     }
 
+    @GetMapping("/getTotalScore")
+    public Result<Map<String, List<String>>> getTotalScore(@Nonnull String taskYear) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
+        detachedCriteria.add(Restrictions.eq("taskYear", taskYear));
+        detachedCriteria.add(Restrictions.eq("type", "综合年度考核"));
+        List<CadreTask> all = cadreTaskService.findAll(detachedCriteria);
+        if (all.size() == 0) {
+            return Result.of(500, "当前任务不存在!");
+        }
+        CadreTask cadreTask = all.get(0);
+
+        String sql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and kvs.taskId = '" +cadreTask.getId()+ "' ORDER BY cast(kvs.score as FLOAT) asc";
+
+        List<KPIVillageStatistics> allBySql = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, sql);
+
+        List<String> allScore = new ArrayList<>();
+        Map<String, List<String>> map = new HashMap<>();
+        for (KPIVillageStatistics item : allBySql) {
+            if (!map.containsKey(item.getParentDistrictName())) {
+                map.put(item.getParentDistrictName(), new ArrayList<>());
+            }
+            List<String> strings = map.get(item.getParentDistrictName());
+            strings.add(item.getScore());
+            allScore.add(item.getScore());
+        }
+        map.put("全市", allScore);
+        return Result.of(map);
+    }
+
+    @GetMapping("/reserveTalents")
+    public List<KPIVillageStatistics> reserveTalents(String taskYear) {
+        String sql = "SELECT top 20 b.* from (\n" +
+                "SELECT cast(sum(calScore) as varchar) as score, a.districtId, a.districtName FROM (\n" +
+                "SELECT CAST(score AS FLOAT) * 0.15 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "02'\n" +
+                "UNION ALL\n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "03'\n" +
+                "UNION ALL\n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "04'\n" +
+                "UNION ALL\n" +
+                "SELECT CAST(score AS FLOAT) * 0.35 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "05'\n" +
+                ") a GROUP BY a.districtId, a.districtName ) b ORDER BY cast(score as FLOAT) desc";
+        return kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, sql);
+    }
+
+    public String getCurrentTaskId(String taskYear) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
+        detachedCriteria.add(Restrictions.eq("taskYear", taskYear));
+        detachedCriteria.add(Restrictions.eq("type", "综合年度考核"));
+        List<CadreTask> all = cadreTaskService.findAll(detachedCriteria);
+        if (all.size() == 0) {
+            return null;
+        }
+        CadreTask cadreTask = all.get(0);
+        return cadreTask.getId();
+    }
 
 }

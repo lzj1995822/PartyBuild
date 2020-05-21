@@ -217,4 +217,9 @@ public class SysDistrictServiceImpl extends BaseServiceImpl<SysDistrict> impleme
     public List<SysDistrict> findAllTowns() {
         return sysDistrictRepository.findAllByDistrictTypeAndDistrictLevel("Party", 2);
     }
+
+    @Override
+    public List<SysDistrict> findAllVillages() {
+        return sysDistrictRepository.findAllByDistrictTypeAndDistrictLevel("Party", 3);
+    }
 }

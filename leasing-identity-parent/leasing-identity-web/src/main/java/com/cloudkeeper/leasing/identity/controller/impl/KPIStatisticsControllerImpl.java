@@ -2,27 +2,43 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KPIStatisticsController;
+import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.KPIStatistics;
+import com.cloudkeeper.leasing.identity.domain.KPIVillageStatistics;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.kpistatistics.KPIStatisticsDTO;
 import com.cloudkeeper.leasing.identity.dto.kpistatistics.KPIStatisticsSearchable;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.service.KPIStatisticsService;
+import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.vo.DistrictsVo;
 import com.cloudkeeper.leasing.identity.vo.KPIStatisticsVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * 双向印证 controller
@@ -37,6 +53,10 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
 
     /** 组织 service */
     private final SysDistrictService sysDistrictService;
+
+    private final CadreTaskService cadreTaskService;
+
+    private final KPIVillageStatisticsService kpiVillageStatisticsService;
 
     @Override
     public Result<KPIStatisticsVO> findOne(@ApiParam(value = "双向印证id", required = true) @PathVariable String id) {
@@ -72,13 +92,21 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
     @Override
     public Result<List<KPIStatisticsVO>> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
+        if (StringUtils.isEmpty(kPIStatisticsSearchable.getTaskYear())) {
+            return Result.of(500, "任务年度不存在！");
+        }
+        CadreTask task = cadreTaskService.getCurrentTaskByType("综合年度考核", kPIStatisticsSearchable.getTaskYear(), null);
+        if (task == null) {
+            return Result.of(500, "年度任务不存在！");
+        }
+        kPIStatisticsSearchable.setTaskId(task.getId());
         List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable, sort);
         List<KPIStatisticsVO> kPIStatisticsVOList = KPIStatistics.convert(kPIStatisticsList, KPIStatisticsVO.class);
         for (KPIStatisticsVO k : kPIStatisticsVOList){
-            k.setMargin1(Math.abs(Integer.valueOf(k.getVillagePerformance()) - Integer.valueOf(k.getMonitoringIndex())));
-            k.setMargin2(Math.abs(Integer.valueOf(k.getDvm()) - Integer.valueOf(k.getAbilityJudgement())));
-            k.setMargin3(Math.abs(Integer.valueOf(k.getRoutine()) - Integer.valueOf(k.getComprehensiveEvaluation())));
-            k.setMargin4(Math.abs(Integer.valueOf(k.getComprehensiveEvaluationABC()) - Integer.valueOf(k.getSatisfactionDegree())));
+            k.setMargin1(Double.valueOf(k.getVillagePerformance()) - Double.valueOf(k.getMonitoringIndex()));
+            k.setMargin2(Double.valueOf(k.getDvm()) - Double.valueOf(k.getAbilityJudgement()));
+            k.setMargin3(Double.valueOf(k.getRoutine()) - Double.valueOf(k.getComprehensiveEvaluation()));
+            k.setMargin4(Double.valueOf(k.getComprehensiveEvaluationABC()) - Double.valueOf(k.getSatisfactionDegree()));
         }
         return Result.of(kPIStatisticsVOList);
     }
@@ -92,111 +120,109 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
     }
 
     @Override
-    public Result<Boolean> init() {
-        //总排名
-        //String sql = "SELECT cast( row_number()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' GROUP BY districtName,districtId) t";
-
-        //村级实绩排名
-        String sql = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '02' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts = sysDistrictService.findAllBySql(DistrictsVo.class,sql);
-        for (DistrictsVo d : sysDistricts){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setVillagePerformance(d.getVal().toString());
-            kPIStatisticsService.save(k);
+    @Transactional
+    public Result<Boolean> generateKpiResult(@Nonnull String taskId) {
+        CadreTask byId = cadreTaskService.findById(taskId);
+        if (byId == null) {
+            return Result.of(500, "当前任务不存在！");
+        }
+        String hasGenerateResult = byId.getHasGenerateResult();
+        if ("1".equals(hasGenerateResult)) {
+            return Result.of(500, "当前任务考核结果已经生成！");
         }
 
-        //村级实绩排名
-        String sql1 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '03' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts1 = sysDistrictService.findAllBySql(DistrictsVo.class,sql1);
-        for (DistrictsVo d : sysDistricts1){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setMonitoringIndex(d.getVal().toString());
-            kPIStatisticsService.save(k);
+        kpiVillageStatisticsService.generateVillageStatistic(taskId);
+
+        List<SysDistrict> villages = sysDistrictService.findAllVillages();
+        Map<String, KPIStatistics> tempRes = new HashMap<>();
+        for (SysDistrict item : villages) {
+            KPIStatistics kpiStatistics = new KPIStatistics();
+            kpiStatistics.setTaskId(taskId);
+            kpiStatistics.setDistrictId(item.getDistrictId());
+            kpiStatistics.setDistrictName(item.getDistrictName());
+            tempRes.put(item.getDistrictId(), kpiStatistics);
         }
 
-        //日常工作村级实绩监测指标排名
-        String sql2 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND (quotaId = '01' or quotaId = '02'or quotaId = '03') GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts2 = sysDistrictService.findAllBySql(DistrictsVo.class,sql2);
-        for (DistrictsVo d : sysDistricts2){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setDvm(d.getVal().toString());
-            kPIStatisticsService.save(k);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPIVillageStatistics.class);
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria.add(Restrictions.eq("quotaLevel", "1"));
+        List<KPIVillageStatistics> all = kpiVillageStatisticsService.findAll(detachedCriteria);
+
+        Map<String, Double> dvb = new HashMap<>();
+        for (KPIVillageStatistics item : all) {
+            BigDecimal score = new BigDecimal(item.getScore());
+            KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
+            String quotaId = item.getQuotaId();
+            if (!dvb.containsKey(item.getDistrictId())) {
+                dvb.put(item.getDistrictId(), 0.00);
+            }
+            Double aDouble = dvb.get(item.getDistrictId());
+            if (quotaId.contains(byId.getTaskYear() + "02")) {
+                kpiStatistics.setVillagePerformance(item.getOldScore());
+                aDouble += Double.valueOf(item.getOldScore());
+            } else if (quotaId.contains(byId.getTaskYear() + "03")) {
+                aDouble += Double.valueOf(item.getScore());
+                kpiStatistics.setMonitoringIndex(score.divide(new BigDecimal(20),2, RoundingMode.FLOOR)
+                        .multiply(new BigDecimal(100)).toString());
+            } else if (quotaId.contains(byId.getTaskYear() + "01")) {
+                aDouble += Double.valueOf(item.getScore());
+                kpiStatistics.setRoutine(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
+                        .multiply(new BigDecimal(100)).toString());
+            } else if (quotaId.contains(byId.getTaskYear() + "05")) {
+                kpiStatistics.setComprehensiveEvaluation(score.divide(new BigDecimal(20),2, RoundingMode.FLOOR)
+                        .multiply(new BigDecimal(100)).toString());
+            }
         }
 
-        //能力研判排名
-        String sql3 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0402' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts3 = sysDistrictService.findAllBySql(DistrictsVo.class,sql3);
-        for (DistrictsVo d : sysDistricts3){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setAbilityJudgement(d.getVal().toString());
-            kPIStatisticsService.save(k);
-        }
-        //日常工作
-        String sql4 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '01' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts4 = sysDistrictService.findAllBySql(DistrictsVo.class,sql4);
-        for (DistrictsVo d : sysDistricts4){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setRoutine(d.getVal().toString());
-            kPIStatisticsService.save(k);
+        DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KPIVillageStatistics.class);
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0402"));
+        all = kpiVillageStatisticsService.findAll(detachedCriteria1);
+
+        for (KPIVillageStatistics item : all) {
+            BigDecimal score = new BigDecimal(item.getScore());
+            KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
+            kpiStatistics.setAbilityJudgement(score.divide(new BigDecimal(5),2, RoundingMode.FLOOR)
+                    .multiply(new BigDecimal(100)).toString());
+            BigDecimal dvm = new BigDecimal(dvb.get(item.getDistrictId()));
+            kpiStatistics.setDvm(dvm.divide(new BigDecimal(100 + 10 + 20), 2, RoundingMode.FLOOR)
+                    .multiply(new BigDecimal(100)).toString());
         }
 
-        //综合评议
-        String sql5 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE parentQuotaId = '0' AND quotaId = '05' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts5 = sysDistrictService.findAllBySql(DistrictsVo.class,sql5);
-        for (DistrictsVo d : sysDistricts5){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setComprehensiveEvaluation(d.getVal().toString());
-            kPIStatisticsService.save(k);
+        DetachedCriteria detachedCriteria2 = DetachedCriteria.forClass(KPIVillageStatistics.class);
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0501"));
+        all = kpiVillageStatisticsService.findAll(detachedCriteria2);
+
+        for (KPIVillageStatistics item : all) {
+            BigDecimal score = new BigDecimal(item.getScore());
+            KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
+            kpiStatistics.setComprehensiveEvaluationABC(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
+                    .multiply(new BigDecimal(100)).toString());
         }
-        //综合评议镇
-        String sql6 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0501' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts6 = sysDistrictService.findAllBySql(DistrictsVo.class,sql6);
-        for (DistrictsVo d : sysDistricts6){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setComprehensiveEvaluationABC(d.getVal().toString());
-            kPIStatisticsService.save(k);
+
+        DetachedCriteria detachedCriteria3 = DetachedCriteria.forClass(KPIVillageStatistics.class);
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0502"));
+        all = kpiVillageStatisticsService.findAll(detachedCriteria3);
+
+        for (KPIVillageStatistics item : all) {
+            BigDecimal score = new BigDecimal(item.getScore());
+            KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
+            kpiStatistics.setSatisfactionDegree(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
+                    .multiply(new BigDecimal(100)).toString());
         }
-        //满意度
-        String sql7 = "SELECT cast( RANK()over(ORDER BY t.val) as int) AS val,t.districtName as districtName,t.districtId as districtId FROM (SELECT SUM(CAST (score AS float)) as val,districtName,districtId FROM KPI_Village_Statistics WHERE quotaId = '0503' GROUP BY districtName,districtId) t";
-        List<DistrictsVo> sysDistricts7 = sysDistrictService.findAllBySql(DistrictsVo.class,sql7);
-        for (DistrictsVo d : sysDistricts7){
-            KPIStatisticsSearchable kPIStatisticsSearchable = new KPIStatisticsSearchable();
-            kPIStatisticsSearchable.setDistrictId(d.getDistrictId());
-            kPIStatisticsSearchable.setDistrictName(d.getDistrictName());
-            List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable);
-            KPIStatistics k = kPIStatisticsList.get(0);
-            k.setSatisfactionDegree(d.getVal().toString());
-            kPIStatisticsService.save(k);
+
+        for (KPIStatistics item : tempRes.values()) {
+            kPIStatisticsService.save(item);
         }
-        return new Result<>();
+
+        cadreTaskService.updateResultStatus(taskId);
+
+        return Result.of(200, true);
     }
 
 }

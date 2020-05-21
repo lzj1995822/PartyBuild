@@ -3,12 +3,16 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.PromotionCadresController;
 import com.cloudkeeper.leasing.identity.domain.PromotionCadres;
+import com.cloudkeeper.leasing.identity.domain.VillageCadres;
 import com.cloudkeeper.leasing.identity.dto.promotioncadres.PromotionCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.promotioncadres.PromotionCadresSearchable;
 import com.cloudkeeper.leasing.identity.service.PromotionCadresService;
+import com.cloudkeeper.leasing.identity.service.VillageCadresService;
 import com.cloudkeeper.leasing.identity.vo.PromotionCadresVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,14 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 村书记拟晋升名单 controller
@@ -35,6 +34,8 @@ public class PromotionCadresControllerImpl implements PromotionCadresController 
 
     /** 村书记拟晋升名单 service */
     private final PromotionCadresService promotionCadresService;
+
+    private final VillageCadresService villageCadresService;
 
     @Override
     public Result<PromotionCadresVO> findOne(@ApiParam(value = "村书记拟晋升名单id", required = true) @PathVariable String id) {
@@ -94,6 +95,31 @@ public class PromotionCadresControllerImpl implements PromotionCadresController 
             promotionCadresVOS.add(byId.convert(PromotionCadresVO.class));
         }
         return Result.of(promotionCadresVOS);
+    }
+
+    // 升级
+    @GetMapping("/upgrade")
+    @Transactional
+    public Result<List<Map<String, String>>> upgrade(String taskId) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(PromotionCadres.class);
+        detachedCriteria.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria.add(Restrictions.eq("status", "1"));
+        List<PromotionCadres> all = promotionCadresService.findAll(detachedCriteria);
+        List<Map<String, String>> map = new LinkedList<>();
+        for (PromotionCadres item : all) {
+            VillageCadres byId = villageCadresService.findById(item.getCadresId());
+            if (byId == null) {
+                continue;
+            }
+            map.add(new HashMap<String, String>(){{
+                put("name", byId.getName());
+                put("oldLevel", byId.getQuasiAssessmentRank());
+                put("newLevel", item.getPurposeLevelName());
+            }});
+            byId.setQuasiAssessmentRank(item.getPurposeLevelName());
+            villageCadresService.save(byId);
+        }
+        return Result.of(map);
     }
 
 }

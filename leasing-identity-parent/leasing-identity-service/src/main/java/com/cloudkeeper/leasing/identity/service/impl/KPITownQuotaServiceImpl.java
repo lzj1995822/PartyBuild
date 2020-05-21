@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -61,5 +62,10 @@ public class KPITownQuotaServiceImpl extends BaseServiceImpl<KPITownQuota> imple
     @Override
     public List<KPITownQuota> findAllByQuotaName(String quotaName) {
         return kPITownQuotaRepository.findAllByQuotaName(quotaName);
+    }
+
+    @Override
+    public List<KPITownQuota> findAllByTaskId(@Nonnull String taskId) {
+        return kPITownQuotaRepository.findAllByTaskId(taskId);
     }
 }

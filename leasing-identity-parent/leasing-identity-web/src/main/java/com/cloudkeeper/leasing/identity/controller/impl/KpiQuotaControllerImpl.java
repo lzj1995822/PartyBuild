@@ -2,10 +2,13 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KpiQuotaController;
+import com.cloudkeeper.leasing.identity.domain.KPIAttachment;
 import com.cloudkeeper.leasing.identity.domain.KpiQuota;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaSearchable;
+import com.cloudkeeper.leasing.identity.service.KPIAttachmentService;
 import com.cloudkeeper.leasing.identity.service.KpiQuotaService;
+import com.cloudkeeper.leasing.identity.vo.KPIAttachmentVO;
 import com.cloudkeeper.leasing.identity.vo.KpiQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,8 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
 
     /** 村主任考核指标 service */
     private final KpiQuotaService kpiQuotaService;
+
+    private final KPIAttachmentService kpiAttachmentService;
 
     @Override
     public Result<KpiQuotaVO> findOne(@ApiParam(value = "村主任考核指标id", required = true) @PathVariable String id) {
@@ -72,6 +77,13 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
         @ApiParam(value = "排序条件", required = true) Sort sort) {
         List<KpiQuota> kpiQuotaList = kpiQuotaService.findAll(kpiQuotaSearchable, sort);
         List<KpiQuotaVO> kpiQuotaVOList = KpiQuota.convert(kpiQuotaList, KpiQuotaVO.class);
+        for (KpiQuotaVO item : kpiQuotaVOList) {
+            KPIAttachment byQuota = kpiAttachmentService.findByQuota(item.getQuotaId(), kpiQuotaSearchable.getDistrictId(), kpiQuotaSearchable.getQuarter(), kpiQuotaSearchable.getTaskId());
+            if (byQuota == null) {
+                continue;
+            }
+            item.setAttachment(byQuota.convert(KPIAttachmentVO.class));
+        }
         return Result.of(kpiQuotaVOList);
     }
 

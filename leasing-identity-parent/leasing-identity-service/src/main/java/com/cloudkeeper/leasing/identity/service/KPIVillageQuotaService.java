@@ -16,13 +16,13 @@ public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
 
     void deleteAllByParentDistrictIdAndParentQuotaId(String parentDistrictId,String parentQuotaId);
 
-    List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String parentQuotaId, String quarter);
+    List<Map<String, Object>> buildCommonWorkData(String districtId, String taskId, String reviewTaskId, String parentQuotaId, String quarter, String makeQuotaDistrictId);
 
-    List<Map<String, Object>> buildCommonData(String districtId, String taskId, String rootQuotaId);
+    List<Map<String, Object>> buildCommonData(String districtId, String taskId, String reviewTaskId, String rootQuotaId, String makeQuotaDistrictId);
 
-    List<Map<String, Object>> buildWatchQuotaData(String districtId, String taskId, String parentQuotaId);
+    List<Map<String, Object>> buildWatchQuotaData(String districtId, String taskId, String reviewTaskId, String taskYear, String parentQuotaId, String makeQuotaDistrictId);
 
-    List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId, String parentQuotaId);
+    List<Map<String, Object>> buildCommentQuotaData(String districtId, String taskId, String reviewTaskId, String taskYear, String parentQuotaId, String makeQuotaDistrictId);
 
     void deleteAllByTownQuotaId(String townQuotaId);
 
@@ -31,4 +31,6 @@ public interface KPIVillageQuotaService extends BaseService<KPIVillageQuota> {
     void updateScoreById(@Nonnull String score, @Nonnull String scoreEnd, @Nonnull String id);
 
     List<KPIVillageQuota> findAllByTownQuotaIdAndQuarter(@Nonnull String townQuotaId, @Nonnull String quarter);
+
+    List<KPIVillageQuota> findAllByParentQuotaId(String parentQuotaId);
 }

@@ -60,6 +60,10 @@ public class KPITownQuota extends BaseEntity {
     @Column(length = 60)
     private String quotaYear;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentQuotaId", referencedColumnName = "quotaId", insertable = false, updatable = false)
+    private KpiQuota kpiQuota;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "townQuotaId", insertable = false, updatable = false)
     @OrderBy("districtId desc")

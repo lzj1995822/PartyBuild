@@ -69,4 +69,7 @@ public class KPIStatisticsSearchable extends BaseSearchable {
     @ApiModelProperty(value = "满意度", position = 10, required = true)
     private String satisfactionDegree;
 
+    /** 任务年度 */
+    @ApiModelProperty(value = "任务年度", position = 10, required = true)
+    private String taskYear;
 }

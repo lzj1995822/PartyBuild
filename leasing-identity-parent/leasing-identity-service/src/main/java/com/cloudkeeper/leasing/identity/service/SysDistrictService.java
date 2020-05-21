@@ -59,4 +59,6 @@ public interface SysDistrictService extends BaseService<SysDistrict> {
     Integer countAllByDistrictIdStartingWithAndDistrictNameContains(String districtId, String districtName);
 
     List<SysDistrict> findAllTowns();
+
+    List<SysDistrict> findAllVillages();
 }

@@ -23,4 +23,6 @@ public interface KPITownQuotaRepository extends BaseRepository<KPITownQuota> {
     void deleteAllByIdIn(List<String> ids);
 
     List<KPITownQuota> findAllByQuotaName(String quotaName);
+
+    List<KPITownQuota> findAllByTaskId(String taskId);
 }

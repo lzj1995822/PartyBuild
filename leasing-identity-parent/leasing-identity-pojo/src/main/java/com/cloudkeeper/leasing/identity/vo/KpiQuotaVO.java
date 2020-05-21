@@ -1,6 +1,7 @@
 package com.cloudkeeper.leasing.identity.vo;
 
 import com.cloudkeeper.leasing.base.vo.BaseVO;
+import com.cloudkeeper.leasing.identity.domain.KPIAttachment;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -70,4 +71,6 @@ public class KpiQuotaVO extends BaseVO {
     @ApiModelProperty(value = "子类", position = 19)
     private List<KPITownQuotaVO> kpiTownQuotas;
 
+    // 附带的佐证材料
+    private KPIAttachmentVO attachment;
 }

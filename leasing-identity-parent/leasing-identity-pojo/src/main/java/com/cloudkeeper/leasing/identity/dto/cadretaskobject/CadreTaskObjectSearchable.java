@@ -80,4 +80,8 @@ public class CadreTaskObjectSearchable extends BaseSearchable {
     /** 最新审核意见 */
     @ApiModelProperty(value = "最新审核意见")
     private String lastestAdvice;
+
+    /** 是否为被驳回状态 */
+    @ApiModelProperty(value = "是否为被驳回状态")
+    private String isRejected;
 }

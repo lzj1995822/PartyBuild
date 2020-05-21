@@ -63,6 +63,9 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
     private final KPIEvaluationService kpiEvaluationService;
 
+    private final KPIAttachmentService kpiAttachmentService;
+
+
     @Override
     public Result<KPITownQuotaVO> findOne(@ApiParam(value = "镇考核指标id", required = true) @PathVariable String id) {
         Optional<KPITownQuota> kPITownQuotaOptional = kPITownQuotaService.findOptionalById(id);
@@ -112,12 +115,11 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
 
     @GetMapping("/commonWork")
-    public Result<List<KpiQuotaVO>> getCommonWorkByQuarter(String taskYear, String quarter, String districtId) {
+    public Result<List<KpiQuotaVO>> getCommonWorkByQuarter(@Nonnull String taskYear, @Nonnull String quarter, @Nonnull String districtId, @Nonnull String taskId) {
         String quotaId = taskYear + "01";
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
         detachedCriteria.add(Restrictions.like("parentQuotaId", quotaId, MatchMode.START));
         detachedCriteria.add(Restrictions.eq("quotaYear", taskYear));
-        detachedCriteria.add(Restrictions.eq("quarter", quarter));
         detachedCriteria.add(Restrictions.eq("districtId", districtId));
         detachedCriteria.addOrder(Order.asc("parentQuotaId"));
         List<KPITownQuota> all = kPITownQuotaService.findAll(detachedCriteria);
@@ -128,6 +130,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
                 map.put(item.getParentQuotaId(), new ArrayList<>());
             }
             List<KPITownQuota> kpiTownQuotas = map.get(item.getParentQuotaId());
+            item.setKpiVillageQuotas(kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(item.getId(), quarter));
             kpiTownQuotas.add(item);
         }
 
@@ -136,6 +139,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
 
         // 一级指标VO
         KpiQuotaVO kpiQuotaVO = first.convert(KpiQuotaVO.class);
+        KPIAttachment byQuota = kpiAttachmentService.findByQuota(kpiQuotaVO.getQuotaId(), districtId, quarter, taskId);
+        if (byQuota != null) {
+            kpiQuotaVO.setAttachment(byQuota.convert(KPIAttachmentVO.class));
+        }
 
         // 二级指标实体
         List<KpiQuota> seconds = first.getKpiQuotas();
@@ -169,6 +176,12 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         List<KpiQuota> kpiQuotas = kpiQuotaService.findAll(kpiQuotaSearchable,new Sort(Sort.Direction.DESC,"parentQuotaId"));
         List<KpiQuotaVO> quotaVOList = KpiQuota.convert(kpiQuotas,KpiQuotaVO.class);
         for (KpiQuotaVO k : quotaVOList){
+            // 查找相关佐证材料
+            KPIAttachment byQuota = kpiAttachmentService.findByQuota(k.getQuotaId(), d, kpi.getQuarter(), kpi.getTaskId());
+            if (byQuota != null) {
+                k.setAttachment(byQuota.convert(KPIAttachmentVO.class));
+            }
+
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
             detachedCriteria.add(Restrictions.eq("parentQuotaId", k.getQuotaId()));
             if ("1".equals(isDepart)) {
@@ -179,40 +192,18 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             }
             detachedCriteria.add(Restrictions.eq("districtId",d));
             detachedCriteria.addOrder(Order.desc("createdAt"));
-            if (StringUtils.isNotBlank(kpi.getQuarter())){
-                detachedCriteria.add(Restrictions.eq("quarter",kpi.getQuarter()));
-            }
             List<KPITownQuota> kpiTownQuotas = kPITownQuotaService.findAll(detachedCriteria);
-            List<KPITownQuotaVO> kpiTownQuotaVOS = KPITownQuota.convert(kpiTownQuotas,KPITownQuotaVO.class);
+            List<KPITownQuotaVO> kpiTownQuotaVOS = new ArrayList<>();
+            if (StringUtils.isNotBlank(kpi.getQuarter())){
+                for (KPITownQuota item : kpiTownQuotas) {
+                    item.setKpiVillageQuotas(kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(item.getId(), kpi.getQuarter()));
+                    KPITownQuotaVO convert = item.convert(KPITownQuotaVO.class);
+                    kpiTownQuotaVOS.add(convert);
+                }
+            }
+            kpiTownQuotaVOS = KPITownQuota.convert(kpiTownQuotas, KPITownQuotaVO.class);
             k.setKpiTownQuotas(kpiTownQuotaVOS);
         }
-
-//        List<KPITownQuotaVO> kpiTownQuotaVOS ;
-//        if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas())){//此处为了前端初始化考核指标中村数据
-//            //二级为空，需要初始化一个二级和三级
-//            kpiTownQuotaVOS = new ArrayList<>();//二级
-//            KPITownQuotaVO vo = new KPITownQuotaVO();
-//            vo.setDistrictId(d);
-//            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
-//            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
-//            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
-//            kpiTownQuotaVOS.add(vo);
-//            KpiQuotaVO k = quotaVOList.get(0);
-//            k.setKpiTownQuotas(kpiTownQuotaVOS);
-//            quotaVOList.set(0,k);
-//        }else if (CollectionUtils.isEmpty(quotaVOList.get(0).getKpiTownQuotas().get(0).getKpiVillageQuotas())){
-//            //三级为空，需要初始化一个三级
-//            kpiTownQuotaVOS = quotaVOList.get(0).getKpiTownQuotas();//二级
-//            KPITownQuotaVO vo = new KPITownQuotaVO();
-//            vo.setDistrictId(d);
-//            String sql = "SELECT districtId,districtName FROM SYS_District WHERE attachTo ="+d+" order by districtId desc";
-//            List<KPIVillageQuotaVO> kpiVillageQuotaVOS1 = sysDistrictService.findAllBySql(KPIVillageQuotaVO.class,sql);
-//            vo.setKpiVillageQuotas(kpiVillageQuotaVOS1);
-//            kpiTownQuotaVOS.set(0,vo);
-//            KpiQuotaVO k = quotaVOList.get(0);
-//            k.setKpiTownQuotas(kpiTownQuotaVOS);
-//            quotaVOList.set(0,k);
-//        }
         return Result.of(quotaVOList);
     }
 

@@ -65,10 +65,10 @@ public class KPIStatisticsVO extends BaseVO {
     @ApiModelProperty(value = "满意度", position = 10, required = true)
     private String satisfactionDegree;
 
-    private int margin1;
-    private int margin2;
-    private int margin3;
-    private int margin4;
+    private Double margin1;
+    private Double margin2;
+    private Double margin3;
+    private Double margin4;
 
 
 }
