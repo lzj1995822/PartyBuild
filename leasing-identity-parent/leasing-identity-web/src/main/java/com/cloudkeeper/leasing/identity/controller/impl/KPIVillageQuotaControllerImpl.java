@@ -216,40 +216,54 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
     }
 
     @GetMapping("/getFullScore")
-    public Result<List<String>> getFullScore(String taskYear) {
+    public Result<Map> getFullScore(String taskYear, String percent) {
         String sql = "SELECT\n" +
                 "\t* \n" +
                 "FROM\n" +
                 "\t(\n" +
-                "\tSELECT COUNT\n" +
-                "\t\t( 1 ) AS total,\n" +
-                "\t\tSUM ( CASE kvq.scoreEnd WHEN ktq.score THEN 1 ELSE 0 END ) AS fullTotal,\n" +
-                "\t\tktq.quotaName,\n" +
-                "\t\tktq.parentQuotaId \n" +
+                "\tSELECT\n" +
+                "\t\t* ,\n" +
+                "\t\tROUND( CAST ( fullTotal AS FLOAT ) / CAST ( total AS FLOAT ), 2 ) AS fullRatio \n" +
                 "\tFROM\n" +
-                "\t\tKPI_village_Quota kvq\n" +
-                "\t\tLEFT JOIN KPI_Town_Quota ktq ON ktq.id = kvq.townQuotaId \n" +
+                "\t\t(\n" +
+                "\t\tSELECT COUNT\n" +
+                "\t\t\t( 1 ) AS total,\n" +
+                "\t\t\tSUM ( CASE kvq.scoreEnd WHEN ktq.score THEN 1 ELSE 0 END ) AS fullTotal,\n" +
+                "\t\t\tktq.quotaName,\n" +
+                "\t\t\tktq.parentQuotaId,\n" +
+                "\t\t\tktq.districtName \n" +
+                "\t\tFROM\n" +
+                "\t\t\tKPI_village_Quota kvq\n" +
+                "\t\t\tLEFT JOIN KPI_Town_Quota ktq ON ktq.id = kvq.townQuotaId \n" +
                 "\t\tWHERE\n" +
-                "\t\tkvq.parentQuotaId like '" + taskYear + "%'\n" +
-                "\tGROUP BY\n" +
-                "\t\tktq.id,\n" +
-                "\t\tktq.quotaName,\n" +
-                "\t\tktq.parentQuotaId \n" +
-                "\t) a \n" +
+                "\t\t\tkvq.parentQuotaId LIKE '" + taskYear+ "%' \n" +
+                "\t\tGROUP BY\n" +
+                "\t\t\tktq.id,\n" +
+                "\t\t\tktq.quotaName,\n" +
+                "\t\t\tktq.parentQuotaId,\n" +
+                "\t\t\tktq.districtName \n" +
+                "\t\t) a \n" +
+                "\t) b \n" +
                 "WHERE\n" +
-                "\ta.total = a.fullTotal";
+                "\tfullRatio >= '" + percent +"'";
         List<FullScoreVO> fullScoreVOS = kPIVillageQuotaService.findAllBySql(FullScoreVO.class, sql);
 
-        ArrayList<String> actualVillage = new ArrayList<>();
-        Set<String> noActualVillage = new HashSet<>();
+        Map<String, Integer> map = new HashMap<>();
+        ArrayList<FullScoreVO> actualVillage = new ArrayList<>();
+        Set<FullScoreVO> noActualVillage = new HashSet<>();
         for (FullScoreVO item : fullScoreVOS) {
+            if (!map.containsKey(item.getDistrictName())) {
+                map.put(item.getDistrictName(), 0);
+            }
+            Integer integer = map.get(item.getDistrictName());
+            map.put(item.getDistrictName(), ++integer);
             if (item.getParentQuotaId().contains(taskYear + "02")) {
-                actualVillage.add(item.getQuotaName());
+                actualVillage.add(item);
             } else {
-                noActualVillage.add(item.getQuotaName());
+                noActualVillage.add(item);
             }
         }
         actualVillage.addAll(noActualVillage);
-        return Result.of(actualVillage);
+        return Result.of(new HashMap(){{put("townCount", map);put("quotas", actualVillage);}});
     }
 }

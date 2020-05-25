@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 双向印证 controller
@@ -70,8 +71,8 @@ public interface KPIStatisticsController {
      */
     @ApiOperation(value = "列表查询", notes = "列表查询<br/>sort：排序字段，默认是asc排序方式，可以不写，格式：sort=code,asc&sort=name&sort=note,desc", position = 5)
     @PostMapping("/list")
-    Result<List<KPIStatisticsVO>> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
-        @ApiParam(value = "排序条件", required = true) Sort sort);
+    Result<Map> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
+                     @ApiParam(value = "排序条件", required = true) Sort sort);
 
     /**
      * 分页查询

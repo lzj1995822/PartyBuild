@@ -7,13 +7,19 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class FullScoreVO {
+@NoArgsConstructor
+public class TrainingForecastVO {
 
-    private String parentQuotaId;
+    /** 值*/
+    private Double val;
 
-    private String quotaName;
+    /** 组织id*/
+    private String districtId;
 
+    /** 组织名称*/
     private String districtName;
+
+    /** 村书记名称*/
+    private String cadresName;
 }

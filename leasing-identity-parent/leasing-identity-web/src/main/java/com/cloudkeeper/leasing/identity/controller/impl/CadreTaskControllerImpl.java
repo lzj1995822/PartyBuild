@@ -174,6 +174,7 @@ public class CadreTaskControllerImpl implements CadreTaskController {
             if ("1".equals(isReview)) {
                 detachedCriteria.add(Restrictions.eq("status", "1"));
             } else {
+                detachedCriteria.add(Restrictions.eq("status", "0"));
                 detachedCriteria.add(Restrictions.eq("objectId", sysDistrict.getDistrictId()));
             }
             detachedCriteria.createAlias("cadreTask", "c");

@@ -15,22 +15,22 @@ import static com.cloudkeeper.leasing.utils.DefinitionUtil.generateJavaFile;
 public class GenerateTemplateCodeUtil {
 
     /** 表名*/
-    static String TABLE_NAME = "dbo.famliy_work_info";
+    static String TABLE_NAME = "dbo.KPI_Attachment";
 
     /** 创建liquibase xml 的id*/
     static final String CHANGE_SET_ID = "20190614-02";
 
     /** 类名*/
-    static final String CLASS_NAME = "FamilyWorkInfo";
+    static final String CLASS_NAME = "KPIAttachment";
 
     /** 类注释*/
-    static final String CLASS_EXPLAIN = "专职村书记家庭工作情况";
+    static final String CLASS_EXPLAIN = "考核实施佐证材料";
 
     /** 子工程名称*/
     static final String PROJECT_NAME = "identity";
 
     /** 注释 - 作者*/
-    static String DOC_AUTHOR = "yujian";
+    static String DOC_AUTHOR = "asher";
 
     /** 生成domain*/
     @Test

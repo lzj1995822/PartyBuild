@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @ApiModel(value = "村一级指标统计 VO", description = "村一级指标统计 VO")
 @Getter
 @Setter
-@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class KPIVillageStatisticsVO extends BaseVO {
@@ -55,7 +54,7 @@ public class KPIVillageStatisticsVO extends BaseVO {
     private String taskId;
 
     @ApiModelProperty(value = "排名", position = 10, required = true)
-    private String ranking;
+    private Integer ranking;
 
     @ApiModelProperty(value = "村书记姓名", position = 10, required = true)
     private String cadresName;
@@ -71,5 +70,8 @@ public class KPIVillageStatisticsVO extends BaseVO {
 
     @ApiModelProperty(value = "村级实绩老的得分", position = 10, required = true)
     private String oldScore;
+
+    @ApiModelProperty(value = "年龄", position = 10, required = true)
+    private Integer age;
 
 }

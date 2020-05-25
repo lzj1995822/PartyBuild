@@ -55,7 +55,7 @@ public class KPIVillageStatisticsSearchable extends BaseSearchable {
     private String taskId;
 
     @ApiModelProperty(value = "排名", position = 10, required = true)
-    private String ranking;
+    private Integer ranking;
 
     @ApiModelProperty(value = "村书记姓名", position = 10, required = true)
     private String cadresName;

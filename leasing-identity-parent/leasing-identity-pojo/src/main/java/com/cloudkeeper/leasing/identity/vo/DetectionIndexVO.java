@@ -121,4 +121,7 @@ public class DetectionIndexVO extends BaseVO {
     @ApiModelProperty(value = "素能评价附件佐证材料", position = 10, required = true)
     private String judgeSupportDoc;
 
+    /** 村集体经济收入（全口径） */
+    @ApiModelProperty(value = "村集体经济收入（全口径）", position = 10, required = true)
+    private String economicIncome;
 }

@@ -9,11 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FullScoreVO {
+public class DoubleVerityVO {
 
-    private String parentQuotaId;
+    private Double villagePerMonitorIndexDistanceAvg;
 
-    private String quotaName;
+    private Double dvmAndAbilityJudgementDistanceAvg;
 
-    private String districtName;
+    private Double comprehensiveEvaluationAndCommonWorkDistanceAvg;
+
 }

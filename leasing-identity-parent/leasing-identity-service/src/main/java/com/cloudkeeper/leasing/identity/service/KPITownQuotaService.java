@@ -24,4 +24,6 @@ public interface KPITownQuotaService extends BaseService<KPITownQuota> {
     List<KPITownQuota> findAllByQuotaName(String quotaName);
 
     List<KPITownQuota> findAllByTaskId(@Nonnull String taskId);
+
+    List<KPITownQuota> findAllByParentQuotaIdAndDistrictId(@Nonnull String quotaId, @Nonnull String districtId);
 }

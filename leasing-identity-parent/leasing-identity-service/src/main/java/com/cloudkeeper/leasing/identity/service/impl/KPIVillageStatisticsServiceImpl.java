@@ -64,6 +64,19 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
         kPIVillageStatisticsRepository.flush();
     }
 
+    private String level2Statistic(String levelCode, String taskYear, String taskId) {
+        String sql = "SELECT cast(b.score as varchar) as score, b.districtId, b.districtName, b.parentQuotaId as quotaId, '2' as quotaLevel, " +
+                "vc.name as cadresName, sd.orgParent as parentDistrictId, sd.orgParentName as parentDistrictName, " +
+                "kq.quotaName as quotaName, kq.parentQuotaId, kqp.quotaName as parentQuotaName, '" +taskId+ "' as taskId FROM (\n" +
+                "SELECT ROUND(avg(cast(score as float)), 2) as score, parentQuotaId, districtId, " +
+                "districtName from KPI_village_Quota kvq WHERE kvq.parentQuotaId like '" + taskYear + levelCode+ "%'  " +
+                "GROUP BY parentQuotaId,districtId,districtName ) b LEFT JOIN village_cadres vc on vc.districtId = b.districtId \n" +
+                "LEFT JOIN SYS_District sd on sd.districtId = b.districtId\n" +
+                "LEFT JOIN KPI_Quota kq on kq.quotaId = b.parentQuotaId\n" +
+                "LEFT JOIN KPI_Quota kqp on kq.parentQuotaId = kqp.quotaId\n" +
+                "WHERE vc.cadresType = 'SECRETARY'";
+        return sql;
+    }
     @Override
     public Boolean generateVillageStatistic(@Nonnull String taskId) {
         CadreTask byId = cadreTaskService.findById(taskId);
@@ -82,59 +95,28 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
         detachedCriteria1.addOrder(Order.asc("quotaId"));
         List<KpiQuota> seconds = kpiQuotaService.findAll(detachedCriteria1);
 
+        String taskYear = byId.getTaskYear();
         // 每个二级指标对应每个村的总分sql
-        String sql = "SELECT\n" +
-                "\tb.score,\n" +
-                "\tvc.name as cadresName,\n" +
-                "\tb.districtId,\n" +
-                "\tsd.districtName,\n" +
-                "\tsd.orgParent as parentDistrictId,\n" +
-                "\tsd.orgParentName as parentDistrictName,\n" +
-                "\tb.parentQuotaId AS quotaId,\n" +
-                "\tkq.quotaName,\n" +
-                "\tkq.parentQuotaId,\n" +
-                "\tpkq.quotaName AS parentQuotaName,\n" +
-                "\t'2' AS quotaLevel,\n" +
-                "\t cast(b.ranking as varchar) as ranking, \n" +
-                "'" +taskId+ "' as taskId " +
-                "FROM\n" +
-                "\t(\n" +
-                "\tSELECT CAST\n" +
-                "\t\t( SUM ( a.score ) AS VARCHAR ) AS score,\n" +
-                "\t\ta.districtId,\n" +
-                "\t\ta.parentQuotaId ,\n" +
-                "\t\trank ( ) OVER ( partition BY parentQuotaId ORDER BY score DESC ) AS ranking \n" +
-                "\tFROM\n" +
-                "\t\t(\n" +
-                "\t\tSELECT AVG\n" +
-                "\t\t\t( CAST ( kvq.scoreEnd AS FLOAT ) ) AS score,\n" +
-                "\t\t\tkvq.townQuotaId ,\n" +
-                "\t\t\tkvq.parentQuotaId,\n" +
-                "\t\t\tkvq.districtId \n" +
-                "\t\tFROM\n" +
-                "\t\t\tKPI_village_Quota kvq\n" +
-                "\t\t\tLEFT JOIN KPI_Town_Quota ktq ON ktq.id = kvq.townQuotaId \n" +
-                "\t\tWHERE\n" +
-                "\t\t\tktq.taskId = '" + quotaTask.getId() + "'" +
-                "\t\tGROUP BY\n" +
-                "\t\t\tkvq.townQuotaId ,\n" +
-                "\t\t\tkvq.districtId,\n" +
-                "\t\t\tkvq.parentQuotaId \n" +
-                "\t\t) a \n" +
-                "\tGROUP BY\n" +
-                "\t\ta.districtId,\n" +
-                "\t\ta.parentQuotaId,\n" +
-                "\t\ta.score \n" +
-                "\t) b\n" +
-                "\tLEFT JOIN SYS_District sd ON sd.districtId = b.districtId\n" +
-                "\tLEFT JOIN KPI_Quota kq ON kq.quotaId = b.parentQuotaId\n" +
-                "\tLEFT JOIN KPI_Quota pkq ON kq.parentQuotaId = pkq.quotaId \n" +
-                "\tLEFT JOIN village_cadres vc ON vc.districtId = sd.districtId and vc.cadresType = 'SECRETARY' \n" +
-                "ORDER BY\n" +
-                "\tb.parentQuotaId ASC,\n" +
-                "\tb.ranking ASC,\n" +
-                "\tb.districtId ASC";
+        String sql = "SELECT cast(b.score as varchar) as score, b.districtId, b.districtName, b.parentQuotaId as quotaId, '2' as quotaLevel, " +
+                "vc.name as cadresName, sd.orgParent as parentDistrictId, sd.orgParentName as parentDistrictName, " +
+                "kq.quotaName as quotaName, kq.parentQuotaId, kqp.quotaName as parentQuotaName, " +
+                "'" +taskId+ "' as taskId FROM (\n" +
+                "SELECT ROUND(avg(score), 2) as score, parentQuotaId, districtId, districtName from (\n" +
+                "SELECT sum(cast(score as float)) as score, districtId, districtName,quarter,parentQuotaId " +
+                "from KPI_village_Quota kvq WHERE kvq.parentQuotaId like '" + taskYear + "01%' GROUP BY " +
+                "quarter,parentQuotaId,districtId,districtName ) a\n" +
+                "GROUP BY parentQuotaId, districtId, districtName\n" +
+                ") b LEFT JOIN village_cadres vc on vc.districtId = b.districtId \n" +
+                "LEFT JOIN SYS_District sd on sd.districtId = b.districtId\n" +
+                "LEFT JOIN KPI_Quota kq on kq.quotaId = b.parentQuotaId\n" +
+                "LEFT JOIN KPI_Quota kqp on kq.parentQuotaId = kqp.quotaId\n" +
+                "WHERE vc.cadresType = 'SECRETARY'";
         List<KPIVillageStatistics> allBySql = super.findAllBySql(KPIVillageStatistics.class, sql);
+        allBySql.addAll(super.findAllBySql(KPIVillageStatistics.class, level2Statistic("02", taskYear, taskId)));
+        allBySql.addAll(super.findAllBySql(KPIVillageStatistics.class, level2Statistic("03", taskYear, taskId)));
+        allBySql.addAll(super.findAllBySql(KPIVillageStatistics.class, level2Statistic("04", taskYear, taskId)));
+        allBySql.addAll(super.findAllBySql(KPIVillageStatistics.class, level2Statistic("05", taskYear, taskId)));
+        allBySql.addAll(super.findAllBySql(KPIVillageStatistics.class, level2Statistic("06", taskYear, taskId)));
         kPIVillageStatisticsRepository.saveAll(allBySql);//二级统计
 
 
@@ -151,7 +133,7 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\tkq.parentQuotaId,\n" +
                 "\tpkq.quotaName AS parentQuotaName,\n" +
                 "\t'1' AS quotaLevel,\n" +
-                "\tcast(rank ( ) OVER ( partition BY b.parentQuotaId ORDER BY b.score DESC ) as varchar)  AS ranking, \n" +
+                "\tcast(rank ( ) OVER ( partition BY b.parentQuotaId ORDER BY b.score DESC ) as int)  AS ranking, \n" +
                 "\tcast(rank ( ) OVER ( partition BY b.parentQuotaId, sd.orgParent ORDER BY b.score DESC) as varchar) AS townRanking, " +
                 "'" +taskId+ "' as taskId " +
                 "FROM\n" +
@@ -171,10 +153,10 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\tLEFT JOIN SYS_District sd ON sd.districtId = b.districtId\n" +
                 "\tLEFT JOIN KPI_Quota kq ON kq.quotaId = b.parentQuotaId\n" +
                 "\tLEFT JOIN KPI_Quota pkq ON kq.parentQuotaId = pkq.quotaId" +
-                "\tLEFT JOIN village_cadres vc ON vc.districtId = sd.districtId and vc.cadresType = 'SECRETARY' \n";
-        allBySql = super.findAllBySql(KPIVillageStatistics.class, sql);
-        handlePartitionLevel(allBySql, quotaTask.getTaskYear());
-        kPIVillageStatisticsRepository.saveAll(allBySql);
+                "\tLEFT JOIN village_cadres vc ON vc.districtId = sd.districtId where vc.cadresType = 'SECRETARY' \n";
+        List<KPIVillageStatistics> level1 = super.findAllBySql(KPIVillageStatistics.class, sql);
+        handlePartitionLevel(level1, quotaTask.getTaskYear());
+        kPIVillageStatisticsRepository.saveAll(level1);
 
         sql = "SELECT\n" +
                 "\tvc.name as cadresName,\n" +
@@ -188,7 +170,7 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\t'0' AS quotaLevel,\n" +
                 "\tcast(a.score as varchar) as score,\n" +
                 "\ta.districtId,\n" +
-                "\tcast(rank ( ) OVER ( ORDER BY a.score DESC ) as varchar) AS ranking, \n" +
+                "\tcast(rank ( ) OVER ( ORDER BY a.score DESC ) as int) AS ranking, \n" +
                 "'" +taskId+ "' as taskId " +
                 "FROM\n" +
                 "\t(\n" +
@@ -207,8 +189,8 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\tLEFT JOIN village_cadres vc ON vc.districtId = sd.districtId and vc.cadresType = 'SECRETARY' \n" +
                 "ORDER BY\n" +
                 "\tranking ASC";
-        allBySql = super.findAllBySql(KPIVillageStatistics.class, sql);
-        kPIVillageStatisticsRepository.saveAll(allBySql);
+        List<KPIVillageStatistics> level0 = super.findAllBySql(KPIVillageStatistics.class, sql);
+        kPIVillageStatisticsRepository.saveAll(level0);
         return true;
     }
 

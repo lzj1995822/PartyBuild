@@ -16,6 +16,7 @@ import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.vo.ImportVO;
 import com.cloudkeeper.leasing.identity.vo.KPIVillageStatisticsVO;
 import com.cloudkeeper.leasing.identity.vo.StatisticsStringVO;
+import com.cloudkeeper.leasing.identity.vo.TrainingForecastVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nonnull;
 import javax.management.Query;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -204,11 +207,21 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         String incompetenceSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and CAST (kvs.score as FLOAT) > 0 and cast(kvs.score as FLOAT) < 60  ORDER BY kvs.score asc";
         List<KPIVillageStatistics> incompetence = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, incompetenceSql);
 
+
+        String good10Sql = "SELECT top  10 cast(score as VARCHAR) as score, c.cadresName FROM (\n" +
+                "SELECT sum(score) as score, b.cadresName from  (\n" +
+                "select  cast(kvs.score as FLOAT) * 0.8 as score, kvs.cadresName from KPI_Village_Statistics kvs WHERE quotaLevel = '0' and taskId = '" + taskId + "'\n" +
+                "union all\n" +
+                "select  cast(kvs.score as FLOAT) * 0.2 as score, kvs.cadresName from KPI_Village_Statistics kvs WHERE quotaLevel = '2' and taskId = '" + taskId + "' and quotaId = '" + taskYear + "0502' \n" +
+                ") b GROUP BY b.cadresName ) c ORDER BY score desc";
+        List<KPIVillageStatistics> good10 = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, good10Sql);
+
         Map<String,Object> res = new HashMap<>();
         res.put("top10", top10);
         res.put("last10", last10);
         res.put("lastGroupByTown", lastGroupByTown);
         res.put("top3ByQuotas", map);
+        res.put("good10", good10);
         res.put("good", good);
         res.put("competent", competent);
         res.put("basicCompetent", basicCompetent);
@@ -239,14 +252,10 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
 
     @GetMapping("/getTotalScore")
     public Result<Map<String, List<String>>> getTotalScore(@Nonnull String taskYear) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
-        detachedCriteria.add(Restrictions.eq("taskYear", taskYear));
-        detachedCriteria.add(Restrictions.eq("type", "综合年度考核"));
-        List<CadreTask> all = cadreTaskService.findAll(detachedCriteria);
-        if (all.size() == 0) {
+        CadreTask cadreTask = checkCurrentTask(taskYear);
+        if (cadreTask == null) {
             return Result.of(500, "当前任务不存在!");
         }
-        CadreTask cadreTask = all.get(0);
 
         String sql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and kvs.taskId = '" +cadreTask.getId()+ "' ORDER BY cast(kvs.score as FLOAT) asc";
 
@@ -267,21 +276,122 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     }
 
     @GetMapping("/reserveTalents")
-    public List<KPIVillageStatistics> reserveTalents(String taskYear) {
-        String sql = "SELECT top 20 b.* from (\n" +
-                "SELECT cast(sum(calScore) as varchar) as score, a.districtId, a.districtName FROM (\n" +
-                "SELECT CAST(score AS FLOAT) * 0.15 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "02'\n" +
-                "UNION ALL\n" +
-                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "03'\n" +
-                "UNION ALL\n" +
-                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "04'\n" +
-                "UNION ALL\n" +
-                "SELECT CAST(score AS FLOAT) * 0.35 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear+ "05'\n" +
-                ") a GROUP BY a.districtId, a.districtName ) b ORDER BY cast(score as FLOAT) desc";
-        return kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, sql);
+    public Result<Map> reserveTalents(@Nonnull String taskYear,@Nonnull String limit) {
+        Map<String, Object> info = new HashMap<>();
+        info.put("45岁以下", generateReserveTalentsSql(null, "45", taskYear, limit));
+        info.put("45岁-55岁", generateReserveTalentsSql("45", "55", taskYear, limit));
+        info.put("55岁以上", generateReserveTalentsSql("55", null, taskYear, limit));
+        Map<String, Object> chart = new HashMap<>();
+        chart.put("45岁以下", generateReserveTalentByAge(null, "45", taskYear));
+        chart.put("45岁-55岁", generateReserveTalentByAge("45", "55", taskYear));
+        chart.put("55岁以上", generateReserveTalentByAge("55", null, taskYear));
+        return Result.of(new HashMap(){{put("info", info);put("chart", chart);}});
+    }
+
+    private List<KPIVillageStatisticsVO> generateReserveTalentByAge(String startAge, String endAge, String taskYear) {
+        String sql =
+                "SELECT cast(d.ranking as int) as ranking, d.districtId, d.districtName, vc.name as cadresName, cast(FLOOR(datediff(DY,vc.birth,getdate())/365.25) as int) as age from  (\n" +
+                "SELECT rank() over ( ORDER BY score desc) as ranking, c.* from (\n" +
+                "SELECT sum(calScore) as score, a.districtId, a.districtName FROM  \n" +
+                "(\n" +
+                "SELECT CAST(score AS FLOAT) * 0.15 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "02' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "03' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "04' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.35 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "05' \n" +
+                ") a \n" +
+                "GROUP BY a.districtId, a.districtName\n" +
+                ") c\n" +
+                ") d\n" +
+                "LEFT JOIN village_cadres vc on vc.districtId = d.districtId and vc.cadresType = 'SECRETARY'\n";
+        sql = handleQueryParam(startAge, endAge, sql);
+        sql += "ORDER BY cast(score as FLOAT) desc";
+        return kPIVillageStatisticsService.findAllBySql(KPIVillageStatisticsVO.class, sql);
+    }
+    private List<KPIVillageStatisticsVO> generateReserveTalentsSql(String startAge, String endAge, String taskYear, String limit) {
+        String sql = "SELECT top " + limit +" cast(b.score as varchar) as score,b.districtId, b.districtName , b.name as cadresName from  (\n" +
+                "SELECT cast(sum(calScore) as varchar) as score, a.districtId, a.districtName, vc.name FROM  \n" +
+                "(\n" +
+                "SELECT CAST(score AS FLOAT) * 0.15 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "02' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "03' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.25 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "04' \n" +
+                "UNION ALL \n" +
+                "SELECT CAST(score AS FLOAT) * 0.35 AS calScore, kvs.* from KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' and kvs.quotaId = '" + taskYear + "05' \n" +
+                ") a \n" +
+                "LEFT JOIN village_cadres vc on vc.districtId = a.districtId and vc.cadresType = 'SECRETARY'\n";
+        sql = handleQueryParam(startAge, endAge, sql);
+        sql += "GROUP BY a.districtId, a.districtName, vc.name ) b ORDER BY cast(score as FLOAT) desc";
+        return kPIVillageStatisticsService.findAllBySql(KPIVillageStatisticsVO.class, sql);
+    }
+
+    private String handleQueryParam(String startAge, String endAge, String sql) {
+        if (!StringUtils.isEmpty(startAge) && !StringUtils.isEmpty(endAge)) {
+            sql += "WHERE FLOOR(datediff(DY,vc.birth,getdate())/365.25) >= " + startAge + " " +
+                    "and  FLOOR(datediff(DY,vc.birth,getdate())/365.25) <= " + endAge + "\n";
+        } else if (!StringUtils.isEmpty(startAge)){
+            sql += "WHERE FLOOR(datediff(DY,vc.birth,getdate())/365.25) > " + startAge + "\n";
+        } else if (!StringUtils.isEmpty(endAge)) {
+            sql += "WHERE FLOOR(datediff(DY,vc.birth,getdate())/365.25) < " + endAge + "\n";
+        }
+        return sql;
     }
 
     public String getCurrentTaskId(String taskYear) {
+        CadreTask cadreTask = checkCurrentTask(taskYear);
+        if (cadreTask == null) {
+            return null;
+        }
+        return cadreTask.getId();
+    }
+
+
+    @GetMapping("/trainingForecast")
+    public Result trainingForecast(@Nonnull String taskYear) {
+        CadreTask cadreTask = checkCurrentTask(taskYear);
+        if (cadreTask == null) {
+            return Result.of(500, "当前任务不存在!");
+        }
+        String taskId = cadreTask.getId();
+        ArrayList<Map> res = new ArrayList<>();
+        String industrySql = "SELECT av.*,vc.name as cadresName FROM (\n" +
+                "SELECT ROUND(SUM(totalOut)/sum(economicIncome) , 2) as val, v.districtId, v.districtName from (\n" +
+                "SELECT sum(cast(ri.totalReward as FLOAT)) as totalOut, 0 as economicIncome, vc.districtId,vc.districtName  " +
+                "FROM Reward_Info ri LEFT JOIN village_cadres vc on vc.id = ri.cadresId WHERE vc.districtId is not null " +
+                "and YEAR(ri.achieveTime) = '" + taskYear + "' GROUP BY vc.districtId, vc.districtName\n" +
+                "UNION all\n" +
+                "SELECT  0 as totalOut, cast(ISNULL(di.economicIncome, 0) AS FLOAT) AS economicIncome, di.districtId, di.districtName " +
+                "from Detection_Index di  WHERE di.tasKId = '" + taskId+ "' ) v GROUP BY v.districtId, v.districtName ) " +
+                "av LEFT JOIN village_cadres vc on vc.districtId = av.districtId AND vc.cadresType = 'SECRETARY'\n" +
+                "WHERE vc.name is not null\n" +
+                "ORDER BY av.val asc\n";
+        List<TrainingForecastVO> industryForecast = kPIVillageStatisticsService.findAllBySql(TrainingForecastVO.class, industrySql);
+        res.add(calAvgAndLast40(industryForecast, "0.5", "1" , ">", "产业类"));
+
+        String partySql = "SELECT sum(cast(kvs.score as float)) as val, kvs.districtId, kvs.districtName, kvs.cadresName \n" +
+                "from KPI_Village_Statistics kvs where kvs.quotaLevel = '2' and kvs.quotaId in ('" + taskYear + "0501', '" + taskYear + "0402', '" + taskYear + "0302') and kvs.cadresName is not null\n" +
+                "GROUP BY kvs.districtId, kvs.districtName, kvs.cadresName ORDER BY val asc";
+        List<TrainingForecastVO> partyForecast = kPIVillageStatisticsService.findAllBySql(TrainingForecastVO.class, partySql);
+        res.add(calAvgAndLast40(partyForecast, "11.3", "0", "<", "党建类"));
+
+        String lawSql = "SELECT cast(score as Float) as val, kvs.districtId, kvs.districtName, kvs.cadresName " +
+                "FROM KPI_Village_Statistics kvs WHERE kvs.quotaLevel = '1' " +
+                "and kvs.quotaId = '" + taskYear + "04' and kvs.cadresName is not null ORDER BY val asc";
+        List<TrainingForecastVO> lawForecast = kPIVillageStatisticsService.findAllBySql(TrainingForecastVO.class, lawSql);
+        res.add(calAvgAndLast40(lawForecast, "7", "0", "<", "政策法规类"));
+
+        String mangeSql = "SELECT sum(cast(kvs.score as float)) as val, kvs.districtId, kvs.districtName, kvs.cadresName \n" +
+                "from KPI_Village_Statistics kvs where kvs.quotaLevel = '2' and kvs.quotaId in ('" + taskYear + "0305', '" + taskYear + "0303', '" + taskYear + "0502') and kvs.cadresName is not null\n" +
+                "GROUP BY kvs.districtId, kvs.districtName, kvs.cadresName ORDER BY val asc";
+        List<TrainingForecastVO> mangeForecast = kPIVillageStatisticsService.findAllBySql(TrainingForecastVO.class, lawSql);
+        res.add(calAvgAndLast40(mangeForecast, "12.6", "0", "<", "治理类"));
+        return Result.of(res);
+    }
+
+    private CadreTask checkCurrentTask(@Nonnull String taskYear) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
         detachedCriteria.add(Restrictions.eq("taskYear", taskYear));
         detachedCriteria.add(Restrictions.eq("type", "综合年度考核"));
@@ -289,8 +399,33 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         if (all.size() == 0) {
             return null;
         }
-        CadreTask cadreTask = all.get(0);
-        return cadreTask.getId();
+        return all.get(0);
     }
 
+    private Map calAvgAndLast40(@Nonnull List<TrainingForecastVO> trainingForecastVOS, String standard, String isPercent, String operate, String label) {
+        Double sum = 0.0;
+        int size = 0;
+        List<TrainingForecastVO> last40 = new ArrayList<>();
+        for (TrainingForecastVO item : trainingForecastVOS) {
+            sum += item.getVal();
+            if (size < 40) {
+                last40.add(item);
+                size++;
+            }
+        }
+        BigDecimal sumDecimal = new BigDecimal(sum);
+        BigDecimal avg = sumDecimal.divide(new BigDecimal(trainingForecastVOS.size()), 2, RoundingMode.FLOOR);
+        Map<String, Object> res = new HashMap<>();
+        res.put("avg", avg.toString());
+        res.put("standard", standard);
+        res.put("isPercent", isPercent);
+        res.put("last40", last40);
+        res.put("label", label);
+        if (operate.equals("<")) {
+            res.put("isNeedOperate", avg.doubleValue() < Double.valueOf(standard));
+        } else {
+            res.put("isNeedOperate", avg.doubleValue() > Double.valueOf(standard));
+        }
+        return res;
+    }
 }

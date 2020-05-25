@@ -65,10 +65,12 @@ public class KPIStatisticsVO extends BaseVO {
     @ApiModelProperty(value = "满意度", position = 10, required = true)
     private String satisfactionDegree;
 
-    private Double margin1;
-    private Double margin2;
-    private Double margin3;
-    private Double margin4;
+    /** 村级实绩和监测指标 */
+    private Double villagePerMonitorIndexDistance;
 
+    /** 日常工作村级实绩监测指标和能力研判 */
+    private Double dvmAndAbilityJudgementDistance;
 
+    /** 综合评议和日常工作 */
+    private Double comprehensiveEvaluationAndCommonWorkDistance;
 }

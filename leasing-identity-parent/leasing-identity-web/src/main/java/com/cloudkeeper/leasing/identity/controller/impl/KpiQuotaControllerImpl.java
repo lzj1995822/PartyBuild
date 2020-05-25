@@ -3,15 +3,22 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.KpiQuotaController;
 import com.cloudkeeper.leasing.identity.domain.KPIAttachment;
+import com.cloudkeeper.leasing.identity.domain.KPITownQuota;
 import com.cloudkeeper.leasing.identity.domain.KpiQuota;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaDTO;
 import com.cloudkeeper.leasing.identity.dto.kpiquota.KpiQuotaSearchable;
 import com.cloudkeeper.leasing.identity.service.KPIAttachmentService;
+import com.cloudkeeper.leasing.identity.service.KPITownQuotaService;
 import com.cloudkeeper.leasing.identity.service.KpiQuotaService;
 import com.cloudkeeper.leasing.identity.vo.KPIAttachmentVO;
+import com.cloudkeeper.leasing.identity.vo.KPITownQuotaVO;
 import com.cloudkeeper.leasing.identity.vo.KpiQuotaVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,10 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -40,6 +44,8 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
     private final KpiQuotaService kpiQuotaService;
 
     private final KPIAttachmentService kpiAttachmentService;
+
+    private final KPITownQuotaService kpiTownQuotaService;
 
     @Override
     public Result<KpiQuotaVO> findOne(@ApiParam(value = "村主任考核指标id", required = true) @PathVariable String id) {
@@ -113,6 +119,25 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
         kpiQuotaSearchable.setQuotaYear(kpiQuotaDTOS.get(0).getQuotaYear());
         List<KpiQuota> all = kpiQuotaService.findAll(kpiQuotaSearchable);
         List<KpiQuotaVO> convert = KpiQuota.convert(all, KpiQuotaVO.class);
+        return Result.of(convert);
+    }
+
+    @GetMapping("/getBlowSecondsByQuotaId")
+    public Result<List<KpiQuotaVO>> getBlowSecondsByQuotaId(@Nonnull String quotaId, @Nonnull String districtId, String isDepart) {
+        KpiQuota kpiQuota = kpiQuotaService.findByQuotaId(quotaId);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KpiQuota.class);
+        detachedCriteria.add(Restrictions.eq("parentQuotaId", quotaId));
+        detachedCriteria.add(Restrictions.like("quotaMakeDepartId", districtId, MatchMode.ANYWHERE));
+        detachedCriteria.addOrder(Order.asc("quotaId"));
+        List<KpiQuota> kpiQuotas = kpiQuotaService.findAll(detachedCriteria);
+        List<KpiQuotaVO> convert = KpiQuota.convert(kpiQuotas, KpiQuotaVO.class);
+        if ("1".equals(isDepart)) {
+            districtId = "0101";
+        }
+        for (KpiQuotaVO item : convert) {
+            List<KPITownQuota> kpiTownQuotas = kpiTownQuotaService.findAllByParentQuotaIdAndDistrictId(item.getQuotaId(), districtId);
+            item.setKpiTownQuotas(KPITownQuota.convert(kpiTownQuotas, KPITownQuotaVO.class)); ;
+        }
         return Result.of(convert);
     }
 

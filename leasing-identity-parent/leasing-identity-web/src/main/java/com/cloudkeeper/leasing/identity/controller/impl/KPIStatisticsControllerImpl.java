@@ -13,6 +13,7 @@ import com.cloudkeeper.leasing.identity.service.KPIStatisticsService;
 import com.cloudkeeper.leasing.identity.service.KPIVillageStatisticsService;
 import com.cloudkeeper.leasing.identity.service.SysDistrictService;
 import com.cloudkeeper.leasing.identity.vo.DistrictsVo;
+import com.cloudkeeper.leasing.identity.vo.DoubleVerityVO;
 import com.cloudkeeper.leasing.identity.vo.KPIStatisticsVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,7 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
     }
 
     @Override
-    public Result<List<KPIStatisticsVO>> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
+    public Result<Map> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
         if (StringUtils.isEmpty(kPIStatisticsSearchable.getTaskYear())) {
             return Result.of(500, "任务年度不存在！");
@@ -100,15 +101,34 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
             return Result.of(500, "年度任务不存在！");
         }
         kPIStatisticsSearchable.setTaskId(task.getId());
+
+        DoubleVerityVO city = kpiVillageStatisticsService.findBySql(DoubleVerityVO.class, generateAvgSqlByDistrictId("01", task.getId()));
+
+        DoubleVerityVO town = kpiVillageStatisticsService.findBySql(DoubleVerityVO.class, generateAvgSqlByDistrictId(kPIStatisticsSearchable.getDistrictId(), task.getId()));
+
         List<KPIStatistics> kPIStatisticsList = kPIStatisticsService.findAll(kPIStatisticsSearchable, sort);
         List<KPIStatisticsVO> kPIStatisticsVOList = KPIStatistics.convert(kPIStatisticsList, KPIStatisticsVO.class);
         for (KPIStatisticsVO k : kPIStatisticsVOList){
-            k.setMargin1(Double.valueOf(k.getVillagePerformance()) - Double.valueOf(k.getMonitoringIndex()));
-            k.setMargin2(Double.valueOf(k.getDvm()) - Double.valueOf(k.getAbilityJudgement()));
-            k.setMargin3(Double.valueOf(k.getRoutine()) - Double.valueOf(k.getComprehensiveEvaluation()));
-            k.setMargin4(Double.valueOf(k.getComprehensiveEvaluationABC()) - Double.valueOf(k.getSatisfactionDegree()));
+            k.setVillagePerMonitorIndexDistance(Math.abs(Double.valueOf(k.getVillagePerformance()) - Double.valueOf(k.getMonitoringIndex())));
+            k.setDvmAndAbilityJudgementDistance(Math.abs(Double.valueOf(k.getDvm()) - Double.valueOf(k.getAbilityJudgement())));
+            k.setComprehensiveEvaluationAndCommonWorkDistance(Math.abs(Double.valueOf(k.getRoutine()) - Double.valueOf(k.getComprehensiveEvaluation())));
         }
-        return Result.of(kPIStatisticsVOList);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("city", city);
+        res.put("town", town);
+        res.put("data", kPIStatisticsVOList);
+        return Result.of(res);
+    }
+
+    private String generateAvgSqlByDistrictId(@Nonnull String districtId, @Nonnull String taskId) {
+        String avgSql = "SELECT Round(avg(villagePerMonitorIndexDistance), 2) as villagePerMonitorIndexDistanceAvg, Round(avg(dvmAndAbilityJudgementDistance),2) as dvmAndAbilityJudgementDistanceAvg, \n" +
+                "Round(avg(comprehensiveEvaluationAndCommonWorkDistance),2) as comprehensiveEvaluationAndCommonWorkDistanceAvg from (\n" +
+                "SELECT ROUND(ABS(cast(isNUll(ks.villagePerformance, 0) as float) - cast(isnull(ks.monitoringIndex, 0) as float)), 2) as villagePerMonitorIndexDistance, \n" +
+                "ROUND(ABS(cast(isNUll(ks.dvm, 0) as float) - cast(isnull(ks.abilityJudgement, 0) as float)), 2) as dvmAndAbilityJudgementDistance,\n" +
+                "ROUND(ABS(cast(isNUll(ks.comprehensiveEvaluation, 0) as float) - cast(isnull(ks.routine, 0) as float)), 2) as comprehensiveEvaluationAndCommonWorkDistance,\n" +
+                "ks.*  FROM KPI_Statistics ks WHERE ks.taskId = '" + taskId+ "' and ks.districtId like '" + districtId+ "%') a ";
+        return avgSql;
     }
 
     @Override
@@ -150,67 +170,81 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
 
         Map<String, Double> dvb = new HashMap<>();
         for (KPIVillageStatistics item : all) {
-            BigDecimal score = new BigDecimal(item.getScore());
+            BigDecimal score = BigDecimal.ZERO;
+            if (!StringUtils.isEmpty(item.getScore())) {
+                score = new BigDecimal(item.getScore());
+            }
             KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
             String quotaId = item.getQuotaId();
             if (!dvb.containsKey(item.getDistrictId())) {
                 dvb.put(item.getDistrictId(), 0.00);
             }
             Double aDouble = dvb.get(item.getDistrictId());
-            if (quotaId.contains(byId.getTaskYear() + "02")) {
-                kpiStatistics.setVillagePerformance(item.getOldScore());
-                aDouble += Double.valueOf(item.getOldScore());
-            } else if (quotaId.contains(byId.getTaskYear() + "03")) {
-                aDouble += Double.valueOf(item.getScore());
+            if (quotaId.equals(byId.getTaskYear() + "02")) {
+                aDouble += score.doubleValue();
+                kpiStatistics.setVillagePerformance(score.divide(new BigDecimal(40),2, RoundingMode.FLOOR)
+                        .multiply(new BigDecimal(100)).toString());
+            } else if (quotaId.equals(byId.getTaskYear() + "03")) {
+                aDouble += score.doubleValue();
                 kpiStatistics.setMonitoringIndex(score.divide(new BigDecimal(20),2, RoundingMode.FLOOR)
                         .multiply(new BigDecimal(100)).toString());
-            } else if (quotaId.contains(byId.getTaskYear() + "01")) {
-                aDouble += Double.valueOf(item.getScore());
+            } else if (quotaId.equals(byId.getTaskYear() + "01")) {
+                aDouble += score.doubleValue();
                 kpiStatistics.setRoutine(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
                         .multiply(new BigDecimal(100)).toString());
-            } else if (quotaId.contains(byId.getTaskYear() + "05")) {
+            } else if (quotaId.equals(byId.getTaskYear() + "05")) {
                 kpiStatistics.setComprehensiveEvaluation(score.divide(new BigDecimal(20),2, RoundingMode.FLOOR)
                         .multiply(new BigDecimal(100)).toString());
             }
+            dvb.put(item.getDistrictId(), aDouble);
         }
 
         DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KPIVillageStatistics.class);
-        detachedCriteria.add(Restrictions.eq("taskId", taskId));
-        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
-        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0402"));
+        detachedCriteria1.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria1.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria1.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0401"));
         all = kpiVillageStatisticsService.findAll(detachedCriteria1);
 
         for (KPIVillageStatistics item : all) {
-            BigDecimal score = new BigDecimal(item.getScore());
+            BigDecimal score = BigDecimal.ZERO;
+            if (!StringUtils.isEmpty(item.getScore())) {
+                score = new BigDecimal(item.getScore());
+            }
             KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
             kpiStatistics.setAbilityJudgement(score.divide(new BigDecimal(5),2, RoundingMode.FLOOR)
                     .multiply(new BigDecimal(100)).toString());
             BigDecimal dvm = new BigDecimal(dvb.get(item.getDistrictId()));
-            kpiStatistics.setDvm(dvm.divide(new BigDecimal(100 + 10 + 20), 2, RoundingMode.FLOOR)
+            kpiStatistics.setDvm(dvm.divide(new BigDecimal(40 + 10 + 20), 2, RoundingMode.FLOOR)
                     .multiply(new BigDecimal(100)).toString());
         }
 
         DetachedCriteria detachedCriteria2 = DetachedCriteria.forClass(KPIVillageStatistics.class);
-        detachedCriteria.add(Restrictions.eq("taskId", taskId));
-        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
-        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0501"));
+        detachedCriteria2.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria2.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria2.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0501"));
         all = kpiVillageStatisticsService.findAll(detachedCriteria2);
 
         for (KPIVillageStatistics item : all) {
-            BigDecimal score = new BigDecimal(item.getScore());
+            BigDecimal score = BigDecimal.ZERO;
+            if (!StringUtils.isEmpty(item.getScore())) {
+                score = new BigDecimal(item.getScore());
+            }
             KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
             kpiStatistics.setComprehensiveEvaluationABC(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
                     .multiply(new BigDecimal(100)).toString());
         }
 
         DetachedCriteria detachedCriteria3 = DetachedCriteria.forClass(KPIVillageStatistics.class);
-        detachedCriteria.add(Restrictions.eq("taskId", taskId));
-        detachedCriteria.add(Restrictions.eq("quotaLevel", "2"));
-        detachedCriteria.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0502"));
+        detachedCriteria3.add(Restrictions.eq("taskId", taskId));
+        detachedCriteria3.add(Restrictions.eq("quotaLevel", "2"));
+        detachedCriteria3.add(Restrictions.eq("quotaId", byId.getTaskYear() + "0502"));
         all = kpiVillageStatisticsService.findAll(detachedCriteria3);
 
         for (KPIVillageStatistics item : all) {
-            BigDecimal score = new BigDecimal(item.getScore());
+            BigDecimal score = BigDecimal.ZERO;
+            if (!StringUtils.isEmpty(item.getScore())) {
+                score = new BigDecimal(item.getScore());
+            }
             KPIStatistics kpiStatistics = tempRes.get(item.getDistrictId());
             kpiStatistics.setSatisfactionDegree(score.divide(new BigDecimal(10),2, RoundingMode.FLOOR)
                     .multiply(new BigDecimal(100)).toString());

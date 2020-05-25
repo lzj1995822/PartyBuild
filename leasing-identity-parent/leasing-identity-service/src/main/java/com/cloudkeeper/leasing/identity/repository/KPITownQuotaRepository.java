@@ -25,4 +25,6 @@ public interface KPITownQuotaRepository extends BaseRepository<KPITownQuota> {
     List<KPITownQuota> findAllByQuotaName(String quotaName);
 
     List<KPITownQuota> findAllByTaskId(String taskId);
+
+    List<KPITownQuota> findAllByParentQuotaIdAndDistrictIdOrderByParentQuotaId(String quotaId, String districtId);
 }

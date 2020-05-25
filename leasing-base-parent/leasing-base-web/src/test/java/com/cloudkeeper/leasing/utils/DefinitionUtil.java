@@ -28,7 +28,7 @@ class DefinitionUtil {
     private static final String CLASS_EXPLAIN = GenerateTemplateCodeUtil.CLASS_EXPLAIN;
 
     /** 项目根目录 */
-    private static final String PROJECT_DIR = "D:\\PartyBuild\\";
+    private static final String PROJECT_DIR = "E:\\project\\partybuild\\party\\";
 
     ////////////////////////// 定参 //////////////////////////////////
     /** 总工程名称 */
