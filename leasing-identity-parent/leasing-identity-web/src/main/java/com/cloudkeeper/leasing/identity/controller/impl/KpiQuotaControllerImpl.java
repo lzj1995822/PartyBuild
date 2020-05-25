@@ -13,8 +13,10 @@ import com.cloudkeeper.leasing.identity.service.KpiQuotaService;
 import com.cloudkeeper.leasing.identity.vo.KPIAttachmentVO;
 import com.cloudkeeper.leasing.identity.vo.KPITownQuotaVO;
 import com.cloudkeeper.leasing.identity.vo.KpiQuotaVO;
+import com.sun.org.apache.bcel.internal.generic.I2F;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -29,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,6 +108,9 @@ public class KpiQuotaControllerImpl implements KpiQuotaController {
     @Transactional
     public Result<List<KpiQuotaVO>> blukSave(@RequestBody List<KpiQuotaDTO> kpiQuotaDTOS, @Nonnull String quotaYear) {
         kpiQuotaService.deleteAllByQuotaYear(quotaYear);
+        if (CollectionUtils.isEmpty(kpiQuotaDTOS)) {
+            return Result.of(new ArrayList<>());
+        }
         for (KpiQuotaDTO item :kpiQuotaDTOS) {
             KpiQuota convert = item.convert(KpiQuota.class);
             convert.setKpiQuotas(null);
