@@ -6,12 +6,12 @@ spring:
 #    url: jdbc:sqlserver://asher.wicp.vip:10858;DatabaseName=JRParty
 #    url: jdbc:sqlserver://192.168.0.101:1433;DatabaseName=PartyBuild
     # url: jdbc:sqlserver://172.16.0.221:1433;DatabaseName=PartyBuild
-    url: jdbc:sqlserver://192.168.1.104:1433;DatabaseName=Copy3
+    url: jdbc:sqlserver://172.16.0.207:1433;DatabaseName=Copy3
     # 用户名
 #    username: lxw
-    username: sa
+    username: asherlv
     # 密码-
-    password: q243485908
+    password: q243485
     # 驱动类型
 #   driver-class-name: com.mysql.jdbc.Driver
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -120,7 +120,7 @@ fdfs:
   thumbImage:             #缩略图生成参数
     width: 150
     height: 150
-  trackerList: 172.16.0.199:22122
+  trackerList: 172.22.116.2:22122
   pool:
     max-total: -1
     max-wait-millis: 5000
