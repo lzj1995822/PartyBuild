@@ -58,4 +58,7 @@ public class KPITownQuotaDTO extends BaseEditDTO {
 
     List<KPIVillageQuotaDTO> kpiVillageQuotas;
 
+//    是指标制定0还是考核打分1
+    private String isReviewOrMake;
+
 }
