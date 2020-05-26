@@ -37,6 +37,7 @@ public class KpiQuotaServiceImpl extends BaseServiceImpl<KpiQuota> implements Kp
                 .withMatcher("quotaLevel", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("quotaYear", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("quotaMakeDepartId", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("quotaScoringDepartId", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("parentQuotaId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 

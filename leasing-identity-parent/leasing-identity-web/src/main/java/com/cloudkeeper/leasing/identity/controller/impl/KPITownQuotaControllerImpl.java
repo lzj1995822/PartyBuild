@@ -169,9 +169,13 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
     @Override
     public Result<Object> getAll(@RequestBody KPITownQuotaDTO kpi, String isDepart, String townDistrictId) {
         String d = kpi.getDistrictId();
-
+        String isReviewOrMake = kpi.getIsReviewOrMake();
         KpiQuotaSearchable kpiQuotaSearchable = new KpiQuotaSearchable();
-        kpiQuotaSearchable.setQuotaMakeDepartId(d);
+        if (StringUtils.isEmpty(isReviewOrMake) || "0".equals(isReviewOrMake)) {
+            kpiQuotaSearchable.setQuotaMakeDepartId(d);
+        } else {
+            kpiQuotaSearchable.setQuotaScoringDepartId(d);
+        }
         kpiQuotaSearchable.setParentQuotaId(kpi.getParentQuotaId());
         List<KpiQuota> kpiQuotas = kpiQuotaService.findAll(kpiQuotaSearchable,new Sort(Sort.Direction.DESC,"parentQuotaId"));
         List<KpiQuotaVO> quotaVOList = KpiQuota.convert(kpiQuotas,KpiQuotaVO.class);

@@ -146,8 +146,8 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
             return Result.of(500, "当前年份对应的考核任务不存在！");
         }
 
-        String top10Sql = "SELECT TOP 10 * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
-        List<KPIVillageStatistics> top10 = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, top10Sql);
+        String allRankSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
+        List<KPIVillageStatistics> allRank = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, allRankSql);
 
 
         String last10Sql = "SELECT TOP 10 * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) ASC";
@@ -217,7 +217,7 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
         List<KPIVillageStatistics> good10 = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, good10Sql);
 
         Map<String,Object> res = new HashMap<>();
-        res.put("top10", top10);
+        res.put("all", allRank);
         res.put("last10", last10);
         res.put("lastGroupByTown", lastGroupByTown);
         res.put("top3ByQuotas", map);
@@ -277,15 +277,15 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
 
     @GetMapping("/reserveTalents")
     public Result<Map> reserveTalents(@Nonnull String taskYear,@Nonnull String limit) {
-        Map<String, Object> info = new HashMap<>();
+        Map<String, Object> info = new LinkedHashMap<>();
         info.put("45岁以下", generateReserveTalentsSql(null, "45", taskYear, limit));
         info.put("45岁-55岁", generateReserveTalentsSql("45", "55", taskYear, limit));
         info.put("55岁以上", generateReserveTalentsSql("55", null, taskYear, limit));
-        Map<String, Object> chart = new HashMap<>();
+        Map<String, Object> chart = new LinkedHashMap<>();
         chart.put("45岁以下", generateReserveTalentByAge(null, "45", taskYear));
         chart.put("45岁-55岁", generateReserveTalentByAge("45", "55", taskYear));
         chart.put("55岁以上", generateReserveTalentByAge("55", null, taskYear));
-        return Result.of(new HashMap(){{put("info", info);put("chart", chart);}});
+        return Result.of(new LinkedHashMap(){{put("info", info);put("chart", chart);}});
     }
 
     private List<KPIVillageStatisticsVO> generateReserveTalentByAge(String startAge, String endAge, String taskYear) {
