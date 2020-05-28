@@ -53,6 +53,8 @@ public class KPITownQuotaVO extends BaseVO {
 
     private String quarter;
 
+    private String quotaYear;
+
     List<KPIVillageQuotaVO> kpiVillageQuotas;
 
 }
