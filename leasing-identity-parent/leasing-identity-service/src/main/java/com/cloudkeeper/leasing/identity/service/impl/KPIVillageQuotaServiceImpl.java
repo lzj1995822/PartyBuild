@@ -79,6 +79,9 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
         Map<String, Map<String, String>> map = new HashMap<>();
         for (KPIVillageQuota item : villageQuotas) {
             String quotaName = item.getKpiTownQuota().getQuotaName();
+            if (StringUtils.isEmpty(quotaName) || StringUtils.isEmpty(item.getQuarter())) {
+                continue;
+            }
             if (!map.containsKey(quotaName)) {
                 map.put(quotaName, new HashMap<>());
             }
@@ -299,6 +302,11 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
         parentQuotaId = parentQuotaId.substring(4, parentQuotaId.length());
         switch (parentQuotaId) {
             case "0301":
+                maps.add(new HashMap<String, Object>(){{
+                    put("isQuota", "0");
+                    put("quotasName", "年度村集体经济收入(全口径)");
+                    put("value", detectionIndex.getEconomicIncome());
+                }});
                 maps.add(new HashMap<String, Object>(){{
                     put("isQuota", "0");
                     put("quotasName", "本年度村集体经济收入");

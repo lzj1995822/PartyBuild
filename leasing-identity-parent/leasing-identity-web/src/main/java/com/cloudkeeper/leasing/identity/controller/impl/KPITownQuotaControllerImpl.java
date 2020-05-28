@@ -198,9 +198,13 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             detachedCriteria.addOrder(Order.desc("createdAt"));
             List<KPITownQuota> kpiTownQuotas = kPITownQuotaService.findAll(detachedCriteria);
             List<KPITownQuotaVO> kpiTownQuotaVOS = new ArrayList<>();
-            if (StringUtils.isNotBlank(kpi.getQuarter())){
+            String quarter = kpi.getQuarter();
+            if (StringUtils.isEmpty(quarter)) {
+                quarter = "第一季度";
+            }
+            if (k.getOnceOrMore().equals("一年多次")){
                 for (KPITownQuota item : kpiTownQuotas) {
-                    item.setKpiVillageQuotas(kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(item.getId(), kpi.getQuarter()));
+                    item.setKpiVillageQuotas(kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(item.getId(), quarter));
                     KPITownQuotaVO convert = item.convert(KPITownQuotaVO.class);
                     kpiTownQuotaVOS.add(convert);
                 }
@@ -411,6 +415,11 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         for (KPIVillageQuotaDTO item : kpiVillageQuotas) {
             item.setId(null);
             item.setTownQuotaId(convert.getId());
+            item.setParentQuotaId(convert.getParentQuotaId());
+            item.setParentDistrictId(kpiTownQuotaDTO.getDistrictId());
+            item.setScore("0");
+            item.setScoreEnd("0");
+            item.setFormulaScore("0");
             if (kpiQuota.getOnceOrMore().equals("一年多次")) {
                 for (String subItem : quarterList) {
                     KPIVillageQuota k = item.convert(KPIVillageQuota.class);
@@ -458,15 +467,14 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         List<KpiQuotaVO> firstRes = new ArrayList<>();
         for (KpiQuota item : first) {
             List<KpiQuota> second = item.getKpiQuotas();
-            if (CollectionUtils.isEmpty(second)) {
-                continue;
-            }
             KpiQuotaVO firstConvert = item.convert(KpiQuotaVO.class);
             List<KpiQuotaVO> secondRes = new ArrayList<>();
-            for (KpiQuota subItem : second) {
-                KpiQuotaVO secondConvert = subItem.convert(KpiQuotaVO.class);
-                secondConvert.setKpiTownQuotas(map.get(subItem.getQuotaId()));
-                secondRes.add(secondConvert);
+            if (!CollectionUtils.isEmpty(second)) {
+                for (KpiQuota subItem : second) {
+                    KpiQuotaVO secondConvert = subItem.convert(KpiQuotaVO.class);
+                    secondConvert.setKpiTownQuotas(map.get(subItem.getQuotaId()));
+                    secondRes.add(secondConvert);
+                }
             }
             firstConvert.setKpiQuotas(secondRes);
             firstRes.add(firstConvert);

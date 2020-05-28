@@ -198,7 +198,11 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
         Integer totalCount = super.getTotalCount(detachedCriteria);
         detachedCriteria.add(Restrictions.ge("status", finishStatus));
         Integer finishCount = super.getTotalCount(detachedCriteria);
-        currentTask.setCurrentPercent(new BigDecimal(finishCount).divide(new BigDecimal(totalCount), 2, RoundingMode.FLOOR).toString());
+        if (totalCount == 0) {
+            currentTask.setCurrentPercent("0");
+        } else {
+            currentTask.setCurrentPercent(new BigDecimal(finishCount).divide(new BigDecimal(totalCount), 2, RoundingMode.FLOOR).toString());
+        }
         return cadreTaskRepository.save(currentTask);
     }
 
