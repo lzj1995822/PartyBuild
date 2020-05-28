@@ -193,8 +193,8 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         detachedCriteria.add(Restrictions.in("type", types));
         detachedCriteria.add(Restrictions.gt("endTime", LocalDate.now()));
         Integer totalCount = cadreTaskObjectService.getTotalCount(detachedCriteria);
-        detachedCriteria.addOrder(Order.desc("c.taskYear"));
-        detachedCriteria.addOrder(Order.desc("c.endTime"));
+        detachedCriteria.addOrder(Order.desc("taskYear"));
+        detachedCriteria.addOrder(Order.desc("endTime"));
         return Result.of(CadreTask.convert(cadreTaskService.findAll(detachedCriteria, pageable, totalCount), CadreTaskVO.class));
     }
 }

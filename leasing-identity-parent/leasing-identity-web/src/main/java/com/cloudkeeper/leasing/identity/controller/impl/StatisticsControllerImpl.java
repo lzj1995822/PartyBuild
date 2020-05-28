@@ -112,8 +112,9 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
-        Object obj = statisticsService.getCustomStatistics(villageCadresStatisticsSearchables);
+    public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
+                                              String cadresType) {
+        Object obj = statisticsService.getCustomStatistics(villageCadresStatisticsSearchables, cadresType);
         if ("error".equals(obj.toString())){
             return Result.of("非法查询条件！");
         }
@@ -121,14 +122,14 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<Object> page(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, @RequestParam Integer page, @RequestParam Integer size, Pageable pageable) {
-        return Result.of(statisticsService.page(villageCadresStatisticsSearchables,page,size,pageable));
+    public Result<Object> page(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,String cadresType, @RequestParam Integer page, @RequestParam Integer size, Pageable pageable) {
+        return Result.of(statisticsService.page(villageCadresStatisticsSearchables, cadresType, page,size,pageable));
     }
 
     @Override
-    public Result<Object> export(@RequestBody ExportDTO exportDTO) {
+    public Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType) {
         Map<String,String> map = new HashMap<>();
-        map.put("file",statisticsService.export(exportDTO));
+        map.put("file",statisticsService.export(exportDTO, cadresType));
         return Result.of(map);
     }
 
