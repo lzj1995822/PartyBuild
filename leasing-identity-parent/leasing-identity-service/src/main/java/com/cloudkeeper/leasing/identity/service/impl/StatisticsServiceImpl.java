@@ -336,14 +336,16 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables) {
-
+    public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType) {
+        if (StringUtils.isEmpty(cadresType)) {
+            cadresType = "SECRETARY";
+        }
         try {
             //2.查询按镇统计
             StringBuilder s = new StringBuilder();
             s.append(createSql(villageCadresStatisticsSearchables));
             StringBuilder statisticsSql = new StringBuilder();
-            statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+            statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = '" + cadresType +"' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
             statisticsSql.append(s);
             statisticsSql.append(" group by parentDistrictName");
             List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,statisticsSql.toString());
@@ -367,19 +369,22 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, Integer page, Integer size, Pageable pageable) {
+    public Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType, Integer page, Integer size, Pageable pageable) {
+        if (StringUtils.isEmpty(cadresType)) {
+            cadresType = "SECRETARY";
+        }
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
         s.append(createSql(villageCadresStatisticsSearchables));
         StringBuilder resSql = new StringBuilder();
-        resSql.append("SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        resSql.append("SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         resSql.append(s);
         resSql.append(") a WHERE  a.rownumber BETWEEN ");
         resSql.append(page*size+1);
         resSql.append(" and ");
         resSql.append(page*size+size);
 
-        StringBuilder count = new StringBuilder("select count(1) as val,'全部' as name from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        StringBuilder count = new StringBuilder("select count(1) as val,'全部' as name from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         count.append(s);
         List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,count.toString());
 
@@ -388,12 +393,16 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public String export(ExportDTO exportDTO) {
+    public String export(ExportDTO exportDTO, String cadresType) {
+        if (StringUtils.isEmpty(cadresType)) {
+            cadresType = "SECRETARY";
+        }
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
         s.append(createSql(exportDTO.getSearchFields()));
         StringBuilder resSql = new StringBuilder();
-        resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = 'SECRETARY' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = '" + cadresType + "' and " +
+                "village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         resSql.append(s);
         return generateFileUrl(exportDTO, resSql.toString());
     }

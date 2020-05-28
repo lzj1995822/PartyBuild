@@ -121,16 +121,17 @@ public interface StatisticsController {
 
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
     @PostMapping("/getCustomStatistics")
-    Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables);
+    Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
+                                       String cadresType);
 
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
     @PostMapping("/page")
     Result<Object> page(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables
-    , @ApiParam(value = "分页参数", required = true) @RequestParam Integer page, @RequestParam Integer size, Pageable pageable);
+    , String cadresType, @ApiParam(value = "分页参数", required = true) @RequestParam Integer page, @RequestParam Integer size, Pageable pageable);
 
     @ApiOperation(value = "导出", notes = "导出", position = 1)
     @PostMapping("/export")
-    Result<Object> export(@RequestBody ExportDTO exportDTO);
+    Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType);
 
     @ApiOperation(value = "获取年龄段统计", notes = "获取年龄段统计", position = 1)
     @GetMapping("/getAgeCountByDistrict/{cadresType}/{districtId}")
