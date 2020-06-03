@@ -42,12 +42,20 @@ public class VillageCadresTermVO extends BaseVO {
     /** 组织ID */
     @ApiModelProperty(value = "组织ID", position = 10, required = true)
     private String districtId;
+
     @ApiModelProperty(value = "组织名称", position = 10, required = true)
     private String districtName;
 
     @ApiModelProperty(value = "人员类型", position = 10, required = true)
     private String cadresType;
+
     @ApiModelProperty(value = "离退休材料", position = 10, required = true)
     private String termFile;
+
+    @ApiModelProperty(value = "任期类型（新任/离任）", position = 10, required = true)
+    private String termType;
+
+    @ApiModelProperty(value = "头像", position = 19)
+    private String headSculpture;
 
 }

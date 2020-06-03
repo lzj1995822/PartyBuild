@@ -89,8 +89,10 @@ public interface StatisticsController {
      * @return 专职村主任统计 VO
      */
     @ApiOperation(value = "报酬结构列表", notes = "报酬结构列表", position = 1)
-    @GetMapping("/getSalaryStatisticsList/{type}/{cadresType}")
-    Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@ApiParam(value = "组织ID", required = true) @PathVariable("type") String type,@PathVariable("cadresType") String cadresType);
+    @GetMapping("/getSalaryStatisticsList/{type}/{cadresType}/{districtId}")
+    Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@ApiParam(value = "组织ID", required = true) @PathVariable("type") String type,
+                                                                 @PathVariable("cadresType") String cadresType,
+                                                                 @PathVariable("districtId") String districtId);
 
     /**
      * 党龄情况分析
@@ -122,16 +124,16 @@ public interface StatisticsController {
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
     @PostMapping("/getCustomStatistics")
     Result<Object> getCustomStatistics(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
-                                       String cadresType);
+                                       String cadresType, String districtId);
 
     @ApiOperation(value = "自定义查询", notes = "自定义查询", position = 1)
     @PostMapping("/page")
     Result<Object> page(@ApiParam(value = "查询参数", required = true)@RequestBody  List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables
-    , String cadresType, @ApiParam(value = "分页参数", required = true) @RequestParam Integer page, @RequestParam Integer size, Pageable pageable);
+    , String cadresType, String districtId, @ApiParam(value = "分页参数", required = true) @RequestParam Integer page, @RequestParam Integer size, Pageable pageable);
 
     @ApiOperation(value = "导出", notes = "导出", position = 1)
     @PostMapping("/export")
-    Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType);
+    Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType, String districtId);
 
     @ApiOperation(value = "获取年龄段统计", notes = "获取年龄段统计", position = 1)
     @GetMapping("/getAgeCountByDistrict/{cadresType}/{districtId}")

@@ -20,10 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,31 +143,62 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
 
     @Override
     public List<StatisticsNotIntegerVO> getSalaryStatistics(String districtId,String cadresType) {
-        String sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'平均基本报酬' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null ";
-        StatisticsNotIntegerVO basics = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均基本报酬
+        if (StringUtils.isEmpty(districtId)) {
+            districtId = "01";
+        }
 
-        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'全职村干部基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '全职村干部'";
-        StatisticsNotIntegerVO basicsQzcgb = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均全职村干部
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'公务员村书记基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员'";
-        StatisticsNotIntegerVO basicsGwy = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均公务员
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'事业编制村书记基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制'";
-        StatisticsNotIntegerVO basicsSybz = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均事业编制
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'考核报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
-        StatisticsNotIntegerVO reviews = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均考核报酬
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'增收报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
-        StatisticsNotIntegerVO others =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均增收报酬
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val,'其他报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
-        StatisticsNotIntegerVO des =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均其他报酬
-
-        sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,'总报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        String sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'总报酬平均值' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id " +
+                "and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND " +
+                "reward.achieveTime IS NOT null and cadres.districtId like '" + districtId + "%'";
         StatisticsNotIntegerVO totals =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均总报酬
 
-        List<StatisticsNotIntegerVO> list = new ArrayList<>();
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'平均基本报酬' as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id " +
+                "and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' " +
+                "AND reward.achieveTime IS NOT null and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO basics = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均基本报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'全职村干部基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and " +
+                "hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '全职村干部' and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO basicsQzcgb = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均全职村干部
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'公务员村书记基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                "and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员' and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO basicsGwy = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均公务员
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'事业编制村书记基本报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and " +
+                "hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制' and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO basicsSybz = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//年平均事业编制
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'考核报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                "and hasRetire = '0' AND reward.achieveTime IS NOT null and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO reviews = (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均考核报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'增收报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                "and hasRetire = '0' AND reward.achieveTime IS NOT null and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO others =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均增收报酬
+
+        sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val," +
+                "'其他报酬平均值' as name from Reward_Info reward join village_cadres cadres on " +
+                "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                "and hasRetire = '0' AND reward.achieveTime IS NOT null and cadres.districtId like '" + districtId + "%'";
+        StatisticsNotIntegerVO des =  (StatisticsNotIntegerVO)findBySql(StatisticsNotIntegerVO.class,sql);//平均其他报酬
+
+
+
+        List<StatisticsNotIntegerVO> list = new LinkedList<>();
+        list.add(totals);
         list.add(basics);
         list.add(basicsQzcgb);
         list.add(basicsGwy);
@@ -178,7 +206,6 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         list.add(reviews);
         list.add(others);
         list.add(des);
-        list.add(totals);
         return list;
     }
 
@@ -336,22 +363,32 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType) {
+    public Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType, String districtId) {
         if (StringUtils.isEmpty(cadresType)) {
             cadresType = "SECRETARY";
         }
         try {
             //2.查询按镇统计
             StringBuilder s = new StringBuilder();
-            s.append(createSql(villageCadresStatisticsSearchables));
+            s.append(createSql(villageCadresStatisticsSearchables, districtId));
             StringBuilder statisticsSql = new StringBuilder();
-            statisticsSql.append("select count(1) as val,parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = '" + cadresType +"' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
-            statisticsSql.append(s);
-            statisticsSql.append(" group by parentDistrictName");
+
+            String sql;
+
+            if (!StringUtils.isEmpty(districtId) && districtId.length() >= 4) {
+                statisticsSql.append("select count(1) as val, districtName as name from village_cadres  WHERE village_cadres.cadresType = '" + cadresType +"' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+                statisticsSql.append(s);
+                statisticsSql.append(" group by districtName");
+                sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 3 and districtType = 'Party' and orgParent = '" +districtId+ "'";
+            } else {
+                statisticsSql.append("select count(1) as val, parentDistrictName as name from village_cadres  WHERE village_cadres.cadresType = '" + cadresType +"' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+                statisticsSql.append(s);
+                statisticsSql.append(" group by parentDistrictName");
+                sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 2 and districtType = 'Party'";
+            }
             List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,statisticsSql.toString());
 
             //没有统计数据的镇补0
-            String sql = "SELECT 0 as val,districtName as name FROM SYS_District WHERE districtLevel = 2 and  districtType = 'Party'";
             List<StatisticsVO> districts = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,sql);
             for (StatisticsVO district : districts){
                 for (StatisticsVO statisticsVO : statistics){
@@ -369,15 +406,16 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType, Integer page, Integer size, Pageable pageable) {
+    public Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType, Integer page, Integer size, String districtId, Pageable pageable) {
         if (StringUtils.isEmpty(cadresType)) {
             cadresType = "SECRETARY";
         }
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
-        s.append(createSql(villageCadresStatisticsSearchables));
+        s.append(createSql(villageCadresStatisticsSearchables, districtId));
         StringBuilder resSql = new StringBuilder();
-        resSql.append("SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
+        String tempSql = "SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ";
+        resSql.append(tempSql);
         resSql.append(s);
         resSql.append(") a WHERE  a.rownumber BETWEEN ");
         resSql.append(page*size+1);
@@ -393,13 +431,13 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public String export(ExportDTO exportDTO, String cadresType) {
+    public String export(ExportDTO exportDTO, String cadresType, String districtId) {
         if (StringUtils.isEmpty(cadresType)) {
             cadresType = "SECRETARY";
         }
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
-        s.append(createSql(exportDTO.getSearchFields()));
+        s.append(createSql(exportDTO.getSearchFields(), districtId));
         StringBuilder resSql = new StringBuilder();
         resSql.append("select * from village_cadres  WHERE village_cadres.cadresType = '" + cadresType + "' and " +
                 "village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
@@ -453,38 +491,67 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     }
 
     @Override
-    public List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type,String cadresType) {
+    public List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type,String cadresType, String districtId) {
         String sql = "";
-        if ("1".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
-        }else if ("2".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '全职村干部' group by cadres.parentDistrictName";
-
+        String fieldName = "parentDistrictName";
+        if (StringUtils.isEmpty(districtId)) {
+            districtId = "01";
+        }
+        if (!StringUtils.isEmpty(districtId) && districtId.length() >= 4) {
+            fieldName = "districtName";
+        }
+        if ("1".equals(type)) {
+            sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null";
+        } else if ("2".equals(type)){
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null";
         }else if ("3".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员' group by cadres.parentDistrictName";
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0'" +
+                    " and hasRetire = '0' AND reward.achieveTime IS NOT null and cadres.personnelType = '全职村干部' ";
 
         }else if ("4".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制' group by cadres.parentDistrictName";
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '公务员' ";
 
         }else if ("5".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+            sql = "SELECT cast(avg(cast(Isnull(reward.basicReward, 0) as  decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null  and cadres.personnelType = '事业编制' ";
 
         }else if ("6".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
+            sql = "SELECT cast(avg(cast(Isnull(reward.reviewReward, 0) as  decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null";
 
         }else if ("7".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
-
+            sql = "SELECT cast(avg(cast(Isnull(reward.otherReward, 0) as  decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null";
         }else if ("8".equals(type)){
-            sql = "SELECT cast(avg(cast(Isnull(reward.totalReward, 0) as  decimal(10,2))) as decimal(10,2)) as val,cadres.parentDistrictName as name from Reward_Info reward join village_cadres cadres on reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' and hasRetire = '0' AND reward.achieveTime IS NOT null group by cadres.parentDistrictName";
-
+            sql = "SELECT cast(avg(cast(Isnull(reward.des, 0) as  decimal(10,2))) as decimal(10,2)) as val, " +
+                    "cadres." +fieldName+ " as name from Reward_Info reward join village_cadres cadres on " +
+                    "reward.cadresId = cadres.id and cadres.cadresType like '"+cadresType+"%' and cadres.isDelete = '0' " +
+                    "and hasRetire = '0' AND reward.achieveTime IS NOT null";
         }
-        List<StatisticsNotIntegerVO> totals = findAllBySql(StatisticsNotIntegerVO.class,sql);//平均总报酬
+        sql += " and cadres.districtId like '" + districtId + "%' group by cadres." + fieldName;
+        List<StatisticsNotIntegerVO> totals = findAllBySql(StatisticsNotIntegerVO.class, sql);//平均总报酬
         return totals;
     }
 
     //拼接字符串
-    private StringBuilder createSql(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables){
+    private StringBuilder createSql(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String districtId){
         StringBuilder s = new StringBuilder();
         for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
             StringBuilder filedName = new StringBuilder();
@@ -524,6 +591,10 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
                     break;
             }
         }
+        if (StringUtils.isEmpty(districtId)) {
+            districtId = "01";
+        }
+        s.append(" and districtId like '").append(districtId).append("%'");
         return s;
     }
 }

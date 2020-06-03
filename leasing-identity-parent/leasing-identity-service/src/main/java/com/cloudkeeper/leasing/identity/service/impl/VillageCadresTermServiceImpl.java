@@ -41,4 +41,9 @@ public class VillageCadresTermServiceImpl extends BaseServiceImpl<VillageCadresT
     public VillageCadresTerm findByCadresId(String cadresId) {
         return villageCadresTermRepository.findByCadresId(cadresId);
     }
+
+    @Override
+    public VillageCadresTerm findByCadresIdAndTermType(String cadresId, String termType) {
+        return villageCadresTermRepository.findByCadresIdAndTermType(cadresId, termType);
+    }
 }

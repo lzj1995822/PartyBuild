@@ -104,9 +104,9 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
 
     @GetMapping("/loadVillageAllQuota")
     public Result<List<Map<String, Object>>> loadAllVillageAllQuota(@NonNull String districtId, @NonNull String taskId,  @NonNull String taskYear, @Nonnull String departDistrictId) {
-        String makeQuotaDistrictId = districtId.substring(0, 4);
+        String scoringQuotaDistrictId = districtId.substring(0, 4);
         if (!StringUtils.isEmpty(departDistrictId)) {
-            makeQuotaDistrictId = departDistrictId;
+            scoringQuotaDistrictId = departDistrictId;
         }
         CadreTask byId = cadreTaskService.findById(taskId);
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(CadreTask.class);
@@ -121,7 +121,7 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
         String quotaTaskId = quotaTask.getId();
 
         DetachedCriteria detachedCriteria1 = DetachedCriteria.forClass(KpiQuota.class);
-        detachedCriteria1.add(Restrictions.like("quotaMakeDepartId", makeQuotaDistrictId, MatchMode.ANYWHERE));
+        detachedCriteria1.add(Restrictions.like("quotaScoringDepartId", scoringQuotaDistrictId, MatchMode.ANYWHERE));
         detachedCriteria1.add(Restrictions.eq("quotaLevel", "1"));
         detachedCriteria1.add(Restrictions.eq("quotaYear", taskYear));
         detachedCriteria1.addOrder(Order.asc("quotaId"));
@@ -132,22 +132,22 @@ public class KPIVillageQuotaControllerImpl implements KPIVillageQuotaController 
             KpiQuota byQuotaId = kpiQuotaService.findByQuotaId(quotaId);
             List<Map<String, Object>> maps = new LinkedList<>();
             if (quotaId.equals(taskYear + "01")) {
-                maps = kPIVillageQuotaService.buildCommonWorkData(districtId, quotaTaskId, taskId, quotaId, null, makeQuotaDistrictId);
+                maps = kPIVillageQuotaService.buildCommonWorkData(districtId, quotaTaskId, taskId, quotaId, null, scoringQuotaDistrictId);
             } else if (quotaId.equals(taskYear + "03")) {
-                maps = kPIVillageQuotaService.buildWatchQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, makeQuotaDistrictId);
+                maps = kPIVillageQuotaService.buildWatchQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, scoringQuotaDistrictId);
             } else if (quotaId.equals(taskYear + "05")) {
-                maps = kPIVillageQuotaService.buildCommentQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, makeQuotaDistrictId);
+                maps = kPIVillageQuotaService.buildCommentQuotaData(districtId, quotaTaskId, taskId, quotaTask.getTaskYear(), quotaId, scoringQuotaDistrictId);
             } else {
-                maps = kPIVillageQuotaService.buildCommonData(districtId, quotaTaskId, taskId, quotaId, makeQuotaDistrictId);
+                maps = kPIVillageQuotaService.buildCommonData(districtId, quotaTaskId, taskId, quotaId, scoringQuotaDistrictId);
             }
             temps.put("quotaId", quotaId);
             temps.put("quotaName", byQuotaId.getQuotaName());
             temps.put("quotaScore", byQuotaId.getQuotaScore());
             temps.put("isSetWeight", byQuotaId.getIsSetWeight());
             if (quotaId.equals(taskYear + "01")) {
-                temps.put("attachment", kpiAttachmentService.findAllByQuota(item.getQuotaId(), makeQuotaDistrictId));
+                temps.put("attachment", kpiAttachmentService.findAllByQuota(item.getQuotaId(), scoringQuotaDistrictId));
             } else {
-                temps.put("attachment", kpiAttachmentService.findByQuota(item.getQuotaId(), makeQuotaDistrictId, null, taskId));
+                temps.put("attachment", kpiAttachmentService.findByQuota(item.getQuotaId(), scoringQuotaDistrictId, null, taskId));
             }
             temps.put("kpiQuotas", maps);
             res.add(temps);

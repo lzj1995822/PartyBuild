@@ -202,7 +202,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             if (StringUtils.isEmpty(quarter)) {
                 quarter = "第一季度";
             }
-            if (k.getOnceOrMore().equals("一年多次")){
+            if ("一年多次".equals(k.getOnceOrMore())){
                 for (KPITownQuota item : kpiTownQuotas) {
                     item.setKpiVillageQuotas(kpiVillageQuotaService.findAllByTownQuotaIdAndQuarter(item.getId(), quarter));
                     KPITownQuotaVO convert = item.convert(KPITownQuotaVO.class);
@@ -354,22 +354,18 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         List<KpiQuota> seconds = kpiQuotaService.findAll(detachedCriteria1);
         List<KpiQuotaVO> secondVOS = KpiQuota.convert(seconds, KpiQuotaVO.class);
 
-        //组装二级，三级
-        Map<String,List<KpiQuotaVO>> secondMap = secondVOS.stream().collect(Collectors.toMap(
-                key -> key.getParentQuotaId(),
-                val -> {
-                    List<KpiQuotaVO> valList = new ArrayList();
-//                    if (thirdMap.containsKey(val.getQuotaId())){
-//                        val.setKpiTownQuotas(thirdMap.get(val.getQuotaId()));
-//                    }
-                    valList.add(val);
-                    return valList;
-                },
-                (List<KpiQuotaVO> newValueList, List<KpiQuotaVO> oldValueList) -> {
-                    oldValueList.addAll(newValueList);
-                    return oldValueList;
-                }));
-
+        //组装二级
+        Map<String, LinkedList<KpiQuotaVO>> secondMap = new LinkedHashMap<>();
+        for (KpiQuota item : seconds) {
+            String parentQuotaId = item.getParentQuotaId();
+            if (StringUtils.isEmpty(parentQuotaId)) {
+                continue;
+            }
+            if (!secondMap.containsKey(parentQuotaId)) {
+                secondMap.put(parentQuotaId, new LinkedList<>());
+            }
+            secondMap.get(parentQuotaId).add(item.convert(KpiQuotaVO.class));
+        }
 
         //获取一级
         DetachedCriteria detachedCriteria2 = DetachedCriteria.forClass(KpiQuota.class);
@@ -420,7 +416,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             item.setScore("0");
             item.setScoreEnd("0");
             item.setFormulaScore("0");
-            if (kpiQuota.getOnceOrMore().equals("一年多次")) {
+            if ("一年多次".equals(kpiQuota.getOnceOrMore())) {
                 for (String subItem : quarterList) {
                     KPIVillageQuota k = item.convert(KPIVillageQuota.class);
                     k.setQuarter(subItem);
@@ -528,7 +524,7 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         List<SysDistrict> allTowns = sysDistrictService.findAllTowns();
         for (SysDistrict item : allTowns) {
             KPITownQuota kpiTownQuota = new KPITownQuota();
-            BeanUtils.copyProperties(kpiTownQuotaDTO, kpiTownQuota, "id");
+            BeanUtils.copyProperties(kpiTownQuotaDTO, kpiTownQuota, "id", "kpiVillageQuotas");
             kpiTownQuota.setDistrictId(item.getDistrictId());
             kpiTownQuota.setDistrictName(item.getDistrictName());
             KPITownQuota save = kPITownQuotaService.save(kpiTownQuota);

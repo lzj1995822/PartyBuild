@@ -83,8 +83,10 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@PathVariable("type")String type,@PathVariable("cadresType") String cadresType) {
-        return Result.of(statisticsService.getRewardsStatisticsByType(type,cadresType));
+    public Result<List<StatisticsNotIntegerVO>> getSalaryStatisticsList(@PathVariable("type")String type,
+                                                                        @PathVariable("cadresType") String cadresType,
+                                                                        @PathVariable("districtId") String districtId) {
+        return Result.of(statisticsService.getRewardsStatisticsByType(type,cadresType,districtId));
     }
 
     @Override
@@ -113,8 +115,8 @@ public class StatisticsControllerImpl implements StatisticsController {
 
     @Override
     public Result<Object> getCustomStatistics(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
-                                              String cadresType) {
-        Object obj = statisticsService.getCustomStatistics(villageCadresStatisticsSearchables, cadresType);
+                                              String cadresType, String districtId) {
+        Object obj = statisticsService.getCustomStatistics(villageCadresStatisticsSearchables, cadresType, districtId);
         if ("error".equals(obj.toString())){
             return Result.of("非法查询条件！");
         }
@@ -122,14 +124,15 @@ public class StatisticsControllerImpl implements StatisticsController {
     }
 
     @Override
-    public Result<Object> page(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,String cadresType, @RequestParam Integer page, @RequestParam Integer size, Pageable pageable) {
-        return Result.of(statisticsService.page(villageCadresStatisticsSearchables, cadresType, page,size,pageable));
+    public Result<Object> page(@RequestBody List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
+                               String cadresType, String districtId, @RequestParam Integer page, @RequestParam Integer size, Pageable pageable) {
+        return Result.of(statisticsService.page(villageCadresStatisticsSearchables, cadresType, page,size,districtId,pageable));
     }
 
     @Override
-    public Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType) {
+    public Result<Object> export(@RequestBody ExportDTO exportDTO, String cadresType, String districtId) {
         Map<String,String> map = new HashMap<>();
-        map.put("file",statisticsService.export(exportDTO, cadresType));
+        map.put("file",statisticsService.export(exportDTO, cadresType, districtId));
         return Result.of(map);
     }
 

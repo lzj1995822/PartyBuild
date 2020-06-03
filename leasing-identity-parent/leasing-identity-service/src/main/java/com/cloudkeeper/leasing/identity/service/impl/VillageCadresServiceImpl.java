@@ -239,6 +239,7 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
         villageCadresTerm.setDistrictId(convert.getDistrictId());
         villageCadresTerm.setCadresType(convert.getCadresType());
         villageCadresTerm.setDistrictName(convert.getDistrictName());
+        villageCadresTerm.setTermType("0");
         villageCadresTermService.save(villageCadresTerm);
         //添加村干部任期信息----结束
 
