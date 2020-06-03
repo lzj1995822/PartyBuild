@@ -98,6 +98,7 @@ public class CadrePosition extends BaseEntity {
         CadrePositionVO cadrePositionVO = (CadrePositionVO) convert;
         if(!StringUtils.isEmpty(this.villageCadres)){
             cadrePositionVO.setCadreName(this.villageCadres.getName());
+            cadrePositionVO.setHeadSculpture(this.villageCadres.getHeadSculpture());
         }
         if(!StringUtils.isEmpty((this.sysDistrict))){
             cadrePositionVO.setDistrictName(this.sysDistrict.getDistrictName());

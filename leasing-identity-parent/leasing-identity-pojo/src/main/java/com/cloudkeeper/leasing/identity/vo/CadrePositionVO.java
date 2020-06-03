@@ -65,5 +65,9 @@ public class CadrePositionVO extends BaseVO {
     @ApiModelProperty(value = "所属镇组织", position = 10, required = true)
     private String parentDistrictName;
 
+    /** 村书记头像 */
+    @ApiModelProperty(value = "村书记头像", position = 10, required = true)
+    private String headSculpture;
+
 
 }

@@ -12,4 +12,7 @@ public interface VillageCadresTermService extends BaseService<VillageCadresTerm>
     void deleteAllByCadresId(String cadresId);
 
     VillageCadresTerm findByCadresId(String cadresId);
+
+    VillageCadresTerm findByCadresIdAndTermType(String cadresId, String termType);
+
 }

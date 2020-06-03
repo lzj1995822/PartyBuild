@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 
 /**
@@ -54,4 +55,7 @@ public class VillageCadresTermDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "离任职位id", position = 10, required = true)
     private String positionId;
+
+    @ApiModelProperty(value = "任期类型（新任/离任）", position = 10, required = true)
+    private String termType;
 }

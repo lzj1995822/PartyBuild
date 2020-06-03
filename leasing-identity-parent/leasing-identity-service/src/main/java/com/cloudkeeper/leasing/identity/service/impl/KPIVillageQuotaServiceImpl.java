@@ -440,7 +440,7 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
         detachedCriteria1.add(Restrictions.eq("taskId", taskId));
         detachedCriteria1.add(Restrictions.like("parentQuotaId", parentQuotaId, MatchMode.START));
         detachedCriteria1.createAlias("kpiQuota", "k");
-        detachedCriteria1.add(Restrictions.like("k.quotaMakeDepartId", makeQuotaDistrictId, MatchMode.ANYWHERE));
+        detachedCriteria1.add(Restrictions.like("k.quotaScoringDepartId", makeQuotaDistrictId, MatchMode.ANYWHERE));
         return kpiTownQuotaService.findAll(detachedCriteria1);
     }
 

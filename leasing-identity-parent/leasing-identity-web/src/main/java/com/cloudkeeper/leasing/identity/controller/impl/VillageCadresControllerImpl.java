@@ -24,6 +24,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,11 +98,16 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         villageCadresService.save(villageCadres);
 
         // 任期信息记录
-        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresId(villageCadres.getId());
+        VillageCadresTerm villageCadresTerm = villageCadresTermService.findByCadresIdAndTermType(villageCadres.getId(), "0");
         if (villageCadresTerm != null){
             villageCadresTerm.setDepartureTime(LocalDate.now());
             villageCadresTerm.setTermFile(villageCadresTermDTO.getTermFile());
             villageCadresTermService.save(villageCadresTerm);
+            VillageCadresTermDTO vDto= new VillageCadresTermDTO();
+            BeanUtils.copyProperties(villageCadresTerm, vDto, "id");
+            VillageCadresTerm convert = vDto.convert(VillageCadresTerm.class);
+            convert.setTermType("1");
+            villageCadresTermService.save(convert);
         }
         String msg = villageCadresService.actionLog("移除","[村干部信息]", villageCadres.getName());
         sysLogService.pushLog(this.getClass().getName(),msg,villageCadresService.getTableName(),villageCadres.getId());
@@ -145,6 +151,7 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         villageCadresTerm.setDistrictId(villageCadres.getDistrictId());
         villageCadresTerm.setDistrictName(villageCadres.getDistrictName());
         villageCadresTerm.setCadresType(villageCadres.getCadresType());
+        villageCadresTerm.setTermType("0");
         villageCadresTermService.save(villageCadresTerm);
         //添加村干部任期信息----结束
 

@@ -30,12 +30,14 @@ public interface StatisticsService {
     Object getAgeCountByDistrict(String cadresType,String districtId);
     List<StatisticsVO> getAllStatistics();
 
-    Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String cadresType);
-    Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,String cadresType, Integer page, Integer size, Pageable pageable);
-    String export(ExportDTO exportDTO,  String cadresType);
+    Object getCustomStatistics(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
+                               String cadresType, String districtId);
+    Object page(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables,
+                String cadresType, Integer page, Integer size, String districtId, Pageable pageable);
+    String export(ExportDTO exportDTO,  String cadresType, String districtId);
 
     // 生成文件
     String generateFileUrl(ExportDTO exportDTO, String resSql);
-    List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type,String cadresType);
+    List<StatisticsNotIntegerVO> getRewardsStatisticsByType(String type,String cadresType, String districtId);
 
 }
