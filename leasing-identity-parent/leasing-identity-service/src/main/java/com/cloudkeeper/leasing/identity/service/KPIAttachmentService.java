@@ -16,5 +16,7 @@ public interface KPIAttachmentService extends BaseService<KPIAttachment> {
 
     List<KPIAttachment> findAllByQuota(String quotaId, String districtId);
 
+    KPIAttachment findByQuotaIdAndDistrictIdAndQuarter(String quotaId, String districtId, String quarter);
+
     void deleteAllByQuotaIdAndDistrictIdAndQuarterAndTaskId(String quotaId, String districtId, String quarter, String taskId);
 }

@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface KPIAttachmentRepository extends BaseRepository<KPIAttachment> {
 
     void deleteAllByQuotaIdAndDistrictIdAndQuarterAndTaskId(String quotaId, String districtId, String quarter, String taskId);
+
+    KPIAttachment findByQuotaIdAndDistrictIdAndQuarter(String quotaId, String districtId, String quarter);
 }

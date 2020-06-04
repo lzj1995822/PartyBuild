@@ -66,6 +66,11 @@ public class KPIAttachmentServiceImpl extends BaseServiceImpl<KPIAttachment> imp
     }
 
     @Override
+    public KPIAttachment findByQuotaIdAndDistrictIdAndQuarter(String quotaId, String districtId, String quarter) {
+        return kPIAttachmentRepository.findByQuotaIdAndDistrictIdAndQuarter(quotaId, districtId, quarter);
+    }
+
+    @Override
     public void deleteAllByQuotaIdAndDistrictIdAndQuarterAndTaskId(String quotaId, String districtId, String quarter, String taskId) {
         kPIAttachmentRepository.deleteAllByQuotaIdAndDistrictIdAndQuarterAndTaskId(quotaId, districtId, quarter, taskId);
     }

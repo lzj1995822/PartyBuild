@@ -158,6 +158,10 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
             if (!CollectionUtils.isEmpty(kpiTownQuotas)) {
                 convert.setKpiTownQuotas(KPITownQuota.convert(kpiTownQuotas, KPITownQuotaVO.class));
             }
+            KPIAttachment kpiAttachment = kpiAttachmentService.findByQuotaIdAndDistrictIdAndQuarter(item.getQuotaId(), districtId, quarter);
+            if (kpiAttachment != null) {
+                convert.setAttachment(kpiAttachment.convert(KPIAttachmentVO.class));
+            }
             secondVOS.add(convert);
         }
         ArrayList<KpiQuotaVO> res = new ArrayList<>();

@@ -109,7 +109,7 @@ public class KPIVillageQuotaServiceImpl extends BaseServiceImpl<KPIVillageQuota>
             Map<String, Object> val = new HashMap<>();
             val.put("quotasName", item.getParentQuotaName());
             val.put("quotaScore", item.getScore());
-            val.put("attachment", kpiAttachmentService.findByQuota(item.getParentQuotaId(), item.getDistrictId(), quarter, reviewTaskId));
+            val.put("attachment", kpiAttachmentService.findAllByQuota(item.getParentQuotaId(), item.getDistrictId()));
             val.put("thirdRes", thirdRes.get(item.getParentQuotaId()));
             secondRes.add(val);
         }
