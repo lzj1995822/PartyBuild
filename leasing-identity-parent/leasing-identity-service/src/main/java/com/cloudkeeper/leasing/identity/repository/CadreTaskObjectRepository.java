@@ -18,5 +18,5 @@ public interface CadreTaskObjectRepository extends BaseRepository<CadreTaskObjec
 
     void deleteAllByTaskId(String taskId);
 
-    List<CadreTaskObject> findAllByTaskId(String taskId);
+    List<CadreTaskObject> findAllByTaskIdOrderByObjectIdAsc(String taskId);
 }

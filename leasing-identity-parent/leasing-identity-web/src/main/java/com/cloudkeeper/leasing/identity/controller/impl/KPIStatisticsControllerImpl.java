@@ -27,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -139,19 +140,9 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
         return Result.of(kPIStatisticsVOPage);
     }
 
-    @Override
-    @Transactional
-    public Result<Boolean> generateKpiResult(@Nonnull String taskId) {
-        CadreTask byId = cadreTaskService.findById(taskId);
-        if (byId == null) {
-            return Result.of(500, "当前任务不存在！");
-        }
-        String hasGenerateResult = byId.getHasGenerateResult();
-        if ("1".equals(hasGenerateResult)) {
-            return Result.of(500, "当前任务考核结果已经生成！");
-        }
+    private void updateDoubleVerify(String taskId, CadreTask byId) {
 
-        kpiVillageStatisticsService.generateVillageStatistic(taskId);
+        kPIStatisticsService.deleteAllByTaskId(taskId);
 
         List<SysDistrict> villages = sysDistrictService.findAllVillages();
         Map<String, KPIStatistics> tempRes = new HashMap<>();
@@ -253,6 +244,38 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
         for (KPIStatistics item : tempRes.values()) {
             kPIStatisticsService.save(item);
         }
+    }
+
+    @GetMapping("/updateDoubleVerify")
+    @Transactional
+    public Result<Boolean> updateDoubleVerify(@Nonnull String taskYear) {
+        CadreTask byId = cadreTaskService.getCurrentTaskByType("综合年度考核", taskYear, null);
+        if (byId == null) {
+            return Result.of(200, "当前任务不存在！", null);
+        }
+
+        // 双验证数据更新
+        this.updateDoubleVerify(byId.getId(), byId);
+
+        return Result.of(200, true);
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> generateKpiResult(@Nonnull String taskId) {
+        CadreTask byId = cadreTaskService.findById(taskId);
+        if (byId == null) {
+            return Result.of(200, "当前任务不存在！", null);
+        }
+        String hasGenerateResult = byId.getHasGenerateResult();
+        if ("1".equals(hasGenerateResult)) {
+            return Result.of(200, "当前任务考核结果已经生成！", null);
+        }
+
+        kpiVillageStatisticsService.generateVillageStatistic(taskId);
+
+        // 双验证数据更新
+        this.updateDoubleVerify(taskId, byId);
 
         cadreTaskService.updateResultStatus(taskId);
 

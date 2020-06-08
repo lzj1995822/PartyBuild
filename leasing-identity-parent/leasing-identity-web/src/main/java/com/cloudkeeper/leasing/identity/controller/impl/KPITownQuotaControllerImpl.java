@@ -446,14 +446,15 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(KPITownQuota.class);
         detachedCriteria.add(Restrictions.eq("districtId", districtId));
         detachedCriteria.add(Restrictions.eq("quotaYear", quotaYear));
+        detachedCriteria.addOrder(Order.asc("parentQuotaId"));
         List<KPITownQuota> all = kPITownQuotaService.findAll(detachedCriteria);
 
-        Map<String, List<KPITownQuotaVO>> map = new HashMap<>();
+        Map<String, List<KPITownQuotaVO>> map = new LinkedHashMap<>();
         for (KPITownQuota item : all) {
             String parentQuotaId = item.getParentQuotaId();
             List<KPITownQuotaVO> currentList = null;
             if (!map.containsKey(parentQuotaId)) {
-                map.put(parentQuotaId, new ArrayList<>());
+                map.put(parentQuotaId, new LinkedList<>());
             }
             currentList = map.get(parentQuotaId);
             currentList.add(item.convert(KPITownQuotaVO.class));
@@ -462,13 +463,14 @@ public class KPITownQuotaControllerImpl implements KPITownQuotaController {
         DetachedCriteria quota = DetachedCriteria.forClass(KpiQuota.class);
         quota.add(Restrictions.eq("quotaYear", quotaYear));
         quota.add(Restrictions.eq("quotaLevel", "1"));
+        quota.addOrder(Order.asc("quotaId"));
         List<KpiQuota> first = kpiQuotaService.findAll(quota);
 
-        List<KpiQuotaVO> firstRes = new ArrayList<>();
+        List<KpiQuotaVO> firstRes = new LinkedList<>();
         for (KpiQuota item : first) {
             List<KpiQuota> second = item.getKpiQuotas();
             KpiQuotaVO firstConvert = item.convert(KpiQuotaVO.class);
-            List<KpiQuotaVO> secondRes = new ArrayList<>();
+            List<KpiQuotaVO> secondRes = new LinkedList<>();
             if (!CollectionUtils.isEmpty(second)) {
                 for (KpiQuota subItem : second) {
                     KpiQuotaVO secondConvert = subItem.convert(KpiQuotaVO.class);

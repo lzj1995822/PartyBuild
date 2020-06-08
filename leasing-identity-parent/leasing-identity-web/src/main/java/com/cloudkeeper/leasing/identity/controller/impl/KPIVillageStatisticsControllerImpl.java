@@ -141,10 +141,16 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
 
     @Override
     public Result<Object> getStatistics(String taskYear) {
-        String taskId = getCurrentTaskId(taskYear);
-        if (taskId == null) {
-            return Result.of(500, "当前年份对应的考核任务不存在！");
+        CadreTask cadreTask = checkCurrentTask(taskYear);
+
+        if (cadreTask == null) {
+            return Result.of(200, "当前年份对应的考核任务不存在！", null);
         }
+
+        if (StringUtils.isEmpty(cadreTask.getHasGenerateResult()) || "0".equals(cadreTask.getHasGenerateResult())) {
+            return Result.of(200, "当前年份考核结果尚未生成，请前往考核实施-任务管理生成！", null);
+        }
+        String taskId = cadreTask.getId();
 
         String allRankSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +taskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
         List<KPIVillageStatistics> allRank = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, allRankSql);
@@ -158,7 +164,7 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
                 "FROM\n" +
                 "\tKPI_Village_Statistics kvs \n" +
                 "WHERE\n" +
-                "\tkvs.score IN ( SELECT MIN ( CAST ( score AS FLOAT ) ) AS score FROM KPI_Village_Statistics WHERE " +
+                "\tkvs.score IN ( SELECT CAST( MIN ( CAST ( score AS FLOAT ) ) as varchar) AS score FROM KPI_Village_Statistics WHERE " +
                 "quotaLevel = '0' and taskId = '" + taskId + "' GROUP BY parentDistrictId, parentDistrictName ) \n" +
                 "ORDER BY\n" +
                 "\tscore DESC";
@@ -243,7 +249,7 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     public Result<List<KPIVillageStatistics>> getExcellent(String taskYear) {
         String currentTaskId = getCurrentTaskId(taskYear);
         if (currentTaskId == null) {
-            return Result.of(500, "当前年份对应的考核任务不存在！");
+            return Result.of(200, "当前年份对应的考核任务不存在！", null);
         }
         String allSql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and taskId = '" +currentTaskId+ "' ORDER BY cast(kvs.score as FLOAT) DESC";
         List<KPIVillageStatistics> all = kPIVillageStatisticsService.findAllBySql(KPIVillageStatistics.class, allSql);
@@ -254,7 +260,11 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     public Result<Map<String, List<String>>> getTotalScore(@Nonnull String taskYear) {
         CadreTask cadreTask = checkCurrentTask(taskYear);
         if (cadreTask == null) {
-            return Result.of(500, "当前任务不存在!");
+            return Result.of(200, "当前任务不存在!", null);
+        }
+
+        if (StringUtils.isEmpty(cadreTask.getHasGenerateResult()) || "0".equals(cadreTask.getHasGenerateResult())) {
+            return Result.of(200, "当前年份考核结果尚未生成，请前往考核实施-任务管理生成！", null);
         }
 
         String sql = "SELECT * FROM KPI_Village_Statistics kvs WHERE quotaLevel ='0' and kvs.taskId = '" +cadreTask.getId()+ "' ORDER BY cast(kvs.score as FLOAT) asc";
@@ -353,7 +363,7 @@ public class KPIVillageStatisticsControllerImpl implements KPIVillageStatisticsC
     public Result trainingForecast(@Nonnull String taskYear) {
         CadreTask cadreTask = checkCurrentTask(taskYear);
         if (cadreTask == null) {
-            return Result.of(500, "当前任务不存在!");
+            return Result.of(200, "当前任务不存在!");
         }
         String taskId = cadreTask.getId();
         ArrayList<Map> res = new ArrayList<>();

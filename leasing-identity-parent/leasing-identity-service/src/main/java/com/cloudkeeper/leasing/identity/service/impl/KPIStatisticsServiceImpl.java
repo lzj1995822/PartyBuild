@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
+
 /**
  * 双向印证 service
  * @author yujian
@@ -42,4 +44,8 @@ public class KPIStatisticsServiceImpl extends BaseServiceImpl<KPIStatistics> imp
                 .withMatcher("taskId", ExampleMatcher.GenericPropertyMatchers.contains());
     }
 
+    @Override
+    public void deleteAllByTaskId(@Nonnull String taskId) {
+        kPIStatisticsRepository.deleteAllByTaskId(taskId);
+    }
 }

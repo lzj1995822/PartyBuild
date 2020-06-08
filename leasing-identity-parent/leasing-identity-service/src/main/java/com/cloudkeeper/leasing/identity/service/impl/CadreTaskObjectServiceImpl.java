@@ -93,7 +93,7 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
 
     @Override
     public List<CadreTaskObject> findAllByTaskId(String taskId) {
-        return cadreTaskObjectRepository.findAllByTaskId(taskId);
+        return cadreTaskObjectRepository.findAllByTaskIdOrderByObjectIdAsc(taskId);
     }
 
     @Override

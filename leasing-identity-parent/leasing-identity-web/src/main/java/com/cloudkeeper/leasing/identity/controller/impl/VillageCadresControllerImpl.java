@@ -457,4 +457,20 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         exportDTO.setExportFields(list);
         return exportDTO;
     }
+
+    // 获得村书记疗养建议名单
+    @GetMapping("/getRestSuggestSecretary")
+    public Result<List<VillageCadresVO>> getRestSuggestSecretary() {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(VillageCadres.class);
+        detachedCriteria.add(Restrictions.in("quasiAssessmentRank",
+                new ArrayList(){{
+                    add("三级专职村书记");
+                    add("四级专职村书记");
+                    add("五级专职村书记");
+                }}
+        ));
+        detachedCriteria.addOrder(Order.asc("districtId"));
+        List<VillageCadres> all = villageCadresService.findAll(detachedCriteria);
+        return Result.of(VillageCadres.convert(all, VillageCadresVO.class));
+    }
 }
