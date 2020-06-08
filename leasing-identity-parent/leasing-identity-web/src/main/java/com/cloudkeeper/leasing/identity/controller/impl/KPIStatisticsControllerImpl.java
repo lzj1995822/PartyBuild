@@ -95,11 +95,11 @@ public class KPIStatisticsControllerImpl implements KPIStatisticsController {
     public Result<Map> list(@ApiParam(value = "双向印证查询条件", required = true) @RequestBody KPIStatisticsSearchable kPIStatisticsSearchable,
         @ApiParam(value = "排序条件", required = true) Sort sort) {
         if (StringUtils.isEmpty(kPIStatisticsSearchable.getTaskYear())) {
-            return Result.of(500, "任务年度不存在！");
+            return Result.of(200, "任务年度不存在！");
         }
         CadreTask task = cadreTaskService.getCurrentTaskByType("综合年度考核", kPIStatisticsSearchable.getTaskYear(), null);
         if (task == null) {
-            return Result.of(500, "年度任务不存在！");
+            return Result.of(200, "年度任务不存在！");
         }
         kPIStatisticsSearchable.setTaskId(task.getId());
 
