@@ -14,4 +14,7 @@ public interface HonourInfoService extends BaseService<HonourInfo> {
     void deleteAllByCadresId(String cadresId);
 
     List<HonourInfo> findAllByCadresId(String cadresId);
+
+    List<HonourInfo> findAllByCadresIdAndRewardsType(String cadresId, String rewardsType);
+
 }

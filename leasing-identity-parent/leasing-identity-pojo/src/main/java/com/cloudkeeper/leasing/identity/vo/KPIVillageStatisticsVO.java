@@ -74,4 +74,9 @@ public class KPIVillageStatisticsVO extends BaseVO {
     @ApiModelProperty(value = "年龄", position = 10, required = true)
     private Integer age;
 
+    @ApiModelProperty(value = "村书记id")
+    private String cadresId;
+
+    @ApiModelProperty(value = "考核年份")
+    private String quotaYear;
 }

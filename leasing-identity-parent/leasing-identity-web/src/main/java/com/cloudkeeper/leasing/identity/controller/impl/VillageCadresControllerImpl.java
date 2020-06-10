@@ -2,10 +2,7 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.VillageCadresController;
-import com.cloudkeeper.leasing.identity.domain.CadrePosition;
-import com.cloudkeeper.leasing.identity.domain.PromotionCadres;
-import com.cloudkeeper.leasing.identity.domain.VillageCadres;
-import com.cloudkeeper.leasing.identity.domain.VillageCadresTerm;
+import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.dto.InformationAudit.InformationAuditDTO;
 import com.cloudkeeper.leasing.identity.dto.promotioncadres.PromotionCadresSearchable;
 import com.cloudkeeper.leasing.identity.dto.villagecadres.ExportDTO;
@@ -14,10 +11,7 @@ import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresSearchabl
 import com.cloudkeeper.leasing.identity.dto.villagecadres.VillageCadresStatisticsSearchable;
 import com.cloudkeeper.leasing.identity.dto.villagecadresterm.VillageCadresTermDTO;
 import com.cloudkeeper.leasing.identity.service.*;
-import com.cloudkeeper.leasing.identity.vo.CadresExamineVO;
-import com.cloudkeeper.leasing.identity.vo.CadresGroupByLevelVO;
-import com.cloudkeeper.leasing.identity.vo.SecretaryNumberVO;
-import com.cloudkeeper.leasing.identity.vo.VillageCadresVO;
+import com.cloudkeeper.leasing.identity.vo.*;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.criterion.DetachedCriteria;
@@ -37,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -63,7 +58,9 @@ public class VillageCadresControllerImpl implements VillageCadresController {
 
     private final PromotionCadresService promotionCadresService;
 
-    private final CadreTaskObjectService cadreTaskObjectService;
+    private final HonourInfoService honourInfoService;
+
+    private final KPIVillageStatisticsService kpiVillageStatisticsService;
 
     @Override
     public Result<VillageCadresVO> findOne(@ApiParam(value = "村干部管理id", required = true) @PathVariable String id) {
@@ -472,5 +469,23 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         detachedCriteria.addOrder(Order.asc("districtId"));
         List<VillageCadres> all = villageCadresService.findAll(detachedCriteria);
         return Result.of(VillageCadres.convert(all, VillageCadresVO.class));
+    }
+
+    @GetMapping("/getLevelRelateInfo")
+    public Result<VillageCadresLevelInfoVO> getLevelRelateInfo(@Nonnull String cadresId) {
+        Optional<VillageCadres> optionalById = villageCadresService.findOptionalById(cadresId);
+        if (!optionalById.isPresent()) {
+            return Result.ofNotFound();
+        }
+        VillageCadres villageCadres = optionalById.get();
+        VillageCadresLevelInfoVO villageCadresLevelInfoVO = new VillageCadresLevelInfoVO();
+        BeanUtils.copyProperties(villageCadres, villageCadresLevelInfoVO);
+        List<HonourInfo> honours = honourInfoService.findAllByCadresIdAndRewardsType(villageCadres.getId(), "表彰");
+        villageCadresLevelInfoVO.setHonours(HonourInfo.convert(honours, HonourInfoVO.class));
+
+        List<KPIVillageStatistics> allByCadresIdAndQuotaLevel = kpiVillageStatisticsService.findAllByCadresIdAndQuotaLevel(villageCadres.getId(), "0");
+        villageCadresLevelInfoVO.setKpiVillageStatisticsVOS(KPIVillageStatistics.convert(allByCadresIdAndQuotaLevel, KPIVillageStatisticsVO.class));
+
+        return Result.of(villageCadresLevelInfoVO);
     }
 }

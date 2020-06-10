@@ -72,4 +72,8 @@ public class CadreTaskSearchable extends BaseSearchable {
     /** 是否可以生成考核结果 */
     @ApiModelProperty(value = "是否可以生成考核结果")
     private String generateResultEnable;
+
+    /** 指标制定任务是否经过确认了 */
+    @ApiModelProperty(value = "指标制定任务是否经过确认了")
+    private String hasConfirm;
 }

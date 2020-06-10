@@ -16,4 +16,6 @@ public interface HonourInfoRepository extends BaseRepository<HonourInfo> {
     void deleteAllByCadresId(String cadresId);
 
     List<HonourInfo> findAllByCadresId(String cadresId);
+
+    List<HonourInfo> findAllByCadresIdAndRewardsType(String cadresId, String rewardsType);
 }

@@ -2,10 +2,12 @@ package com.cloudkeeper.leasing.identity.controller.impl;
 
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.CadreTaskObjectController;
+import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.identity.dto.cadretaskobject.CadreTaskObjectDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretaskobject.CadreTaskObjectSearchable;
 import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
+import com.cloudkeeper.leasing.identity.service.CadreTaskService;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,9 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CadreTaskObjectControllerImpl implements CadreTaskObjectController {
+
+    /** 村书记模块发布任务对象记录 service */
+    private final CadreTaskService cadreTaskService;
 
     /** 村书记模块发布任务对象记录 service */
     private final CadreTaskObjectService cadreTaskObjectService;
@@ -84,12 +90,20 @@ public class CadreTaskObjectControllerImpl implements CadreTaskObjectController 
 
     @Override
     public Result<CadreTaskObjectVO> progressNext(@ApiParam(value = "走任务流程", required = true) String taskObjectId, String isSuccess, String auditor, String auditAdvice) {
-        CadreTaskObject submit = cadreTaskObjectService.submit(taskObjectId, isSuccess, auditor, auditAdvice);
-        return Result.of(submit.convert(CadreTaskObjectVO.class));
+        CadreTaskObjectVO submit = cadreTaskObjectService.submit(taskObjectId, isSuccess, auditor, auditAdvice);
+        return Result.of(submit);
     }
 
     @GetMapping("/quota/confirm")
+    @Transactional
     public Result<Boolean> quotaConfirm(@Nonnull String taskId) {
+        Optional<CadreTask> optional = cadreTaskService.findOptionalById(taskId);
+        if (!optional.isPresent()) {
+            return Result.of(Boolean.FALSE);
+        }
+        CadreTask cadreTask = optional.get();
+        cadreTask.setHasConfirm("1");
+        cadreTaskService.save(cadreTask);
         List<CadreTaskObject> allByTaskId = cadreTaskObjectService.findAllByTaskId(taskId);
         for (CadreTaskObject item : allByTaskId) {
             item.setStatus("3");

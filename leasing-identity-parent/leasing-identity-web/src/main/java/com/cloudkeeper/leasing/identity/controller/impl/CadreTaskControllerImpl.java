@@ -192,6 +192,9 @@ public class CadreTaskControllerImpl implements CadreTaskController {
         }
         detachedCriteria.add(Restrictions.in("type", types));
         detachedCriteria.add(Restrictions.gt("endTime", LocalDate.now()));
+        if (types.contains("考核指标内容制定")) {
+            detachedCriteria.add(Restrictions.ne("hasConfirm", "1"));
+        }
         Integer totalCount = cadreTaskObjectService.getTotalCount(detachedCriteria);
         detachedCriteria.addOrder(Order.desc("taskYear"));
         detachedCriteria.addOrder(Order.desc("endTime"));

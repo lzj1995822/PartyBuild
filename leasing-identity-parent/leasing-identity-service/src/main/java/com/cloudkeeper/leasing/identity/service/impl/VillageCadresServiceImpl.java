@@ -600,10 +600,13 @@ public class VillageCadresServiceImpl extends BaseServiceImpl<VillageCadres> imp
                 HashMap<String, String> stringStringHashMap = new HashMap<>();
                 stringStringHashMap.put("name", subItem.getName());
                 stringStringHashMap.put("postName", subItem.getCadrePosition().stream().map(CadrePosition::getName).collect(Collectors.joining("、")));
+                stringStringHashMap.put("headSculpture", subItem.getHeadSculpture());
+                stringStringHashMap.put("id", subItem.getId());
                 values.add(stringStringHashMap);
             }
             CadresGroupByLevelVO cadresGroupByLevelVO = new CadresGroupByLevelVO();
-            cadresGroupByLevelVO.setLevelName(item);
+            String newLevelName = item.replace("专职村书记", "职级");
+            cadresGroupByLevelVO.setLevelName(newLevelName);
             cadresGroupByLevelVO.setCadres(values);
             res.add(cadresGroupByLevelVO);
         }

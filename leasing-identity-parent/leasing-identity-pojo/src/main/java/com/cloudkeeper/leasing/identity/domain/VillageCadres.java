@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.springframework.beans.BeanUtils;
@@ -135,6 +137,7 @@ public class VillageCadres extends BaseEntity {
     /** 岗位 */
     @ApiModelProperty(value = "岗位", position = 13)
     @OneToMany(mappedBy = "villageCadres")
+    @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<CadrePosition> cadrePosition;
 
@@ -201,7 +204,7 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "入额时间", position = 19)
     private LocalDate entryAmountTime;
 
-    @OneToMany(mappedBy = "villageCadres")
+    @OneToMany(mappedBy = "villageCadres", fetch = FetchType.LAZY)
     @OrderBy("createdAt desc")
     private List<InformationAudit> informationAudits = new ArrayList<>();
 

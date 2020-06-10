@@ -3,10 +3,7 @@ package com.cloudkeeper.leasing.identity.domain;
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
@@ -79,4 +76,9 @@ public class CadreTask extends BaseEntity {
     /** 是否可以生成考核结果 */
     @ApiModelProperty(value = "是否可以生成考核结果")
     private String generateResultEnable;
+
+    /** 指标制定任务是否经过确认了 */
+    @ApiModelProperty(value = "指标制定任务是否经过确认了")
+    private String hasConfirm = "0";
+
 }

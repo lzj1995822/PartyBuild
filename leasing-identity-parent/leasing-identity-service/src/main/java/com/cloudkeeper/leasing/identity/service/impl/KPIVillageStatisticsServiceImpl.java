@@ -5,6 +5,7 @@ import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
 import com.cloudkeeper.leasing.identity.domain.*;
 import com.cloudkeeper.leasing.identity.repository.KPIVillageStatisticsRepository;
 import com.cloudkeeper.leasing.identity.service.*;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
@@ -99,8 +100,9 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
         // 每个二级指标对应每个村的总分sql
         String sql = "SELECT cast(b.score as varchar) as score, b.districtId, b.districtName, b.parentQuotaId as quotaId, '2' as quotaLevel, " +
                 "vc.name as cadresName, sd.orgParent as parentDistrictId, sd.orgParentName as parentDistrictName, " +
-                "kq.quotaName as quotaName, kq.parentQuotaId, kqp.quotaName as parentQuotaName, " +
-                "'" +taskId+ "' as taskId FROM (\n" +
+                "kq.quotaName as quotaName, kq.parentQuotaId, kqp.quotaName as parentQuotaName, vc.id as cadresId, " +
+                "'" + byId.getTaskYear() +"' as quotaYear, " +
+                "'" + taskId + "' as taskId FROM (\n" +
                 "SELECT ROUND(avg(score), 2) as score, parentQuotaId, districtId, districtName from (\n" +
                 "SELECT sum(cast(score as float)) as score, districtId, districtName,quarter,parentQuotaId " +
                 "from KPI_village_Quota kvq WHERE kvq.parentQuotaId like '" + taskYear + "01%' GROUP BY " +
@@ -135,6 +137,8 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\t'1' AS quotaLevel,\n" +
                 "\tcast(rank ( ) OVER ( partition BY b.parentQuotaId ORDER BY b.score DESC ) as int)  AS ranking, \n" +
                 "\tcast(rank ( ) OVER ( partition BY b.parentQuotaId, sd.orgParent ORDER BY b.score DESC) as varchar) AS townRanking, " +
+                "\tvc.id as cadresId,\n" +
+                "'" + byId.getTaskYear() +"' as quotaYear, " +
                 "'" +taskId+ "' as taskId " +
                 "FROM\n" +
                 "\t(\n" +
@@ -171,6 +175,8 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "\tcast(a.score as varchar) as score,\n" +
                 "\ta.districtId,\n" +
                 "\tcast(rank ( ) OVER ( ORDER BY a.score DESC ) as int) AS ranking, \n" +
+                "\tvc.id as cadresId,\n" +
+                "'" + byId.getTaskYear() +"' as quotaYear, " +
                 "'" +taskId+ "' as taskId " +
                 "FROM\n" +
                 "\t(\n" +
@@ -190,8 +196,29 @@ public class KPIVillageStatisticsServiceImpl extends BaseServiceImpl<KPIVillageS
                 "ORDER BY\n" +
                 "\tranking ASC";
         List<KPIVillageStatistics> level0 = super.findAllBySql(KPIVillageStatistics.class, sql);
+        int total = 162;
+        int good = ((Double)(total * 0.15)).intValue();
+        int pass = ((Double)(total * 0.5)).intValue();
+        for (KPIVillageStatistics item : level0) {
+            int rank = item.getRanking();
+            if (rank <= good) {
+                item.setPartitionLevel("优秀");
+            } else if (rank <= pass) {
+                item.setPartitionLevel("称职");
+            } else {
+                item.setPartitionLevel("基本称职");
+            }
+            if (Double.valueOf(item.getScore()) < 60d) {
+                item.setPartitionLevel("不称职");
+            }
+        }
         kPIVillageStatisticsRepository.saveAll(level0);
         return true;
+    }
+
+    @Override
+    public List<KPIVillageStatistics> findAllByCadresIdAndQuotaLevel(@Nonnull String cadresId, @Nonnull String quotaLevel) {
+        return kPIVillageStatisticsRepository.findAllByCadresIdAndQuotaLevelOrderByCreatedAt(cadresId, quotaLevel);
     }
 
     List<KPIVillageStatistics> handlePartitionLevel(List<KPIVillageStatistics> kpiVillageStatistics, String taskYear) {

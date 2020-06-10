@@ -101,4 +101,7 @@ public class CadreTaskObjectVO extends BaseVO {
     /** 是否为被驳回状态 */
     @ApiModelProperty(value = "是否为被驳回状态")
     private String isRejected;
+
+    @ApiModelProperty(value = "是否可以生成考核结果")
+    private String generateResultEnable;
 }

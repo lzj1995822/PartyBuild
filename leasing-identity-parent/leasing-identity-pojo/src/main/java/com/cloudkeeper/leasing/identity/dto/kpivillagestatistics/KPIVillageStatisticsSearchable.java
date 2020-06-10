@@ -72,4 +72,6 @@ public class KPIVillageStatisticsSearchable extends BaseSearchable {
     @ApiModelProperty(value = "村级实绩老的得分", position = 10, required = true)
     private String oldScore;
 
+    @ApiModelProperty(value = "村书记id")
+    private String cadresId;
 }

@@ -1,5 +1,8 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.RuntimeUtil;
+import cn.hutool.log.StaticLog;
 import com.cloudkeeper.leasing.base.model.Result;
 import com.cloudkeeper.leasing.identity.controller.SysConfigurationController;
 import com.cloudkeeper.leasing.identity.domain.SysConfiguration;
@@ -20,10 +23,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nonnull;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,4 +118,78 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
         return Result.of(Result.ResultCode.OK.getCode(), "设置成功");
     }
 
+    private String dataBaseName = "Copy3";
+
+    private String filePath = "d:\\" + dataBaseName + ".bak";
+
+    private String backupCmd = "sqlcmd -S . -E -Q \"BACKUP DATABASE " + dataBaseName + " TO DISK='" + filePath + "'\" ";
+
+    private String offlineCmd = "sqlcmd -S . -E -Q \"ALTER DATABASE " + dataBaseName + " SET OFFLINE WITH ROLLBACK IMMEDIATE\" ";
+
+    private String onlineCmd = "sqlcmd -S . -E -Q \"ALTER DATABASE " + dataBaseName + " SET ONLINE\" ";
+
+    private String restoreCmd = "sqlcmd -S . -E -Q \"RESTORE DATABASE " + dataBaseName + " FROM DISK='" + filePath + "' WITH REPLACE\" ";
+
+    @GetMapping("/backup")
+    public Result backup() {
+        Boolean result;
+        //执行备份命令
+        try {
+            StaticLog.info("执行备份命令：" + backupCmd);
+            Process process = RuntimeUtil.exec(backupCmd);
+            result = handleCmdResult(process, "成功处理");
+        } catch (Exception ex) {
+            return Result.of(200, ex.getMessage(), false);
+        }
+        if (!result) {
+            return Result.of(200, "备份失败！", false);
+        }
+        return Result.of(200, "备份成功!", true);
+    }
+
+    @GetMapping("/restore")
+    public Result<Boolean> restore() {
+        Boolean result;
+        try {
+            StaticLog.info("执行数据库离线命令：" + offlineCmd);
+            RuntimeUtil.exec(offlineCmd);
+
+            StaticLog.info("执行还原命令：" + restoreCmd);
+            Process process = RuntimeUtil.exec(restoreCmd);
+
+            StaticLog.info("执行数据库离线命令：" + onlineCmd);
+            RuntimeUtil.exec(onlineCmd);
+
+            result = handleCmdResult(process, "成功处理");
+        } catch (Exception ex) {
+            return Result.of(200, ex.getMessage(), false);
+        }
+        if (!result) {
+            return Result.of(200, "还原失败", false);
+        }
+        return Result.of(200, "还原成功!", true);
+    }
+
+    private Boolean handleCmdResult(Process process,@Nonnull String judgeChar) throws Exception {
+        StringBuilder outResult = new StringBuilder();
+        StringBuilder errorResult = new StringBuilder();
+        process.waitFor();
+
+        // 获取命令执行结果, 有两个结果: 正常的输出 和 错误的输出（PS: 子进程的输出就是主进程的输入）
+        BufferedReader bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+        BufferedReader bufrError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GBK"));
+
+        // 读取输出
+        String line = null;
+        while ((line = bufrIn.readLine()) != null) {
+            outResult.append(line).append('\n');
+        }
+        while ((line = bufrError.readLine()) != null) {
+            errorResult.append(line).append('\n');
+        }
+        if (outResult.indexOf(judgeChar) == -1) {
+            return false;
+        }
+        return true;
+    }
 }

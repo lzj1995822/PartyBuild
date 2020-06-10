@@ -16,4 +16,6 @@ public interface KPIVillageStatisticsService extends BaseService<KPIVillageStati
 
     Boolean generateVillageStatistic(@Nonnull String taskId);
 
+    List<KPIVillageStatistics> findAllByCadresIdAndQuotaLevel(@Nonnull String cadresId, @Nonnull String quotaLevel);
+
 }

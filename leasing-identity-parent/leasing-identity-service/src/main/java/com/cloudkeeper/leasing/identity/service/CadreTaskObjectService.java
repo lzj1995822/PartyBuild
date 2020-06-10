@@ -4,6 +4,7 @@ import com.cloudkeeper.leasing.identity.domain.CadreTask;
 import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
 import com.cloudkeeper.leasing.base.service.BaseService;
 import com.cloudkeeper.leasing.identity.domain.TaskObject;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface CadreTaskObjectService extends BaseService<CadreTaskObject> {
 
     List<CadreTaskObject> findAllByTaskId(String taskId);
 
-    CadreTaskObject submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice);
+    CadreTaskObjectVO submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice);
 }

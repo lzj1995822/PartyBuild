@@ -9,6 +9,7 @@ import com.cloudkeeper.leasing.identity.repository.CadreTaskObjectRepository;
 import com.cloudkeeper.leasing.identity.repository.CadreTaskRepository;
 import com.cloudkeeper.leasing.identity.service.CadreTaskObjectService;
 import com.cloudkeeper.leasing.identity.service.InformationAuditService;
+import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.FinishRatioVO;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -97,7 +99,8 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
     }
 
     @Override
-    public CadreTaskObject submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice) {
+    @Transactional
+    public CadreTaskObjectVO submit(String taskObjectId, String isSuccess, String auditor, String auditorAdvice) {
         Optional<CadreTaskObject> byId = findOptionalById(taskObjectId);
         if (!byId.isPresent()) {
             return null;
@@ -111,13 +114,7 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
             status--;
             cadreTaskObject.setIsRejected("1");
         }
-        if (status == 2) {
-            updateTotalProgress(cadreTaskObject.getCadreTask());
-            if ("考核内容实施".equals(cadreTaskObject.getCadreTask().getType())){
-                //如果是考核内容实施完成去检测是否所有项都完成,使用redis消息队列
-                //template.convertAndSend("checkHasCompleted",cadreTaskObject.getTaskId());
-            }
-        }
+
         cadreTaskObject.setLastestAuditor(auditor);
         cadreTaskObject.setLastestAdvice(auditorAdvice);
         cadreTaskObject.setStatus(String.valueOf(status));
@@ -128,10 +125,17 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
         informationAudit.setTaskId(cadreTaskObject.getTaskId());
         informationAudit.setProcessType(cadreTaskObject.getCadreTask().getType());
         informationAuditService.save(informationAudit);
-        return save(cadreTaskObject);
+        CadreTaskObject save = save(cadreTaskObject);
+        CadreTaskObjectVO convert = save.convert(CadreTaskObjectVO.class);
+        // 更新进度并将是否可以生成考核结果标志位返回
+        if (status == 2) {
+            convert.setGenerateResultEnable(updateTotalProgress(cadreTaskObject.getCadreTask()));
+        }
+        return convert;
     }
 
-    private void updateTotalProgress(@NonNull CadreTask cadreTask) {
+    // 返回是否都已经完成
+    private String updateTotalProgress(@NonNull CadreTask cadreTask) {
         String finalStatus = "2";
         if (LEVEL_JUDGE_TASK.equals(cadreTask.getType())) {
             finalStatus = "4";
@@ -140,11 +144,17 @@ public class CadreTaskObjectServiceImpl extends BaseServiceImpl<CadreTaskObject>
                 "count(case when cto.status != '" +finalStatus+ "' then 1 else null end) as unfinish, count(*) as total" +
                 " from cadres_task_object cto where cto.taskId = '" + cadreTask.getId() + "'";
         FinishRatioVO bySql = findBySql(FinishRatioVO.class, sql);
+        String isAllFinish = "0";
         if (bySql != null) {
             BigDecimal divide1 = new BigDecimal(bySql.getFinish()).divide(new BigDecimal(bySql.getTotal()), 2, BigDecimal.ROUND_FLOOR);
             cadreTask.setCurrentPercent(divide1.toString());
+            if (divide1.intValue() == 1) {
+                isAllFinish = "1";
+            }
+            cadreTask.setGenerateResultEnable(isAllFinish);
             cadreTaskRepository.save(cadreTask);
         }
+        return isAllFinish;
     }
 
 

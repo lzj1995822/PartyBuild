@@ -46,4 +46,9 @@ public class HonourInfoServiceImpl extends BaseServiceImpl<HonourInfo> implement
     public List<HonourInfo> findAllByCadresId(String cadresId) {
         return honourInfoRepository.findAllByCadresId(cadresId);
     }
+
+    @Override
+    public List<HonourInfo> findAllByCadresIdAndRewardsType(String cadresId, String rewardsType) {
+        return honourInfoRepository.findAllByCadresIdAndRewardsType(cadresId, rewardsType);
+    }
 }

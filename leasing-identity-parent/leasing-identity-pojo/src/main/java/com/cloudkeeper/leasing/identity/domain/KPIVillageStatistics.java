@@ -1,13 +1,17 @@
 package com.cloudkeeper.leasing.identity.domain;
 
 import com.cloudkeeper.leasing.base.domain.BaseEntity;
+import com.cloudkeeper.leasing.identity.vo.CadrePositionVO;
+import com.cloudkeeper.leasing.identity.vo.KPIVillageStatisticsVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -72,5 +76,11 @@ public class KPIVillageStatistics extends BaseEntity {
 
     @ApiModelProperty(value = "村级实绩老的得分", position = 10, required = true)
     private String oldScore;
+
+    @ApiModelProperty(value = "村书记id")
+    private String cadresId;
+
+    @ApiModelProperty(value = "考核年份")
+    private String quotaYear;
 
 }
