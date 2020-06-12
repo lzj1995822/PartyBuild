@@ -84,6 +84,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
                 .withMatcher("score", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("attach", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("taskYear", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("taskModule", ExampleMatcher.GenericPropertyMatchers.startsWith());
     }
 

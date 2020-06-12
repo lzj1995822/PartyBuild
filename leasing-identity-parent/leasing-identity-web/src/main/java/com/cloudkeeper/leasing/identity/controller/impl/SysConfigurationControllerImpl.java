@@ -1,5 +1,6 @@
 package com.cloudkeeper.leasing.identity.controller.impl;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.RuntimeUtil;
 import cn.hutool.log.StaticLog;
@@ -120,7 +121,7 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
 
     private String dataBaseName = "Copy3";
 
-    private String filePath = "d:\\" + dataBaseName + ".bak";
+    private String filePath = "e:\\" + dataBaseName + ".bak";
 
     private String backupCmd = "sqlcmd -S . -E -Q \"BACKUP DATABASE " + dataBaseName + " TO DISK='" + filePath + "'\" ";
 
@@ -135,6 +136,7 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
         Boolean result;
         //执行备份命令
         try {
+            FileUtil.del(filePath);
             StaticLog.info("执行备份命令：" + backupCmd);
             Process process = RuntimeUtil.exec(backupCmd);
             result = handleCmdResult(process, "成功处理");
@@ -188,6 +190,7 @@ public class SysConfigurationControllerImpl implements SysConfigurationControlle
             errorResult.append(line).append('\n');
         }
         if (outResult.indexOf(judgeChar) == -1) {
+            System.out.print("操作失败信息：" + outResult);
             return false;
         }
         return true;
