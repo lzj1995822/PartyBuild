@@ -107,7 +107,8 @@ public class VillageCadresVO extends BaseVO {
 
     @ApiModelProperty(value = "担任村书记时长", position = 19)
     private String onDutyTime;
-
+    @ApiModelProperty(value = "担任村书记时长-月", position = 19)
+    private String onDutyMonth;
     @ApiModelProperty(value = "素能评价", position = 19)
     private String evaluation;
 

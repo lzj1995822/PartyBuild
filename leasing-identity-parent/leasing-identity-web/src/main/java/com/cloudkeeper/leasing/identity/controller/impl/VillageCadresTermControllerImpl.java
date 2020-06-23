@@ -94,6 +94,11 @@ public class VillageCadresTermControllerImpl implements VillageCadresTermControl
             detachedCriteria.add(Restrictions.eq("termType",villageCadresTermSearchable.getTermType()));
         }
         Integer total = villageCadresTermService.getTotalCount(detachedCriteria);
+        if (!StringUtils.isEmpty(villageCadresTermSearchable.getHasRetire()) && "-1".equals(villageCadresTermSearchable.getHasRetire())){
+            detachedCriteria.addOrder(Order.desc("departureTime"));
+        }else {
+            detachedCriteria.addOrder(Order.desc("appointmentTime"));
+        }
         pageable.getSort().forEach(item -> {
             if (item.isAscending()) {
                 detachedCriteria.addOrder(Order.asc(item.getProperty()));

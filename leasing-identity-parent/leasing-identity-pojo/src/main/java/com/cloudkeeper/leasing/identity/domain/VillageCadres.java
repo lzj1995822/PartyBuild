@@ -153,9 +153,10 @@ public class VillageCadres extends BaseEntity {
     @ApiModelProperty(value = "职责", position = 19)
     private String duty;
 
-    @ApiModelProperty(value = "担任村书记时长", position = 19)
+    @ApiModelProperty(value = "担任村书记时-年", position = 19)
     private String onDutyTime;
-
+    @ApiModelProperty(value = "担任村书记时长-月", position = 19)
+    private String onDutyMonth;
     @ApiModelProperty(value = "能力研判（原素能评价字段）", position = 19)
     private String evaluation;
 

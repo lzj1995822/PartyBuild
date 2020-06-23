@@ -2,8 +2,10 @@ package com.cloudkeeper.leasing.identity.service.impl;
 
 import com.cloudkeeper.leasing.base.repository.BaseRepository;
 import com.cloudkeeper.leasing.base.service.impl.BaseServiceImpl;
-import com.cloudkeeper.leasing.identity.domain.*;
-import com.cloudkeeper.leasing.identity.dto.InformationAuditSearchable;
+import com.cloudkeeper.leasing.identity.domain.CadreTask;
+import com.cloudkeeper.leasing.identity.domain.CadreTaskObject;
+import com.cloudkeeper.leasing.identity.domain.DetectionIndex;
+import com.cloudkeeper.leasing.identity.domain.SysDistrict;
 import com.cloudkeeper.leasing.identity.dto.cadretask.CadreTaskDTO;
 import com.cloudkeeper.leasing.identity.dto.cadretask.PromotionCadresDTO;
 import com.cloudkeeper.leasing.identity.dto.sysdistrict.SysDistrictSearchable;
@@ -14,12 +16,10 @@ import com.cloudkeeper.leasing.identity.vo.CadreTaskObjectVO;
 import com.cloudkeeper.leasing.identity.vo.CadreTaskVO;
 import com.cloudkeeper.leasing.identity.vo.VillageCadresInfoVO;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,6 +102,7 @@ public class CadreTaskServiceImpl extends BaseServiceImpl<CadreTask> implements 
             case DAILY_REVIEW:
                 sysDistrictSearchable.setDistrictType("Party");
                 sysDistrictSearchable.setDistrictLevel(2);
+                villageCadresRepository.updateState();
                 all = sysDistrictService.findAll(sysDistrictSearchable);
                 break;
             case REVIEW_TASK:

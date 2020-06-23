@@ -1,10 +1,6 @@
 package com.cloudkeeper.leasing.identity.dto.villagecadres;
 
 import com.cloudkeeper.leasing.base.dto.BaseEditDTO;
-import com.cloudkeeper.leasing.identity.domain.FamilyInfo;
-import com.cloudkeeper.leasing.identity.domain.FamilyWorkInfo;
-import com.cloudkeeper.leasing.identity.domain.HonourInfo;
-import com.cloudkeeper.leasing.identity.domain.TrainingInfo;
 import com.cloudkeeper.leasing.identity.dto.familyinfo.FamilyInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.familyworkinfo.FamilyWorkInfoDTO;
 import com.cloudkeeper.leasing.identity.dto.honourinfo.HonourInfoDTO;
@@ -18,10 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +101,8 @@ public class VillageCadresDTO extends BaseEditDTO {
 
     @ApiModelProperty(value = "担任村书记时长", position = 19)
     private String onDutyTime;
-
+    @ApiModelProperty(value = "担任村书记时长-月", position = 19)
+    private String onDutyMonth;
     @ApiModelProperty(value = "素能评价", position = 19)
     private String evaluation;
 
