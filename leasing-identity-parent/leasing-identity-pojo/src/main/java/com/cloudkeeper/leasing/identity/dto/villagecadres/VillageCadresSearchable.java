@@ -86,7 +86,7 @@ public class VillageCadresSearchable extends BaseSearchable {
 
     @ApiModelProperty(value = "担任村书记时长", position = 19)
     private String onDutyTime;
-
+    private String onDutyMonth;
     @ApiModelProperty(value = "素能评价", position = 19)
     private String evalution;
 
