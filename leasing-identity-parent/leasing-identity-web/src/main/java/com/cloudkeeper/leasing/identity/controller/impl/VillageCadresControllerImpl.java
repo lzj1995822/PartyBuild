@@ -88,10 +88,11 @@ public class VillageCadresControllerImpl implements VillageCadresController {
         }
         // 没有任何职位的时候标记退休
         VillageCadres villageCadres = optional.get();
-        List<CadrePosition> cadrePosition = villageCadres.getCadrePosition();
-        if (cadrePosition.size() == 0) {
-            villageCadres.setHasRetire("1");
-        }
+//        List<CadrePosition> cadrePosition = villageCadres.getCadrePosition();
+//        if (cadrePosition.size() == 0) {
+//
+//        }
+        villageCadres.setHasRetire("1");
         villageCadresService.save(villageCadres);
 
         // 任期信息记录
