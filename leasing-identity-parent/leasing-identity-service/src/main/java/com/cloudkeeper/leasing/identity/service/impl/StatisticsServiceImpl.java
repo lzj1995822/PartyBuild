@@ -10,10 +10,13 @@ import com.cloudkeeper.leasing.identity.service.StatisticsService;
 import com.cloudkeeper.leasing.identity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +33,7 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
     protected BaseRepository<MessageCenter> getBaseRepository() {
         return null;
     }
-
+    private final static Logger log = LoggerFactory.getLogger(StatisticsServiceImpl.class);
     public final FdfsService fdfsService;
     @Override
     public List<StatisticsVO> getSxStatistics(String districtId,String cadresType) {
@@ -412,18 +415,37 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         }
         //1.查询列表数据
         StringBuilder s = new StringBuilder();
-        s.append(createSql(villageCadresStatisticsSearchables, districtId));
+        Map<String,List<VillageCadresStatisticsSearchable>>  map = villageCadresStatisticsSearchables.stream().collect(Collectors.groupingBy(VillageCadresStatisticsSearchable::getTableName));
+        s.append(map.containsKey("VillageCadres") ? createSql(map.get("VillageCadres"), districtId) : "");
         StringBuilder resSql = new StringBuilder();
         String tempSql = "SELECT * from (select * ,row_number() over(order by id) as rownumber from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ";
         resSql.append(tempSql);
         resSql.append(s);
+        //2.增加子查询条件，使用IN
+        Set<String> strings = new HashSet<>();
+        for (String key : map.keySet()){
+            if (!key.equals("VillageCadres") && map.get(key) != null){
+                Set set = createChildSql(map.get(key),key);
+                strings.addAll(set);
+            }
+        }
+        String inSql = "";
+        if (!CollectionUtils.isEmpty(strings)){
+            inSql += "and id in (";
+            for (String s1 : strings){
+                inSql +=s1+",";
+            }
+            inSql += ")";
+        }
+        resSql.append(inSql);
         resSql.append(") a WHERE  a.rownumber BETWEEN ");
         resSql.append(page*size+1);
         resSql.append(" and ");
         resSql.append(page*size+size);
-
+        log.info("-------------------主查询"+resSql.toString());
         StringBuilder count = new StringBuilder("select count(1) as val,'全部' as name from village_cadres  WHERE village_cadres.cadresType = '" +cadresType+ "' and village_cadres.hasRetire = '0' and village_cadres.isDelete = '0' ");
         count.append(s);
+        count.append(inSql);
         List<StatisticsVO> statistics = (List<StatisticsVO>)findAllBySql(StatisticsVO.class,count.toString());
 
         List<VillageCadresStatisticsVO> villageCadresStatisticsVOS = (List<VillageCadresStatisticsVO>)findAllBySql(VillageCadresStatisticsVO.class,resSql.toString());
@@ -596,5 +618,56 @@ public class StatisticsServiceImpl extends BaseServiceImpl implements Statistics
         }
         s.append(" and districtId like '").append(districtId).append("%'");
         return s;
+    }
+
+    private Set<String> createChildSql(List<VillageCadresStatisticsSearchable> villageCadresStatisticsSearchables, String tableName){
+        StringBuilder s = new StringBuilder();
+        s.append("select cadresId from "+tableName + " where 1=1");
+        for (VillageCadresStatisticsSearchable v : villageCadresStatisticsSearchables){
+            StringBuilder filedName = new StringBuilder();
+            StringBuilder strToNumberMin = new StringBuilder("(CASE WHEN IsNumeric('").append(v.getValueMin()).append("') = 1 THEN cast('").append(v.getValueMin()).append("'  as deciaml(10,2)) ELSE -1 END)");
+            StringBuilder strToNumberMax = new StringBuilder("(CASE WHEN IsNumeric('").append(v.getValueMax()).append("') = 1 THEN cast('").append(v.getValueMax()).append("'  as deciaml(10,2)) ELSE -1 END)");
+            switch(v.getComparison()){
+                case "大于" :
+                    s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" > ").append(strToNumberMin);
+                    break;
+                case "小于" :
+                    s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" < ").append(strToNumberMin);
+                    break;
+                case "大于等于" :
+                    s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" >= ").append(strToNumberMin);
+                    break;
+                case "小于等于" :
+                    s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" <= ").append(strToNumberMin);
+                    break;
+                case "等于" :
+                    s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" = '").append(v.getValueMin()).append("'");
+                    break;
+                case "模糊匹配" :
+                    s.append(" and (").append(filedName).append(" like ").append(" '%").append(v.getValueMin()).append("%' ");
+                    break;
+                case "在范围内" :
+                    if (!StringUtils.isEmpty(v.getValueMin()) && !StringUtils.isEmpty(v.getValueMin())){
+                        s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" >= ").append(strToNumberMin);
+                        s.append(" and ").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" <= ").append(strToNumberMax);
+                    }else {
+                        if (!StringUtils.isEmpty(v.getValueMin()) ){
+                            s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" >= ").append(strToNumberMin);
+                        }
+                        if (!StringUtils.isEmpty(v.getValueMax())){
+                            s.append(" and (").append("cast(Isnull("+filedName+", 0) as  decimal(10,2))").append(" <= ").append(strToNumberMax);
+                        }
+                    }
+                    break;
+            }
+            if (!StringUtils.isEmpty(v.getSearchYear())){
+                s.append(" and YEAR(achieveTime) = "+v.getSearchYear());
+            }
+            s.append(")");
+        }
+        log.info("------------子查询SQL："+s.toString());
+        List<ChildSqlVO> childSqlVOS = findAllBySql(ChildSqlVO.class,s.toString());
+        Set<String> collect = childSqlVOS.stream().map(ChildSqlVO::getCadresId).collect(Collectors.toSet());
+        return collect;
     }
 }
